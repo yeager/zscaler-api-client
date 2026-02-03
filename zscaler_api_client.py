@@ -55,7 +55,345 @@ except ImportError:
         print("Error: PyQt6 or PySide6 required. Install with: pip install PyQt6")
         sys.exit(1)
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
+
+# Stylesheets for theming
+DARK_STYLE = """
+QMainWindow, QDialog {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+}
+QWidget {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+}
+QGroupBox {
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
+    margin-top: 8px;
+    padding-top: 8px;
+    font-weight: bold;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 5px;
+}
+QLineEdit, QPlainTextEdit, QTextEdit, QComboBox, QSpinBox {
+    background-color: #2d2d2d;
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
+    padding: 4px;
+    color: #d4d4d4;
+    selection-background-color: #264f78;
+}
+QLineEdit:focus, QPlainTextEdit:focus, QTextEdit:focus {
+    border-color: #0078d4;
+}
+QComboBox::drop-down {
+    border: none;
+    padding-right: 8px;
+}
+QComboBox::down-arrow {
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid #d4d4d4;
+}
+QPushButton {
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #1084d8;
+}
+QPushButton:pressed {
+    background-color: #006cc1;
+}
+QPushButton:disabled {
+    background-color: #3c3c3c;
+    color: #6c6c6c;
+}
+QTreeWidget, QTableWidget, QListWidget {
+    background-color: #252526;
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
+    alternate-background-color: #2d2d2d;
+}
+QTreeWidget::item, QTableWidget::item, QListWidget::item {
+    padding: 4px;
+}
+QTreeWidget::item:selected, QTableWidget::item:selected, QListWidget::item:selected {
+    background-color: #264f78;
+}
+QTreeWidget::item:hover, QTableWidget::item:hover, QListWidget::item:hover {
+    background-color: #2a2d2e;
+}
+QHeaderView::section {
+    background-color: #2d2d2d;
+    color: #d4d4d4;
+    border: none;
+    border-bottom: 1px solid #3c3c3c;
+    padding: 6px;
+    font-weight: bold;
+}
+QTabWidget::pane {
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
+}
+QTabBar::tab {
+    background-color: #2d2d2d;
+    color: #d4d4d4;
+    border: 1px solid #3c3c3c;
+    border-bottom: none;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 6px 12px;
+    margin-right: 2px;
+}
+QTabBar::tab:selected {
+    background-color: #1e1e1e;
+    border-bottom: 2px solid #0078d4;
+}
+QTabBar::tab:hover:!selected {
+    background-color: #383838;
+}
+QMenuBar {
+    background-color: #2d2d2d;
+    color: #d4d4d4;
+}
+QMenuBar::item:selected {
+    background-color: #3c3c3c;
+}
+QMenu {
+    background-color: #2d2d2d;
+    color: #d4d4d4;
+    border: 1px solid #3c3c3c;
+}
+QMenu::item:selected {
+    background-color: #264f78;
+}
+QStatusBar {
+    background-color: #007acc;
+    color: white;
+}
+QSplitter::handle {
+    background-color: #3c3c3c;
+}
+QScrollBar:vertical {
+    background-color: #1e1e1e;
+    width: 12px;
+    border: none;
+}
+QScrollBar::handle:vertical {
+    background-color: #5a5a5a;
+    border-radius: 6px;
+    min-height: 20px;
+}
+QScrollBar::handle:vertical:hover {
+    background-color: #6a6a6a;
+}
+QScrollBar:horizontal {
+    background-color: #1e1e1e;
+    height: 12px;
+    border: none;
+}
+QScrollBar::handle:horizontal {
+    background-color: #5a5a5a;
+    border-radius: 6px;
+    min-width: 20px;
+}
+QProgressBar {
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
+    background-color: #2d2d2d;
+    text-align: center;
+}
+QProgressBar::chunk {
+    background-color: #0078d4;
+    border-radius: 3px;
+}
+QLabel {
+    background-color: transparent;
+}
+QLabel a {
+    color: #3794ff;
+}
+"""
+
+LIGHT_STYLE = """
+QMainWindow, QDialog {
+    background-color: #f5f5f5;
+    color: #1e1e1e;
+}
+QWidget {
+    background-color: #f5f5f5;
+    color: #1e1e1e;
+}
+QGroupBox {
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    margin-top: 8px;
+    padding-top: 8px;
+    font-weight: bold;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 5px;
+}
+QLineEdit, QPlainTextEdit, QTextEdit, QComboBox, QSpinBox {
+    background-color: white;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    padding: 4px;
+    color: #1e1e1e;
+    selection-background-color: #0078d4;
+    selection-color: white;
+}
+QLineEdit:focus, QPlainTextEdit:focus, QTextEdit:focus {
+    border-color: #0078d4;
+}
+QComboBox::drop-down {
+    border: none;
+    padding-right: 8px;
+}
+QComboBox::down-arrow {
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid #1e1e1e;
+}
+QPushButton {
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #1084d8;
+}
+QPushButton:pressed {
+    background-color: #006cc1;
+}
+QPushButton:disabled {
+    background-color: #e0e0e0;
+    color: #a0a0a0;
+}
+QTreeWidget, QTableWidget, QListWidget {
+    background-color: white;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    alternate-background-color: #fafafa;
+}
+QTreeWidget::item, QTableWidget::item, QListWidget::item {
+    padding: 4px;
+}
+QTreeWidget::item:selected, QTableWidget::item:selected, QListWidget::item:selected {
+    background-color: #0078d4;
+    color: white;
+}
+QTreeWidget::item:hover, QTableWidget::item:hover, QListWidget::item:hover {
+    background-color: #e8e8e8;
+}
+QHeaderView::section {
+    background-color: #f0f0f0;
+    color: #1e1e1e;
+    border: none;
+    border-bottom: 1px solid #d0d0d0;
+    padding: 6px;
+    font-weight: bold;
+}
+QTabWidget::pane {
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+}
+QTabBar::tab {
+    background-color: #e8e8e8;
+    color: #1e1e1e;
+    border: 1px solid #d0d0d0;
+    border-bottom: none;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 6px 12px;
+    margin-right: 2px;
+}
+QTabBar::tab:selected {
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #0078d4;
+}
+QTabBar::tab:hover:!selected {
+    background-color: #d8d8d8;
+}
+QMenuBar {
+    background-color: #f0f0f0;
+    color: #1e1e1e;
+}
+QMenuBar::item:selected {
+    background-color: #d0d0d0;
+}
+QMenu {
+    background-color: white;
+    color: #1e1e1e;
+    border: 1px solid #d0d0d0;
+}
+QMenu::item:selected {
+    background-color: #0078d4;
+    color: white;
+}
+QStatusBar {
+    background-color: #0078d4;
+    color: white;
+}
+QSplitter::handle {
+    background-color: #d0d0d0;
+}
+QScrollBar:vertical {
+    background-color: #f5f5f5;
+    width: 12px;
+    border: none;
+}
+QScrollBar::handle:vertical {
+    background-color: #c0c0c0;
+    border-radius: 6px;
+    min-height: 20px;
+}
+QScrollBar::handle:vertical:hover {
+    background-color: #a0a0a0;
+}
+QScrollBar:horizontal {
+    background-color: #f5f5f5;
+    height: 12px;
+    border: none;
+}
+QScrollBar::handle:horizontal {
+    background-color: #c0c0c0;
+    border-radius: 6px;
+    min-width: 20px;
+}
+QProgressBar {
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    background-color: white;
+    text-align: center;
+}
+QProgressBar::chunk {
+    background-color: #0078d4;
+    border-radius: 3px;
+}
+QLabel {
+    background-color: transparent;
+}
+QLabel a {
+    color: #0066cc;
+}
+"""
 
 # Zscaler API Definitions
 ZIA_ENDPOINTS = {
@@ -1417,6 +1755,10 @@ class MainWindow(QMainWindow):
             self.response_body.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
         else:
             self.response_body.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        
+        # Apply theme
+        theme = int(settings.value("display/theme", "2"))
+        apply_theme(QApplication.instance(), theme)
     
     def _show_batch(self):
         dialog = BatchDialog(self)
@@ -1658,6 +2000,34 @@ class MainWindow(QMainWindow):
         dialog.exec()
 
 
+def is_system_dark_mode() -> bool:
+    """Check if macOS is in dark mode."""
+    if sys.platform == "darwin":
+        try:
+            import subprocess
+            result = subprocess.run(
+                ["defaults", "read", "-g", "AppleInterfaceStyle"],
+                capture_output=True, text=True
+            )
+            return result.stdout.strip().lower() == "dark"
+        except Exception:
+            pass
+    return False
+
+
+def apply_theme(app: QApplication, theme: int):
+    """Apply theme: 0=Light, 1=Dark, 2=System."""
+    if theme == 2:  # System
+        use_dark = is_system_dark_mode()
+    else:
+        use_dark = (theme == 1)
+    
+    if use_dark:
+        app.setStyleSheet(DARK_STYLE)
+    else:
+        app.setStyleSheet(LIGHT_STYLE)
+
+
 def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Zscaler API Client")
@@ -1671,6 +2041,10 @@ def main():
     translations_dir = Path(__file__).parent / "translations"
     if translator.load(f"zscaler_api_client_{lang}", str(translations_dir)):
         app.installTranslator(translator)
+    
+    # Apply theme
+    theme = int(settings.value("display/theme", "2"))
+    apply_theme(app, theme)
     
     window = MainWindow()
     window.show()
