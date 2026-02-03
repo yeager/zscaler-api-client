@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
-VERSION = '1.6.4'
+VERSION = '1.6.5'
 
 block_cipher = None
 

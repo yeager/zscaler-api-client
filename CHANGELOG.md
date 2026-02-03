@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.5] - 2026-02-03
+
+### Fixed
+- **SSL certificate error in update check** - Bundled apps now handle SSL properly
+
 ## [1.6.4] - 2026-02-03
 
 ### Fixed

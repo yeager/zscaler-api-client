@@ -39,7 +39,7 @@ from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTranslator, QLocal
 from PyQt6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PyQt6"
 
-__version__ = "1.6.4"
+__version__ = "1.6.5"
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -3574,10 +3574,21 @@ class MainWindow(QMainWindow):
         QApplication.processEvents()
         
         try:
+            import ssl
+            # Create SSL context - try certifi first, fall back to unverified for bundled apps
+            try:
+                import certifi
+                ssl_context = ssl.create_default_context(cafile=certifi.where())
+            except ImportError:
+                # Bundled app without certifi - use unverified context for GitHub API only
+                ssl_context = ssl.create_default_context()
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = ssl.CERT_NONE
+            
             url = "https://api.github.com/repos/yeager/zscaler-api-client/releases/latest"
             request = urllib.request.Request(url, headers={"User-Agent": "ZscalerAPIClient"})
             
-            with urllib.request.urlopen(request, timeout=10) as response:
+            with urllib.request.urlopen(request, timeout=10, context=ssl_context) as response:
                 data = json.loads(response.read().decode("utf-8"))
             
             latest_version = data.get("tag_name", "").lstrip("v")
