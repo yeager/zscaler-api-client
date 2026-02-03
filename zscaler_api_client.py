@@ -39,7 +39,7 @@ from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTranslator, QLocal
 from PyQt6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PyQt6"
 
-__version__ = "1.6.1"
+__version__ = "1.6.2"
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -3536,11 +3536,34 @@ class MainWindow(QMainWindow):
         settings = QSettings("Zscaler", "APIClient")
         settings.setValue("language", lang_code)
         
-        QMessageBox.information(
+        reply = QMessageBox.question(
             self,
             self.tr("Language Changed"),
-            self.tr("Please restart the application to apply the new language.")
+            self.tr("The application needs to restart to apply the new language.\n\nRestart now?"),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.Yes
         )
+        
+        if reply == QMessageBox.StandardButton.Yes:
+            self._restart_application()
+    
+    def _restart_application(self):
+        """Restart the application."""
+        import subprocess
+        # Get the executable path
+        if getattr(sys, 'frozen', False):
+            # Running as bundled app
+            executable = sys.executable
+        else:
+            # Running as script
+            executable = sys.executable
+            script = os.path.abspath(__file__)
+            subprocess.Popen([executable, script])
+            QApplication.quit()
+            return
+        
+        subprocess.Popen([executable])
+        QApplication.quit()
     
     def _check_for_updates(self):
         """Check GitHub for newer releases."""

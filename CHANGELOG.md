@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.2] - 2026-02-03
+
+### Fixed
+- **Language switching now works!** Compiled .qm translation files were missing
+- Added "Restart now?" dialog when changing language
+- App can now restart itself after language change
+
 ## [1.6.1] - 2026-02-03
 
 ### Fixed
