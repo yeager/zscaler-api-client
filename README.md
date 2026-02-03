@@ -1,12 +1,13 @@
 # Zscaler API Client
 
-🔐 A Postman-like desktop application for Zscaler APIs (ZIA, ZPA, ZDX, ZCC)
+🔐 A Postman-like desktop application for all Zscaler APIs
 
 ![Screenshot](screenshots/main.png)
 
 ## Features
 
-- **API Explorer** – Browse ZIA, ZPA, ZDX, and ZCC endpoints with documentation
+- **8 APIs Supported** – ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA, EASM
+- **API Explorer** – Browse 200+ endpoints with inline documentation
 - **Request Builder** – Build requests with params, headers, and JSON body
 - **JSON Highlighting** – Syntax highlighting for responses
 - **Batch Operations** – Import CSV for bulk create/delete/update
@@ -63,6 +64,40 @@
 - Software Versions & Updates
 - Enrollment Tokens
 - Troubleshooting & Logs
+
+### ZIdentity (Identity & Access Management)
+- OAuth 2.0 Authentication
+- User Management (CRUD)
+- Group Management
+- **SCIM 2.0** (Users, Groups provisioning)
+- Identity Providers (SAML, OIDC)
+- API Clients Management
+- Audit Logs
+
+### ZTW (Zero Trust Workloads)
+- OAuth Authentication
+- Branch Connectors
+- Connector Groups
+- Locations
+- Service Edges & Health
+- Traffic Forwarding Rules
+
+### ZWA (Workflow Automation)
+- OAuth Authentication
+- Workflows (Create, Execute, Enable/Disable)
+- Execution History & Logs
+- Triggers & Webhooks
+- Actions & Integrations
+- Templates
+
+### EASM (External Attack Surface Management)
+- OAuth Authentication
+- **Asset Discovery** (domains, IPs, certificates)
+- Vulnerability Management
+- Risk Assessment & Trends
+- Certificate Monitoring
+- Scan Management
+- Reports (Executive, Technical)
 
 ## Installation
 
@@ -161,9 +196,18 @@ Change via **Language** menu.
 
 ## API Documentation
 
-- [ZIA API Reference](https://help.zscaler.com/zia/api)
-- [ZPA API Reference](https://help.zscaler.com/zpa/api-reference)
-- [Zscaler API Portal](https://automate.zscaler.com/)
+| API | Documentation |
+|-----|---------------|
+| ZIA | [ZIA API Reference](https://help.zscaler.com/zia/api) |
+| ZPA | [ZPA API Reference](https://help.zscaler.com/zpa/api-reference) |
+| ZDX | [ZDX API Reference](https://help.zscaler.com/zdx/api-reference) |
+| ZCC | [ZCC API Reference](https://help.zscaler.com/zcc/api-reference) |
+| ZIdentity | [ZIdentity API](https://help.zscaler.com/zidentity/api-reference) |
+| ZTW | [Cloud Branch Connector API](https://help.zscaler.com/cloud-branch-connector/api-reference) |
+| ZWA | [Workflow Automation API](https://help.zscaler.com/workflow-automation/api-reference) |
+| EASM | [EASM API Reference](https://help.zscaler.com/easm/api-reference) |
+
+**Official SDK:** [zscaler-sdk-python](https://github.com/zscaler/zscaler-sdk-python)
 
 ## Security
 
