@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
-VERSION = '1.4.3'
+VERSION = '1.4.4'
 
 block_cipher = None
 
@@ -35,13 +35,23 @@ a = Analysis(
     ],
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=['runtime_hook.py'],  # Important: sets env vars before PyQt6 loads
+    runtime_hooks=['runtime_hook.py'],
     excludes=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
     noarchive=False,
 )
+
+# macOS: Filter out problematic Qt permission plugins that crash on startup
+# The darwin permission plugin tries to call CFBundleCopyBundleURL during
+# static initialization, which crashes in PyInstaller bundles
+if sys.platform == 'darwin':
+    problematic_plugins = [
+        'libqdarwinpermissionplugin',  # Crashes in _GLOBAL__sub_I_qdarwinpermissionplugin_location.mm
+    ]
+    a.binaries = [b for b in a.binaries if not any(p in b[0] for p in problematic_plugins)]
+    a.datas = [d for d in a.datas if not any(p in d[0] for p in problematic_plugins)]
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
@@ -98,11 +108,19 @@ app = BUNDLE(
         'CFBundleShortVersionString': VERSION,
         'CFBundleVersion': VERSION,
         'CFBundleIdentifier': 'com.zscaler.apiclient',
+        'CFBundlePackageType': 'APPL',
+        'CFBundleSignature': '????',
+        'CFBundleExecutable': 'Zscaler API Client',
         'NSHighResolutionCapable': True,
         'NSPrincipalClass': 'NSApplication',
         'LSMinimumSystemVersion': '10.15',
         'LSEnvironment': {
+            # Disable Qt trying to detect bundle paths via CFBundle APIs
             'QT_MAC_DISABLE_FOREGROUND_APPLICATION_TRANSFORM': '1',
+            # Disable early Qt logging that triggers the crash
+            'QT_LOGGING_RULES': '*.debug=false;qt.*=false',
+            # Force Qt to not use CF bundle detection
+            'QT_QPA_PLATFORM_PLUGIN_PATH': '@executable_path/../Frameworks/PyQt6/Qt6/plugins/platforms',
         },
     },
 )
