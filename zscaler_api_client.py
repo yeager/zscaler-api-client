@@ -39,7 +39,40 @@ from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTranslator, QLocal
 from PyQt6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PyQt6"
 
-__version__ = "1.6.5"
+__version__ = "1.7.0"
+
+# Secure credential storage using system keychain
+SERVICE_NAME = "ZscalerAPIClient"
+
+def secure_store(key: str, value: str) -> bool:
+    """Store credential securely in system keychain."""
+    if not value:
+        secure_delete(key)
+        return True
+    try:
+        import keyring
+        keyring.set_password(SERVICE_NAME, key, value)
+        return True
+    except Exception:
+        return False
+
+def secure_get(key: str) -> str:
+    """Retrieve credential from system keychain."""
+    try:
+        import keyring
+        value = keyring.get_password(SERVICE_NAME, key)
+        return value or ""
+    except Exception:
+        return ""
+
+def secure_delete(key: str) -> bool:
+    """Delete credential from system keychain."""
+    try:
+        import keyring
+        keyring.delete_password(SERVICE_NAME, key)
+        return True
+    except Exception:
+        return False
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -1850,11 +1883,7 @@ class WelcomeDialog(QDialog):
         header.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(header)
         
-        subtitle = QLabel(self.tr(
-            "<p style='font-size: 14px; color: #666;'>"
-            "A Postman-like tool for exploring Zscaler APIs"
-            "</p>"
-        ))
+        subtitle = QLabel(self.tr("<p style='font-size: 14px; color: #666;'>A Postman-like tool for exploring Zscaler APIs</p>"))
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(subtitle)
         
@@ -2012,8 +2041,10 @@ def create_splash_pixmap() -> QPixmap:
                     Qt.AlignmentFlag.AlignHCenter, "ZIA · ZPA · ZDX · ZCC · ZIdentity · ZTW · ZWA · EASM")
     
     # Draw loading text
+    from PyQt6.QtCore import QCoreApplication
+    loading_text = QCoreApplication.translate("SplashScreen", "Loading...")
     painter.drawText(pixmap.rect().adjusted(0, 220, 0, 0),
-                    Qt.AlignmentFlag.AlignHCenter, "Loading...")
+                    Qt.AlignmentFlag.AlignHCenter, loading_text)
     
     # Draw copyright
     font = QFont("Arial", 9)
@@ -2136,9 +2167,14 @@ class SettingsDialog(QDialog):
         
         # === Credentials Tab ===
         creds_widget = QWidget()
-        creds_layout = QVBoxLayout(creds_widget)
+        creds_main_layout = QVBoxLayout(creds_widget)
         
-        # ZIA Settings
+        # Two-column layout for credentials
+        creds_columns = QHBoxLayout()
+        left_column = QVBoxLayout()
+        right_column = QVBoxLayout()
+        
+        # ZIA Settings (Left)
         zia_group = QGroupBox(self.tr("ZIA (Zscaler Internet Access)"))
         zia_layout = QFormLayout(zia_group)
         
@@ -2157,9 +2193,9 @@ class SettingsDialog(QDialog):
         self.zia_password.setEchoMode(QLineEdit.EchoMode.Password)
         zia_layout.addRow(self.tr("Password:"), self.zia_password)
         
-        creds_layout.addWidget(zia_group)
+        left_column.addWidget(zia_group)
         
-        # ZPA Settings
+        # ZPA Settings (Left)
         zpa_group = QGroupBox(self.tr("ZPA (Zscaler Private Access)"))
         zpa_layout = QFormLayout(zpa_group)
         
@@ -2177,9 +2213,9 @@ class SettingsDialog(QDialog):
         self.zpa_customer_id = QLineEdit()
         zpa_layout.addRow(self.tr("Customer ID:"), self.zpa_customer_id)
         
-        creds_layout.addWidget(zpa_group)
+        left_column.addWidget(zpa_group)
         
-        # ZDX Settings
+        # ZDX Settings (Left)
         zdx_group = QGroupBox(self.tr("ZDX (Zscaler Digital Experience)"))
         zdx_layout = QFormLayout(zdx_group)
         
@@ -2194,9 +2230,9 @@ class SettingsDialog(QDialog):
         self.zdx_key_secret.setEchoMode(QLineEdit.EchoMode.Password)
         zdx_layout.addRow(self.tr("Key Secret:"), self.zdx_key_secret)
         
-        creds_layout.addWidget(zdx_group)
+        left_column.addWidget(zdx_group)
         
-        # ZCC Settings
+        # ZCC Settings (Left)
         zcc_group = QGroupBox(self.tr("ZCC (Client Connector)"))
         zcc_layout = QFormLayout(zcc_group)
         
@@ -2211,9 +2247,10 @@ class SettingsDialog(QDialog):
         self.zcc_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
         zcc_layout.addRow(self.tr("Client Secret:"), self.zcc_client_secret)
         
-        creds_layout.addWidget(zcc_group)
+        left_column.addWidget(zcc_group)
+        left_column.addStretch()
         
-        # ZIdentity Settings
+        # ZIdentity Settings (Right)
         zidentity_group = QGroupBox(self.tr("ZIdentity (Identity & Access)"))
         zidentity_layout = QFormLayout(zidentity_group)
         
@@ -2228,9 +2265,9 @@ class SettingsDialog(QDialog):
         self.zidentity_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
         zidentity_layout.addRow(self.tr("Client Secret:"), self.zidentity_client_secret)
         
-        creds_layout.addWidget(zidentity_group)
+        right_column.addWidget(zidentity_group)
         
-        # ZTW Settings (Zero Trust Workloads / Cloud Branch Connector)
+        # ZTW Settings (Right) (Zero Trust Workloads / Cloud Branch Connector)
         ztw_group = QGroupBox(self.tr("ZTW (Zero Trust Workloads)"))
         ztw_layout = QFormLayout(ztw_group)
         
@@ -2245,9 +2282,9 @@ class SettingsDialog(QDialog):
         self.ztw_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
         ztw_layout.addRow(self.tr("Client Secret:"), self.ztw_client_secret)
         
-        creds_layout.addWidget(ztw_group)
+        right_column.addWidget(ztw_group)
         
-        # ZWA Settings (Workflow Automation)
+        # ZWA Settings (Right) (Workflow Automation)
         zwa_group = QGroupBox(self.tr("ZWA (Workflow Automation)"))
         zwa_layout = QFormLayout(zwa_group)
         
@@ -2262,9 +2299,9 @@ class SettingsDialog(QDialog):
         self.zwa_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
         zwa_layout.addRow(self.tr("Client Secret:"), self.zwa_client_secret)
         
-        creds_layout.addWidget(zwa_group)
+        right_column.addWidget(zwa_group)
         
-        # EASM Settings (External Attack Surface Management)
+        # EASM Settings (Right) (External Attack Surface Management)
         easm_group = QGroupBox(self.tr("EASM (Attack Surface Management)"))
         easm_layout = QFormLayout(easm_group)
         
@@ -2279,8 +2316,13 @@ class SettingsDialog(QDialog):
         self.easm_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
         easm_layout.addRow(self.tr("Client Secret:"), self.easm_client_secret)
         
-        creds_layout.addWidget(easm_group)
-        creds_layout.addStretch()
+        right_column.addWidget(easm_group)
+        right_column.addStretch()
+        
+        # Add columns to main layout
+        creds_columns.addLayout(left_column)
+        creds_columns.addLayout(right_column)
+        creds_main_layout.addLayout(creds_columns)
         
         tabs.addTab(creds_widget, self.tr("Credentials"))
         
@@ -2293,11 +2335,15 @@ class SettingsDialog(QDialog):
         network_layout = QFormLayout(network_group)
         
         self.timeout_spin = QComboBox()
+        self.timeout_spin.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.timeout_spin.setMinimumContentsLength(10)
         self.timeout_spin.addItems(["10", "30", "60", "120", "300"])
         self.timeout_spin.setEditable(True)
         network_layout.addRow(self.tr("Request Timeout (seconds):"), self.timeout_spin)
         
         self.verify_ssl = QComboBox()
+        self.verify_ssl.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.verify_ssl.setMinimumContentsLength(10)
         self.verify_ssl.addItems([self.tr("Enabled"), self.tr("Disabled")])
         ssl_note = QLabel(self.tr("<small><i>⚠️ Only disable for testing</i></small>"))
         ssl_layout = QHBoxLayout()
@@ -2313,6 +2359,8 @@ class SettingsDialog(QDialog):
         proxy_layout = QFormLayout(proxy_group)
         
         self.proxy_enabled = QComboBox()
+        self.proxy_enabled.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.proxy_enabled.setMinimumContentsLength(10)
         self.proxy_enabled.addItems([self.tr("No Proxy"), self.tr("System Proxy"), self.tr("Manual")])
         self.proxy_enabled.currentIndexChanged.connect(self._on_proxy_changed)
         proxy_layout.addRow(self.tr("Proxy Mode:"), self.proxy_enabled)
@@ -2342,22 +2390,32 @@ class SettingsDialog(QDialog):
         behavior_layout = QFormLayout(behavior_group)
         
         self.auto_auth = QComboBox()
+        self.auto_auth.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.auto_auth.setMinimumContentsLength(10)
         self.auto_auth.addItems([self.tr("Disabled"), self.tr("Enabled")])
         behavior_layout.addRow(self.tr("Auto-authenticate on startup:"), self.auto_auth)
         
         self.save_history = QComboBox()
+        self.save_history.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.save_history.setMinimumContentsLength(10)
         self.save_history.addItems([self.tr("Disabled"), self.tr("Enabled")])
         behavior_layout.addRow(self.tr("Save request history:"), self.save_history)
         
         self.history_limit = QComboBox()
+        self.history_limit.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.history_limit.setMinimumContentsLength(10)
         self.history_limit.addItems(["50", "100", "200", "500", "1000"])
         behavior_layout.addRow(self.tr("History limit:"), self.history_limit)
         
         self.default_api = QComboBox()
+        self.default_api.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.default_api.setMinimumContentsLength(10)
         self.default_api.addItems(["ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"])
         behavior_layout.addRow(self.tr("Default API:"), self.default_api)
         
         self.auto_update_check = QComboBox()
+        self.auto_update_check.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.auto_update_check.setMinimumContentsLength(10)
         self.auto_update_check.addItems([self.tr("Disabled"), self.tr("Enabled")])
         behavior_layout.addRow(self.tr("Check for updates on startup:"), self.auto_update_check)
         
@@ -2374,18 +2432,26 @@ class SettingsDialog(QDialog):
         display_form = QFormLayout(display_group)
         
         self.json_indent = QComboBox()
+        self.json_indent.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.json_indent.setMinimumContentsLength(10)
         self.json_indent.addItems(["2", "4", "Tab"])
         display_form.addRow(self.tr("JSON Indentation:"), self.json_indent)
         
         self.word_wrap = QComboBox()
+        self.word_wrap.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.word_wrap.setMinimumContentsLength(10)
         self.word_wrap.addItems([self.tr("Disabled"), self.tr("Enabled")])
         display_form.addRow(self.tr("Word Wrap:"), self.word_wrap)
         
         self.font_size = QComboBox()
+        self.font_size.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.font_size.setMinimumContentsLength(10)
         self.font_size.addItems(["10", "11", "12", "13", "14", "16", "18"])
         display_form.addRow(self.tr("Font Size:"), self.font_size)
         
         self.theme = QComboBox()
+        self.theme.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.theme.setMinimumContentsLength(10)
         self.theme.addItems([self.tr("Light"), self.tr("Dark"), self.tr("System")])
         display_form.addRow(self.tr("Theme:"), self.theme)
         
@@ -2448,45 +2514,45 @@ class SettingsDialog(QDialog):
     def _load_settings(self):
         settings = QSettings("Zscaler", "APIClient")
         
-        # Credentials
+        # Credentials (non-sensitive from QSettings, sensitive from Keychain)
         self.zia_cloud.setText(settings.value("zia/cloud", ""))
-        self.zia_api_key.setText(settings.value("zia/api_key", ""))
+        self.zia_api_key.setText(secure_get("zia_api_key"))
         self.zia_username.setText(settings.value("zia/username", ""))
-        self.zia_password.setText(settings.value("zia/password", ""))
+        self.zia_password.setText(secure_get("zia_password"))
         self.zpa_cloud.setText(settings.value("zpa/cloud", ""))
         self.zpa_client_id.setText(settings.value("zpa/client_id", ""))
-        self.zpa_client_secret.setText(settings.value("zpa/client_secret", ""))
+        self.zpa_client_secret.setText(secure_get("zpa_client_secret"))
         self.zpa_customer_id.setText(settings.value("zpa/customer_id", ""))
         
         # ZDX
         self.zdx_cloud.setText(settings.value("zdx/cloud", ""))
         self.zdx_key_id.setText(settings.value("zdx/key_id", ""))
-        self.zdx_key_secret.setText(settings.value("zdx/key_secret", ""))
+        self.zdx_key_secret.setText(secure_get("zdx_key_secret"))
         
         # ZCC
         self.zcc_cloud.setText(settings.value("zcc/cloud", ""))
         self.zcc_client_id.setText(settings.value("zcc/client_id", ""))
-        self.zcc_client_secret.setText(settings.value("zcc/client_secret", ""))
+        self.zcc_client_secret.setText(secure_get("zcc_client_secret"))
         
         # ZIdentity
         self.zidentity_domain.setText(settings.value("zidentity/domain", ""))
         self.zidentity_client_id.setText(settings.value("zidentity/client_id", ""))
-        self.zidentity_client_secret.setText(settings.value("zidentity/client_secret", ""))
+        self.zidentity_client_secret.setText(secure_get("zidentity_client_secret"))
         
         # ZTW
         self.ztw_cloud.setText(settings.value("ztw/cloud", ""))
         self.ztw_client_id.setText(settings.value("ztw/client_id", ""))
-        self.ztw_client_secret.setText(settings.value("ztw/client_secret", ""))
+        self.ztw_client_secret.setText(secure_get("ztw_client_secret"))
         
         # ZWA
         self.zwa_cloud.setText(settings.value("zwa/cloud", ""))
         self.zwa_client_id.setText(settings.value("zwa/client_id", ""))
-        self.zwa_client_secret.setText(settings.value("zwa/client_secret", ""))
+        self.zwa_client_secret.setText(secure_get("zwa_client_secret"))
         
         # EASM
         self.easm_cloud.setText(settings.value("easm/cloud", ""))
         self.easm_client_id.setText(settings.value("easm/client_id", ""))
-        self.easm_client_secret.setText(settings.value("easm/client_secret", ""))
+        self.easm_client_secret.setText(secure_get("easm_client_secret"))
         
         # Advanced
         self.timeout_spin.setCurrentText(settings.value("advanced/timeout", "30"))
@@ -2495,7 +2561,7 @@ class SettingsDialog(QDialog):
         self.proxy_host.setText(settings.value("advanced/proxy_host", ""))
         self.proxy_port.setText(settings.value("advanced/proxy_port", ""))
         self.proxy_username.setText(settings.value("advanced/proxy_username", ""))
-        self.proxy_password.setText(settings.value("advanced/proxy_password", ""))
+        self.proxy_password.setText(secure_get("proxy_password"))
         self.auto_auth.setCurrentIndex(1 if settings.value("advanced/auto_auth", "false") == "true" else 0)
         self.save_history.setCurrentIndex(1 if settings.value("advanced/save_history", "true") == "true" else 0)
         self.history_limit.setCurrentText(settings.value("advanced/history_limit", "100"))
@@ -2511,45 +2577,45 @@ class SettingsDialog(QDialog):
     def accept(self):
         settings = QSettings("Zscaler", "APIClient")
         
-        # Credentials
+        # Credentials (non-sensitive to QSettings, sensitive to Keychain)
         settings.setValue("zia/cloud", self.zia_cloud.text())
-        settings.setValue("zia/api_key", self.zia_api_key.text())
+        secure_store("zia_api_key", self.zia_api_key.text())
         settings.setValue("zia/username", self.zia_username.text())
-        settings.setValue("zia/password", self.zia_password.text())
+        secure_store("zia_password", self.zia_password.text())
         settings.setValue("zpa/cloud", self.zpa_cloud.text())
         settings.setValue("zpa/client_id", self.zpa_client_id.text())
-        settings.setValue("zpa/client_secret", self.zpa_client_secret.text())
+        secure_store("zpa_client_secret", self.zpa_client_secret.text())
         settings.setValue("zpa/customer_id", self.zpa_customer_id.text())
         
         # ZDX
         settings.setValue("zdx/cloud", self.zdx_cloud.text())
         settings.setValue("zdx/key_id", self.zdx_key_id.text())
-        settings.setValue("zdx/key_secret", self.zdx_key_secret.text())
+        secure_store("zdx_key_secret", self.zdx_key_secret.text())
         
         # ZCC
         settings.setValue("zcc/cloud", self.zcc_cloud.text())
         settings.setValue("zcc/client_id", self.zcc_client_id.text())
-        settings.setValue("zcc/client_secret", self.zcc_client_secret.text())
+        secure_store("zcc_client_secret", self.zcc_client_secret.text())
         
         # ZIdentity
         settings.setValue("zidentity/domain", self.zidentity_domain.text())
         settings.setValue("zidentity/client_id", self.zidentity_client_id.text())
-        settings.setValue("zidentity/client_secret", self.zidentity_client_secret.text())
+        secure_store("zidentity_client_secret", self.zidentity_client_secret.text())
         
         # ZTW
         settings.setValue("ztw/cloud", self.ztw_cloud.text())
         settings.setValue("ztw/client_id", self.ztw_client_id.text())
-        settings.setValue("ztw/client_secret", self.ztw_client_secret.text())
+        secure_store("ztw_client_secret", self.ztw_client_secret.text())
         
         # ZWA
         settings.setValue("zwa/cloud", self.zwa_cloud.text())
         settings.setValue("zwa/client_id", self.zwa_client_id.text())
-        settings.setValue("zwa/client_secret", self.zwa_client_secret.text())
+        secure_store("zwa_client_secret", self.zwa_client_secret.text())
         
         # EASM
         settings.setValue("easm/cloud", self.easm_cloud.text())
         settings.setValue("easm/client_id", self.easm_client_id.text())
-        settings.setValue("easm/client_secret", self.easm_client_secret.text())
+        secure_store("easm_client_secret", self.easm_client_secret.text())
         
         # Advanced
         settings.setValue("advanced/timeout", self.timeout_spin.currentText())
@@ -2558,7 +2624,7 @@ class SettingsDialog(QDialog):
         settings.setValue("advanced/proxy_host", self.proxy_host.text())
         settings.setValue("advanced/proxy_port", self.proxy_port.text())
         settings.setValue("advanced/proxy_username", self.proxy_username.text())
-        settings.setValue("advanced/proxy_password", self.proxy_password.text())
+        secure_store("proxy_password", self.proxy_password.text())
         settings.setValue("advanced/auto_auth", "true" if self.auto_auth.currentIndex() == 1 else "false")
         settings.setValue("advanced/save_history", "true" if self.save_history.currentIndex() == 1 else "false")
         settings.setValue("advanced/history_limit", self.history_limit.currentText())
@@ -2612,6 +2678,8 @@ class BatchDialog(QDialog):
         op_layout = QHBoxLayout()
         op_layout.addWidget(QLabel(self.tr("Operation:")))
         self.operation_combo = QComboBox()
+        self.operation_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.operation_combo.setMinimumContentsLength(10)
         self.operation_combo.addItems([
             self.tr("Create Users (ZIA)"),
             self.tr("Delete Users (ZIA)"),
@@ -2817,6 +2885,9 @@ class MainWindow(QMainWindow):
         api_selector = QHBoxLayout()
         api_selector.addWidget(QLabel(self.tr("API:")))
         self.api_type = QComboBox()
+        self.api_type.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.api_type.setMinimumContentsLength(10)
+        self.api_type.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.api_type.addItems(["ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"])
         self.api_type.currentTextChanged.connect(self._update_endpoint_tree)
         api_selector.addWidget(self.api_type)
@@ -2841,8 +2912,10 @@ class MainWindow(QMainWindow):
         # Method and URL
         url_layout = QHBoxLayout()
         self.method_combo = QComboBox()
+        self.method_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.method_combo.setMinimumContentsLength(10)
+        self.method_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.method_combo.addItems(["GET", "POST", "PUT", "DELETE", "PATCH"])
-        self.method_combo.setFixedWidth(100)
         url_layout.addWidget(self.method_combo)
         
         self.url_input = QLineEdit()
@@ -3451,9 +3524,9 @@ class MainWindow(QMainWindow):
         """Authenticate to ZIA API."""
         settings = QSettings("Zscaler", "APIClient")
         cloud = settings.value("zia/cloud", "")
-        api_key = settings.value("zia/api_key", "")
+        api_key = secure_get("zia_api_key")
         username = settings.value("zia/username", "")
-        password = settings.value("zia/password", "")
+        password = secure_get("zia_password")
         
         if not all([cloud, api_key, username, password]):
             QMessageBox.warning(
@@ -3503,7 +3576,7 @@ class MainWindow(QMainWindow):
         settings = QSettings("Zscaler", "APIClient")
         cloud = settings.value("zpa/cloud", "")
         client_id = settings.value("zpa/client_id", "")
-        client_secret = settings.value("zpa/client_secret", "")
+        client_secret = secure_get("zpa_client_secret")
         
         if not all([cloud, client_id, client_secret]):
             QMessageBox.warning(
@@ -3536,6 +3609,7 @@ class MainWindow(QMainWindow):
         
         settings = QSettings("Zscaler", "APIClient")
         settings.setValue("language", lang_code)
+        settings.sync()  # Force write to disk
         
         reply = QMessageBox.question(
             self,
@@ -3550,16 +3624,16 @@ class MainWindow(QMainWindow):
     
     def _restart_application(self):
         """Restart the application."""
-        QApplication.closeAllWindows()
+        import subprocess
         
         if getattr(sys, 'frozen', False):
             # Running as bundled app (PyInstaller)
-            # On macOS, we need to launch the .app bundle, not the binary
             executable = sys.executable
             bundle_path = os.path.dirname(os.path.dirname(os.path.dirname(executable)))
             if bundle_path.endswith('.app'):
                 # Use 'open' command to launch the .app properly
-                os.system(f'open "{bundle_path}" &')
+                subprocess.Popen(['open', '-n', bundle_path])
+                QApplication.quit()
             else:
                 os.execv(executable, [executable])
         else:
@@ -3704,8 +3778,25 @@ def main():
     # Load translation
     lang = settings.value("language", QLocale.system().name()[:2])
     
+    # Handle both frozen (bundled) and script modes
+    if getattr(sys, 'frozen', False):
+        # Bundled app - translations are in the app bundle
+        base_path = Path(sys.executable).parent
+        translations_dir = base_path / "translations"
+        if not translations_dir.exists():
+            # Try Resources folder for macOS
+            translations_dir = base_path.parent / "Resources" / "translations"
+    else:
+        translations_dir = Path(__file__).parent / "translations"
+    
+    # Load Qt base translations (for standard dialogs, buttons, etc.)
+    qt_translator = QTranslator()
+    qt_lang = "zh_CN" if lang == "zh" else lang  # Handle Chinese variant
+    if qt_translator.load(f"qtbase_{qt_lang}", str(translations_dir)):
+        app.installTranslator(qt_translator)
+    
+    # Load app translations
     translator = QTranslator()
-    translations_dir = Path(__file__).parent / "translations"
     if translator.load(f"zscaler_api_client_{lang}", str(translations_dir)):
         app.installTranslator(translator)
     

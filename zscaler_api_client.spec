@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
-VERSION = '1.6.5'
+VERSION = '1.6.7'
 
 block_cipher = None
 
@@ -14,9 +14,9 @@ block_cipher = None
 pyqt6_datas = collect_data_files('PyQt6', include_py_files=True)
 pyqt6_submodules = collect_submodules('PyQt6')
 
-# Path to translations
+# Path to translations - include compiled .qm files
 translations_path = Path('translations')
-translation_files = [(str(f), 'translations') for f in translations_path.glob('*.ts')]
+translation_files = [(str(f), 'translations') for f in translations_path.glob('*.qm')]
 
 a = Analysis(
     ['zscaler_api_client.py'],

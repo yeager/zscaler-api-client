@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.0] - 2026-02-03
+
+### Added
+- **Qt base translations** - Standard dialog buttons (OK, Cancel, Yes, No) now translated
+- **Secure credential storage** - API keys stored in macOS Keychain / Windows Credential Locker
+
+### Changed
+- **Two-column Settings layout** - Credentials tab now side-by-side (ZIA/ZPA/ZDX/ZCC | ZIdentity/ZTW/ZWA/EASM)
+- **Auto-width dropdowns** - All combo boxes adjust to content width
+- **Improved translations** - Welcome dialog, API descriptions, tips fully translated for all 7 languages
+
+### Fixed
+- Splash screen "Loading..." now translated
+- Translation string concatenation issues
+
 ## [1.6.5] - 2026-02-03
 
 ### Fixed
