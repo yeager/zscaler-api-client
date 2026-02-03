@@ -19,6 +19,7 @@
 - **Splash Screen** – Professional startup experience
 - **Welcome Guide** – Getting started help for new users
 - **Inline Documentation** – Links to API docs for each endpoint
+- **Auto-Update Check** – Automatically checks for new versions on startup
 
 ## Supported APIs
 
@@ -30,6 +31,10 @@
 - Firewall Policies
 - Admin Audit Logs
 - Activation
+- **Security Insights** (Company Risk Score, Threat Insights)
+- **Malware Protection** (Detection Stats, Blocked Malware, By Type)
+- **Reports** (Executive Summary, Traffic, Security, Bandwidth, Top Users/Apps/Threats)
+- **Sandbox** (Submit Files, Get Reports, Quota)
 
 ### ZPA (Zscaler Private Access)
 - Authentication (OAuth)

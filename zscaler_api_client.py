@@ -57,7 +57,7 @@ except ImportError:
         print("Error: PyQt6 or PySide6 required. Install with: pip install PyQt6")
         sys.exit(1)
 
-__version__ = "1.3.1"
+__version__ = "1.4.0"
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -533,6 +533,136 @@ ZIA_ENDPOINTS = {
             "method": "POST",
             "path": "/api/v1/status/activate",
             "description": "Activate pending changes",
+        },
+    },
+    "Security Insights": {
+        "Get Company Risk Score": {
+            "method": "GET",
+            "path": "/api/v1/riskScore",
+            "description": "Get company-wide risk score and trends",
+            "doc_url": "https://help.zscaler.com/zia/api-risk-score",
+        },
+        "Get Risk Score History": {
+            "method": "GET",
+            "path": "/api/v1/riskScore/history",
+            "description": "Get historical risk score data",
+            "params": {"startTime": "", "endTime": ""},
+            "doc_url": "https://help.zscaler.com/zia/api-risk-score",
+        },
+        "Get Insights Summary": {
+            "method": "GET",
+            "path": "/api/v1/insights/summary",
+            "description": "Get security insights summary",
+            "doc_url": "https://help.zscaler.com/zia/api-insights",
+        },
+        "Get Threat Insights": {
+            "method": "GET",
+            "path": "/api/v1/insights/threats",
+            "description": "Get threat-related insights and statistics",
+            "params": {"startTime": "", "endTime": ""},
+            "doc_url": "https://help.zscaler.com/zia/api-insights",
+        },
+    },
+    "Malware Protection": {
+        "Get Malware Summary": {
+            "method": "GET",
+            "path": "/api/v1/malware/summary",
+            "description": "Get malware detection summary (count, types)",
+            "params": {"startTime": "", "endTime": ""},
+            "doc_url": "https://help.zscaler.com/zia/api-malware-protection",
+        },
+        "Get Malware Detections": {
+            "method": "GET",
+            "path": "/api/v1/malware/detections",
+            "description": "Get list of detected malware",
+            "params": {"startTime": "", "endTime": "", "page": "1", "pageSize": "100"},
+            "doc_url": "https://help.zscaler.com/zia/api-malware-protection",
+        },
+        "Get Blocked Malware": {
+            "method": "GET",
+            "path": "/api/v1/malware/blocked",
+            "description": "Get blocked malware statistics",
+            "params": {"startTime": "", "endTime": ""},
+            "doc_url": "https://help.zscaler.com/zia/api-malware-protection",
+        },
+        "Get Malware by Type": {
+            "method": "GET",
+            "path": "/api/v1/malware/byType",
+            "description": "Get malware breakdown by type (virus, trojan, ransomware, etc.)",
+            "params": {"startTime": "", "endTime": ""},
+            "doc_url": "https://help.zscaler.com/zia/api-malware-protection",
+        },
+    },
+    "Reports": {
+        "Get Executive Summary": {
+            "method": "GET",
+            "path": "/api/v1/reports/executive",
+            "description": "Get executive summary report",
+            "params": {"startTime": "", "endTime": ""},
+            "doc_url": "https://help.zscaler.com/zia/api-reports",
+        },
+        "Get Web Traffic Report": {
+            "method": "GET",
+            "path": "/api/v1/reports/webTraffic",
+            "description": "Get web traffic analytics",
+            "params": {"startTime": "", "endTime": "", "groupBy": "user"},
+            "doc_url": "https://help.zscaler.com/zia/api-reports",
+        },
+        "Get Security Report": {
+            "method": "GET",
+            "path": "/api/v1/reports/security",
+            "description": "Get security events report",
+            "params": {"startTime": "", "endTime": ""},
+            "doc_url": "https://help.zscaler.com/zia/api-reports",
+        },
+        "Get Bandwidth Report": {
+            "method": "GET",
+            "path": "/api/v1/reports/bandwidth",
+            "description": "Get bandwidth usage report",
+            "params": {"startTime": "", "endTime": "", "groupBy": "department"},
+            "doc_url": "https://help.zscaler.com/zia/api-reports",
+        },
+        "Get Top Users": {
+            "method": "GET",
+            "path": "/api/v1/reports/topUsers",
+            "description": "Get top users by traffic/threats",
+            "params": {"startTime": "", "endTime": "", "limit": "10", "metric": "traffic"},
+            "doc_url": "https://help.zscaler.com/zia/api-reports",
+        },
+        "Get Top Applications": {
+            "method": "GET",
+            "path": "/api/v1/reports/topApps",
+            "description": "Get top applications by usage",
+            "params": {"startTime": "", "endTime": "", "limit": "10"},
+            "doc_url": "https://help.zscaler.com/zia/api-reports",
+        },
+        "Get Top Threats": {
+            "method": "GET",
+            "path": "/api/v1/reports/topThreats",
+            "description": "Get top threats detected",
+            "params": {"startTime": "", "endTime": "", "limit": "10"},
+            "doc_url": "https://help.zscaler.com/zia/api-reports",
+        },
+    },
+    "Sandbox": {
+        "Get Sandbox Report": {
+            "method": "GET",
+            "path": "/api/v1/sandbox/report/{md5Hash}",
+            "description": "Get sandbox analysis report for a file",
+            "doc_url": "https://help.zscaler.com/zia/api-sandbox",
+        },
+        "Submit File for Analysis": {
+            "method": "POST",
+            "path": "/api/v1/sandbox/submit",
+            "description": "Submit a file for sandbox analysis",
+            "body": {"fileType": "", "force": False},
+            "doc_url": "https://help.zscaler.com/zia/api-sandbox",
+        },
+        "Get Sandbox Quota": {
+            "method": "GET",
+            "path": "/api/v1/sandbox/quota",
+            "description": "Get remaining sandbox submission quota",
+            "doc_url": "https://help.zscaler.com/zia/api-sandbox",
         },
     },
 }
@@ -1459,6 +1589,10 @@ class SettingsDialog(QDialog):
         self.default_api.addItems(["ZIA", "ZPA", "ZDX", "ZCC"])
         behavior_layout.addRow(self.tr("Default API:"), self.default_api)
         
+        self.auto_update_check = QComboBox()
+        self.auto_update_check.addItems([self.tr("Disabled"), self.tr("Enabled")])
+        behavior_layout.addRow(self.tr("Check for updates on startup:"), self.auto_update_check)
+        
         advanced_layout.addWidget(behavior_group)
         advanced_layout.addStretch()
         
@@ -1578,6 +1712,7 @@ class SettingsDialog(QDialog):
         self.save_history.setCurrentIndex(1 if settings.value("advanced/save_history", "true") == "true" else 0)
         self.history_limit.setCurrentText(settings.value("advanced/history_limit", "100"))
         self.default_api.setCurrentText(settings.value("advanced/default_api", "ZIA"))
+        self.auto_update_check.setCurrentIndex(1 if settings.value("advanced/auto_update_check", "true") == "true" else 0)
         
         # Display
         self.json_indent.setCurrentText(settings.value("display/json_indent", "2"))
@@ -1620,6 +1755,7 @@ class SettingsDialog(QDialog):
         settings.setValue("advanced/save_history", "true" if self.save_history.currentIndex() == 1 else "false")
         settings.setValue("advanced/history_limit", self.history_limit.currentText())
         settings.setValue("advanced/default_api", self.default_api.currentText())
+        settings.setValue("advanced/auto_update_check", "true" if self.auto_update_check.currentIndex() == 1 else "false")
         
         # Display
         settings.setValue("display/json_indent", self.json_indent.currentText())
@@ -2103,6 +2239,12 @@ class MainWindow(QMainWindow):
         api_portal_action = QAction(self.tr("Zscaler API &Portal"), self)
         api_portal_action.triggered.connect(lambda: __import__("webbrowser").open("https://automate.zscaler.com/"))
         help_menu.addAction(api_portal_action)
+        
+        help_menu.addSeparator()
+        
+        check_updates_action = QAction(self.tr("Check for &Updates..."), self)
+        check_updates_action.triggered.connect(self._check_for_updates)
+        help_menu.addAction(check_updates_action)
     
     def _load_settings(self):
         settings = QSettings("Zscaler", "APIClient")
@@ -2588,6 +2730,60 @@ class MainWindow(QMainWindow):
             self.tr("Please restart the application to apply the new language.")
         )
     
+    def _check_for_updates(self):
+        """Check GitHub for newer releases."""
+        self.status_bar.showMessage(self.tr("Checking for updates..."))
+        QApplication.processEvents()
+        
+        try:
+            url = "https://api.github.com/repos/yeager/zscaler-api-client/releases/latest"
+            request = urllib.request.Request(url, headers={"User-Agent": "ZscalerAPIClient"})
+            
+            with urllib.request.urlopen(request, timeout=10) as response:
+                data = json.loads(response.read().decode("utf-8"))
+            
+            latest_version = data.get("tag_name", "").lstrip("v")
+            current_version = __version__
+            
+            # Simple version comparison
+            def version_tuple(v):
+                return tuple(map(int, v.split(".")))
+            
+            if version_tuple(latest_version) > version_tuple(current_version):
+                reply = QMessageBox.information(
+                    self,
+                    self.tr("Update Available"),
+                    self.tr(
+                        "<h3>A new version is available!</h3>"
+                        "<p><b>Current version:</b> {current}</p>"
+                        "<p><b>Latest version:</b> {latest}</p>"
+                        "<p>Would you like to open the download page?</p>"
+                    ).format(current=current_version, latest=latest_version),
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+                )
+                if reply == QMessageBox.StandardButton.Yes:
+                    import webbrowser
+                    webbrowser.open(data.get("html_url", "https://github.com/yeager/zscaler-api-client/releases"))
+                self.status_bar.showMessage(self.tr("Update available: v{version}").format(version=latest_version))
+            else:
+                QMessageBox.information(
+                    self,
+                    self.tr("No Updates"),
+                    self.tr(
+                        "<p>You are running the latest version.</p>"
+                        "<p><b>Version:</b> {version}</p>"
+                    ).format(version=current_version)
+                )
+                self.status_bar.showMessage(self.tr("You are up to date (v{version})").format(version=current_version))
+        
+        except Exception as e:
+            QMessageBox.warning(
+                self,
+                self.tr("Update Check Failed"),
+                self.tr("Could not check for updates:\n{error}").format(error=str(e))
+            )
+            self.status_bar.showMessage(self.tr("Update check failed"))
+    
     def _show_welcome(self):
         dialog = WelcomeDialog(self)
         dialog.exec()
@@ -2666,6 +2862,11 @@ def main():
     show_welcome = settings.value("welcome/show_on_startup", "true") == "true"
     if show_welcome:
         QTimer.singleShot(100, lambda: WelcomeDialog(window).exec())
+    
+    # Auto-check for updates on startup
+    auto_update = settings.value("advanced/auto_update_check", "true") == "true"
+    if auto_update and not show_welcome:
+        QTimer.singleShot(2000, window._check_for_updates)
     
     sys.exit(app.exec())
 
