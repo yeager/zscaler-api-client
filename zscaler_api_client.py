@@ -57,7 +57,7 @@ except ImportError:
         print("Error: PyQt6 or PySide6 required. Install with: pip install PyQt6")
         sys.exit(1)
 
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 # Stylesheets for theming
 DARK_STYLE = """

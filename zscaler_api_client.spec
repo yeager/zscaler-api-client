@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
-VERSION = '1.4.2'
+VERSION = '1.4.3'
 
 block_cipher = None
 
@@ -45,12 +45,25 @@ a = Analysis(
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
+import sys
+
+# Platform-specific names for CI compatibility
+if sys.platform == 'win32':
+    exe_name = 'ZscalerAPIClient'
+    collect_name = 'ZscalerAPIClient'
+elif sys.platform == 'darwin':
+    exe_name = 'Zscaler API Client'
+    collect_name = 'Zscaler API Client'
+else:  # Linux
+    exe_name = 'zscaler-api-client'
+    collect_name = 'zscaler-api-client'
+
 exe = EXE(
     pyz,
     a.scripts,
     [],
     exclude_binaries=True,
-    name='Zscaler API Client',
+    name=exe_name,
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -71,12 +84,12 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='Zscaler API Client',
+    name=collect_name,
 )
 
 app = BUNDLE(
     coll,
-    name=f'Zscaler API Client {VERSION}.app',
+    name='Zscaler API Client.app',
     icon=None,  # Add icon path here: 'icon.icns'
     bundle_identifier='com.zscaler.apiclient',
     info_plist={
