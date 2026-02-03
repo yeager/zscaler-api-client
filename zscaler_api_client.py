@@ -25,9 +25,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, Dict, List, Any
 
-# Use PySide6 (Qt's official Python bindings)
-# Note: PyQt6 has a macOS crash bug in the darwin permission plugin
-from PySide6.QtWidgets import (
+# Use PyQt6 for Qt bindings
+from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QSplitter, QTreeWidget, QTreeWidgetItem, QTextEdit, QLineEdit,
     QComboBox, QPushButton, QLabel, QTabWidget, QTableWidget,
@@ -36,11 +35,11 @@ from PySide6.QtWidgets import (
     QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
     QCheckBox, QScrollArea, QFrame
 )
-from PySide6.QtCore import Qt, QThread, Signal as pyqtSignal, QSettings, QTranslator, QLocale, QTimer
-from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-QT_BINDINGS = "PySide6"
+from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTranslator, QLocale, QTimer
+from PyQt6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
+QT_BINDINGS = "PyQt6"
 
-__version__ = "1.6.0"
+__version__ = "1.6.1"
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -3639,18 +3638,18 @@ def main():
     # Must be done BEFORE QApplication is created
     if getattr(sys, 'frozen', False):
         bundle_dir = os.path.dirname(sys.executable)
-        # Set Qt plugin path for bundled app (PySide6)
-        plugin_path = os.path.join(bundle_dir, '..', 'Frameworks', 'PySide6', 'Qt', 'plugins')
+        # Set Qt plugin path for bundled app (PyQt6)
+        plugin_path = os.path.join(bundle_dir, '..', 'Frameworks', 'PyQt6', 'Qt6', 'plugins')
         if os.path.exists(plugin_path):
             os.environ['QT_PLUGIN_PATH'] = plugin_path
         # Also try alternative locations
-        alt_plugin_path = os.path.join(bundle_dir, '..', 'Resources', 'PySide6', 'Qt', 'plugins')
+        alt_plugin_path = os.path.join(bundle_dir, '..', 'Resources', 'PyQt6', 'Qt6', 'plugins')
         if os.path.exists(alt_plugin_path):
             os.environ['QT_PLUGIN_PATH'] = alt_plugin_path
         # Set library path for Qt
         lib_path = os.path.join(bundle_dir, '..', 'Frameworks')
         if os.path.exists(lib_path):
-            os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = os.path.join(lib_path, 'PySide6', 'Qt', 'plugins', 'platforms')
+            os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = os.path.join(lib_path, 'PyQt6', 'Qt6', 'plugins', 'platforms')
     
     app = QApplication(sys.argv)
     app.setApplicationName("Zscaler API Client")
