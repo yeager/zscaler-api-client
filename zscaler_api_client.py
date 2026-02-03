@@ -57,7 +57,7 @@ except ImportError:
         print("Error: PyQt6 or PySide6 required. Install with: pip install PyQt6")
         sys.exit(1)
 
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -2822,6 +2822,23 @@ def apply_theme(app: QApplication, theme: int):
 
 
 def main():
+    # Fix for bundled macOS apps (PyInstaller/py2app)
+    # Must be done BEFORE QApplication is created
+    if getattr(sys, 'frozen', False):
+        bundle_dir = os.path.dirname(sys.executable)
+        # Set Qt plugin path for bundled app
+        plugin_path = os.path.join(bundle_dir, '..', 'Frameworks', 'PyQt6', 'Qt6', 'plugins')
+        if os.path.exists(plugin_path):
+            os.environ['QT_PLUGIN_PATH'] = plugin_path
+        # Also try alternative locations
+        alt_plugin_path = os.path.join(bundle_dir, '..', 'Resources', 'PyQt6', 'Qt6', 'plugins')
+        if os.path.exists(alt_plugin_path):
+            os.environ['QT_PLUGIN_PATH'] = alt_plugin_path
+        # Set library path for Qt
+        lib_path = os.path.join(bundle_dir, '..', 'Frameworks')
+        if os.path.exists(lib_path):
+            os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = os.path.join(lib_path, 'PyQt6', 'Qt6', 'plugins', 'platforms')
+    
     app = QApplication(sys.argv)
     app.setApplicationName("Zscaler API Client")
     app.setOrganizationName("Zscaler")
