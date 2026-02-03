@@ -39,7 +39,7 @@ from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTranslator, QLocal
 from PyQt6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PyQt6"
 
-__version__ = "1.6.3"
+__version__ = "1.6.4"
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -3550,21 +3550,23 @@ class MainWindow(QMainWindow):
     
     def _restart_application(self):
         """Restart the application."""
-        import subprocess
-        # Get the executable path
+        QApplication.closeAllWindows()
+        
         if getattr(sys, 'frozen', False):
-            # Running as bundled app
+            # Running as bundled app (PyInstaller)
+            # On macOS, we need to launch the .app bundle, not the binary
             executable = sys.executable
+            bundle_path = os.path.dirname(os.path.dirname(os.path.dirname(executable)))
+            if bundle_path.endswith('.app'):
+                # Use 'open' command to launch the .app properly
+                os.system(f'open "{bundle_path}" &')
+            else:
+                os.execv(executable, [executable])
         else:
             # Running as script
             executable = sys.executable
             script = os.path.abspath(__file__)
-            subprocess.Popen([executable, script])
-            QApplication.quit()
-            return
-        
-        subprocess.Popen([executable])
-        QApplication.quit()
+            os.execv(executable, [executable, script])
     
     def _check_for_updates(self):
         """Check GitHub for newer releases."""

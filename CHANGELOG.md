@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.4] - 2026-02-03
+
+### Fixed
+- **App restart after language change now works** - Fixed restart logic for both script and bundled app modes
+- Uses `os.execv` for clean process replacement
+- macOS .app bundles now use `open` command for proper restart
+
 ## [1.6.3] - 2026-02-03
 
 ### Added
