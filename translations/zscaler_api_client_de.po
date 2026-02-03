@@ -1,0 +1,632 @@
+# Zscaler API Client translations
+# Copyright (C) 2026 Daniel Nylander
+# This file is distributed under the GPL-3.0-or-later license.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: zscaler-api-client 1.4.0\n"
+"Report-Msgid-Bugs-To: daniel@danielnylander.se\n"
+"POT-Creation-Date: 2026-02-03 13:52+0100\n"
+"PO-Revision-Date: 2026-02-03 13:52+0100\n"
+"Last-Translator: Daniel Nylander <daniel@danielnylander.se>\n"
+"Language-Team: de_DE\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: MainWindow
+msgid "API:"
+msgstr "API:"
+
+#: MainWindow
+msgid "Endpoints"
+msgstr "Endpunkte"
+
+#: MainWindow
+msgid "Request"
+msgstr "Anfrage"
+
+#: MainWindow
+msgid "Enter URL or select endpoint..."
+msgstr "URL eingeben oder Endpunkt auswählen..."
+
+#: MainWindow
+msgid "Send"
+msgstr "Senden"
+
+#: MainWindow
+msgid "Key"
+msgstr "Schlüssel"
+
+#: MainWindow
+msgid "Value"
+msgstr "Wert"
+
+#: MainWindow
+msgid "Params"
+msgstr "Parameter"
+
+#: MainWindow
+msgid "Headers"
+msgstr "Kopfzeilen"
+
+#: MainWindow
+msgid "Body"
+msgstr "Körper"
+
+#: MainWindow
+msgid "Request body (JSON)..."
+msgstr "Anfragekörper (JSON)..."
+
+#: MainWindow
+msgid "Response"
+msgstr "Antwort"
+
+#: MainWindow
+msgid "Help"
+msgstr "Hilfe"
+
+#: MainWindow
+msgid "Ready"
+msgstr "Bereit"
+
+#: MainWindow
+msgid "&File"
+msgstr "&Datei"
+
+#: MainWindow
+msgid "&Settings..."
+msgstr "&Einstellungen..."
+
+#: MainWindow
+msgid "&Batch Operations..."
+msgstr "&Batch-Operationen..."
+
+#: MainWindow
+msgid "&Quit"
+msgstr "&Beenden"
+
+#: MainWindow
+msgid "&Language"
+msgstr "&Sprache"
+
+#: MainWindow
+msgid "&Help"
+msgstr "&Hilfe"
+
+#: MainWindow
+msgid "&About"
+msgstr "&Über"
+
+#: MainWindow
+msgid "Zscaler API &Documentation"
+msgstr "Zscaler API-&Dokumentation"
+
+#: MainWindow
+msgid "Warning"
+msgstr "Warnung"
+
+#: MainWindow
+msgid "Please enter a URL"
+msgstr "Bitte URL eingeben"
+
+#: MainWindow
+msgid "Sending request..."
+msgstr "Anfrage wird gesendet..."
+
+#: MainWindow
+msgid "Success"
+msgstr "Erfolg"
+
+#: MainWindow
+msgid "Error"
+msgstr "Fehler"
+
+#: MainWindow
+msgid "Request successful"
+msgstr "Anfrage erfolgreich"
+
+#: MainWindow
+msgid "Request failed"
+msgstr "Anfrage fehlgeschlagen"
+
+#: MainWindow
+msgid "Batch"
+msgstr "Batch"
+
+#: MainWindow
+msgid "Processing {count} items..."
+msgstr "Verarbeite {count} Elemente..."
+
+#: MainWindow
+msgid "Language Changed"
+msgstr "Sprache geändert"
+
+#: MainWindow
+msgid "Please restart the application to apply the new language."
+msgstr "Bitte starten Sie die Anwendung neu, um die neue Sprache anzuwenden."
+
+#: MainWindow
+msgid "About Zscaler API Client"
+msgstr "Über Zscaler API Client"
+
+#: MainWindow
+msgid "Request &History..."
+msgstr "Anfrage&verlauf..."
+
+#: MainWindow
+msgid "&Edit"
+msgstr "&Bearbeiten"
+
+#: MainWindow
+msgid "Copy as c&URL"
+msgstr "Als c&URL kopieren"
+
+#: MainWindow
+msgid "Copy &Response"
+msgstr "&Antwort kopieren"
+
+#: MainWindow
+msgid "C&lear Request"
+msgstr "Anfrage &löschen"
+
+#: MainWindow
+msgid "&Request"
+msgstr "&Anfrage"
+
+#: MainWindow
+msgid "&Send Request"
+msgstr "Anfrage &senden"
+
+#: MainWindow
+msgid "Authenticate &ZIA"
+msgstr "&ZIA authentifizieren"
+
+#: MainWindow
+msgid "Authenticate Z&PA"
+msgstr "Z&PA authentifizieren"
+
+#: MainWindow
+msgid "&Logout All Sessions"
+msgstr "Alle Sitzungen &abmelden"
+
+#: MainWindow
+msgid "&About..."
+msgstr "&Über..."
+
+#: MainWindow
+msgid "ZIA API &Documentation"
+msgstr "ZIA API &Documentation"
+
+#: MainWindow
+msgid "ZPA API D&ocumentation"
+msgstr "ZPA API D&ocumentation"
+
+#: MainWindow
+msgid "Zscaler API &Portal"
+msgstr "Zscaler API &Portal"
+
+#: MainWindow
+msgid "ZIA authenticated successfully"
+msgstr "ZIA authenticated successfully"
+
+#: MainWindow
+msgid "ZPA authenticated successfully"
+msgstr "ZPA authenticated successfully"
+
+#: MainWindow
+msgid "Request loaded from history"
+msgstr "Request loaded from history"
+
+#: MainWindow
+msgid "No URL to copy"
+msgstr "No URL to copy"
+
+#: MainWindow
+msgid "cURL command copied to clipboard"
+msgstr "cURL command copied to clipboard"
+
+#: MainWindow
+msgid "Response copied to clipboard"
+msgstr "Response copied to clipboard"
+
+#: MainWindow
+msgid "No response to copy"
+msgstr "No response to copy"
+
+#: MainWindow
+msgid "Request cleared"
+msgstr "Request cleared"
+
+#: MainWindow
+msgid "Missing Credentials"
+msgstr "Missing Credentials"
+
+#: MainWindow
+msgid "Please configure ZIA credentials in Settings first."
+msgstr "Please configure ZIA credentials in Settings first."
+
+#: MainWindow
+msgid "ZIA auth request prepared. Click Send to authenticate."
+msgstr "ZIA auth request prepared. Click Send to authenticate."
+
+#: MainWindow
+msgid "Please configure ZPA credentials in Settings first."
+msgstr "Please configure ZPA credentials in Settings first."
+
+#: MainWindow
+msgid "ZPA auth request prepared. Click Send to authenticate."
+msgstr "ZPA auth request prepared. Click Send to authenticate."
+
+#: MainWindow
+msgid "All sessions cleared"
+msgstr "All sessions cleared"
+
+#: MainWindow
+msgid "ZDX (Zscaler Digital Experience)"
+msgstr "ZDX (Zscaler Digital Experience)"
+
+#: MainWindow
+msgid "ZCC (Client Connector)"
+msgstr "ZCC (Client Connector)"
+
+#: MainWindow
+msgid "Key ID:"
+msgstr "Schlüssel-ID:"
+
+#: MainWindow
+msgid "Key Secret:"
+msgstr "Schlüsselgeheimnis:"
+
+#: MainWindow
+msgid "Welcome to Zscaler API Client"
+msgstr "Willkommen bei Zscaler API Client"
+
+#: MainWindow
+msgid "Supported APIs"
+msgstr "Unterstützte APIs"
+
+#: MainWindow
+msgid "Getting Started"
+msgstr "Erste Schritte"
+
+#: MainWindow
+msgid "Tips for Advanced Users"
+msgstr "Tipps für fortgeschrittene Benutzer"
+
+#: MainWindow
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: MainWindow
+msgid "Show this dialog on startup"
+msgstr "Diesen Dialog beim Start anzeigen"
+
+#: MainWindow
+msgid "Open Settings"
+msgstr "Einstellungen öffnen"
+
+#: MainWindow
+msgid "Get Started"
+msgstr "Loslegen"
+
+#: MainWindow
+msgid "&Welcome Guide..."
+msgstr "&Willkommensanleitung..."
+
+#: MainWindow
+msgid "Check for &Updates..."
+msgstr "Nach &Updates suchen..."
+
+#: MainWindow
+msgid "Checking for updates..."
+msgstr "Suche nach Updates..."
+
+#: MainWindow
+msgid "Update Available"
+msgstr "Update verfügbar"
+
+#: MainWindow
+msgid "No Updates"
+msgstr "Keine Updates"
+
+#: MainWindow
+msgid "Update Check Failed"
+msgstr "Update-Prüfung fehlgeschlagen"
+
+#: MainWindow
+msgid "Could not check for updates:\n{error}"
+msgstr "Konnte nicht nach Updates suchen:\n{error}"
+
+#: MainWindow
+msgid "Update available: v{version}"
+msgstr "Update verfügbar: v{version}"
+
+#: MainWindow
+msgid "You are up to date (v{version})"
+msgstr "Sie sind auf dem neuesten Stand (v{version})"
+
+#: MainWindow
+msgid "Check for updates on startup:"
+msgstr "Beim Start nach Updates suchen:"
+
+#: SettingsDialog
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: SettingsDialog
+msgid "ZIA (Zscaler Internet Access)"
+msgstr "ZIA (Zscaler Internet Access)"
+
+#: SettingsDialog
+msgid "Cloud:"
+msgstr "Cloud:"
+
+#: SettingsDialog
+msgid "API Key:"
+msgstr "API-Schlüssel:"
+
+#: SettingsDialog
+msgid "Username:"
+msgstr "Benutzername:"
+
+#: SettingsDialog
+msgid "Password:"
+msgstr "Passwort:"
+
+#: SettingsDialog
+msgid "ZPA (Zscaler Private Access)"
+msgstr "ZPA (Zscaler Private Access)"
+
+#: SettingsDialog
+msgid "Client ID:"
+msgstr "Client-ID:"
+
+#: SettingsDialog
+msgid "Client Secret:"
+msgstr "Client-Geheimnis:"
+
+#: SettingsDialog
+msgid "Customer ID:"
+msgstr "Kunden-ID:"
+
+#: SettingsDialog
+msgid "Credentials"
+msgstr "Anmeldedaten"
+
+#: SettingsDialog
+msgid "Network"
+msgstr "Netzwerk"
+
+#: SettingsDialog
+msgid "Request Timeout (seconds):"
+msgstr "Anfrage-Timeout (Sekunden):"
+
+#: SettingsDialog
+msgid "Enabled"
+msgstr "Aktiviert"
+
+#: SettingsDialog
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+#: SettingsDialog
+msgid "<small><i>⚠️ Only disable for testing</i></small>"
+msgstr "<small><i>⚠️ Only disable for testing</i></small>"
+
+#: SettingsDialog
+msgid "SSL Verification:"
+msgstr "SSL-Verifizierung:"
+
+#: SettingsDialog
+msgid "Proxy"
+msgstr "Proxy"
+
+#: SettingsDialog
+msgid "No Proxy"
+msgstr "Kein Proxy"
+
+#: SettingsDialog
+msgid "System Proxy"
+msgstr "System-Proxy"
+
+#: SettingsDialog
+msgid "Manual"
+msgstr "Manuell"
+
+#: SettingsDialog
+msgid "Proxy Mode:"
+msgstr "Proxy-Modus:"
+
+#: SettingsDialog
+msgid "Proxy Host:"
+msgstr "Proxy-Host:"
+
+#: SettingsDialog
+msgid "Proxy Port:"
+msgstr "Proxy-Port:"
+
+#: SettingsDialog
+msgid "Optional"
+msgstr "Optional"
+
+#: SettingsDialog
+msgid "Proxy Username:"
+msgstr "Proxy-Benutzername:"
+
+#: SettingsDialog
+msgid "Proxy Password:"
+msgstr "Proxy-Passwort:"
+
+#: SettingsDialog
+msgid "Behavior"
+msgstr "Verhalten"
+
+#: SettingsDialog
+msgid "Auto-authenticate on startup:"
+msgstr "Automatisch beim Start authentifizieren:"
+
+#: SettingsDialog
+msgid "Save request history:"
+msgstr "Anfrageverlauf speichern:"
+
+#: SettingsDialog
+msgid "History limit:"
+msgstr "Verlaufslimit:"
+
+#: SettingsDialog
+msgid "Default API:"
+msgstr "Standard-API:"
+
+#: SettingsDialog
+msgid "Advanced"
+msgstr "Erweitert"
+
+#: SettingsDialog
+msgid "Response Display"
+msgstr "Antwortanzeige"
+
+#: SettingsDialog
+msgid "JSON Indentation:"
+msgstr "JSON-Einrückung:"
+
+#: SettingsDialog
+msgid "Word Wrap:"
+msgstr "Zeilenumbruch:"
+
+#: SettingsDialog
+msgid "Font Size:"
+msgstr "Schriftgröße:"
+
+#: SettingsDialog
+msgid "Light"
+msgstr "Hell"
+
+#: SettingsDialog
+msgid "Dark"
+msgstr "Dunkel"
+
+#: SettingsDialog
+msgid "System"
+msgstr "System"
+
+#: SettingsDialog
+msgid "Theme:"
+msgstr "Design:"
+
+#: SettingsDialog
+msgid "Display"
+msgstr "Anzeige"
+
+#: SettingsDialog
+msgid "Restore Defaults"
+msgstr "Standardwerte wiederherstellen"
+
+#: SettingsDialog
+msgid "This will reset all advanced settings to defaults. Continue?"
+msgstr "This will reset all advanced settings to defaults. Continue?"
+
+#: BatchDialog
+msgid "Batch Operations"
+msgstr "Batch-Operationen"
+
+#: BatchDialog
+msgid "Import a CSV file to perform batch operations. The CSV should have columns matching the API parameters."
+msgstr "Importieren Sie eine CSV-Datei, um Batch-Operationen durchzuführen. Die CSV sollte Spalten haben, die den API-Parametern entsprechen."
+
+#: BatchDialog
+msgid "Select CSV file..."
+msgstr "CSV-Datei auswählen..."
+
+#: BatchDialog
+msgid "Browse..."
+msgstr "Durchsuchen..."
+
+#: BatchDialog
+msgid "Operation:"
+msgstr "Operation:"
+
+#: BatchDialog
+msgid "Create Users (ZIA)"
+msgstr "Benutzer erstellen (ZIA)"
+
+#: BatchDialog
+msgid "Delete Users (ZIA)"
+msgstr "Benutzer löschen (ZIA)"
+
+#: BatchDialog
+msgid "Create Locations (ZIA)"
+msgstr "Standorte erstellen (ZIA)"
+
+#: BatchDialog
+msgid "URL Lookup (ZIA)"
+msgstr "URL-Suche (ZIA)"
+
+#: BatchDialog
+msgid "Create App Segments (ZPA)"
+msgstr "App-Segmente erstellen (ZPA)"
+
+#: BatchDialog
+msgid "Select CSV File"
+msgstr "CSV-Datei auswählen"
+
+#: BatchDialog
+msgid "Error"
+msgstr "Fehler"
+
+#: AboutDialog
+msgid "About Zscaler API Client"
+msgstr "Über Zscaler API Client"
+
+#: AboutDialog
+msgid "Disclaimer"
+msgstr "Haftungsausschluss"
+
+#: HistoryDialog
+msgid "Request History"
+msgstr "Anfrageverlauf"
+
+#: HistoryDialog
+msgid "Search:"
+msgstr "Suche:"
+
+#: HistoryDialog
+msgid "Filter by URL or method..."
+msgstr "Nach URL oder Methode filtern..."
+
+#: HistoryDialog
+msgid "Clear History"
+msgstr "Verlauf löschen"
+
+#: HistoryDialog
+msgid "Time"
+msgstr "Zeit"
+
+#: HistoryDialog
+msgid "Method"
+msgstr "Methode"
+
+#: HistoryDialog
+msgid "URL"
+msgstr "URL"
+
+#: HistoryDialog
+msgid "Status"
+msgstr "Status"
+
+#: HistoryDialog
+msgid "Duration"
+msgstr "Dauer"
+
+#: HistoryDialog
+msgid "Load Request"
+msgstr "Anfrage laden"
+
+#: HistoryDialog
+msgid "Close"
+msgstr "Schließen"
+
+#: HistoryDialog
+msgid "Are you sure you want to clear all request history?"
+msgstr "Are you sure you want to clear all request history?"

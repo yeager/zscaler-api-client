@@ -1,0 +1,632 @@
+# Zscaler API Client translations
+# Copyright (C) 2026 Daniel Nylander
+# This file is distributed under the GPL-3.0-or-later license.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: zscaler-api-client 1.4.0\n"
+"Report-Msgid-Bugs-To: daniel@danielnylander.se\n"
+"POT-Creation-Date: 2026-02-03 13:52+0100\n"
+"PO-Revision-Date: 2026-02-03 13:52+0100\n"
+"Last-Translator: Daniel Nylander <daniel@danielnylander.se>\n"
+"Language-Team: ja_JP\n"
+"Language: ja_JP\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: MainWindow
+msgid "API:"
+msgstr "API:"
+
+#: MainWindow
+msgid "Endpoints"
+msgstr "エンドポイント"
+
+#: MainWindow
+msgid "Request"
+msgstr "リクエスト"
+
+#: MainWindow
+msgid "Enter URL or select endpoint..."
+msgstr "URLを入力またはエンドポイントを選択..."
+
+#: MainWindow
+msgid "Send"
+msgstr "送信"
+
+#: MainWindow
+msgid "Key"
+msgstr "キー"
+
+#: MainWindow
+msgid "Value"
+msgstr "値"
+
+#: MainWindow
+msgid "Params"
+msgstr "パラメータ"
+
+#: MainWindow
+msgid "Headers"
+msgstr "ヘッダー"
+
+#: MainWindow
+msgid "Body"
+msgstr "ボディ"
+
+#: MainWindow
+msgid "Request body (JSON)..."
+msgstr "リクエストボディ (JSON)..."
+
+#: MainWindow
+msgid "Response"
+msgstr "レスポンス"
+
+#: MainWindow
+msgid "Help"
+msgstr "ヘルプ"
+
+#: MainWindow
+msgid "Ready"
+msgstr "準備完了"
+
+#: MainWindow
+msgid "&File"
+msgstr "ファイル(&F)"
+
+#: MainWindow
+msgid "&Settings..."
+msgstr "設定(&S)..."
+
+#: MainWindow
+msgid "&Batch Operations..."
+msgstr "バッチ操作(&B)..."
+
+#: MainWindow
+msgid "&Quit"
+msgstr "終了(&Q)"
+
+#: MainWindow
+msgid "&Language"
+msgstr "言語(&L)"
+
+#: MainWindow
+msgid "&Help"
+msgstr "ヘルプ(&H)"
+
+#: MainWindow
+msgid "&About"
+msgstr "について(&A)"
+
+#: MainWindow
+msgid "Zscaler API &Documentation"
+msgstr "Zscaler API ドキュメント(&D)"
+
+#: MainWindow
+msgid "Warning"
+msgstr "警告"
+
+#: MainWindow
+msgid "Please enter a URL"
+msgstr "URLを入力してください"
+
+#: MainWindow
+msgid "Sending request..."
+msgstr "リクエスト送信中..."
+
+#: MainWindow
+msgid "Success"
+msgstr "成功"
+
+#: MainWindow
+msgid "Error"
+msgstr "エラー"
+
+#: MainWindow
+msgid "Request successful"
+msgstr "リクエスト成功"
+
+#: MainWindow
+msgid "Request failed"
+msgstr "リクエスト失敗"
+
+#: MainWindow
+msgid "Batch"
+msgstr "バッチ"
+
+#: MainWindow
+msgid "Processing {count} items..."
+msgstr "{count}件を処理中..."
+
+#: MainWindow
+msgid "Language Changed"
+msgstr "言語変更"
+
+#: MainWindow
+msgid "Please restart the application to apply the new language."
+msgstr "新しい言語を適用するにはアプリケーションを再起動してください。"
+
+#: MainWindow
+msgid "About Zscaler API Client"
+msgstr "Zscaler API クライアントについて"
+
+#: MainWindow
+msgid "Request &History..."
+msgstr "Request &History..."
+
+#: MainWindow
+msgid "&Edit"
+msgstr "編集(&E)"
+
+#: MainWindow
+msgid "Copy as c&URL"
+msgstr "Copy as c&URL"
+
+#: MainWindow
+msgid "Copy &Response"
+msgstr "Copy &Response"
+
+#: MainWindow
+msgid "C&lear Request"
+msgstr "C&lear Request"
+
+#: MainWindow
+msgid "&Request"
+msgstr "リクエスト(&R)"
+
+#: MainWindow
+msgid "&Send Request"
+msgstr "&Send Request"
+
+#: MainWindow
+msgid "Authenticate &ZIA"
+msgstr "Authenticate &ZIA"
+
+#: MainWindow
+msgid "Authenticate Z&PA"
+msgstr "Authenticate Z&PA"
+
+#: MainWindow
+msgid "&Logout All Sessions"
+msgstr "&Logout All Sessions"
+
+#: MainWindow
+msgid "&About..."
+msgstr "バージョン情報(&A)..."
+
+#: MainWindow
+msgid "ZIA API &Documentation"
+msgstr "ZIA API &Documentation"
+
+#: MainWindow
+msgid "ZPA API D&ocumentation"
+msgstr "ZPA API D&ocumentation"
+
+#: MainWindow
+msgid "Zscaler API &Portal"
+msgstr "Zscaler API &Portal"
+
+#: MainWindow
+msgid "ZIA authenticated successfully"
+msgstr "ZIA authenticated successfully"
+
+#: MainWindow
+msgid "ZPA authenticated successfully"
+msgstr "ZPA authenticated successfully"
+
+#: MainWindow
+msgid "Request loaded from history"
+msgstr "Request loaded from history"
+
+#: MainWindow
+msgid "No URL to copy"
+msgstr "No URL to copy"
+
+#: MainWindow
+msgid "cURL command copied to clipboard"
+msgstr "cURL command copied to clipboard"
+
+#: MainWindow
+msgid "Response copied to clipboard"
+msgstr "Response copied to clipboard"
+
+#: MainWindow
+msgid "No response to copy"
+msgstr "No response to copy"
+
+#: MainWindow
+msgid "Request cleared"
+msgstr "Request cleared"
+
+#: MainWindow
+msgid "Missing Credentials"
+msgstr "Missing Credentials"
+
+#: MainWindow
+msgid "Please configure ZIA credentials in Settings first."
+msgstr "Please configure ZIA credentials in Settings first."
+
+#: MainWindow
+msgid "ZIA auth request prepared. Click Send to authenticate."
+msgstr "ZIA auth request prepared. Click Send to authenticate."
+
+#: MainWindow
+msgid "Please configure ZPA credentials in Settings first."
+msgstr "Please configure ZPA credentials in Settings first."
+
+#: MainWindow
+msgid "ZPA auth request prepared. Click Send to authenticate."
+msgstr "ZPA auth request prepared. Click Send to authenticate."
+
+#: MainWindow
+msgid "All sessions cleared"
+msgstr "All sessions cleared"
+
+#: MainWindow
+msgid "ZDX (Zscaler Digital Experience)"
+msgstr "ZDX (Zscaler Digital Experience)"
+
+#: MainWindow
+msgid "ZCC (Client Connector)"
+msgstr "ZCC (Client Connector)"
+
+#: MainWindow
+msgid "Key ID:"
+msgstr "キーID:"
+
+#: MainWindow
+msgid "Key Secret:"
+msgstr "キーシークレット:"
+
+#: MainWindow
+msgid "Welcome to Zscaler API Client"
+msgstr "Zscaler APIクライアントへようこそ"
+
+#: MainWindow
+msgid "Supported APIs"
+msgstr "サポートされているAPI"
+
+#: MainWindow
+msgid "Getting Started"
+msgstr "はじめに"
+
+#: MainWindow
+msgid "Tips for Advanced Users"
+msgstr "上級ユーザー向けのヒント"
+
+#: MainWindow
+msgid "Documentation"
+msgstr "ドキュメント"
+
+#: MainWindow
+msgid "Show this dialog on startup"
+msgstr "起動時にこのダイアログを表示"
+
+#: MainWindow
+msgid "Open Settings"
+msgstr "設定を開く"
+
+#: MainWindow
+msgid "Get Started"
+msgstr "始める"
+
+#: MainWindow
+msgid "&Welcome Guide..."
+msgstr "ウェルカムガイド(&W)..."
+
+#: MainWindow
+msgid "Check for &Updates..."
+msgstr "更新を確認(&U)..."
+
+#: MainWindow
+msgid "Checking for updates..."
+msgstr "更新を確認中..."
+
+#: MainWindow
+msgid "Update Available"
+msgstr "アップデートがあります"
+
+#: MainWindow
+msgid "No Updates"
+msgstr "更新なし"
+
+#: MainWindow
+msgid "Update Check Failed"
+msgstr "更新確認に失敗"
+
+#: MainWindow
+msgid "Could not check for updates:\n{error}"
+msgstr "更新を確認できませんでした:\n{error}"
+
+#: MainWindow
+msgid "Update available: v{version}"
+msgstr "更新があります: v{version}"
+
+#: MainWindow
+msgid "You are up to date (v{version})"
+msgstr "最新バージョンです (v{version})"
+
+#: MainWindow
+msgid "Check for updates on startup:"
+msgstr "起動時に更新を確認:"
+
+#: SettingsDialog
+msgid "Settings"
+msgstr "設定"
+
+#: SettingsDialog
+msgid "ZIA (Zscaler Internet Access)"
+msgstr "ZIA (Zscaler Internet Access)"
+
+#: SettingsDialog
+msgid "Cloud:"
+msgstr "クラウド:"
+
+#: SettingsDialog
+msgid "API Key:"
+msgstr "APIキー:"
+
+#: SettingsDialog
+msgid "Username:"
+msgstr "ユーザー名:"
+
+#: SettingsDialog
+msgid "Password:"
+msgstr "パスワード:"
+
+#: SettingsDialog
+msgid "ZPA (Zscaler Private Access)"
+msgstr "ZPA (Zscaler Private Access)"
+
+#: SettingsDialog
+msgid "Client ID:"
+msgstr "クライアントID:"
+
+#: SettingsDialog
+msgid "Client Secret:"
+msgstr "クライアントシークレット:"
+
+#: SettingsDialog
+msgid "Customer ID:"
+msgstr "カスタマーID:"
+
+#: SettingsDialog
+msgid "Credentials"
+msgstr "認証情報"
+
+#: SettingsDialog
+msgid "Network"
+msgstr "ネットワーク"
+
+#: SettingsDialog
+msgid "Request Timeout (seconds):"
+msgstr "リクエストタイムアウト（秒）:"
+
+#: SettingsDialog
+msgid "Enabled"
+msgstr "有効"
+
+#: SettingsDialog
+msgid "Disabled"
+msgstr "無効"
+
+#: SettingsDialog
+msgid "<small><i>⚠️ Only disable for testing</i></small>"
+msgstr "<small><i>⚠️ Only disable for testing</i></small>"
+
+#: SettingsDialog
+msgid "SSL Verification:"
+msgstr "SSL検証:"
+
+#: SettingsDialog
+msgid "Proxy"
+msgstr "プロキシ"
+
+#: SettingsDialog
+msgid "No Proxy"
+msgstr "No Proxy"
+
+#: SettingsDialog
+msgid "System Proxy"
+msgstr "System Proxy"
+
+#: SettingsDialog
+msgid "Manual"
+msgstr "Manual"
+
+#: SettingsDialog
+msgid "Proxy Mode:"
+msgstr "Proxy Mode:"
+
+#: SettingsDialog
+msgid "Proxy Host:"
+msgstr "Proxy Host:"
+
+#: SettingsDialog
+msgid "Proxy Port:"
+msgstr "Proxy Port:"
+
+#: SettingsDialog
+msgid "Optional"
+msgstr "Optional"
+
+#: SettingsDialog
+msgid "Proxy Username:"
+msgstr "Proxy Username:"
+
+#: SettingsDialog
+msgid "Proxy Password:"
+msgstr "Proxy Password:"
+
+#: SettingsDialog
+msgid "Behavior"
+msgstr "動作"
+
+#: SettingsDialog
+msgid "Auto-authenticate on startup:"
+msgstr "Auto-authenticate on startup:"
+
+#: SettingsDialog
+msgid "Save request history:"
+msgstr "Save request history:"
+
+#: SettingsDialog
+msgid "History limit:"
+msgstr "History limit:"
+
+#: SettingsDialog
+msgid "Default API:"
+msgstr "Default API:"
+
+#: SettingsDialog
+msgid "Advanced"
+msgstr "詳細設定"
+
+#: SettingsDialog
+msgid "Response Display"
+msgstr "レスポンス表示"
+
+#: SettingsDialog
+msgid "JSON Indentation:"
+msgstr "JSON Indentation:"
+
+#: SettingsDialog
+msgid "Word Wrap:"
+msgstr "Word Wrap:"
+
+#: SettingsDialog
+msgid "Font Size:"
+msgstr "Font Size:"
+
+#: SettingsDialog
+msgid "Light"
+msgstr "ライト"
+
+#: SettingsDialog
+msgid "Dark"
+msgstr "ダーク"
+
+#: SettingsDialog
+msgid "System"
+msgstr "システム"
+
+#: SettingsDialog
+msgid "Theme:"
+msgstr "テーマ:"
+
+#: SettingsDialog
+msgid "Display"
+msgstr "表示"
+
+#: SettingsDialog
+msgid "Restore Defaults"
+msgstr "Restore Defaults"
+
+#: SettingsDialog
+msgid "This will reset all advanced settings to defaults. Continue?"
+msgstr "This will reset all advanced settings to defaults. Continue?"
+
+#: BatchDialog
+msgid "Batch Operations"
+msgstr "バッチ操作"
+
+#: BatchDialog
+msgid "Import a CSV file to perform batch operations. The CSV should have columns matching the API parameters."
+msgstr "バッチ操作を実行するためにCSVファイルをインポートします。CSVにはAPIパラメータに一致する列が必要です。"
+
+#: BatchDialog
+msgid "Select CSV file..."
+msgstr "CSVファイルを選択..."
+
+#: BatchDialog
+msgid "Browse..."
+msgstr "参照..."
+
+#: BatchDialog
+msgid "Operation:"
+msgstr "操作:"
+
+#: BatchDialog
+msgid "Create Users (ZIA)"
+msgstr "ユーザー作成 (ZIA)"
+
+#: BatchDialog
+msgid "Delete Users (ZIA)"
+msgstr "ユーザー削除 (ZIA)"
+
+#: BatchDialog
+msgid "Create Locations (ZIA)"
+msgstr "ロケーション作成 (ZIA)"
+
+#: BatchDialog
+msgid "URL Lookup (ZIA)"
+msgstr "URL検索 (ZIA)"
+
+#: BatchDialog
+msgid "Create App Segments (ZPA)"
+msgstr "アプリセグメント作成 (ZPA)"
+
+#: BatchDialog
+msgid "Select CSV File"
+msgstr "CSVファイルを選択"
+
+#: BatchDialog
+msgid "Error"
+msgstr "エラー"
+
+#: AboutDialog
+msgid "About Zscaler API Client"
+msgstr "Zscaler APIクライアントについて"
+
+#: AboutDialog
+msgid "Disclaimer"
+msgstr "免責事項"
+
+#: HistoryDialog
+msgid "Request History"
+msgstr "リクエスト履歴"
+
+#: HistoryDialog
+msgid "Search:"
+msgstr "検索:"
+
+#: HistoryDialog
+msgid "Filter by URL or method..."
+msgstr "Filter by URL or method..."
+
+#: HistoryDialog
+msgid "Clear History"
+msgstr "履歴をクリア"
+
+#: HistoryDialog
+msgid "Time"
+msgstr "時刻"
+
+#: HistoryDialog
+msgid "Method"
+msgstr "メソッド"
+
+#: HistoryDialog
+msgid "URL"
+msgstr "URL"
+
+#: HistoryDialog
+msgid "Status"
+msgstr "Status"
+
+#: HistoryDialog
+msgid "Duration"
+msgstr "期間"
+
+#: HistoryDialog
+msgid "Load Request"
+msgstr "リクエストを読み込む"
+
+#: HistoryDialog
+msgid "Close"
+msgstr "閉じる"
+
+#: HistoryDialog
+msgid "Are you sure you want to clear all request history?"
+msgstr "Are you sure you want to clear all request history?"
