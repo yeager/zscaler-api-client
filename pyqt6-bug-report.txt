@@ -1,0 +1,71 @@
+Subject: [BUG] PyQt6 6.10.x crashes on macOS in PyInstaller bundles (qdarwinpermissionplugin static init)
+
+Hi,
+
+I've discovered a crash in PyQt6 6.10.x on macOS when used with PyInstaller. The app crashes 
+during static initialization before any Python code runs.
+
+## Crash Stack Trace
+
+Thread 0 Crashed:: Dispatch queue: com.apple.main-thread
+0   CoreFoundation   __CFCheckCFInfoPACSignature + 4
+1   CoreFoundation   CFBundleCopyBundleURL + 24
+2   QtCore           QLibraryInfoPrivate::paths + 2252
+3   QtCore           QLibraryInfoPrivate::path + 48
+...
+8   QtCore           QLoggingRegistry::instance() + 172
+9   QtCore           QLoggingCategory::QLoggingCategory + 56
+10  QtCore.abi3.so   _GLOBAL__sub_I_qdarwinpermissionplugin_location.mm + 308
+11  dyld             invocation function for block in dyld4::Loader::findAndRunAllInitializers
+
+## Root Cause
+
+The darwin permission plugin has a static initializer that creates a QLoggingCategory. 
+During initialization, Qt calls CFBundleCopyBundleURL(CFBundleGetMainBundle()) which 
+crashes because the bundle context is not properly set up at static initialization time 
+in PyInstaller bundles.
+
+## Environment
+
+- macOS 15.3 (Sequoia) - ARM64 (Apple Silicon)
+- Python 3.11
+- PyInstaller 6.x
+- PyQt6 6.10.2 (crashes)
+- PyQt6 6.5.3 (works fine)
+
+## Minimal Reproduction
+
+1. pip install PyQt6==6.10.2 pyinstaller
+2. Create test.py:
+   
+   from PyQt6.QtWidgets import QApplication, QMainWindow
+   import sys
+   app = QApplication(sys.argv)
+   window = QMainWindow()
+   window.show()
+   sys.exit(app.exec())
+
+3. pyinstaller --windowed test.py
+4. open dist/test.app  # crashes with SIGSEGV
+
+## Analysis
+
+The crash originates from _GLOBAL__sub_I_qdarwinpermissionplugin_location.mm being 
+linked into QtCore.abi3.so. Its static initializer runs before the app bundle is 
+properly set up by PyInstaller, causing CFBundleCopyBundleURL to fail.
+
+## Possible Fix
+
+Could the darwin permission plugin initialization be deferred until QApplication 
+creation, rather than at static init time? Or add a NULL check for the bundle.
+
+## Workaround
+
+Downgrade to PyQt6 6.5.3:
+  pip install 'PyQt6==6.5.3' 'PyQt6-Qt6==6.5.3'
+
+Best regards,
+Daniel Nylander
+
+---
+Also reported to PyInstaller: https://github.com/pyinstaller/pyinstaller/issues/9367

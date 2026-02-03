@@ -21,7 +21,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libxcb-cursor0 libxkbcommon0
-          pip install 'PyQt6==6.5.3' 'PyQt6-Qt6==6.5.3' pyinstaller
+          pip install PySide6 pyinstaller
       
       - name: Build
         run: |
@@ -46,7 +46,7 @@ jobs:
           python-version: '3.11'
       
       - name: Install dependencies
-        run: pip install 'PyQt6==6.5.3' 'PyQt6-Qt6==6.5.3' pyinstaller
+        run: pip install PySide6 pyinstaller
       
       - name: Build
         run: pyinstaller zscaler_api_client.spec
@@ -71,7 +71,7 @@ jobs:
           python-version: '3.11'
       
       - name: Install dependencies
-        run: pip install 'PyQt6==6.5.3' 'PyQt6-Qt6==6.5.3' pyinstaller
+        run: pip install PySide6 pyinstaller
       
       - name: Build
         run: |
