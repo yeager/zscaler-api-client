@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
+VERSION = '1.4.2'
+
 block_cipher = None
 
 # Collect all PyQt6 data files and submodules
@@ -74,14 +76,14 @@ coll = COLLECT(
 
 app = BUNDLE(
     coll,
-    name='Zscaler API Client.app',
+    name=f'Zscaler API Client {VERSION}.app',
     icon=None,  # Add icon path here: 'icon.icns'
     bundle_identifier='com.zscaler.apiclient',
     info_plist={
         'CFBundleName': 'Zscaler API Client',
         'CFBundleDisplayName': 'Zscaler API Client',
-        'CFBundleShortVersionString': '1.4.2',
-        'CFBundleVersion': '1.4.2',
+        'CFBundleShortVersionString': VERSION,
+        'CFBundleVersion': VERSION,
         'CFBundleIdentifier': 'com.zscaler.apiclient',
         'NSHighResolutionCapable': True,
         'NSPrincipalClass': 'NSApplication',
