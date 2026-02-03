@@ -78,11 +78,13 @@ cd zscaler-api-client
 python zscaler_api_client.py
 ```
 
-### macOS App Bundle (coming soon)
+### macOS App Bundle
 ```bash
 pip install pyinstaller
-pyinstaller --windowed --name "Zscaler API Client" zscaler_api_client.py
+pyinstaller zscaler_api_client.spec
 ```
+
+The included `.spec` file and `runtime_hook.py` handle Qt plugin paths correctly for bundled apps.
 
 ## Usage
 
