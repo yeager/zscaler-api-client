@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.3] - 2026-02-03
+
+### Added
+- **Farsi (فارسی) language support** - Now supports 8 languages
+
 ## [1.6.2] - 2026-02-03
 
 ### Fixed

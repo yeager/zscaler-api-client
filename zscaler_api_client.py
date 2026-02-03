@@ -39,7 +39,7 @@ from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTranslator, QLocal
 from PyQt6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PyQt6"
 
-__version__ = "1.6.2"
+__version__ = "1.6.3"
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -3015,6 +3015,7 @@ class MainWindow(QMainWindow):
             ("🇪🇸 Español", "es"),
             ("🇯🇵 日本語", "ja"),
             ("🇨🇳 中文", "zh"),
+            ("🇮🇷 فارسی", "fa"),
         ]
         
         for name, code in languages:

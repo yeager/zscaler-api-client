@@ -194,6 +194,7 @@ The application supports:
 - 🇪🇸 Español
 - 🇯🇵 日本語
 - 🇨🇳 中文
+- 🇮🇷 فارسی
 
 Change via **Language** menu.
 
