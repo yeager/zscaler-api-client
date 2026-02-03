@@ -11,7 +11,7 @@
     <message>
         <location filename="../zscaler_api_client.py" line="2083"/>
         <source>&lt;p&gt;A Postman-like desktop application for exploring and testing Zscaler APIs (ZIA and ZPA).&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Une application de bureau similaire à Postman pour explorer et tester les APIs Zscaler (ZIA et ZPA).&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2116"/>
@@ -21,7 +21,7 @@
     <message>
         <location filename="../zscaler_api_client.py" line="2119"/>
         <source>&lt;p style=&apos;color: #666;&apos;&gt;This software is &lt;b&gt;not affiliated with, endorsed by, or supported by Zscaler, Inc.&lt;/b&gt; in any way. This is an independent community project.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;Zscaler® is a registered trademark of Zscaler, Inc. All product names, logos, and brands are property of their respective owners.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;&lt;b&gt;NO WARRANTY:&lt;/b&gt; This software is provided &quot;as is&quot; without warranty of any kind. Use at your own risk. The author is not responsible for any damage or data loss resulting from the use of this software.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;&lt;b&gt;NO SUPPORT:&lt;/b&gt; For Zscaler product support, please contact Zscaler directly through official channels.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p style=&apos;color: #666;&apos;&gt;Ce logiciel n&apos;est &lt;b&gt;pas affilié, approuvé ou soutenu par Zscaler, Inc.&lt;/b&gt; de quelque manière que ce soit. Il s&apos;agit d&apos;un projet communautaire indépendant.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;Zscaler® est une marque déposée de Zscaler, Inc. Tous les noms de produits, logos et marques appartiennent à leurs propriétaires respectifs.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;&lt;b&gt;AUCUNE GARANTIE :&lt;/b&gt; Ce logiciel est fourni &quot;tel quel&quot; sans aucune garantie. Utilisation à vos propres risques. L&apos;auteur n&apos;est pas responsable des dommages ou pertes de données résultant de l&apos;utilisation de ce logiciel.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;&lt;b&gt;PAS DE SUPPORT :&lt;/b&gt; Pour le support des produits Zscaler, veuillez contacter Zscaler directement via les canaux officiels.&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -102,7 +102,7 @@
     <message>
         <location filename="../zscaler_api_client.py" line="2760"/>
         <source>Filter by URL or method...</source>
-        <translation type="unfinished">Filter by URL or method...</translation>
+        <translation>Filter by URL or method...</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2764"/>
@@ -123,12 +123,12 @@
     <message>
         <location filename="../zscaler_api_client.py" line="2773"/>
         <source>URL</source>
-        <translation type="unfinished">URL</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2774"/>
         <source>Status</source>
-        <translation type="unfinished">Status</translation>
+        <translation>Status</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2774"/>
@@ -148,7 +148,7 @@
     <message>
         <location filename="../zscaler_api_client.py" line="2836"/>
         <source>Are you sure you want to clear all request history?</source>
-        <translation type="unfinished">Are you sure you want to clear all request history?</translation>
+        <translation>Are you sure you want to clear all request history?</translation>
     </message>
 </context>
 <context>
@@ -243,7 +243,7 @@
     <message>
         <location filename="../zscaler_api_client.py" line="3025"/>
         <source>Request &amp;History...</source>
-        <translation type="unfinished">Request &amp;History...</translation>
+        <translation>Request &amp;History...</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3032"/>
@@ -258,17 +258,17 @@
     <message>
         <location filename="../zscaler_api_client.py" line="3040"/>
         <source>Copy as c&amp;URL</source>
-        <translation type="unfinished">Copy as c&amp;URL</translation>
+        <translation>Copy as c&amp;URL</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3045"/>
         <source>Copy &amp;Response</source>
-        <translation type="unfinished">Copy &amp;Response</translation>
+        <translation>Copy &amp;Response</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3052"/>
         <source>C&amp;lear Request</source>
-        <translation type="unfinished">C&amp;lear Request</translation>
+        <translation>C&amp;lear Request</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3057"/>
@@ -278,22 +278,22 @@
     <message>
         <location filename="../zscaler_api_client.py" line="3059"/>
         <source>&amp;Send Request</source>
-        <translation type="unfinished">&amp;Send Request</translation>
+        <translation>&amp;Send Request</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3066"/>
         <source>Authenticate &amp;ZIA</source>
-        <translation type="unfinished">Authenticate &amp;ZIA</translation>
+        <translation>Authenticate &amp;ZIA</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3070"/>
         <source>Authenticate Z&amp;PA</source>
-        <translation type="unfinished">Authenticate Z&amp;PA</translation>
+        <translation>Authenticate Z&amp;PA</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3076"/>
         <source>&amp;Logout All Sessions</source>
-        <translation type="unfinished">&amp;Logout All Sessions</translation>
+        <translation>&amp;Logout All Sessions</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3081"/>
@@ -318,17 +318,17 @@
     <message>
         <location filename="../zscaler_api_client.py" line="3113"/>
         <source>ZIA API &amp;Documentation</source>
-        <translation type="unfinished">ZIA API &amp;Documentation</translation>
+        <translation>ZIA API &amp;Documentation</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3117"/>
         <source>ZPA API D&amp;ocumentation</source>
-        <translation type="unfinished">ZPA API D&amp;ocumentation</translation>
+        <translation>ZPA API D&amp;ocumentation</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3121"/>
         <source>Zscaler API &amp;Portal</source>
-        <translation type="unfinished">Zscaler API &amp;Portal</translation>
+        <translation>Zscaler API &amp;Portal</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3127"/>
@@ -378,12 +378,12 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="3335"/>
         <source>ZIA authenticated successfully</source>
-        <translation type="unfinished">ZIA authenticated successfully</translation>
+        <translation>ZIA authenticated successfully</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3338"/>
         <source>ZPA authenticated successfully</source>
-        <translation type="unfinished">ZPA authenticated successfully</translation>
+        <translation>ZPA authenticated successfully</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3344"/>
@@ -403,63 +403,63 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="3419"/>
         <source>Request loaded from history</source>
-        <translation type="unfinished">Request loaded from history</translation>
+        <translation>Request loaded from history</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3474"/>
         <source>No URL to copy</source>
-        <translation type="unfinished">No URL to copy</translation>
+        <translation>No URL to copy</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3501"/>
         <source>cURL command copied to clipboard</source>
-        <translation type="unfinished">cURL command copied to clipboard</translation>
+        <translation>cURL command copied to clipboard</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3508"/>
         <source>Response copied to clipboard</source>
-        <translation type="unfinished">Response copied to clipboard</translation>
+        <translation>Response copied to clipboard</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3510"/>
         <source>No response to copy</source>
-        <translation type="unfinished">No response to copy</translation>
+        <translation>No response to copy</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3521"/>
         <source>Request cleared</source>
-        <translation type="unfinished">Request cleared</translation>
+        <translation>Request cleared</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3534"/>
         <location filename="../zscaler_api_client.py" line="3584"/>
         <source>Missing Credentials</source>
-        <translation type="unfinished">Missing Credentials</translation>
+        <translation>Missing Credentials</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3535"/>
         <source>Please configure ZIA credentials in Settings first.</source>
-        <translation type="unfinished">Please configure ZIA credentials in Settings first.</translation>
+        <translation>Please configure ZIA credentials in Settings first.</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3556"/>
         <source>ZIA auth request prepared. Click Send to authenticate.</source>
-        <translation type="unfinished">ZIA auth request prepared. Click Send to authenticate.</translation>
+        <translation>ZIA auth request prepared. Click Send to authenticate.</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3585"/>
         <source>Please configure ZPA credentials in Settings first.</source>
-        <translation type="unfinished">Please configure ZPA credentials in Settings first.</translation>
+        <translation>Please configure ZPA credentials in Settings first.</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3598"/>
         <source>ZPA auth request prepared. Click Send to authenticate.</source>
-        <translation type="unfinished">ZPA auth request prepared. Click Send to authenticate.</translation>
+        <translation>ZPA auth request prepared. Click Send to authenticate.</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3604"/>
         <source>All sessions cleared</source>
-        <translation type="unfinished">All sessions cleared</translation>
+        <translation>All sessions cleared</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3616"/>
@@ -483,7 +483,7 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="3680"/>
         <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Une nouvelle version est disponible !&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Version actuelle :&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Dernière version :&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;Voulez-vous ouvrir la page de téléchargement ?&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3690"/>
@@ -498,7 +498,7 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="3696"/>
         <source>&lt;p&gt;You are running the latest version.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Version:&lt;/b&gt; {version}&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Vous utilisez la dernière version.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Version :&lt;/b&gt; {version}&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3700"/>
@@ -520,7 +520,7 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="3708"/>
         <source>Update check failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de la vérification des mises à jour</translation>
     </message>
     <message>
         <source>&amp;About</source>
@@ -544,11 +544,11 @@ Redémarrer maintenant ?</translation>
     </message>
     <message>
         <source>Key ID:</source>
-        <translation type="vanished">ID de clé:</translation>
+        <translation type="vanished">ID de clé :</translation>
     </message>
     <message>
         <source>Key Secret:</source>
-        <translation type="vanished">Secret de clé:</translation>
+        <translation type="vanished">Secret de clé :</translation>
     </message>
     <message>
         <source>Welcome to Zscaler API Client</source>
@@ -584,7 +584,7 @@ Redémarrer maintenant ?</translation>
     </message>
     <message>
         <source>Check for updates on startup:</source>
-        <translation type="vanished">Vérifier les mises à jour au démarrage:</translation>
+        <translation type="vanished">Vérifier les mises à jour au démarrage :</translation>
     </message>
 </context>
 <context>
@@ -658,47 +658,47 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2219"/>
         <source>ZDX (Zscaler Digital Experience)</source>
-        <translation type="unfinished">ZDX (Zscaler Digital Experience)</translation>
+        <translation>ZDX (Zscaler Digital Experience)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2227"/>
         <source>Key ID:</source>
-        <translation type="unfinished">ID de clé:</translation>
+        <translation>ID de clé :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2231"/>
         <source>Key Secret:</source>
-        <translation type="unfinished">Secret de clé:</translation>
+        <translation>Secret de clé :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2236"/>
         <source>ZCC (Client Connector)</source>
-        <translation type="unfinished">ZCC (Client Connector)</translation>
+        <translation>ZCC (Client Connector)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2254"/>
         <source>ZIdentity (Identity &amp; Access)</source>
-        <translation type="unfinished"></translation>
+        <translation>ZIdentity (Identité et accès)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2259"/>
         <source>Vanity Domain:</source>
-        <translation type="unfinished"></translation>
+        <translation>Domaine personnalisé :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2271"/>
         <source>ZTW (Zero Trust Workloads)</source>
-        <translation type="unfinished"></translation>
+        <translation>ZTW (Zero Trust Workloads)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2288"/>
         <source>ZWA (Workflow Automation)</source>
-        <translation type="unfinished"></translation>
+        <translation>ZWA (Workflow Automation)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2305"/>
         <source>EASM (Attack Surface Management)</source>
-        <translation type="unfinished"></translation>
+        <translation>EASM (Attack Surface Management)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2327"/>
@@ -713,7 +713,7 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2342"/>
         <source>Request Timeout (seconds):</source>
-        <translation>Délai d&apos;expiration (secondes):</translation>
+        <translation>Délai d&apos;attente (secondes) :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2347"/>
@@ -736,12 +736,12 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2348"/>
         <source>&lt;small&gt;&lt;i&gt;⚠️ Only disable for testing&lt;/i&gt;&lt;/small&gt;</source>
-        <translation type="unfinished">&lt;small&gt;&lt;i&gt;⚠️ Only disable for testing&lt;/i&gt;&lt;/small&gt;</translation>
+        <translation>&lt;small&gt;&lt;i&gt;⚠️ Désactiver uniquement pour les tests&lt;/i&gt;&lt;/small&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2353"/>
         <source>SSL Verification:</source>
-        <translation>Vérification SSL:</translation>
+        <translation>Vérification SSL :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2358"/>
@@ -766,33 +766,33 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2366"/>
         <source>Proxy Mode:</source>
-        <translation>Mode proxy:</translation>
+        <translation>Mode proxy :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2370"/>
         <source>Proxy Host:</source>
-        <translation type="unfinished">Proxy Host:</translation>
+        <translation>Hôte proxy :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2375"/>
         <source>Proxy Port:</source>
-        <translation type="unfinished">Proxy Port:</translation>
+        <translation>Port proxy :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2378"/>
         <location filename="../zscaler_api_client.py" line="2383"/>
         <source>Optional</source>
-        <translation type="unfinished">Optional</translation>
+        <translation>Optionnel</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2379"/>
         <source>Proxy Username:</source>
-        <translation type="unfinished">Proxy Username:</translation>
+        <translation>Utilisateur proxy :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2384"/>
         <source>Proxy Password:</source>
-        <translation type="unfinished">Proxy Password:</translation>
+        <translation>Mot de passe proxy :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2389"/>
@@ -802,27 +802,27 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2396"/>
         <source>Auto-authenticate on startup:</source>
-        <translation type="unfinished">Auto-authenticate on startup:</translation>
+        <translation>Auto-authentification au démarrage :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2402"/>
         <source>Save request history:</source>
-        <translation type="unfinished">Save request history:</translation>
+        <translation>Sauvegarder l&apos;historique :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2408"/>
         <source>History limit:</source>
-        <translation type="unfinished">History limit:</translation>
+        <translation>Limite d&apos;historique :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2414"/>
         <source>Default API:</source>
-        <translation type="unfinished">Default API:</translation>
+        <translation>API par défaut :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2420"/>
         <source>Check for updates on startup:</source>
-        <translation type="unfinished">Vérifier les mises à jour au démarrage:</translation>
+        <translation>Vérifier les mises à jour au démarrage :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2425"/>
@@ -837,17 +837,17 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2438"/>
         <source>JSON Indentation:</source>
-        <translation type="unfinished">JSON Indentation:</translation>
+        <translation>Indentation JSON :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2444"/>
         <source>Word Wrap:</source>
-        <translation type="unfinished">Word Wrap:</translation>
+        <translation>Retour à la ligne :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2450"/>
         <source>Font Size:</source>
-        <translation type="unfinished">Font Size:</translation>
+        <translation>Taille de police :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2455"/>
@@ -867,7 +867,7 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2456"/>
         <source>Theme:</source>
-        <translation>Thème:</translation>
+        <translation>Thème :</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2461"/>
@@ -877,12 +877,12 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2493"/>
         <source>Restore Defaults</source>
-        <translation type="unfinished">Restore Defaults</translation>
+        <translation>Restore Defaults</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2494"/>
         <source>This will reset all advanced settings to defaults. Continue?</source>
-        <translation type="unfinished">This will reset all advanced settings to defaults. Continue?</translation>
+        <translation>This will reset all advanced settings to defaults. Continue?</translation>
     </message>
 </context>
 <context>
@@ -890,7 +890,7 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2045"/>
         <source>Loading...</source>
-        <translation type="unfinished"></translation>
+        <translation>Chargement...</translation>
     </message>
 </context>
 <context>
@@ -898,7 +898,7 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="1875"/>
         <source>Welcome to Zscaler API Client</source>
-        <translation type="unfinished">Bienvenue dans Zscaler API Client</translation>
+        <translation>Bienvenue dans Zscaler API Client</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1886"/>
@@ -908,7 +908,7 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="1899"/>
         <source>Supported APIs</source>
-        <translation type="unfinished">APIs prises en charge</translation>
+        <translation>APIs prises en charge</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1902"/>
@@ -918,42 +918,42 @@ Redémarrer maintenant ?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="1918"/>
         <source>Getting Started</source>
-        <translation type="unfinished">Prise en main</translation>
+        <translation>Prise en main</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1921"/>
         <source>&lt;ol&gt;&lt;li&gt;&lt;b&gt;Configure Credentials&lt;/b&gt; – Go to &lt;i&gt;File → Settings&lt;/i&gt; and enter your API credentials&lt;/li&gt;&lt;li&gt;&lt;b&gt;Select API&lt;/b&gt; – Choose from ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA, or EASM&lt;/li&gt;&lt;li&gt;&lt;b&gt;Browse Endpoints&lt;/b&gt; – Click on an endpoint in the tree to load it&lt;/li&gt;&lt;li&gt;&lt;b&gt;Send Request&lt;/b&gt; – Modify parameters if needed, then click Send&lt;/li&gt;&lt;li&gt;&lt;b&gt;View Response&lt;/b&gt; – JSON response will appear with syntax highlighting&lt;/li&gt;&lt;/ol&gt;</source>
-        <translation type="unfinished">&lt;ol&gt;&lt;li&gt;&lt;b&gt;Configurer les identifiants&lt;/b&gt; – Allez dans &lt;i&gt;Fichier → Paramètres&lt;/i&gt; et entrez vos identifiants API&lt;/li&gt;&lt;li&gt;&lt;b&gt;Sélectionner l&apos;API&lt;/b&gt; – Choisissez parmi ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA ou EASM&lt;/li&gt;&lt;li&gt;&lt;b&gt;Parcourir les endpoints&lt;/b&gt; – Cliquez sur un endpoint dans l&apos;arbre&lt;/li&gt;&lt;li&gt;&lt;b&gt;Envoyer la requête&lt;/b&gt; – Modifiez les paramètres puis cliquez sur Envoyer&lt;/li&gt;&lt;li&gt;&lt;b&gt;Voir la réponse&lt;/b&gt; – Réponse JSON avec coloration syntaxique&lt;/li&gt;&lt;/ol&gt;</translation>
+        <translation>&lt;ol&gt;&lt;li&gt;&lt;b&gt;Configurer les identifiants&lt;/b&gt; – Allez dans &lt;i&gt;Fichier → Paramètres&lt;/i&gt; et entrez vos identifiants API&lt;/li&gt;&lt;li&gt;&lt;b&gt;Sélectionner l&apos;API&lt;/b&gt; – Choisissez parmi ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA ou EASM&lt;/li&gt;&lt;li&gt;&lt;b&gt;Parcourir les endpoints&lt;/b&gt; – Cliquez sur un endpoint dans l&apos;arbre&lt;/li&gt;&lt;li&gt;&lt;b&gt;Envoyer la requête&lt;/b&gt; – Modifiez les paramètres puis cliquez sur Envoyer&lt;/li&gt;&lt;li&gt;&lt;b&gt;Voir la réponse&lt;/b&gt; – Réponse JSON avec coloration syntaxique&lt;/li&gt;&lt;/ol&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1934"/>
         <source>Tips for Advanced Users</source>
-        <translation type="unfinished">Conseils pour utilisateurs avancés</translation>
+        <translation>Conseils pour utilisateurs avancés</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1937"/>
         <source>&lt;ul&gt;&lt;li&gt;&lt;b&gt;Ctrl+Enter&lt;/b&gt; – Send request quickly&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+Shift+C&lt;/b&gt; – Copy request as cURL command&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+H&lt;/b&gt; – View request history&lt;/li&gt;&lt;li&gt;&lt;b&gt;Batch Operations&lt;/b&gt; – Import CSV for bulk API calls&lt;/li&gt;&lt;li&gt;&lt;b&gt;Request menu&lt;/b&gt; – Quick authentication helpers for each API&lt;/li&gt;&lt;li&gt;&lt;b&gt;Themes&lt;/b&gt; – Switch between Light/Dark/System in Settings&lt;/li&gt;&lt;/ul&gt;</source>
-        <translation type="unfinished">&lt;ul&gt;&lt;li&gt;&lt;b&gt;Ctrl+Entrée&lt;/b&gt; – Envoyer rapidement&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+Maj+C&lt;/b&gt; – Copier en commande cURL&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+H&lt;/b&gt; – Voir l&apos;historique&lt;/li&gt;&lt;li&gt;&lt;b&gt;Opérations par lots&lt;/b&gt; – Importer CSV pour appels en masse&lt;/li&gt;&lt;li&gt;&lt;b&gt;Menu Requête&lt;/b&gt; – Aides d&apos;authentification rapides&lt;/li&gt;&lt;li&gt;&lt;b&gt;Thèmes&lt;/b&gt; – Clair/Sombre/Système dans Paramètres&lt;/li&gt;&lt;/ul&gt;</translation>
+        <translation>&lt;ul&gt;&lt;li&gt;&lt;b&gt;Ctrl+Entrée&lt;/b&gt; – Envoyer rapidement&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+Maj+C&lt;/b&gt; – Copier en commande cURL&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+H&lt;/b&gt; – Voir l&apos;historique&lt;/li&gt;&lt;li&gt;&lt;b&gt;Opérations par lots&lt;/b&gt; – Importer CSV pour appels en masse&lt;/li&gt;&lt;li&gt;&lt;b&gt;Menu Requête&lt;/b&gt; – Aides d&apos;authentification rapides&lt;/li&gt;&lt;li&gt;&lt;b&gt;Thèmes&lt;/b&gt; – Clair/Sombre/Système dans Paramètres&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1951"/>
         <source>Documentation</source>
-        <translation type="unfinished">Documentation</translation>
+        <translation>Documentation</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1972"/>
         <source>Show this dialog on startup</source>
-        <translation type="unfinished">Afficher cette boîte de dialogue au démarrage</translation>
+        <translation>Afficher cette boîte de dialogue au démarrage</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1980"/>
         <source>Open Settings</source>
-        <translation type="unfinished">Ouvrir les paramètres</translation>
+        <translation>Ouvrir les paramètres</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1984"/>
         <source>Get Started</source>
-        <translation type="unfinished">Commencer</translation>
+        <translation>Commencer</translation>
     </message>
 </context>
 </TS>

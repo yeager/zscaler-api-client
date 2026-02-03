@@ -2064,19 +2064,28 @@ class AboutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle(self.tr("About Zscaler API Client"))
-        self.setFixedSize(500, 400)
+        self.setMinimumSize(520, 550)
         
         layout = QVBoxLayout(self)
-        layout.setSpacing(15)
+        layout.setSpacing(10)
+        
+        # Scroll area for content
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        
+        content = QWidget()
+        content_layout = QVBoxLayout(content)
+        content_layout.setSpacing(10)
         
         # Title and version
         title_label = QLabel(f"<h1>Zscaler API Client</h1>")
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(title_label)
+        content_layout.addWidget(title_label)
         
         version_label = QLabel(f"<p style='font-size: 14px;'>Version {__version__}</p>")
         version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(version_label)
+        content_layout.addWidget(version_label)
         
         # Description
         desc_label = QLabel(self.tr(
@@ -2085,7 +2094,7 @@ class AboutDialog(QDialog):
         ))
         desc_label.setWordWrap(True)
         desc_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(desc_label)
+        content_layout.addWidget(desc_label)
         
         # Copyright
         copyright_label = QLabel(
@@ -2094,14 +2103,14 @@ class AboutDialog(QDialog):
         )
         copyright_label.setOpenExternalLinks(True)
         copyright_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(copyright_label)
+        content_layout.addWidget(copyright_label)
         
         # Credits
         credits_label = QLabel(
             "<p><i>Thanks to Nima Samadi for feature suggestions</i></p>"
         )
         credits_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(credits_label)
+        content_layout.addWidget(credits_label)
         
         # License
         license_label = QLabel(
@@ -2110,7 +2119,7 @@ class AboutDialog(QDialog):
         )
         license_label.setOpenExternalLinks(True)
         license_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(license_label)
+        content_layout.addWidget(license_label)
         
         # Disclaimer box
         disclaimer_group = QGroupBox(self.tr("Disclaimer"))
@@ -2132,7 +2141,7 @@ class AboutDialog(QDialog):
         ))
         disclaimer_text.setWordWrap(True)
         disclaimer_layout.addWidget(disclaimer_text)
-        layout.addWidget(disclaimer_group)
+        content_layout.addWidget(disclaimer_group)
         
         # Links
         links_label = QLabel(
@@ -2142,9 +2151,11 @@ class AboutDialog(QDialog):
         )
         links_label.setOpenExternalLinks(True)
         links_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(links_label)
+        content_layout.addWidget(links_label)
         
-        layout.addStretch()
+        content_layout.addStretch()
+        scroll.setWidget(content)
+        layout.addWidget(scroll)
         
         # Close button
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)

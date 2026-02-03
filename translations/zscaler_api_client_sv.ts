@@ -11,7 +11,7 @@
     <message>
         <location filename="../zscaler_api_client.py" line="2083"/>
         <source>&lt;p&gt;A Postman-like desktop application for exploring and testing Zscaler APIs (ZIA and ZPA).&lt;/p&gt;</source>
-        <translation type="unfinished">&lt;p&gt;En Postman-liknande skrivbordsapplikation för att utforska och testa Zscaler API:er (ZIA och ZPA).&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;En Postman-liknande skrivbordsapplikation för att utforska och testa Zscaler API:er (ZIA och ZPA).&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2116"/>
@@ -21,7 +21,7 @@
     <message>
         <location filename="../zscaler_api_client.py" line="2119"/>
         <source>&lt;p style=&apos;color: #666;&apos;&gt;This software is &lt;b&gt;not affiliated with, endorsed by, or supported by Zscaler, Inc.&lt;/b&gt; in any way. This is an independent community project.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;Zscaler® is a registered trademark of Zscaler, Inc. All product names, logos, and brands are property of their respective owners.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;&lt;b&gt;NO WARRANTY:&lt;/b&gt; This software is provided &quot;as is&quot; without warranty of any kind. Use at your own risk. The author is not responsible for any damage or data loss resulting from the use of this software.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;&lt;b&gt;NO SUPPORT:&lt;/b&gt; For Zscaler product support, please contact Zscaler directly through official channels.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p style=&apos;color: #666;&apos;&gt;Denna programvara är &lt;b&gt;inte ansluten till, godkänd av eller stöds av Zscaler, Inc.&lt;/b&gt; på något sätt. Detta är ett oberoende community-projekt.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;Zscaler® är ett registrerat varumärke som tillhör Zscaler, Inc. Alla produktnamn, logotyper och varumärken tillhör sina respektive ägare.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;&lt;b&gt;INGEN GARANTI:&lt;/b&gt; Denna programvara tillhandahålls &quot;i befintligt skick&quot; utan garanti av något slag. Använd på egen risk. Författaren ansvarar inte för skador eller dataförlust som uppstår vid användning av denna programvara.&lt;/p&gt;&lt;p style=&apos;color: #666;&apos;&gt;&lt;b&gt;INGEN SUPPORT:&lt;/b&gt; För Zscaler-produktsupport, kontakta Zscaler direkt via officiella kanaler.&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -483,7 +483,7 @@ Starta om nu?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="3680"/>
         <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;En ny version är tillgänglig!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Nuvarande version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Senaste version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;Vill du öppna nedladdningssidan?&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3690"/>
@@ -498,7 +498,7 @@ Starta om nu?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="3696"/>
         <source>&lt;p&gt;You are running the latest version.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Version:&lt;/b&gt; {version}&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Du kör den senaste versionen.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Version:&lt;/b&gt; {version}&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3700"/>
@@ -520,7 +520,7 @@ Starta om nu?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="3708"/>
         <source>Update check failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppdateringskontroll misslyckades</translation>
     </message>
     <message>
         <source>&amp;About</source>
@@ -662,47 +662,47 @@ Starta om nu?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2219"/>
         <source>ZDX (Zscaler Digital Experience)</source>
-        <translation type="unfinished">ZDX (Zscaler Digital Experience)</translation>
+        <translation>ZDX (Zscaler Digital Experience)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2227"/>
         <source>Key ID:</source>
-        <translation type="unfinished">Nyckel-ID:</translation>
+        <translation>Nyckel-ID:</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2231"/>
         <source>Key Secret:</source>
-        <translation type="unfinished">Nyckelhemlighet:</translation>
+        <translation>Nyckelhemlighet:</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2236"/>
         <source>ZCC (Client Connector)</source>
-        <translation type="unfinished">ZCC (Client Connector)</translation>
+        <translation>ZCC (Client Connector)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2254"/>
         <source>ZIdentity (Identity &amp; Access)</source>
-        <translation type="unfinished"></translation>
+        <translation>ZIdentity (Identitet och åtkomst)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2259"/>
         <source>Vanity Domain:</source>
-        <translation type="unfinished"></translation>
+        <translation>Vanity-domän:</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2271"/>
         <source>ZTW (Zero Trust Workloads)</source>
-        <translation type="unfinished"></translation>
+        <translation>ZTW (Zero Trust Workloads)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2288"/>
         <source>ZWA (Workflow Automation)</source>
-        <translation type="unfinished"></translation>
+        <translation>ZWA (Workflow Automation)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2305"/>
         <source>EASM (Attack Surface Management)</source>
-        <translation type="unfinished"></translation>
+        <translation>EASM (Attack Surface Management)</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2327"/>
@@ -740,7 +740,7 @@ Starta om nu?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2348"/>
         <source>&lt;small&gt;&lt;i&gt;⚠️ Only disable for testing&lt;/i&gt;&lt;/small&gt;</source>
-        <translation type="unfinished">&lt;small&gt;&lt;i&gt;⚠️ Only disable for testing&lt;/i&gt;&lt;/small&gt;</translation>
+        <translation>&lt;small&gt;&lt;i&gt;⚠️ Inaktivera endast för testning&lt;/i&gt;&lt;/small&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2353"/>
@@ -826,7 +826,7 @@ Starta om nu?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2420"/>
         <source>Check for updates on startup:</source>
-        <translation type="unfinished">Sök efter uppdateringar vid start:</translation>
+        <translation>Sök efter uppdateringar vid start:</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2425"/>
@@ -894,7 +894,7 @@ Starta om nu?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="2045"/>
         <source>Loading...</source>
-        <translation type="unfinished">Laddar...</translation>
+        <translation>Laddar...</translation>
     </message>
 </context>
 <context>
@@ -902,7 +902,7 @@ Starta om nu?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="1875"/>
         <source>Welcome to Zscaler API Client</source>
-        <translation type="unfinished">Välkommen till Zscaler API Client</translation>
+        <translation>Välkommen till Zscaler API Client</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1886"/>
@@ -912,7 +912,7 @@ Starta om nu?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="1899"/>
         <source>Supported APIs</source>
-        <translation type="unfinished">API:er som stöds</translation>
+        <translation>API:er som stöds</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1902"/>
@@ -922,42 +922,42 @@ Starta om nu?</translation>
     <message>
         <location filename="../zscaler_api_client.py" line="1918"/>
         <source>Getting Started</source>
-        <translation type="unfinished">Kom igång</translation>
+        <translation>Kom igång</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1921"/>
         <source>&lt;ol&gt;&lt;li&gt;&lt;b&gt;Configure Credentials&lt;/b&gt; – Go to &lt;i&gt;File → Settings&lt;/i&gt; and enter your API credentials&lt;/li&gt;&lt;li&gt;&lt;b&gt;Select API&lt;/b&gt; – Choose from ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA, or EASM&lt;/li&gt;&lt;li&gt;&lt;b&gt;Browse Endpoints&lt;/b&gt; – Click on an endpoint in the tree to load it&lt;/li&gt;&lt;li&gt;&lt;b&gt;Send Request&lt;/b&gt; – Modify parameters if needed, then click Send&lt;/li&gt;&lt;li&gt;&lt;b&gt;View Response&lt;/b&gt; – JSON response will appear with syntax highlighting&lt;/li&gt;&lt;/ol&gt;</source>
-        <translation type="unfinished">&lt;ol&gt;&lt;li&gt;&lt;b&gt;Konfigurera autentisering&lt;/b&gt; – Gå till &lt;i&gt;Arkiv → Inställningar&lt;/i&gt; och ange dina API-uppgifter&lt;/li&gt;&lt;li&gt;&lt;b&gt;Välj API&lt;/b&gt; – Välj bland ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA eller EASM&lt;/li&gt;&lt;li&gt;&lt;b&gt;Bläddra bland ändpunkter&lt;/b&gt; – Klicka på en ändpunkt i trädet för att ladda den&lt;/li&gt;&lt;li&gt;&lt;b&gt;Skicka begäran&lt;/b&gt; – Ändra parametrar vid behov, klicka sedan på Skicka&lt;/li&gt;&lt;li&gt;&lt;b&gt;Visa svar&lt;/b&gt; – JSON-svaret visas med syntaxmarkering&lt;/li&gt;&lt;/ol&gt;</translation>
+        <translation>&lt;ol&gt;&lt;li&gt;&lt;b&gt;Konfigurera autentisering&lt;/b&gt; – Gå till &lt;i&gt;Arkiv → Inställningar&lt;/i&gt; och ange dina API-uppgifter&lt;/li&gt;&lt;li&gt;&lt;b&gt;Välj API&lt;/b&gt; – Välj bland ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA eller EASM&lt;/li&gt;&lt;li&gt;&lt;b&gt;Bläddra bland ändpunkter&lt;/b&gt; – Klicka på en ändpunkt i trädet för att ladda den&lt;/li&gt;&lt;li&gt;&lt;b&gt;Skicka begäran&lt;/b&gt; – Ändra parametrar vid behov, klicka sedan på Skicka&lt;/li&gt;&lt;li&gt;&lt;b&gt;Visa svar&lt;/b&gt; – JSON-svaret visas med syntaxmarkering&lt;/li&gt;&lt;/ol&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1934"/>
         <source>Tips for Advanced Users</source>
-        <translation type="unfinished">Tips för avancerade användare</translation>
+        <translation>Tips för avancerade användare</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1937"/>
         <source>&lt;ul&gt;&lt;li&gt;&lt;b&gt;Ctrl+Enter&lt;/b&gt; – Send request quickly&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+Shift+C&lt;/b&gt; – Copy request as cURL command&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+H&lt;/b&gt; – View request history&lt;/li&gt;&lt;li&gt;&lt;b&gt;Batch Operations&lt;/b&gt; – Import CSV for bulk API calls&lt;/li&gt;&lt;li&gt;&lt;b&gt;Request menu&lt;/b&gt; – Quick authentication helpers for each API&lt;/li&gt;&lt;li&gt;&lt;b&gt;Themes&lt;/b&gt; – Switch between Light/Dark/System in Settings&lt;/li&gt;&lt;/ul&gt;</source>
-        <translation type="unfinished">&lt;ul&gt;&lt;li&gt;&lt;b&gt;Ctrl+Enter&lt;/b&gt; – Skicka begäran snabbt&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+Shift+C&lt;/b&gt; – Kopiera begäran som cURL-kommando&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+H&lt;/b&gt; – Visa begäranshistorik&lt;/li&gt;&lt;li&gt;&lt;b&gt;Batch-operationer&lt;/b&gt; – Importera CSV för bulk-API-anrop&lt;/li&gt;&lt;li&gt;&lt;b&gt;Begäran-menyn&lt;/b&gt; – Snabb autentiseringshjälp för varje API&lt;/li&gt;&lt;li&gt;&lt;b&gt;Teman&lt;/b&gt; – Växla mellan Ljust/Mörkt/System i Inställningar&lt;/li&gt;&lt;/ul&gt;</translation>
+        <translation>&lt;ul&gt;&lt;li&gt;&lt;b&gt;Ctrl+Enter&lt;/b&gt; – Skicka begäran snabbt&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+Shift+C&lt;/b&gt; – Kopiera begäran som cURL-kommando&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+H&lt;/b&gt; – Visa begäranshistorik&lt;/li&gt;&lt;li&gt;&lt;b&gt;Batch-operationer&lt;/b&gt; – Importera CSV för bulk-API-anrop&lt;/li&gt;&lt;li&gt;&lt;b&gt;Begäran-menyn&lt;/b&gt; – Snabb autentiseringshjälp för varje API&lt;/li&gt;&lt;li&gt;&lt;b&gt;Teman&lt;/b&gt; – Växla mellan Ljust/Mörkt/System i Inställningar&lt;/li&gt;&lt;/ul&gt;</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1951"/>
         <source>Documentation</source>
-        <translation type="unfinished">Dokumentation</translation>
+        <translation>Dokumentation</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1972"/>
         <source>Show this dialog on startup</source>
-        <translation type="unfinished">Visa denna dialog vid start</translation>
+        <translation>Visa denna dialog vid start</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1980"/>
         <source>Open Settings</source>
-        <translation type="unfinished">Öppna inställningar</translation>
+        <translation>Öppna inställningar</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1984"/>
         <source>Get Started</source>
-        <translation type="unfinished">Kom igång</translation>
+        <translation>Kom igång</translation>
     </message>
 </context>
 </TS>
