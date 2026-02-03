@@ -2,6 +2,9 @@
 
 🔐 A Postman-like desktop application for all Zscaler APIs
 
+[![Latest Release](https://img.shields.io/github/v/release/yeager/zscaler-api-client)](https://github.com/yeager/zscaler-api-client/releases)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](LICENSE)
+
 ![Screenshot](screenshots/main.png)
 
 ## Features
@@ -225,6 +228,10 @@ Change via **Language** menu.
 - **NO SUPPORT:** For Zscaler product support, please contact Zscaler directly through official channels.
 
 The author is not responsible for any damage or data loss resulting from the use of this software.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ## License
 
