@@ -10,8 +10,11 @@
 - **Request Builder** – Build requests with params, headers, and JSON body
 - **JSON Highlighting** – Syntax highlighting for responses
 - **Batch Operations** – Import CSV for bulk create/delete/update
+- **Request History** – Browse and reload previous requests
+- **Copy as cURL** – Export requests for command-line use
 - **Multi-language** – English, Swedish, German, French, Spanish, Japanese, Chinese
 - **Secure Storage** – Credentials stored in system keychain
+- **Advanced Settings** – Timeouts, proxy, SSL verification, themes
 
 ## Supported APIs
 
@@ -106,8 +109,11 @@ malware.com
 | Shortcut | Action |
 |----------|--------|
 | Ctrl+Enter | Send Request |
-| Ctrl+S | Save Settings |
+| Ctrl+, | Settings |
 | Ctrl+B | Batch Operations |
+| Ctrl+H | Request History |
+| Ctrl+Shift+C | Copy as cURL |
+| Ctrl+Shift+R | Copy Response |
 | Ctrl+Q | Quit |
 
 ## Languages
@@ -135,6 +141,17 @@ Change via **Language** menu.
 - API sessions are automatically terminated when the app closes
 - No telemetry or external connections except to Zscaler APIs
 
+## Disclaimer
+
+⚠️ **This software is NOT affiliated with, endorsed by, or supported by Zscaler, Inc. in any way.** This is an independent community project.
+
+- Zscaler® is a registered trademark of Zscaler, Inc.
+- All product names, logos, and brands are property of their respective owners.
+- **NO WARRANTY:** This software is provided "as is" without warranty of any kind. Use at your own risk.
+- **NO SUPPORT:** For Zscaler product support, please contact Zscaler directly through official channels.
+
+The author is not responsible for any damage or data loss resulting from the use of this software.
+
 ## License
 
 GPL-3.0-or-later
@@ -142,7 +159,3 @@ GPL-3.0-or-later
 ## Author
 
 **Daniel Nylander** ([@yeager](https://github.com/yeager))
-
----
-
-*Not affiliated with Zscaler, Inc. This is an independent community tool.*
