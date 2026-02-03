@@ -33,10 +33,11 @@ try:
         QComboBox, QPushButton, QLabel, QTabWidget, QTableWidget,
         QTableWidgetItem, QHeaderView, QFileDialog, QMessageBox,
         QGroupBox, QFormLayout, QDialog, QDialogButtonBox, QProgressBar,
-        QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit
+        QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
+        QCheckBox, QScrollArea, QFrame
     )
-    from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTranslator, QLocale
-    from PyQt6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat
+    from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTranslator, QLocale, QTimer
+    from PyQt6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
     PYQT_VERSION = 6
 except ImportError:
     try:
@@ -46,16 +47,17 @@ except ImportError:
             QComboBox, QPushButton, QLabel, QTabWidget, QTableWidget,
             QTableWidgetItem, QHeaderView, QFileDialog, QMessageBox,
             QGroupBox, QFormLayout, QDialog, QDialogButtonBox, QProgressBar,
-            QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit
+            QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
+            QCheckBox, QScrollArea, QFrame
         )
-        from PySide6.QtCore import Qt, QThread, Signal as pyqtSignal, QSettings, QTranslator, QLocale
-        from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat
+        from PySide6.QtCore import Qt, QThread, Signal as pyqtSignal, QSettings, QTranslator, QLocale, QTimer
+        from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
         PYQT_VERSION = "PySide6"
     except ImportError:
         print("Error: PyQt6 or PySide6 required. Install with: pip install PyQt6")
         sys.exit(1)
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -609,6 +611,312 @@ ZPA_ENDPOINTS = {
     },
 }
 
+ZDX_ENDPOINTS = {
+    "Authentication": {
+        "Get Access Token": {
+            "method": "POST",
+            "path": "/v1/oauth/token",
+            "description": "Get OAuth access token for ZDX API",
+            "body": {"key_id": "", "key_secret": ""},
+            "doc_url": "https://help.zscaler.com/zdx/understanding-api-authentication",
+        },
+    },
+    "Administration": {
+        "Get Departments": {
+            "method": "GET",
+            "path": "/v1/administration/departments",
+            "description": "Get all departments",
+            "doc_url": "https://help.zscaler.com/zdx/administration-api",
+        },
+        "Get Locations": {
+            "method": "GET",
+            "path": "/v1/administration/locations",
+            "description": "Get all locations",
+            "doc_url": "https://help.zscaler.com/zdx/administration-api",
+        },
+        "Get Geolocations": {
+            "method": "GET",
+            "path": "/v1/administration/geolocations",
+            "description": "Get all geolocations",
+            "doc_url": "https://help.zscaler.com/zdx/administration-api",
+        },
+    },
+    "Devices": {
+        "List Devices": {
+            "method": "GET",
+            "path": "/v1/devices",
+            "description": "Get all devices with ZDX scores",
+            "params": {"since": "", "search": "", "limit": "100", "offset": "0"},
+            "doc_url": "https://help.zscaler.com/zdx/devices-api",
+        },
+        "Get Device": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}",
+            "description": "Get device details by ID",
+            "doc_url": "https://help.zscaler.com/zdx/devices-api",
+        },
+        "Get Device Apps": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}/apps",
+            "description": "Get applications on a specific device",
+            "doc_url": "https://help.zscaler.com/zdx/devices-api",
+        },
+        "Get Device Web Probes": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}/web-probes",
+            "description": "Get web probe results for a device",
+            "doc_url": "https://help.zscaler.com/zdx/devices-api",
+        },
+        "Get Device Health Metrics": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}/health-metrics",
+            "description": "Get health metrics for a device",
+            "doc_url": "https://help.zscaler.com/zdx/devices-api",
+        },
+        "Get Device Events": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}/events",
+            "description": "Get events for a device",
+            "doc_url": "https://help.zscaler.com/zdx/devices-api",
+        },
+    },
+    "Users": {
+        "List Users": {
+            "method": "GET",
+            "path": "/v1/users",
+            "description": "Get all users with ZDX scores",
+            "params": {"since": "", "search": "", "limit": "100", "offset": "0"},
+            "doc_url": "https://help.zscaler.com/zdx/users-api",
+        },
+        "Get User": {
+            "method": "GET",
+            "path": "/v1/users/{userId}",
+            "description": "Get user details by ID",
+            "doc_url": "https://help.zscaler.com/zdx/users-api",
+        },
+    },
+    "Applications": {
+        "List Applications": {
+            "method": "GET",
+            "path": "/v1/apps",
+            "description": "Get all monitored applications",
+            "doc_url": "https://help.zscaler.com/zdx/apps-api",
+        },
+        "Get Application": {
+            "method": "GET",
+            "path": "/v1/apps/{appId}",
+            "description": "Get application details by ID",
+            "doc_url": "https://help.zscaler.com/zdx/apps-api",
+        },
+        "Get App Score": {
+            "method": "GET",
+            "path": "/v1/apps/{appId}/score",
+            "description": "Get ZDX score for an application",
+            "doc_url": "https://help.zscaler.com/zdx/apps-api",
+        },
+        "Get App Metrics": {
+            "method": "GET",
+            "path": "/v1/apps/{appId}/metrics",
+            "description": "Get performance metrics for an application",
+            "doc_url": "https://help.zscaler.com/zdx/apps-api",
+        },
+    },
+    "Alerts": {
+        "List Alerts": {
+            "method": "GET",
+            "path": "/v1/alerts",
+            "description": "Get all active alerts",
+            "params": {"since": "", "limit": "100", "offset": "0"},
+            "doc_url": "https://help.zscaler.com/zdx/alerts-api",
+        },
+        "Get Alert": {
+            "method": "GET",
+            "path": "/v1/alerts/{alertId}",
+            "description": "Get alert details by ID",
+            "doc_url": "https://help.zscaler.com/zdx/alerts-api",
+        },
+    },
+    "Web Probes": {
+        "List Web Probes": {
+            "method": "GET",
+            "path": "/v1/web-probes",
+            "description": "Get all configured web probes",
+            "doc_url": "https://help.zscaler.com/zdx/web-probes-api",
+        },
+    },
+    "Deep Traces": {
+        "Start Deep Trace": {
+            "method": "POST",
+            "path": "/v1/devices/{deviceId}/deep-traces",
+            "description": "Start a deep trace on a device",
+            "body": {"app_id": "", "duration": 300},
+            "doc_url": "https://help.zscaler.com/zdx/deep-traces-api",
+        },
+        "Get Deep Trace Status": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}/deep-traces/{traceId}",
+            "description": "Get deep trace status",
+            "doc_url": "https://help.zscaler.com/zdx/deep-traces-api",
+        },
+    },
+}
+
+ZCC_ENDPOINTS = {
+    "Authentication": {
+        "Get Access Token": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "description": "Get OAuth access token for Client Connector API",
+            "body": {"client_id": "", "client_secret": ""},
+            "doc_url": "https://help.zscaler.com/zcc/understanding-api-authentication",
+        },
+    },
+    "Devices": {
+        "List Devices": {
+            "method": "GET",
+            "path": "/v1/devices",
+            "description": "Get all registered devices",
+            "params": {"osType": "", "limit": "100", "offset": "0"},
+            "doc_url": "https://help.zscaler.com/zcc/devices-api",
+        },
+        "Get Device": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}",
+            "description": "Get device details by ID",
+            "doc_url": "https://help.zscaler.com/zcc/devices-api",
+        },
+        "Get Device by UDID": {
+            "method": "GET",
+            "path": "/v1/devices/udid/{udid}",
+            "description": "Get device by UDID",
+            "doc_url": "https://help.zscaler.com/zcc/devices-api",
+        },
+        "Force Remove Device": {
+            "method": "POST",
+            "path": "/v1/devices/{deviceId}/force-remove",
+            "description": "Force remove a device",
+            "doc_url": "https://help.zscaler.com/zcc/devices-api",
+        },
+    },
+    "Compliance": {
+        "Get Compliance Status": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}/compliance",
+            "description": "Get device compliance status",
+            "doc_url": "https://help.zscaler.com/zcc/compliance-api",
+        },
+        "List Non-Compliant Devices": {
+            "method": "GET",
+            "path": "/v1/compliance/non-compliant",
+            "description": "Get all non-compliant devices",
+            "params": {"limit": "100", "offset": "0"},
+            "doc_url": "https://help.zscaler.com/zcc/compliance-api",
+        },
+        "Get Compliance Summary": {
+            "method": "GET",
+            "path": "/v1/compliance/summary",
+            "description": "Get compliance summary statistics",
+            "doc_url": "https://help.zscaler.com/zcc/compliance-api",
+        },
+        "Get Posture Profiles": {
+            "method": "GET",
+            "path": "/v1/compliance/posture-profiles",
+            "description": "Get all device posture profiles",
+            "doc_url": "https://help.zscaler.com/zcc/compliance-api",
+        },
+    },
+    "Software": {
+        "Get Software Versions": {
+            "method": "GET",
+            "path": "/v1/software/versions",
+            "description": "Get available ZCC software versions",
+            "doc_url": "https://help.zscaler.com/zcc/software-api",
+        },
+        "Get Device Software": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}/software",
+            "description": "Get software version on a device",
+            "doc_url": "https://help.zscaler.com/zcc/software-api",
+        },
+        "Trigger Software Update": {
+            "method": "POST",
+            "path": "/v1/devices/{deviceId}/software/update",
+            "description": "Trigger software update on a device",
+            "body": {"version": ""},
+            "doc_url": "https://help.zscaler.com/zcc/software-api",
+        },
+    },
+    "Enrollment": {
+        "Get Enrollment Tokens": {
+            "method": "GET",
+            "path": "/v1/enrollment/tokens",
+            "description": "Get all enrollment tokens",
+            "doc_url": "https://help.zscaler.com/zcc/enrollment-api",
+        },
+        "Create Enrollment Token": {
+            "method": "POST",
+            "path": "/v1/enrollment/tokens",
+            "description": "Create new enrollment token",
+            "body": {"name": "", "maxDevices": 100},
+            "doc_url": "https://help.zscaler.com/zcc/enrollment-api",
+        },
+        "Delete Enrollment Token": {
+            "method": "DELETE",
+            "path": "/v1/enrollment/tokens/{tokenId}",
+            "description": "Delete an enrollment token",
+            "doc_url": "https://help.zscaler.com/zcc/enrollment-api",
+        },
+    },
+    "Troubleshooting": {
+        "Get Connection Health": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}/health",
+            "description": "Get connection health for a device",
+            "doc_url": "https://help.zscaler.com/zcc/troubleshooting-api",
+        },
+        "Get Device Logs": {
+            "method": "GET",
+            "path": "/v1/devices/{deviceId}/logs",
+            "description": "Get diagnostic logs from a device",
+            "doc_url": "https://help.zscaler.com/zcc/troubleshooting-api",
+        },
+        "Request Log Upload": {
+            "method": "POST",
+            "path": "/v1/devices/{deviceId}/logs/upload",
+            "description": "Request device to upload logs",
+            "doc_url": "https://help.zscaler.com/zcc/troubleshooting-api",
+        },
+    },
+}
+
+# API Documentation URLs
+API_DOCS = {
+    "ZIA": {
+        "base": "https://help.zscaler.com/zia/api",
+        "getting_started": "https://help.zscaler.com/zia/getting-started-zia-api",
+        "authentication": "https://help.zscaler.com/zia/api-authentication",
+        "rate_limits": "https://help.zscaler.com/zia/rate-limiting",
+    },
+    "ZPA": {
+        "base": "https://help.zscaler.com/zpa/api-reference",
+        "getting_started": "https://help.zscaler.com/zpa/zpa-api-getting-started",
+        "authentication": "https://help.zscaler.com/zpa/about-zpa-api-authentication",
+        "rate_limits": "https://help.zscaler.com/zpa/api-rate-limiting",
+    },
+    "ZDX": {
+        "base": "https://help.zscaler.com/zdx/api-reference",
+        "getting_started": "https://help.zscaler.com/zdx/getting-started-zdx-api",
+        "authentication": "https://help.zscaler.com/zdx/understanding-api-authentication",
+        "rate_limits": "https://help.zscaler.com/zdx/api-rate-limiting",
+    },
+    "ZCC": {
+        "base": "https://help.zscaler.com/zcc/api-reference",
+        "getting_started": "https://help.zscaler.com/zcc/getting-started-zcc-api",
+        "authentication": "https://help.zscaler.com/zcc/understanding-api-authentication",
+        "rate_limits": "https://help.zscaler.com/zcc/api-rate-limiting",
+    },
+}
+
 
 class JsonHighlighter(QSyntaxHighlighter):
     """Syntax highlighter for JSON."""
@@ -698,6 +1006,195 @@ class ApiWorker(QThread):
         
         with urllib.request.urlopen(request, timeout=30) as response:
             return json.loads(response.read().decode("utf-8"))
+
+
+class WelcomeDialog(QDialog):
+    """Welcome dialog for new users with getting started guidance."""
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("Welcome to Zscaler API Client"))
+        self.setMinimumSize(700, 600)
+        
+        layout = QVBoxLayout(self)
+        layout.setSpacing(20)
+        
+        # Header
+        header = QLabel(f"<h1>🔐 Zscaler API Client v{__version__}</h1>")
+        header.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(header)
+        
+        subtitle = QLabel(self.tr(
+            "<p style='font-size: 14px; color: #666;'>"
+            "A Postman-like tool for exploring Zscaler APIs"
+            "</p>"
+        ))
+        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(subtitle)
+        
+        # Scroll area for content
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        
+        content = QWidget()
+        content_layout = QVBoxLayout(content)
+        
+        # Supported APIs
+        apis_group = QGroupBox(self.tr("Supported APIs"))
+        apis_layout = QVBoxLayout(apis_group)
+        apis_label = QLabel(self.tr(
+            "<table cellspacing='10'>"
+            "<tr><td><b>🌐 ZIA</b></td><td>Zscaler Internet Access – Web security, URL filtering, firewall</td></tr>"
+            "<tr><td><b>🔒 ZPA</b></td><td>Zscaler Private Access – Zero trust application access</td></tr>"
+            "<tr><td><b>📊 ZDX</b></td><td>Zscaler Digital Experience – User experience monitoring</td></tr>"
+            "<tr><td><b>💻 ZCC</b></td><td>Client Connector – Device management and compliance</td></tr>"
+            "</table>"
+        ))
+        apis_label.setWordWrap(True)
+        apis_layout.addWidget(apis_label)
+        content_layout.addWidget(apis_group)
+        
+        # Getting Started
+        start_group = QGroupBox(self.tr("Getting Started"))
+        start_layout = QVBoxLayout(start_group)
+        start_label = QLabel(self.tr(
+            "<ol>"
+            "<li><b>Configure Credentials</b> – Go to <i>File → Settings</i> and enter your API credentials</li>"
+            "<li><b>Select API</b> – Choose ZIA, ZPA, ZDX, or ZCC from the dropdown</li>"
+            "<li><b>Browse Endpoints</b> – Click on an endpoint in the tree to load it</li>"
+            "<li><b>Send Request</b> – Modify parameters if needed, then click Send</li>"
+            "<li><b>View Response</b> – JSON response will appear with syntax highlighting</li>"
+            "</ol>"
+        ))
+        start_label.setWordWrap(True)
+        start_layout.addWidget(start_label)
+        content_layout.addWidget(start_group)
+        
+        # Tips for Advanced Users
+        tips_group = QGroupBox(self.tr("Tips for Advanced Users"))
+        tips_layout = QVBoxLayout(tips_group)
+        tips_label = QLabel(self.tr(
+            "<ul>"
+            "<li><b>Ctrl+Enter</b> – Send request quickly</li>"
+            "<li><b>Ctrl+Shift+C</b> – Copy request as cURL command</li>"
+            "<li><b>Ctrl+H</b> – View request history</li>"
+            "<li><b>Batch Operations</b> – Import CSV for bulk API calls</li>"
+            "<li><b>Request menu</b> – Quick authentication helpers for each API</li>"
+            "<li><b>Themes</b> – Switch between Light/Dark/System in Settings</li>"
+            "</ul>"
+        ))
+        tips_label.setWordWrap(True)
+        tips_layout.addWidget(tips_label)
+        content_layout.addWidget(tips_group)
+        
+        # Documentation Links
+        docs_group = QGroupBox(self.tr("Documentation"))
+        docs_layout = QVBoxLayout(docs_group)
+        docs_label = QLabel(
+            "<p>"
+            "<a href='https://help.zscaler.com/zia/api'>ZIA API Documentation</a> · "
+            "<a href='https://help.zscaler.com/zpa/api-reference'>ZPA API Documentation</a><br>"
+            "<a href='https://help.zscaler.com/zdx/api-reference'>ZDX API Documentation</a> · "
+            "<a href='https://help.zscaler.com/zcc/api-reference'>ZCC API Documentation</a><br><br>"
+            "<a href='https://github.com/yeager/zscaler-api-client'>GitHub Repository</a>"
+            "</p>"
+        )
+        docs_label.setOpenExternalLinks(True)
+        docs_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        docs_layout.addWidget(docs_label)
+        content_layout.addWidget(docs_group)
+        
+        content_layout.addStretch()
+        scroll.setWidget(content)
+        layout.addWidget(scroll)
+        
+        # Show on startup checkbox
+        self.show_on_startup = QCheckBox(self.tr("Show this dialog on startup"))
+        self.show_on_startup.setChecked(True)
+        layout.addWidget(self.show_on_startup)
+        
+        # Buttons
+        btn_layout = QHBoxLayout()
+        btn_layout.addStretch()
+        
+        settings_btn = QPushButton(self.tr("Open Settings"))
+        settings_btn.clicked.connect(self._open_settings)
+        btn_layout.addWidget(settings_btn)
+        
+        start_btn = QPushButton(self.tr("Get Started"))
+        start_btn.setDefault(True)
+        start_btn.clicked.connect(self.accept)
+        btn_layout.addWidget(start_btn)
+        
+        layout.addLayout(btn_layout)
+        
+        # Load preference
+        settings = QSettings("Zscaler", "APIClient")
+        show = settings.value("welcome/show_on_startup", "true") == "true"
+        self.show_on_startup.setChecked(show)
+    
+    def _open_settings(self):
+        self.accept()
+        if self.parent():
+            self.parent()._show_settings()
+    
+    def accept(self):
+        settings = QSettings("Zscaler", "APIClient")
+        settings.setValue("welcome/show_on_startup", 
+                         "true" if self.show_on_startup.isChecked() else "false")
+        super().accept()
+
+
+def create_splash_pixmap() -> QPixmap:
+    """Create a splash screen pixmap."""
+    pixmap = QPixmap(500, 300)
+    pixmap.fill(QColor("#1e1e1e"))
+    
+    painter = QPainter(pixmap)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    
+    # Draw gradient background
+    painter.fillRect(0, 0, 500, 300, QColor("#1a1a2e"))
+    
+    # Draw accent bar
+    painter.fillRect(0, 0, 500, 4, QColor("#0078d4"))
+    
+    # Draw title
+    font = QFont("Arial", 28, QFont.Weight.Bold)
+    painter.setFont(font)
+    painter.setPen(QColor("#ffffff"))
+    painter.drawText(pixmap.rect().adjusted(0, 60, 0, 0), 
+                    Qt.AlignmentFlag.AlignHCenter, "🔐 Zscaler API Client")
+    
+    # Draw version
+    font = QFont("Arial", 14)
+    painter.setFont(font)
+    painter.setPen(QColor("#888888"))
+    painter.drawText(pixmap.rect().adjusted(0, 120, 0, 0),
+                    Qt.AlignmentFlag.AlignHCenter, f"Version {__version__}")
+    
+    # Draw supported APIs
+    font = QFont("Arial", 11)
+    painter.setFont(font)
+    painter.setPen(QColor("#666666"))
+    painter.drawText(pixmap.rect().adjusted(0, 170, 0, 0),
+                    Qt.AlignmentFlag.AlignHCenter, "ZIA · ZPA · ZDX · ZCC")
+    
+    # Draw loading text
+    painter.drawText(pixmap.rect().adjusted(0, 220, 0, 0),
+                    Qt.AlignmentFlag.AlignHCenter, "Loading...")
+    
+    # Draw copyright
+    font = QFont("Arial", 9)
+    painter.setFont(font)
+    painter.setPen(QColor("#444444"))
+    painter.drawText(pixmap.rect().adjusted(0, 0, 0, -20),
+                    Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom,
+                    "© 2026 Daniel Nylander · GPL-3.0")
+    
+    painter.end()
+    return pixmap
 
 
 class AboutDialog(QDialog):
@@ -844,6 +1341,40 @@ class SettingsDialog(QDialog):
         zpa_layout.addRow(self.tr("Customer ID:"), self.zpa_customer_id)
         
         creds_layout.addWidget(zpa_group)
+        
+        # ZDX Settings
+        zdx_group = QGroupBox(self.tr("ZDX (Zscaler Digital Experience)"))
+        zdx_layout = QFormLayout(zdx_group)
+        
+        self.zdx_cloud = QLineEdit()
+        self.zdx_cloud.setPlaceholderText("api.zdxcloud.net")
+        zdx_layout.addRow(self.tr("Cloud:"), self.zdx_cloud)
+        
+        self.zdx_key_id = QLineEdit()
+        zdx_layout.addRow(self.tr("Key ID:"), self.zdx_key_id)
+        
+        self.zdx_key_secret = QLineEdit()
+        self.zdx_key_secret.setEchoMode(QLineEdit.EchoMode.Password)
+        zdx_layout.addRow(self.tr("Key Secret:"), self.zdx_key_secret)
+        
+        creds_layout.addWidget(zdx_group)
+        
+        # ZCC Settings
+        zcc_group = QGroupBox(self.tr("ZCC (Client Connector)"))
+        zcc_layout = QFormLayout(zcc_group)
+        
+        self.zcc_cloud = QLineEdit()
+        self.zcc_cloud.setPlaceholderText("api.zscaler.com")
+        zcc_layout.addRow(self.tr("Cloud:"), self.zcc_cloud)
+        
+        self.zcc_client_id = QLineEdit()
+        zcc_layout.addRow(self.tr("Client ID:"), self.zcc_client_id)
+        
+        self.zcc_client_secret = QLineEdit()
+        self.zcc_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
+        zcc_layout.addRow(self.tr("Client Secret:"), self.zcc_client_secret)
+        
+        creds_layout.addWidget(zcc_group)
         creds_layout.addStretch()
         
         tabs.addTab(creds_widget, self.tr("Credentials"))
@@ -918,7 +1449,7 @@ class SettingsDialog(QDialog):
         behavior_layout.addRow(self.tr("History limit:"), self.history_limit)
         
         self.default_api = QComboBox()
-        self.default_api.addItems(["ZIA", "ZPA"])
+        self.default_api.addItems(["ZIA", "ZPA", "ZDX", "ZCC"])
         behavior_layout.addRow(self.tr("Default API:"), self.default_api)
         
         advanced_layout.addWidget(behavior_group)
@@ -1018,6 +1549,16 @@ class SettingsDialog(QDialog):
         self.zpa_client_secret.setText(settings.value("zpa/client_secret", ""))
         self.zpa_customer_id.setText(settings.value("zpa/customer_id", ""))
         
+        # ZDX
+        self.zdx_cloud.setText(settings.value("zdx/cloud", ""))
+        self.zdx_key_id.setText(settings.value("zdx/key_id", ""))
+        self.zdx_key_secret.setText(settings.value("zdx/key_secret", ""))
+        
+        # ZCC
+        self.zcc_cloud.setText(settings.value("zcc/cloud", ""))
+        self.zcc_client_id.setText(settings.value("zcc/client_id", ""))
+        self.zcc_client_secret.setText(settings.value("zcc/client_secret", ""))
+        
         # Advanced
         self.timeout_spin.setCurrentText(settings.value("advanced/timeout", "30"))
         self.verify_ssl.setCurrentIndex(0 if settings.value("advanced/verify_ssl", "true") == "true" else 1)
@@ -1049,6 +1590,16 @@ class SettingsDialog(QDialog):
         settings.setValue("zpa/client_id", self.zpa_client_id.text())
         settings.setValue("zpa/client_secret", self.zpa_client_secret.text())
         settings.setValue("zpa/customer_id", self.zpa_customer_id.text())
+        
+        # ZDX
+        settings.setValue("zdx/cloud", self.zdx_cloud.text())
+        settings.setValue("zdx/key_id", self.zdx_key_id.text())
+        settings.setValue("zdx/key_secret", self.zdx_key_secret.text())
+        
+        # ZCC
+        settings.setValue("zcc/cloud", self.zcc_cloud.text())
+        settings.setValue("zcc/client_id", self.zcc_client_id.text())
+        settings.setValue("zcc/client_secret", self.zcc_client_secret.text())
         
         # Advanced
         settings.setValue("advanced/timeout", self.timeout_spin.currentText())
@@ -1315,7 +1866,7 @@ class MainWindow(QMainWindow):
         api_selector = QHBoxLayout()
         api_selector.addWidget(QLabel(self.tr("API:")))
         self.api_type = QComboBox()
-        self.api_type.addItems(["ZIA", "ZPA"])
+        self.api_type.addItems(["ZIA", "ZPA", "ZDX", "ZCC"])
         self.api_type.currentTextChanged.connect(self._update_endpoint_tree)
         api_selector.addWidget(self.api_type)
         api_selector.addStretch()
@@ -1524,6 +2075,10 @@ class MainWindow(QMainWindow):
         # Help menu
         help_menu = menubar.addMenu(self.tr("&Help"))
         
+        welcome_action = QAction(self.tr("&Welcome Guide..."), self)
+        welcome_action.triggered.connect(self._show_welcome)
+        help_menu.addAction(welcome_action)
+        
         about_action = QAction(self.tr("&About..."), self)
         about_action.triggered.connect(self._show_about)
         help_menu.addAction(about_action)
@@ -1559,7 +2114,14 @@ class MainWindow(QMainWindow):
     def _update_endpoint_tree(self, api_type: str):
         self.endpoint_tree.clear()
         
-        endpoints = ZIA_ENDPOINTS if api_type == "ZIA" else ZPA_ENDPOINTS
+        # Select endpoints based on API type
+        endpoint_map = {
+            "ZIA": ZIA_ENDPOINTS,
+            "ZPA": ZPA_ENDPOINTS,
+            "ZDX": ZDX_ENDPOINTS,
+            "ZCC": ZCC_ENDPOINTS,
+        }
+        endpoints = endpoint_map.get(api_type, ZIA_ENDPOINTS)
         
         for category, items in endpoints.items():
             category_item = QTreeWidgetItem([category])
@@ -1571,6 +2133,18 @@ class MainWindow(QMainWindow):
                 category_item.addChild(endpoint_item)
             
             self.endpoint_tree.addTopLevelItem(category_item)
+        
+        # Update help panel with API documentation links
+        docs = API_DOCS.get(api_type, {})
+        if docs:
+            self.help_text.setText(
+                f"<h3>{api_type} API</h3>"
+                f"<p><a href='{docs.get('getting_started', '')}'>Getting Started</a></p>"
+                f"<p><a href='{docs.get('authentication', '')}'>Authentication</a></p>"
+                f"<p><a href='{docs.get('base', '')}'>API Reference</a></p>"
+                f"<p><a href='{docs.get('rate_limits', '')}'>Rate Limits</a></p>"
+            )
+            self.help_text.setOpenExternalLinks(True)
     
     def _on_endpoint_selected(self, item: QTreeWidgetItem, column: int):
         details = item.data(0, Qt.ItemDataRole.UserRole)
@@ -1583,18 +2157,27 @@ class MainWindow(QMainWindow):
         # Build URL
         settings = QSettings("Zscaler", "APIClient")
         api_type = self.api_type.currentText()
+        path = details["path"]
         
         if api_type == "ZIA":
             cloud = settings.value("zia/cloud", "zsapi.zscaler.net")
             base_url = f"https://{cloud}"
-        else:
+        elif api_type == "ZPA":
             cloud = settings.value("zpa/cloud", "config.private.zscaler.com")
             base_url = f"https://{cloud}"
             # Replace customer ID placeholder
             customer_id = settings.value("zpa/customer_id", "")
-            details["path"] = details["path"].replace("{customerId}", customer_id)
+            path = path.replace("{customerId}", customer_id)
+        elif api_type == "ZDX":
+            cloud = settings.value("zdx/cloud", "api.zdxcloud.net")
+            base_url = f"https://{cloud}"
+        elif api_type == "ZCC":
+            cloud = settings.value("zcc/cloud", "api.zscaler.com")
+            base_url = f"https://{cloud}"
+        else:
+            base_url = ""
         
-        self.url_input.setText(base_url + details["path"])
+        self.url_input.setText(base_url + path)
         
         # Update body if present
         if "body" in details:
@@ -1611,8 +2194,11 @@ class MainWindow(QMainWindow):
                     self.params_table.setItem(row, 0, QTableWidgetItem(key))
                     self.params_table.setItem(row, 1, QTableWidgetItem(value))
         
-        # Update help
-        self.help_text.setText(f"<b>{item.text(0)}</b><br><br>{details['description']}")
+        # Update help with documentation link
+        doc_url = details.get("doc_url", "")
+        doc_link = f"<br><br><a href='{doc_url}'>📖 View Documentation</a>" if doc_url else ""
+        self.help_text.setText(f"<b>{item.text(0)}</b><br><br>{details['description']}{doc_link}")
+        self.help_text.setOpenExternalLinks(True)
     
     def _send_request(self):
         url = self.url_input.text()
@@ -1995,6 +2581,10 @@ class MainWindow(QMainWindow):
             self.tr("Please restart the application to apply the new language.")
         )
     
+    def _show_welcome(self):
+        dialog = WelcomeDialog(self)
+        dialog.exec()
+    
     def _show_about(self):
         dialog = AboutDialog(self)
         dialog.exec()
@@ -2033,8 +2623,16 @@ def main():
     app.setApplicationName("Zscaler API Client")
     app.setOrganizationName("Zscaler")
     
-    # Load translation
+    # Load settings
     settings = QSettings("Zscaler", "APIClient")
+    
+    # Show splash screen
+    splash_pixmap = create_splash_pixmap()
+    splash = QSplashScreen(splash_pixmap)
+    splash.show()
+    app.processEvents()
+    
+    # Load translation
     lang = settings.value("language", QLocale.system().name()[:2])
     
     translator = QTranslator()
@@ -2046,8 +2644,21 @@ def main():
     theme = int(settings.value("display/theme", "2"))
     apply_theme(app, theme)
     
+    # Small delay for splash visibility
+    import time
+    time.sleep(0.5)
+    
+    # Create main window
     window = MainWindow()
+    
+    # Close splash and show window
+    splash.finish(window)
     window.show()
+    
+    # Show welcome dialog on first run or if enabled
+    show_welcome = settings.value("welcome/show_on_startup", "true") == "true"
+    if show_welcome:
+        QTimer.singleShot(100, lambda: WelcomeDialog(window).exec())
     
     sys.exit(app.exec())
 

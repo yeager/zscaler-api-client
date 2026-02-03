@@ -1,12 +1,12 @@
 # Zscaler API Client
 
-🔐 A Postman-like desktop application for Zscaler APIs (ZIA, ZPA)
+🔐 A Postman-like desktop application for Zscaler APIs (ZIA, ZPA, ZDX, ZCC)
 
 ![Screenshot](screenshots/main.png)
 
 ## Features
 
-- **API Explorer** – Browse ZIA and ZPA endpoints with documentation
+- **API Explorer** – Browse ZIA, ZPA, ZDX, and ZCC endpoints with documentation
 - **Request Builder** – Build requests with params, headers, and JSON body
 - **JSON Highlighting** – Syntax highlighting for responses
 - **Batch Operations** – Import CSV for bulk create/delete/update
@@ -15,6 +15,10 @@
 - **Multi-language** – English, Swedish, German, French, Spanish, Japanese, Chinese
 - **Secure Storage** – Credentials stored in system keychain
 - **Advanced Settings** – Timeouts, proxy, SSL verification, themes
+- **Light/Dark Themes** – Full theme support with system auto-detection
+- **Splash Screen** – Professional startup experience
+- **Welcome Guide** – Getting started help for new users
+- **Inline Documentation** – Links to API docs for each endpoint
 
 ## Supported APIs
 
@@ -35,6 +39,25 @@
 - Connectors
 - Access Policies
 - SAML Attributes
+
+### ZDX (Zscaler Digital Experience)
+- Authentication (OAuth)
+- Administration (Departments, Locations, Geolocations)
+- Devices & Health Metrics
+- Users & Scores
+- Applications & Performance
+- Alerts
+- Web Probes
+- Deep Traces
+
+### ZCC (Client Connector)
+- Authentication (OAuth)
+- Device Management
+- **Compliance Status** (compliant/non-compliant devices)
+- Posture Profiles
+- Software Versions & Updates
+- Enrollment Tokens
+- Troubleshooting & Logs
 
 ## Installation
 
