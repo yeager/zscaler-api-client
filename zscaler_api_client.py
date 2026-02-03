@@ -57,7 +57,7 @@ except ImportError:
         print("Error: PyQt6 or PySide6 required. Install with: pip install PyQt6")
         sys.exit(1)
 
-__version__ = "1.4.4"
+__version__ = "1.5.0"
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -1019,6 +1019,696 @@ ZCC_ENDPOINTS = {
     },
 }
 
+# ZIdentity API Endpoints (Identity and Access Management)
+ZIDENTITY_ENDPOINTS = {
+    "Authentication": {
+        "Get OAuth Token": {
+            "method": "POST",
+            "path": "/oauth2/v1/token",
+            "description": "Get OAuth 2.0 access token",
+            "body": {"client_id": "", "client_secret": "", "grant_type": "client_credentials"},
+            "doc_url": "https://help.zscaler.com/zidentity/getting-started-zidentity-api",
+        },
+        "Revoke Token": {
+            "method": "POST",
+            "path": "/oauth2/v1/revoke",
+            "description": "Revoke an access token",
+            "body": {"token": ""},
+            "doc_url": "https://help.zscaler.com/zidentity/getting-started-zidentity-api",
+        },
+    },
+    "Users": {
+        "List Users": {
+            "method": "GET",
+            "path": "/api/v1/users",
+            "description": "List all users",
+            "params": {"page": "1", "pageSize": "100", "search": ""},
+            "doc_url": "https://help.zscaler.com/zidentity/user-management-api",
+        },
+        "Get User": {
+            "method": "GET",
+            "path": "/api/v1/users/{userId}",
+            "description": "Get user by ID",
+            "doc_url": "https://help.zscaler.com/zidentity/user-management-api",
+        },
+        "Create User": {
+            "method": "POST",
+            "path": "/api/v1/users",
+            "description": "Create a new user",
+            "body": {"userName": "", "email": "", "firstName": "", "lastName": "", "active": True},
+            "doc_url": "https://help.zscaler.com/zidentity/user-management-api",
+        },
+        "Update User": {
+            "method": "PUT",
+            "path": "/api/v1/users/{userId}",
+            "description": "Update an existing user",
+            "body": {"userName": "", "email": "", "firstName": "", "lastName": "", "active": True},
+            "doc_url": "https://help.zscaler.com/zidentity/user-management-api",
+        },
+        "Delete User": {
+            "method": "DELETE",
+            "path": "/api/v1/users/{userId}",
+            "description": "Delete a user",
+            "doc_url": "https://help.zscaler.com/zidentity/user-management-api",
+        },
+    },
+    "Groups": {
+        "List Groups": {
+            "method": "GET",
+            "path": "/api/v1/groups",
+            "description": "List all groups",
+            "params": {"page": "1", "pageSize": "100"},
+            "doc_url": "https://help.zscaler.com/zidentity/group-management-api",
+        },
+        "Get Group": {
+            "method": "GET",
+            "path": "/api/v1/groups/{groupId}",
+            "description": "Get group by ID",
+            "doc_url": "https://help.zscaler.com/zidentity/group-management-api",
+        },
+        "Create Group": {
+            "method": "POST",
+            "path": "/api/v1/groups",
+            "description": "Create a new group",
+            "body": {"displayName": "", "description": ""},
+            "doc_url": "https://help.zscaler.com/zidentity/group-management-api",
+        },
+        "Update Group": {
+            "method": "PUT",
+            "path": "/api/v1/groups/{groupId}",
+            "description": "Update a group",
+            "body": {"displayName": "", "description": ""},
+            "doc_url": "https://help.zscaler.com/zidentity/group-management-api",
+        },
+        "Delete Group": {
+            "method": "DELETE",
+            "path": "/api/v1/groups/{groupId}",
+            "description": "Delete a group",
+            "doc_url": "https://help.zscaler.com/zidentity/group-management-api",
+        },
+        "Add User to Group": {
+            "method": "POST",
+            "path": "/api/v1/groups/{groupId}/members",
+            "description": "Add user to group",
+            "body": {"userId": ""},
+            "doc_url": "https://help.zscaler.com/zidentity/group-management-api",
+        },
+        "Remove User from Group": {
+            "method": "DELETE",
+            "path": "/api/v1/groups/{groupId}/members/{userId}",
+            "description": "Remove user from group",
+            "doc_url": "https://help.zscaler.com/zidentity/group-management-api",
+        },
+    },
+    "SCIM": {
+        "List SCIM Users": {
+            "method": "GET",
+            "path": "/scim/v2/Users",
+            "description": "List users via SCIM 2.0",
+            "params": {"startIndex": "1", "count": "100", "filter": ""},
+            "doc_url": "https://help.zscaler.com/zidentity/scim-api",
+        },
+        "Get SCIM User": {
+            "method": "GET",
+            "path": "/scim/v2/Users/{userId}",
+            "description": "Get user via SCIM 2.0",
+            "doc_url": "https://help.zscaler.com/zidentity/scim-api",
+        },
+        "Create SCIM User": {
+            "method": "POST",
+            "path": "/scim/v2/Users",
+            "description": "Create user via SCIM 2.0",
+            "body": {"schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"], "userName": "", "name": {"givenName": "", "familyName": ""}, "emails": [{"value": "", "primary": True}]},
+            "doc_url": "https://help.zscaler.com/zidentity/scim-api",
+        },
+        "List SCIM Groups": {
+            "method": "GET",
+            "path": "/scim/v2/Groups",
+            "description": "List groups via SCIM 2.0",
+            "params": {"startIndex": "1", "count": "100"},
+            "doc_url": "https://help.zscaler.com/zidentity/scim-api",
+        },
+    },
+    "Identity Providers": {
+        "List IdPs": {
+            "method": "GET",
+            "path": "/api/v1/idp",
+            "description": "List all identity providers",
+            "doc_url": "https://help.zscaler.com/zidentity/idp-api",
+        },
+        "Get IdP": {
+            "method": "GET",
+            "path": "/api/v1/idp/{idpId}",
+            "description": "Get identity provider by ID",
+            "doc_url": "https://help.zscaler.com/zidentity/idp-api",
+        },
+        "Get IdP Metadata": {
+            "method": "GET",
+            "path": "/api/v1/idp/{idpId}/metadata",
+            "description": "Get SAML metadata for IdP",
+            "doc_url": "https://help.zscaler.com/zidentity/idp-api",
+        },
+    },
+    "API Clients": {
+        "List API Clients": {
+            "method": "GET",
+            "path": "/api/v1/clients",
+            "description": "List all API clients",
+            "doc_url": "https://help.zscaler.com/zidentity/api-clients",
+        },
+        "Get API Client": {
+            "method": "GET",
+            "path": "/api/v1/clients/{clientId}",
+            "description": "Get API client by ID",
+            "doc_url": "https://help.zscaler.com/zidentity/api-clients",
+        },
+        "Create API Client": {
+            "method": "POST",
+            "path": "/api/v1/clients",
+            "description": "Create a new API client",
+            "body": {"name": "", "description": "", "scopes": []},
+            "doc_url": "https://help.zscaler.com/zidentity/api-clients",
+        },
+        "Rotate Client Secret": {
+            "method": "POST",
+            "path": "/api/v1/clients/{clientId}/rotate-secret",
+            "description": "Rotate API client secret",
+            "doc_url": "https://help.zscaler.com/zidentity/api-clients",
+        },
+    },
+    "Audit Logs": {
+        "Get Audit Logs": {
+            "method": "GET",
+            "path": "/api/v1/audit/logs",
+            "description": "Get audit logs",
+            "params": {"startTime": "", "endTime": "", "page": "1", "pageSize": "100"},
+            "doc_url": "https://help.zscaler.com/zidentity/audit-api",
+        },
+    },
+}
+
+# ZTW API Endpoints (Zero Trust Workloads / Cloud Branch Connector)
+ZTW_ENDPOINTS = {
+    "Authentication": {
+        "Get OAuth Token": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "description": "Get OAuth access token for ZTW API",
+            "body": {"client_id": "", "client_secret": "", "grant_type": "client_credentials"},
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/getting-started-api",
+        },
+    },
+    "Branch Connectors": {
+        "List Branch Connectors": {
+            "method": "GET",
+            "path": "/api/v1/branch-connectors",
+            "description": "List all branch connectors",
+            "params": {"page": "1", "pageSize": "100"},
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/branch-connector-api",
+        },
+        "Get Branch Connector": {
+            "method": "GET",
+            "path": "/api/v1/branch-connectors/{connectorId}",
+            "description": "Get branch connector details",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/branch-connector-api",
+        },
+        "Create Branch Connector": {
+            "method": "POST",
+            "path": "/api/v1/branch-connectors",
+            "description": "Create a new branch connector",
+            "body": {"name": "", "description": "", "locationId": ""},
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/branch-connector-api",
+        },
+        "Update Branch Connector": {
+            "method": "PUT",
+            "path": "/api/v1/branch-connectors/{connectorId}",
+            "description": "Update branch connector",
+            "body": {"name": "", "description": ""},
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/branch-connector-api",
+        },
+        "Delete Branch Connector": {
+            "method": "DELETE",
+            "path": "/api/v1/branch-connectors/{connectorId}",
+            "description": "Delete branch connector",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/branch-connector-api",
+        },
+    },
+    "Connector Groups": {
+        "List Connector Groups": {
+            "method": "GET",
+            "path": "/api/v1/connector-groups",
+            "description": "List all connector groups",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/connector-group-api",
+        },
+        "Get Connector Group": {
+            "method": "GET",
+            "path": "/api/v1/connector-groups/{groupId}",
+            "description": "Get connector group details",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/connector-group-api",
+        },
+        "Create Connector Group": {
+            "method": "POST",
+            "path": "/api/v1/connector-groups",
+            "description": "Create a connector group",
+            "body": {"name": "", "description": "", "enabled": True},
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/connector-group-api",
+        },
+    },
+    "Locations": {
+        "List Locations": {
+            "method": "GET",
+            "path": "/api/v1/locations",
+            "description": "List all locations",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/location-api",
+        },
+        "Get Location": {
+            "method": "GET",
+            "path": "/api/v1/locations/{locationId}",
+            "description": "Get location details",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/location-api",
+        },
+        "Create Location": {
+            "method": "POST",
+            "path": "/api/v1/locations",
+            "description": "Create a new location",
+            "body": {"name": "", "address": "", "latitude": 0, "longitude": 0},
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/location-api",
+        },
+    },
+    "Service Edges": {
+        "List Service Edges": {
+            "method": "GET",
+            "path": "/api/v1/service-edges",
+            "description": "List all service edges",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/service-edge-api",
+        },
+        "Get Service Edge": {
+            "method": "GET",
+            "path": "/api/v1/service-edges/{edgeId}",
+            "description": "Get service edge details",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/service-edge-api",
+        },
+        "Get Service Edge Health": {
+            "method": "GET",
+            "path": "/api/v1/service-edges/{edgeId}/health",
+            "description": "Get service edge health status",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/service-edge-api",
+        },
+    },
+    "Traffic Forwarding": {
+        "List Forwarding Rules": {
+            "method": "GET",
+            "path": "/api/v1/forwarding-rules",
+            "description": "List traffic forwarding rules",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/forwarding-api",
+        },
+        "Get Forwarding Rule": {
+            "method": "GET",
+            "path": "/api/v1/forwarding-rules/{ruleId}",
+            "description": "Get forwarding rule details",
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/forwarding-api",
+        },
+        "Create Forwarding Rule": {
+            "method": "POST",
+            "path": "/api/v1/forwarding-rules",
+            "description": "Create a forwarding rule",
+            "body": {"name": "", "order": 1, "action": "FORWARD", "conditions": []},
+            "doc_url": "https://help.zscaler.com/cloud-branch-connector/forwarding-api",
+        },
+    },
+}
+
+# ZWA API Endpoints (Workflow Automation)
+ZWA_ENDPOINTS = {
+    "Authentication": {
+        "Get OAuth Token": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "description": "Get OAuth access token for Workflow Automation",
+            "body": {"client_id": "", "client_secret": "", "grant_type": "client_credentials"},
+            "doc_url": "https://help.zscaler.com/workflow-automation/getting-started-api",
+        },
+    },
+    "Workflows": {
+        "List Workflows": {
+            "method": "GET",
+            "path": "/api/v1/workflows",
+            "description": "List all workflows",
+            "params": {"page": "1", "pageSize": "100", "status": ""},
+            "doc_url": "https://help.zscaler.com/workflow-automation/workflow-api",
+        },
+        "Get Workflow": {
+            "method": "GET",
+            "path": "/api/v1/workflows/{workflowId}",
+            "description": "Get workflow details",
+            "doc_url": "https://help.zscaler.com/workflow-automation/workflow-api",
+        },
+        "Create Workflow": {
+            "method": "POST",
+            "path": "/api/v1/workflows",
+            "description": "Create a new workflow",
+            "body": {"name": "", "description": "", "trigger": {}, "actions": []},
+            "doc_url": "https://help.zscaler.com/workflow-automation/workflow-api",
+        },
+        "Update Workflow": {
+            "method": "PUT",
+            "path": "/api/v1/workflows/{workflowId}",
+            "description": "Update a workflow",
+            "body": {"name": "", "description": "", "enabled": True},
+            "doc_url": "https://help.zscaler.com/workflow-automation/workflow-api",
+        },
+        "Delete Workflow": {
+            "method": "DELETE",
+            "path": "/api/v1/workflows/{workflowId}",
+            "description": "Delete a workflow",
+            "doc_url": "https://help.zscaler.com/workflow-automation/workflow-api",
+        },
+        "Enable Workflow": {
+            "method": "POST",
+            "path": "/api/v1/workflows/{workflowId}/enable",
+            "description": "Enable a workflow",
+            "doc_url": "https://help.zscaler.com/workflow-automation/workflow-api",
+        },
+        "Disable Workflow": {
+            "method": "POST",
+            "path": "/api/v1/workflows/{workflowId}/disable",
+            "description": "Disable a workflow",
+            "doc_url": "https://help.zscaler.com/workflow-automation/workflow-api",
+        },
+        "Execute Workflow": {
+            "method": "POST",
+            "path": "/api/v1/workflows/{workflowId}/execute",
+            "description": "Manually execute a workflow",
+            "body": {"parameters": {}},
+            "doc_url": "https://help.zscaler.com/workflow-automation/workflow-api",
+        },
+    },
+    "Executions": {
+        "List Executions": {
+            "method": "GET",
+            "path": "/api/v1/executions",
+            "description": "List workflow executions",
+            "params": {"workflowId": "", "status": "", "startTime": "", "endTime": ""},
+            "doc_url": "https://help.zscaler.com/workflow-automation/execution-api",
+        },
+        "Get Execution": {
+            "method": "GET",
+            "path": "/api/v1/executions/{executionId}",
+            "description": "Get execution details",
+            "doc_url": "https://help.zscaler.com/workflow-automation/execution-api",
+        },
+        "Get Execution Logs": {
+            "method": "GET",
+            "path": "/api/v1/executions/{executionId}/logs",
+            "description": "Get execution logs",
+            "doc_url": "https://help.zscaler.com/workflow-automation/execution-api",
+        },
+        "Cancel Execution": {
+            "method": "POST",
+            "path": "/api/v1/executions/{executionId}/cancel",
+            "description": "Cancel a running execution",
+            "doc_url": "https://help.zscaler.com/workflow-automation/execution-api",
+        },
+    },
+    "Triggers": {
+        "List Trigger Types": {
+            "method": "GET",
+            "path": "/api/v1/triggers/types",
+            "description": "List available trigger types",
+            "doc_url": "https://help.zscaler.com/workflow-automation/trigger-api",
+        },
+        "List Webhooks": {
+            "method": "GET",
+            "path": "/api/v1/webhooks",
+            "description": "List webhook triggers",
+            "doc_url": "https://help.zscaler.com/workflow-automation/trigger-api",
+        },
+        "Create Webhook": {
+            "method": "POST",
+            "path": "/api/v1/webhooks",
+            "description": "Create a webhook trigger",
+            "body": {"name": "", "workflowId": ""},
+            "doc_url": "https://help.zscaler.com/workflow-automation/trigger-api",
+        },
+    },
+    "Actions": {
+        "List Action Types": {
+            "method": "GET",
+            "path": "/api/v1/actions/types",
+            "description": "List available action types",
+            "doc_url": "https://help.zscaler.com/workflow-automation/action-api",
+        },
+        "List Integrations": {
+            "method": "GET",
+            "path": "/api/v1/integrations",
+            "description": "List available integrations",
+            "doc_url": "https://help.zscaler.com/workflow-automation/integration-api",
+        },
+    },
+    "Templates": {
+        "List Templates": {
+            "method": "GET",
+            "path": "/api/v1/templates",
+            "description": "List workflow templates",
+            "doc_url": "https://help.zscaler.com/workflow-automation/template-api",
+        },
+        "Get Template": {
+            "method": "GET",
+            "path": "/api/v1/templates/{templateId}",
+            "description": "Get template details",
+            "doc_url": "https://help.zscaler.com/workflow-automation/template-api",
+        },
+        "Create from Template": {
+            "method": "POST",
+            "path": "/api/v1/templates/{templateId}/instantiate",
+            "description": "Create workflow from template",
+            "body": {"name": "", "parameters": {}},
+            "doc_url": "https://help.zscaler.com/workflow-automation/template-api",
+        },
+    },
+}
+
+# EASM API Endpoints (External Attack Surface Management)
+EASM_ENDPOINTS = {
+    "Authentication": {
+        "Get OAuth Token": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "description": "Get OAuth access token for EASM API",
+            "body": {"client_id": "", "client_secret": "", "grant_type": "client_credentials"},
+            "doc_url": "https://help.zscaler.com/easm/getting-started-api",
+        },
+    },
+    "Assets": {
+        "List Assets": {
+            "method": "GET",
+            "path": "/api/v1/assets",
+            "description": "List all discovered assets",
+            "params": {"page": "1", "pageSize": "100", "type": "", "riskLevel": ""},
+            "doc_url": "https://help.zscaler.com/easm/assets-api",
+        },
+        "Get Asset": {
+            "method": "GET",
+            "path": "/api/v1/assets/{assetId}",
+            "description": "Get asset details",
+            "doc_url": "https://help.zscaler.com/easm/assets-api",
+        },
+        "Get Asset History": {
+            "method": "GET",
+            "path": "/api/v1/assets/{assetId}/history",
+            "description": "Get asset change history",
+            "doc_url": "https://help.zscaler.com/easm/assets-api",
+        },
+        "Update Asset Tags": {
+            "method": "PUT",
+            "path": "/api/v1/assets/{assetId}/tags",
+            "description": "Update asset tags",
+            "body": {"tags": []},
+            "doc_url": "https://help.zscaler.com/easm/assets-api",
+        },
+    },
+    "Domains": {
+        "List Domains": {
+            "method": "GET",
+            "path": "/api/v1/domains",
+            "description": "List all monitored domains",
+            "params": {"page": "1", "pageSize": "100"},
+            "doc_url": "https://help.zscaler.com/easm/domains-api",
+        },
+        "Get Domain": {
+            "method": "GET",
+            "path": "/api/v1/domains/{domainId}",
+            "description": "Get domain details",
+            "doc_url": "https://help.zscaler.com/easm/domains-api",
+        },
+        "Add Domain": {
+            "method": "POST",
+            "path": "/api/v1/domains",
+            "description": "Add a domain to monitor",
+            "body": {"domain": "", "autoDiscover": True},
+            "doc_url": "https://help.zscaler.com/easm/domains-api",
+        },
+        "Remove Domain": {
+            "method": "DELETE",
+            "path": "/api/v1/domains/{domainId}",
+            "description": "Remove a monitored domain",
+            "doc_url": "https://help.zscaler.com/easm/domains-api",
+        },
+        "Get Subdomains": {
+            "method": "GET",
+            "path": "/api/v1/domains/{domainId}/subdomains",
+            "description": "Get discovered subdomains",
+            "doc_url": "https://help.zscaler.com/easm/domains-api",
+        },
+    },
+    "IP Ranges": {
+        "List IP Ranges": {
+            "method": "GET",
+            "path": "/api/v1/ip-ranges",
+            "description": "List monitored IP ranges",
+            "doc_url": "https://help.zscaler.com/easm/ip-api",
+        },
+        "Get IP Range": {
+            "method": "GET",
+            "path": "/api/v1/ip-ranges/{rangeId}",
+            "description": "Get IP range details",
+            "doc_url": "https://help.zscaler.com/easm/ip-api",
+        },
+        "Add IP Range": {
+            "method": "POST",
+            "path": "/api/v1/ip-ranges",
+            "description": "Add an IP range to monitor",
+            "body": {"cidr": "", "description": ""},
+            "doc_url": "https://help.zscaler.com/easm/ip-api",
+        },
+        "Get IPs in Range": {
+            "method": "GET",
+            "path": "/api/v1/ip-ranges/{rangeId}/ips",
+            "description": "Get discovered IPs in range",
+            "doc_url": "https://help.zscaler.com/easm/ip-api",
+        },
+    },
+    "Vulnerabilities": {
+        "List Vulnerabilities": {
+            "method": "GET",
+            "path": "/api/v1/vulnerabilities",
+            "description": "List all discovered vulnerabilities",
+            "params": {"severity": "", "status": "", "page": "1", "pageSize": "100"},
+            "doc_url": "https://help.zscaler.com/easm/vulnerabilities-api",
+        },
+        "Get Vulnerability": {
+            "method": "GET",
+            "path": "/api/v1/vulnerabilities/{vulnId}",
+            "description": "Get vulnerability details",
+            "doc_url": "https://help.zscaler.com/easm/vulnerabilities-api",
+        },
+        "Update Vulnerability Status": {
+            "method": "PUT",
+            "path": "/api/v1/vulnerabilities/{vulnId}/status",
+            "description": "Update vulnerability status",
+            "body": {"status": "ACKNOWLEDGED", "notes": ""},
+            "doc_url": "https://help.zscaler.com/easm/vulnerabilities-api",
+        },
+        "Get Affected Assets": {
+            "method": "GET",
+            "path": "/api/v1/vulnerabilities/{vulnId}/assets",
+            "description": "Get assets affected by vulnerability",
+            "doc_url": "https://help.zscaler.com/easm/vulnerabilities-api",
+        },
+    },
+    "Risks": {
+        "Get Risk Summary": {
+            "method": "GET",
+            "path": "/api/v1/risks/summary",
+            "description": "Get overall risk summary",
+            "doc_url": "https://help.zscaler.com/easm/risks-api",
+        },
+        "Get Risk Trends": {
+            "method": "GET",
+            "path": "/api/v1/risks/trends",
+            "description": "Get risk trends over time",
+            "params": {"startDate": "", "endDate": ""},
+            "doc_url": "https://help.zscaler.com/easm/risks-api",
+        },
+        "List Risk Factors": {
+            "method": "GET",
+            "path": "/api/v1/risks/factors",
+            "description": "List contributing risk factors",
+            "doc_url": "https://help.zscaler.com/easm/risks-api",
+        },
+    },
+    "Certificates": {
+        "List Certificates": {
+            "method": "GET",
+            "path": "/api/v1/certificates",
+            "description": "List discovered SSL/TLS certificates",
+            "params": {"status": "", "expiringWithin": ""},
+            "doc_url": "https://help.zscaler.com/easm/certificates-api",
+        },
+        "Get Certificate": {
+            "method": "GET",
+            "path": "/api/v1/certificates/{certId}",
+            "description": "Get certificate details",
+            "doc_url": "https://help.zscaler.com/easm/certificates-api",
+        },
+        "Get Expiring Certificates": {
+            "method": "GET",
+            "path": "/api/v1/certificates/expiring",
+            "description": "Get certificates expiring soon",
+            "params": {"days": "30"},
+            "doc_url": "https://help.zscaler.com/easm/certificates-api",
+        },
+    },
+    "Scans": {
+        "List Scans": {
+            "method": "GET",
+            "path": "/api/v1/scans",
+            "description": "List all scans",
+            "doc_url": "https://help.zscaler.com/easm/scans-api",
+        },
+        "Get Scan": {
+            "method": "GET",
+            "path": "/api/v1/scans/{scanId}",
+            "description": "Get scan details",
+            "doc_url": "https://help.zscaler.com/easm/scans-api",
+        },
+        "Trigger Scan": {
+            "method": "POST",
+            "path": "/api/v1/scans",
+            "description": "Trigger a new scan",
+            "body": {"type": "FULL", "targets": []},
+            "doc_url": "https://help.zscaler.com/easm/scans-api",
+        },
+        "Get Scan Results": {
+            "method": "GET",
+            "path": "/api/v1/scans/{scanId}/results",
+            "description": "Get scan results",
+            "doc_url": "https://help.zscaler.com/easm/scans-api",
+        },
+    },
+    "Reports": {
+        "List Reports": {
+            "method": "GET",
+            "path": "/api/v1/reports",
+            "description": "List generated reports",
+            "doc_url": "https://help.zscaler.com/easm/reports-api",
+        },
+        "Generate Report": {
+            "method": "POST",
+            "path": "/api/v1/reports",
+            "description": "Generate a new report",
+            "body": {"type": "EXECUTIVE", "format": "PDF"},
+            "doc_url": "https://help.zscaler.com/easm/reports-api",
+        },
+        "Download Report": {
+            "method": "GET",
+            "path": "/api/v1/reports/{reportId}/download",
+            "description": "Download a report",
+            "doc_url": "https://help.zscaler.com/easm/reports-api",
+        },
+    },
+}
+
 # API Documentation URLs
 API_DOCS = {
     "ZIA": {
@@ -1044,6 +1734,30 @@ API_DOCS = {
         "getting_started": "https://help.zscaler.com/zcc/getting-started-zcc-api",
         "authentication": "https://help.zscaler.com/zcc/understanding-api-authentication",
         "rate_limits": "https://help.zscaler.com/zcc/api-rate-limiting",
+    },
+    "ZIdentity": {
+        "base": "https://help.zscaler.com/zidentity/api-reference",
+        "getting_started": "https://help.zscaler.com/zidentity/getting-started-zidentity-api",
+        "authentication": "https://help.zscaler.com/zidentity/api-authentication",
+        "rate_limits": "https://help.zscaler.com/zidentity/api-rate-limiting",
+    },
+    "ZTW": {
+        "base": "https://help.zscaler.com/cloud-branch-connector/api-reference",
+        "getting_started": "https://help.zscaler.com/cloud-branch-connector/getting-started-api",
+        "authentication": "https://help.zscaler.com/cloud-branch-connector/api-authentication",
+        "rate_limits": "https://help.zscaler.com/cloud-branch-connector/api-rate-limiting",
+    },
+    "ZWA": {
+        "base": "https://help.zscaler.com/workflow-automation/api-reference",
+        "getting_started": "https://help.zscaler.com/workflow-automation/getting-started-api",
+        "authentication": "https://help.zscaler.com/workflow-automation/api-authentication",
+        "rate_limits": "https://help.zscaler.com/workflow-automation/api-rate-limiting",
+    },
+    "EASM": {
+        "base": "https://help.zscaler.com/easm/api-reference",
+        "getting_started": "https://help.zscaler.com/easm/getting-started-api",
+        "authentication": "https://help.zscaler.com/easm/api-authentication",
+        "rate_limits": "https://help.zscaler.com/easm/api-rate-limiting",
     },
 }
 
@@ -1179,6 +1893,10 @@ class WelcomeDialog(QDialog):
             "<tr><td><b>🔒 ZPA</b></td><td>Zscaler Private Access – Zero trust application access</td></tr>"
             "<tr><td><b>📊 ZDX</b></td><td>Zscaler Digital Experience – User experience monitoring</td></tr>"
             "<tr><td><b>💻 ZCC</b></td><td>Client Connector – Device management and compliance</td></tr>"
+            "<tr><td><b>🔑 ZIdentity</b></td><td>Identity & Access Management – Users, groups, SCIM, IdPs</td></tr>"
+            "<tr><td><b>🌿 ZTW</b></td><td>Zero Trust Workloads – Branch connectors, service edges</td></tr>"
+            "<tr><td><b>⚡ ZWA</b></td><td>Workflow Automation – Automated policies and triggers</td></tr>"
+            "<tr><td><b>🔍 EASM</b></td><td>External Attack Surface Management – Asset discovery, vulnerabilities</td></tr>"
             "</table>"
         ))
         apis_label.setWordWrap(True)
@@ -1191,7 +1909,7 @@ class WelcomeDialog(QDialog):
         start_label = QLabel(self.tr(
             "<ol>"
             "<li><b>Configure Credentials</b> – Go to <i>File → Settings</i> and enter your API credentials</li>"
-            "<li><b>Select API</b> – Choose ZIA, ZPA, ZDX, or ZCC from the dropdown</li>"
+            "<li><b>Select API</b> – Choose from ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA, or EASM</li>"
             "<li><b>Browse Endpoints</b> – Click on an endpoint in the tree to load it</li>"
             "<li><b>Send Request</b> – Modify parameters if needed, then click Send</li>"
             "<li><b>View Response</b> – JSON response will appear with syntax highlighting</li>"
@@ -1309,7 +2027,7 @@ def create_splash_pixmap() -> QPixmap:
     painter.setFont(font)
     painter.setPen(QColor("#666666"))
     painter.drawText(pixmap.rect().adjusted(0, 170, 0, 0),
-                    Qt.AlignmentFlag.AlignHCenter, "ZIA · ZPA · ZDX · ZCC")
+                    Qt.AlignmentFlag.AlignHCenter, "ZIA · ZPA · ZDX · ZCC · ZIdentity · ZTW · ZWA · EASM")
     
     # Draw loading text
     painter.drawText(pixmap.rect().adjusted(0, 220, 0, 0),
@@ -1512,6 +2230,74 @@ class SettingsDialog(QDialog):
         zcc_layout.addRow(self.tr("Client Secret:"), self.zcc_client_secret)
         
         creds_layout.addWidget(zcc_group)
+        
+        # ZIdentity Settings
+        zidentity_group = QGroupBox(self.tr("ZIdentity (Identity & Access)"))
+        zidentity_layout = QFormLayout(zidentity_group)
+        
+        self.zidentity_domain = QLineEdit()
+        self.zidentity_domain.setPlaceholderText("your-tenant.zslogin.net")
+        zidentity_layout.addRow(self.tr("Vanity Domain:"), self.zidentity_domain)
+        
+        self.zidentity_client_id = QLineEdit()
+        zidentity_layout.addRow(self.tr("Client ID:"), self.zidentity_client_id)
+        
+        self.zidentity_client_secret = QLineEdit()
+        self.zidentity_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
+        zidentity_layout.addRow(self.tr("Client Secret:"), self.zidentity_client_secret)
+        
+        creds_layout.addWidget(zidentity_group)
+        
+        # ZTW Settings (Zero Trust Workloads / Cloud Branch Connector)
+        ztw_group = QGroupBox(self.tr("ZTW (Zero Trust Workloads)"))
+        ztw_layout = QFormLayout(ztw_group)
+        
+        self.ztw_cloud = QLineEdit()
+        self.ztw_cloud.setPlaceholderText("api.zscaler.com")
+        ztw_layout.addRow(self.tr("Cloud:"), self.ztw_cloud)
+        
+        self.ztw_client_id = QLineEdit()
+        ztw_layout.addRow(self.tr("Client ID:"), self.ztw_client_id)
+        
+        self.ztw_client_secret = QLineEdit()
+        self.ztw_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
+        ztw_layout.addRow(self.tr("Client Secret:"), self.ztw_client_secret)
+        
+        creds_layout.addWidget(ztw_group)
+        
+        # ZWA Settings (Workflow Automation)
+        zwa_group = QGroupBox(self.tr("ZWA (Workflow Automation)"))
+        zwa_layout = QFormLayout(zwa_group)
+        
+        self.zwa_cloud = QLineEdit()
+        self.zwa_cloud.setPlaceholderText("api.zscaler.com")
+        zwa_layout.addRow(self.tr("Cloud:"), self.zwa_cloud)
+        
+        self.zwa_client_id = QLineEdit()
+        zwa_layout.addRow(self.tr("Client ID:"), self.zwa_client_id)
+        
+        self.zwa_client_secret = QLineEdit()
+        self.zwa_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
+        zwa_layout.addRow(self.tr("Client Secret:"), self.zwa_client_secret)
+        
+        creds_layout.addWidget(zwa_group)
+        
+        # EASM Settings (External Attack Surface Management)
+        easm_group = QGroupBox(self.tr("EASM (Attack Surface Management)"))
+        easm_layout = QFormLayout(easm_group)
+        
+        self.easm_cloud = QLineEdit()
+        self.easm_cloud.setPlaceholderText("api.zscaler.com")
+        easm_layout.addRow(self.tr("Cloud:"), self.easm_cloud)
+        
+        self.easm_client_id = QLineEdit()
+        easm_layout.addRow(self.tr("Client ID:"), self.easm_client_id)
+        
+        self.easm_client_secret = QLineEdit()
+        self.easm_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
+        easm_layout.addRow(self.tr("Client Secret:"), self.easm_client_secret)
+        
+        creds_layout.addWidget(easm_group)
         creds_layout.addStretch()
         
         tabs.addTab(creds_widget, self.tr("Credentials"))
@@ -1586,7 +2372,7 @@ class SettingsDialog(QDialog):
         behavior_layout.addRow(self.tr("History limit:"), self.history_limit)
         
         self.default_api = QComboBox()
-        self.default_api.addItems(["ZIA", "ZPA", "ZDX", "ZCC"])
+        self.default_api.addItems(["ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"])
         behavior_layout.addRow(self.tr("Default API:"), self.default_api)
         
         self.auto_update_check = QComboBox()
@@ -1700,6 +2486,26 @@ class SettingsDialog(QDialog):
         self.zcc_client_id.setText(settings.value("zcc/client_id", ""))
         self.zcc_client_secret.setText(settings.value("zcc/client_secret", ""))
         
+        # ZIdentity
+        self.zidentity_domain.setText(settings.value("zidentity/domain", ""))
+        self.zidentity_client_id.setText(settings.value("zidentity/client_id", ""))
+        self.zidentity_client_secret.setText(settings.value("zidentity/client_secret", ""))
+        
+        # ZTW
+        self.ztw_cloud.setText(settings.value("ztw/cloud", ""))
+        self.ztw_client_id.setText(settings.value("ztw/client_id", ""))
+        self.ztw_client_secret.setText(settings.value("ztw/client_secret", ""))
+        
+        # ZWA
+        self.zwa_cloud.setText(settings.value("zwa/cloud", ""))
+        self.zwa_client_id.setText(settings.value("zwa/client_id", ""))
+        self.zwa_client_secret.setText(settings.value("zwa/client_secret", ""))
+        
+        # EASM
+        self.easm_cloud.setText(settings.value("easm/cloud", ""))
+        self.easm_client_id.setText(settings.value("easm/client_id", ""))
+        self.easm_client_secret.setText(settings.value("easm/client_secret", ""))
+        
         # Advanced
         self.timeout_spin.setCurrentText(settings.value("advanced/timeout", "30"))
         self.verify_ssl.setCurrentIndex(0 if settings.value("advanced/verify_ssl", "true") == "true" else 1)
@@ -1742,6 +2548,26 @@ class SettingsDialog(QDialog):
         settings.setValue("zcc/cloud", self.zcc_cloud.text())
         settings.setValue("zcc/client_id", self.zcc_client_id.text())
         settings.setValue("zcc/client_secret", self.zcc_client_secret.text())
+        
+        # ZIdentity
+        settings.setValue("zidentity/domain", self.zidentity_domain.text())
+        settings.setValue("zidentity/client_id", self.zidentity_client_id.text())
+        settings.setValue("zidentity/client_secret", self.zidentity_client_secret.text())
+        
+        # ZTW
+        settings.setValue("ztw/cloud", self.ztw_cloud.text())
+        settings.setValue("ztw/client_id", self.ztw_client_id.text())
+        settings.setValue("ztw/client_secret", self.ztw_client_secret.text())
+        
+        # ZWA
+        settings.setValue("zwa/cloud", self.zwa_cloud.text())
+        settings.setValue("zwa/client_id", self.zwa_client_id.text())
+        settings.setValue("zwa/client_secret", self.zwa_client_secret.text())
+        
+        # EASM
+        settings.setValue("easm/cloud", self.easm_cloud.text())
+        settings.setValue("easm/client_id", self.easm_client_id.text())
+        settings.setValue("easm/client_secret", self.easm_client_secret.text())
         
         # Advanced
         settings.setValue("advanced/timeout", self.timeout_spin.currentText())
@@ -2009,7 +2835,7 @@ class MainWindow(QMainWindow):
         api_selector = QHBoxLayout()
         api_selector.addWidget(QLabel(self.tr("API:")))
         self.api_type = QComboBox()
-        self.api_type.addItems(["ZIA", "ZPA", "ZDX", "ZCC"])
+        self.api_type.addItems(["ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"])
         self.api_type.currentTextChanged.connect(self._update_endpoint_tree)
         api_selector.addWidget(self.api_type)
         api_selector.addStretch()
@@ -2269,6 +3095,10 @@ class MainWindow(QMainWindow):
             "ZPA": ZPA_ENDPOINTS,
             "ZDX": ZDX_ENDPOINTS,
             "ZCC": ZCC_ENDPOINTS,
+            "ZIdentity": ZIDENTITY_ENDPOINTS,
+            "ZTW": ZTW_ENDPOINTS,
+            "ZWA": ZWA_ENDPOINTS,
+            "EASM": EASM_ENDPOINTS,
         }
         endpoints = endpoint_map.get(api_type, ZIA_ENDPOINTS)
         
