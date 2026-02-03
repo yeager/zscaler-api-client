@@ -52,7 +52,7 @@ jobs:
         run: pyinstaller zscaler_api_client.spec
       
       - name: Create ZIP
-        run: Compress-Archive -Path dist\ZscalerAPIClient.exe -DestinationPath dist\zscaler-api-client-windows-x64.zip
+        run: Compress-Archive -Path dist\ZscalerAPIClient -DestinationPath dist\zscaler-api-client-windows-x64.zip
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -120,11 +120,12 @@ jobs:
             **Linux:**
             ```bash
             tar xzf zscaler-api-client-linux-x64.tar.gz
+            cd zscaler-api-client
             ./zscaler-api-client
             ```
             
             **Windows:**
-            Extract ZIP and run `ZscalerAPIClient.exe`
+            Extract ZIP and run `ZscalerAPIClient/ZscalerAPIClient.exe`
             
             **macOS:**
             Extract ZIP and move `Zscaler API Client.app` to Applications
