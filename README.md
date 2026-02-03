@@ -16,7 +16,7 @@
 - **Batch Operations** – Import CSV for bulk create/delete/update
 - **Request History** – Browse and reload previous requests
 - **Copy as cURL** – Export requests for command-line use
-- **Multi-language** – English, Swedish, German, French, Spanish, Japanese, Chinese
+- **Multi-language** – 8 languages: English, Swedish, German, French, Spanish, Japanese, Chinese, Farsi
 - **Secure Storage** – Credentials stored in system keychain
 - **Advanced Settings** – Timeouts, proxy, SSL verification, themes
 - **Light/Dark Themes** – Full theme support with system auto-detection
