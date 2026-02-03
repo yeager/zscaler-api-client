@@ -182,3 +182,7 @@ GPL-3.0-or-later
 ## Author
 
 **Daniel Nylander** ([@yeager](https://github.com/yeager))
+
+## Acknowledgments
+
+Thanks to **Nima Samadi** for feature suggestions (ZDX, ZCC, compliance, splash screen, user guidance).

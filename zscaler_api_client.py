@@ -1235,6 +1235,13 @@ class AboutDialog(QDialog):
         copyright_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(copyright_label)
         
+        # Credits
+        credits_label = QLabel(
+            "<p><i>Thanks to Nima Samadi for feature suggestions</i></p>"
+        )
+        credits_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(credits_label)
+        
         # License
         license_label = QLabel(
             "<p>Licensed under the <a href='https://www.gnu.org/licenses/gpl-3.0.html'>"
