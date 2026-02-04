@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.2] - 2026-02-04
+
+### Changed
+- **Switched to PySide6** from PyQt6 – fixes macOS bundle crash on startup
+
+### Fixed
+- **Splash screen translation** – "Loading..." now displays in selected language
+- **Keyring missing** – Credential storage now works in bundled app
+
 ## [1.7.1] - 2026-02-04
 
 ### Changed
