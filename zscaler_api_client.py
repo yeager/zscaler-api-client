@@ -25,8 +25,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, Dict, List, Any
 
-# Use PyQt6 for Qt bindings
-from PyQt6.QtWidgets import (
+# Use PySide6 for Qt bindings
+from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QSplitter, QTreeWidget, QTreeWidgetItem, QTextEdit, QLineEdit,
     QComboBox, QPushButton, QLabel, QTabWidget, QTableWidget,
@@ -35,9 +35,9 @@ from PyQt6.QtWidgets import (
     QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
     QCheckBox, QScrollArea, QFrame
 )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTranslator, QLocale, QTimer
-from PyQt6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-QT_BINDINGS = "PyQt6"
+from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer
+from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
+QT_BINDINGS = "PySide6"
 
 __version__ = "1.7.1"
 
@@ -1827,8 +1827,8 @@ class JsonHighlighter(QSyntaxHighlighter):
 
 class ApiWorker(QThread):
     """Worker thread for API requests."""
-    finished = pyqtSignal(dict)
-    progress = pyqtSignal(int, int)
+    finished = Signal(dict)
+    progress = Signal(int, int)
     
     def __init__(self, requests: List[Dict]):
         super().__init__()
@@ -2041,7 +2041,7 @@ def create_splash_pixmap() -> QPixmap:
                     Qt.AlignmentFlag.AlignHCenter, "ZIA · ZPA · ZDX · ZCC · ZIdentity · ZTW · ZWA · EASM")
     
     # Draw loading text
-    from PyQt6.QtCore import QCoreApplication
+    from PySide6.QtCore import QCoreApplication
     loading_text = QCoreApplication.translate("SplashScreen", "Loading...")
     painter.drawText(pixmap.rect().adjusted(0, 220, 0, 0),
                     Qt.AlignmentFlag.AlignHCenter, loading_text)
@@ -2754,7 +2754,7 @@ class BatchDialog(QDialog):
 class HistoryDialog(QDialog):
     """Dialog to view and select from request history."""
     
-    request_selected = pyqtSignal(dict)
+    request_selected = Signal(dict)
     
     def __init__(self, history: List[Dict], parent=None):
         super().__init__(parent)
@@ -3760,18 +3760,18 @@ def main():
     # Must be done BEFORE QApplication is created
     if getattr(sys, 'frozen', False):
         bundle_dir = os.path.dirname(sys.executable)
-        # Set Qt plugin path for bundled app (PyQt6)
-        plugin_path = os.path.join(bundle_dir, '..', 'Frameworks', 'PyQt6', 'Qt6', 'plugins')
+        # Set Qt plugin path for bundled app (PySide6)
+        plugin_path = os.path.join(bundle_dir, '..', 'Frameworks', 'PySide6', 'Qt6', 'plugins')
         if os.path.exists(plugin_path):
             os.environ['QT_PLUGIN_PATH'] = plugin_path
         # Also try alternative locations
-        alt_plugin_path = os.path.join(bundle_dir, '..', 'Resources', 'PyQt6', 'Qt6', 'plugins')
+        alt_plugin_path = os.path.join(bundle_dir, '..', 'Resources', 'PySide6', 'Qt6', 'plugins')
         if os.path.exists(alt_plugin_path):
             os.environ['QT_PLUGIN_PATH'] = alt_plugin_path
         # Set library path for Qt
         lib_path = os.path.join(bundle_dir, '..', 'Frameworks')
         if os.path.exists(lib_path):
-            os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = os.path.join(lib_path, 'PyQt6', 'Qt6', 'plugins', 'platforms')
+            os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = os.path.join(lib_path, 'PySide6', 'Qt6', 'plugins', 'platforms')
     
     app = QApplication(sys.argv)
     app.setApplicationName("ZS API Client")
@@ -3780,13 +3780,7 @@ def main():
     # Load settings
     settings = QSettings("Zscaler", "APIClient")
     
-    # Show splash screen
-    splash_pixmap = create_splash_pixmap()
-    splash = QSplashScreen(splash_pixmap)
-    splash.show()
-    app.processEvents()
-    
-    # Load translation
+    # Load translation BEFORE splash screen (so "Loading..." is translated)
     lang = settings.value("language", QLocale.system().name()[:2])
     
     # Handle both frozen (bundled) and script modes
@@ -3810,6 +3804,12 @@ def main():
     translator = QTranslator()
     if translator.load(f"zscaler_api_client_{lang}", str(translations_dir)):
         app.installTranslator(translator)
+    
+    # Show splash screen (now with translated "Loading...")
+    splash_pixmap = create_splash_pixmap()
+    splash = QSplashScreen(splash_pixmap)
+    splash.show()
+    app.processEvents()
     
     # Apply theme
     theme = int(settings.value("display/theme", "2"))
