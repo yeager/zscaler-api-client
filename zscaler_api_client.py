@@ -39,7 +39,7 @@ from PyQt6.QtCore import Qt, QThread, pyqtSignal, QSettings, QTranslator, QLocal
 from PyQt6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PyQt6"
 
-__version__ = "1.7.0"
+__version__ = "1.7.1"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.1] - 2026-02-04
+
+### Changed
+- **Renamed project** to "ZS API Client" (from "Zscaler API Client") to avoid trademark concerns
+- Updated window titles, splash screen, about dialog, and all translations
+
 ## [1.7.0] - 2026-02-03
 
 ### Added
