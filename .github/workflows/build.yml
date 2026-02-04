@@ -25,15 +25,15 @@ jobs:
       
       - name: Build
         run: |
-          pyinstaller zscaler_api_client.spec
+          pyinstaller --noconfirm --name "ZS API Client" --add-data "translations:translations" zscaler_api_client.py
           cd dist
-          tar czf zscaler-api-client-linux-x64.tar.gz zscaler-api-client
+          tar czf ZS-API-Client-linux-x64.tar.gz "ZS API Client"
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-build
-          path: dist/zscaler-api-client-linux-x64.tar.gz
+          path: dist/ZS-API-Client-linux-x64.tar.gz
 
   build-windows:
     runs-on: windows-latest
@@ -49,16 +49,16 @@ jobs:
         run: pip install PyQt6 pyinstaller
       
       - name: Build
-        run: pyinstaller zscaler_api_client.spec
+        run: pyinstaller --noconfirm --name "ZS API Client" --add-data "translations;translations" zscaler_api_client.py
       
       - name: Create ZIP
-        run: Compress-Archive -Path dist\ZscalerAPIClient -DestinationPath dist\zscaler-api-client-windows-x64.zip
+        run: Compress-Archive -Path "dist\ZS API Client" -DestinationPath dist\ZS-API-Client-windows-x64.zip
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: dist/zscaler-api-client-windows-x64.zip
+          path: dist/ZS-API-Client-windows-x64.zip
 
   build-macos:
     runs-on: macos-latest
@@ -75,15 +75,15 @@ jobs:
       
       - name: Build
         run: |
-          pyinstaller zscaler_api_client.spec
+          pyinstaller --noconfirm --windowed --name "ZS API Client" --add-data "translations:translations" zscaler_api_client.py
           cd dist
-          zip -ry zscaler-api-client-macos-arm64.zip "Zscaler API Client.app"
+          zip -ry ZS-API-Client-macos-x64.zip "ZS API Client.app"
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-build
-          path: dist/zscaler-api-client-macos-arm64.zip
+          path: dist/ZS-API-Client-macos-x64.zip
 
   release:
     needs: [build-linux, build-windows, build-macos]
@@ -101,31 +101,31 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/linux-build/zscaler-api-client-linux-x64.tar.gz
-            artifacts/windows-build/zscaler-api-client-windows-x64.zip
-            artifacts/macos-build/zscaler-api-client-macos-arm64.zip
+            artifacts/linux-build/ZS-API-Client-linux-x64.tar.gz
+            artifacts/windows-build/ZS-API-Client-windows-x64.zip
+            artifacts/macos-build/ZS-API-Client-macos-x64.zip
           body: |
-            ## Zscaler API Client ${{ github.ref_name }}
+            ## ZS API Client ${{ github.ref_name }}
             
             ### Downloads
             
             | Platform | File |
             |----------|------|
-            | 🐧 Linux (x64) | `zscaler-api-client-linux-x64.tar.gz` |
-            | 🪟 Windows (x64) | `zscaler-api-client-windows-x64.zip` |
-            | 🍎 macOS (ARM64) | `zscaler-api-client-macos-arm64.zip` |
+            | 🐧 Linux (x64) | `ZS-API-Client-linux-x64.tar.gz` |
+            | 🪟 Windows (x64) | `ZS-API-Client-windows-x64.zip` |
+            | 🍎 macOS (x64) | `ZS-API-Client-macos-x64.zip` |
             
             ### Installation
             
             **Linux:**
             ```bash
-            tar xzf zscaler-api-client-linux-x64.tar.gz
-            cd zscaler-api-client
-            ./zscaler-api-client
+            tar xzf ZS-API-Client-linux-x64.tar.gz
+            cd "ZS API Client"
+            ./ZS\ API\ Client
             ```
             
             **Windows:**
-            Extract ZIP and run `ZscalerAPIClient/ZscalerAPIClient.exe`
+            Extract ZIP and run `ZS API Client\ZS API Client.exe`
             
             **macOS:**
-            Extract ZIP and move `Zscaler API Client.app` to Applications
+            Extract ZIP and move `ZS API Client.app` to Applications
