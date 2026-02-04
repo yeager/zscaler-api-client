@@ -5,8 +5,8 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../zscaler_api_client.py" line="2066"/>
-        <source>About Zscaler API Client</source>
-        <translation>À propos de Zscaler API Client</translation>
+        <source>About ZS API Client</source>
+        <translation>À propos de ZS API Client</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2083"/>
@@ -531,8 +531,8 @@ Redémarrer maintenant ?</translation>
         <translation type="vanished">&amp;Documentation de l&apos;API Zscaler</translation>
     </message>
     <message>
-        <source>About Zscaler API Client</source>
-        <translation type="vanished">À propos de Zscaler API Client</translation>
+        <source>About ZS API Client</source>
+        <translation type="vanished">À propos de ZS API Client</translation>
     </message>
     <message>
         <source>ZDX (Zscaler Digital Experience)</source>
@@ -551,8 +551,8 @@ Redémarrer maintenant ?</translation>
         <translation type="vanished">Secret de clé :</translation>
     </message>
     <message>
-        <source>Welcome to Zscaler API Client</source>
-        <translation type="vanished">Bienvenue dans Zscaler API Client</translation>
+        <source>Welcome to ZS API Client</source>
+        <translation type="vanished">Bienvenue dans ZS API Client</translation>
     </message>
     <message>
         <source>Supported APIs</source>
@@ -897,8 +897,8 @@ Redémarrer maintenant ?</translation>
     <name>WelcomeDialog</name>
     <message>
         <location filename="../zscaler_api_client.py" line="1875"/>
-        <source>Welcome to Zscaler API Client</source>
-        <translation>Bienvenue dans Zscaler API Client</translation>
+        <source>Welcome to ZS API Client</source>
+        <translation>Bienvenue dans ZS API Client</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1886"/>

@@ -5,8 +5,8 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../zscaler_api_client.py" line="2066"/>
-        <source>About Zscaler API Client</source>
-        <translation>关于 Zscaler API Client</translation>
+        <source>About ZS API Client</source>
+        <translation>关于 ZS API Client</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2083"/>
@@ -531,7 +531,7 @@ Restart now?</source>
         <translation type="vanished">Zscaler API 文档(&amp;D)</translation>
     </message>
     <message>
-        <source>About Zscaler API Client</source>
+        <source>About ZS API Client</source>
         <translation type="vanished">关于 Zscaler API 客户端</translation>
     </message>
     <message>
@@ -551,8 +551,8 @@ Restart now?</source>
         <translation type="vanished">密钥密码:</translation>
     </message>
     <message>
-        <source>Welcome to Zscaler API Client</source>
-        <translation type="vanished">欢迎使用Zscaler API Client</translation>
+        <source>Welcome to ZS API Client</source>
+        <translation type="vanished">欢迎使用ZS API Client</translation>
     </message>
     <message>
         <source>Supported APIs</source>
@@ -897,8 +897,8 @@ Restart now?</source>
     <name>WelcomeDialog</name>
     <message>
         <location filename="../zscaler_api_client.py" line="1875"/>
-        <source>Welcome to Zscaler API Client</source>
-        <translation>欢迎使用Zscaler API Client</translation>
+        <source>Welcome to ZS API Client</source>
+        <translation>欢迎使用ZS API Client</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1886"/>

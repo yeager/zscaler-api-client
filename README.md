@@ -1,4 +1,4 @@
-# Zscaler API Client
+# ZS API Client
 
 🔐 A Postman-like desktop application for all Zscaler APIs
 

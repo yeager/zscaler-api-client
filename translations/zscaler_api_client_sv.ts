@@ -5,8 +5,8 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../zscaler_api_client.py" line="2066"/>
-        <source>About Zscaler API Client</source>
-        <translation>Om Zscaler API Client</translation>
+        <source>About ZS API Client</source>
+        <translation>Om ZS API Client</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="2083"/>
@@ -531,7 +531,7 @@ Starta om nu?</translation>
         <translation type="vanished">Zscaler API-&amp;dokumentation</translation>
     </message>
     <message>
-        <source>About Zscaler API Client</source>
+        <source>About ZS API Client</source>
         <translation type="vanished">Om Zscaler API-klient</translation>
     </message>
     <message>
@@ -551,8 +551,8 @@ Starta om nu?</translation>
         <translation type="vanished">Nyckelhemlighet:</translation>
     </message>
     <message>
-        <source>Welcome to Zscaler API Client</source>
-        <translation type="vanished">Välkommen till Zscaler API Client</translation>
+        <source>Welcome to ZS API Client</source>
+        <translation type="vanished">Välkommen till ZS API Client</translation>
     </message>
     <message>
         <source>A Postman-like tool for exploring Zscaler APIs</source>
@@ -901,8 +901,8 @@ Starta om nu?</translation>
     <name>WelcomeDialog</name>
     <message>
         <location filename="../zscaler_api_client.py" line="1875"/>
-        <source>Welcome to Zscaler API Client</source>
-        <translation>Välkommen till Zscaler API Client</translation>
+        <source>Welcome to ZS API Client</source>
+        <translation>Välkommen till ZS API Client</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1886"/>

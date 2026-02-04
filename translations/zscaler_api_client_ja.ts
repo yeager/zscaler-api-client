@@ -5,7 +5,7 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../zscaler_api_client.py" line="2066"/>
-        <source>About Zscaler API Client</source>
+        <source>About ZS API Client</source>
         <translation>Zscaler APIクライアントについて</translation>
     </message>
     <message>
@@ -531,7 +531,7 @@ Restart now?</source>
         <translation type="vanished">Zscaler API ドキュメント(&amp;D)</translation>
     </message>
     <message>
-        <source>About Zscaler API Client</source>
+        <source>About ZS API Client</source>
         <translation type="vanished">Zscaler API クライアントについて</translation>
     </message>
     <message>
@@ -551,8 +551,8 @@ Restart now?</source>
         <translation type="vanished">キーシークレット:</translation>
     </message>
     <message>
-        <source>Welcome to Zscaler API Client</source>
-        <translation type="vanished">Zscaler API Clientへようこそ</translation>
+        <source>Welcome to ZS API Client</source>
+        <translation type="vanished">ZS API Clientへようこそ</translation>
     </message>
     <message>
         <source>Supported APIs</source>
@@ -897,8 +897,8 @@ Restart now?</source>
     <name>WelcomeDialog</name>
     <message>
         <location filename="../zscaler_api_client.py" line="1875"/>
-        <source>Welcome to Zscaler API Client</source>
-        <translation>Zscaler API Clientへようこそ</translation>
+        <source>Welcome to ZS API Client</source>
+        <translation>ZS API Clientへようこそ</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="1886"/>

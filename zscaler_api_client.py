@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Zscaler API Client - A Qt-based API client for Zscaler APIs
+# ZS API Client - A Qt-based API client for Zscaler APIs
 # Copyright (C) 2026 Daniel Nylander <daniel@danielnylander.se>
 
 """
-Zscaler API Client - Postman-like tool for Zscaler APIs
+ZS API Client - Postman-like tool for Zscaler APIs
 
 Supports:
 - ZIA (Zscaler Internet Access)
@@ -1872,14 +1872,14 @@ class WelcomeDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(self.tr("Welcome to Zscaler API Client"))
+        self.setWindowTitle(self.tr("Welcome to ZS API Client"))
         self.setMinimumSize(700, 600)
         
         layout = QVBoxLayout(self)
         layout.setSpacing(20)
         
         # Header
-        header = QLabel(f"<h1>🔐 Zscaler API Client v{__version__}</h1>")
+        header = QLabel(f"<h1>🔐 ZS API Client v{__version__}</h1>")
         header.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(header)
         
@@ -2024,7 +2024,7 @@ def create_splash_pixmap() -> QPixmap:
     painter.setFont(font)
     painter.setPen(QColor("#ffffff"))
     painter.drawText(pixmap.rect().adjusted(0, 60, 0, 0), 
-                    Qt.AlignmentFlag.AlignHCenter, "🔐 Zscaler API Client")
+                    Qt.AlignmentFlag.AlignHCenter, "🔐 ZS API Client")
     
     # Draw version
     font = QFont("Arial", 14)
@@ -2063,7 +2063,7 @@ class AboutDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(self.tr("About Zscaler API Client"))
+        self.setWindowTitle(self.tr("About ZS API Client"))
         self.setMinimumSize(520, 550)
         
         layout = QVBoxLayout(self)
@@ -2079,7 +2079,7 @@ class AboutDialog(QDialog):
         content_layout.setSpacing(10)
         
         # Title and version
-        title_label = QLabel(f"<h1>Zscaler API Client</h1>")
+        title_label = QLabel(f"<h1>ZS API Client</h1>")
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         content_layout.addWidget(title_label)
         
@@ -2870,7 +2870,7 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"Zscaler API Client v{__version__}")
+        self.setWindowTitle(f"ZS API Client v{__version__}")
         self.setMinimumSize(1200, 800)
         
         self.zia_session = None
@@ -3774,7 +3774,7 @@ def main():
             os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = os.path.join(lib_path, 'PyQt6', 'Qt6', 'plugins', 'platforms')
     
     app = QApplication(sys.argv)
-    app.setApplicationName("Zscaler API Client")
+    app.setApplicationName("ZS API Client")
     app.setOrganizationName("Zscaler")
     
     # Load settings
