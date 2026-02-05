@@ -16,6 +16,7 @@ Supports:
 import csv
 import json
 import os
+import re
 import sys
 import time
 import urllib.request
@@ -39,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.8.8"
+__version__ = "1.8.9"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -1805,8 +1806,6 @@ class JsonHighlighter(QSyntaxHighlighter):
         self.formats["keyword"] = keyword_format
     
     def highlightBlock(self, text):
-        import re
-        
         # Keys
         for match in re.finditer(r'"([^"]+)"(?=\s*:)', text):
             self.setFormat(match.start(), match.end() - match.start(), self.formats["key"])

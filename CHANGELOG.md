@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.9] - 2026-02-05
+
+### Fixed
+- **JSON Highlighter crash** – Fixed `import re` missing at module level
+  - Was causing SIGABRT in syntax highlighter
+  - Affected response display with large JSON payloads
+
 ## [1.8.8] - 2026-02-05
 
 ### Fixed
