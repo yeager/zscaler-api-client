@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.2] - 2026-02-05
+
+### Added
+- **ZCC App Profiles endpoints** – List, get profiles and assignments
+- **ZCC Enrolled Devices endpoints** – List, details, bulk remove
+- **ZCC API Keys endpoints** – List, create, revoke API keys
+- **API Error Codes dialog** (Help → API Error Codes...)
+  - Reference for all Zscaler API error codes
+  - Organized by API type (ZIA, ZPA, ZDX, ZCC, ZIdentity)
+  - Troubleshooting tips included
+
 ## [1.9.1] - 2026-02-05
 
 ### Fixed

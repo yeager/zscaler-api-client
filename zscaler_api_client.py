@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.9.1"
+__version__ = "1.9.2"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -1043,6 +1043,75 @@ ZCC_ENDPOINTS = {
             "path": "/v1/devices/{deviceId}/logs/upload",
             "description": "Request device to upload logs",
             "doc_url": "https://help.zscaler.com/zcc/troubleshooting-api",
+        },
+    },
+    "App Profiles": {
+        "List App Profiles": {
+            "method": "GET",
+            "path": "/v1/profiles",
+            "description": "Get all ZCC app profiles",
+            "doc_url": "https://help.zscaler.com/zscaler-client-connector/about-zscaler-client-connector-app-profiles",
+        },
+        "Get App Profile": {
+            "method": "GET",
+            "path": "/v1/profiles/{profileId}",
+            "description": "Get app profile by ID",
+            "doc_url": "https://help.zscaler.com/zscaler-client-connector/about-zscaler-client-connector-app-profiles",
+        },
+        "Get Profile Assignments": {
+            "method": "GET",
+            "path": "/v1/profiles/{profileId}/assignments",
+            "description": "Get users/groups assigned to profile",
+            "doc_url": "https://help.zscaler.com/zscaler-client-connector/about-zscaler-client-connector-app-profiles",
+        },
+    },
+    "Enrolled Devices": {
+        "List Enrolled Devices": {
+            "method": "GET",
+            "path": "/v1/enrolled-devices",
+            "description": "Get all enrolled devices with details",
+            "params": {"page": "1", "pageSize": "100", "osType": "", "userName": ""},
+            "doc_url": "https://help.zscaler.com/zscaler-client-connector/about-enrolled-devices",
+        },
+        "Get Enrolled Device Details": {
+            "method": "GET",
+            "path": "/v1/enrolled-devices/{machineId}",
+            "description": "Get detailed info for enrolled device",
+            "doc_url": "https://help.zscaler.com/zscaler-client-connector/about-enrolled-devices",
+        },
+        "Bulk Force Remove": {
+            "method": "POST",
+            "path": "/v1/enrolled-devices/bulk-remove",
+            "description": "Force remove multiple devices",
+            "body": {"machineIds": []},
+            "doc_url": "https://help.zscaler.com/zscaler-client-connector/about-enrolled-devices",
+        },
+    },
+    "API Keys": {
+        "List API Keys": {
+            "method": "GET",
+            "path": "/v1/api-keys",
+            "description": "List all API keys",
+            "doc_url": "https://help.zscaler.com/zscaler-client-connector/about-api-key-management",
+        },
+        "Get API Key": {
+            "method": "GET",
+            "path": "/v1/api-keys/{keyId}",
+            "description": "Get API key details",
+            "doc_url": "https://help.zscaler.com/zscaler-client-connector/about-api-key-management",
+        },
+        "Create API Key": {
+            "method": "POST",
+            "path": "/v1/api-keys",
+            "description": "Create new API key",
+            "body": {"name": "", "description": "", "permissions": []},
+            "doc_url": "https://help.zscaler.com/zscaler-client-connector/about-api-key-management",
+        },
+        "Revoke API Key": {
+            "method": "DELETE",
+            "path": "/v1/api-keys/{keyId}",
+            "description": "Revoke an API key",
+            "doc_url": "https://help.zscaler.com/zscaler-client-connector/about-api-key-management",
         },
     },
 }
@@ -2857,6 +2926,113 @@ class SettingsDialog(QDialog):
         super().accept()
 
 
+class ErrorCodesDialog(QDialog):
+    """Dialog showing Zscaler API error codes reference."""
+    
+    ERROR_CODES = {
+        "ZIA": {
+            "400": ("Bad Request", "Invalid request syntax or parameters"),
+            "401": ("Unauthorized", "Invalid or expired session/credentials"),
+            "403": ("Forbidden", "Insufficient permissions for this operation"),
+            "404": ("Not Found", "Resource does not exist"),
+            "409": ("Conflict", "Resource already exists or conflict with current state"),
+            "429": ("Too Many Requests", "Rate limit exceeded - wait and retry"),
+            "500": ("Internal Server Error", "Server-side error - contact support if persistent"),
+        },
+        "ZPA": {
+            "400": ("Bad Request", "Malformed request or invalid parameters"),
+            "401": ("Unauthorized", "Invalid token or credentials"),
+            "403": ("Forbidden", "Access denied - check role permissions"),
+            "404": ("Not Found", "Application, segment, or connector not found"),
+            "409": ("Conflict", "Duplicate name or conflicting configuration"),
+            "422": ("Unprocessable Entity", "Valid syntax but semantic errors"),
+            "429": ("Rate Limited", "Too many requests - implement backoff"),
+        },
+        "ZDX": {
+            "1000": ("Invalid Request", "Missing or invalid key, secret, or timestamp"),
+            "1001": ("Auth Failed", "Authentication failed - check credentials"),
+            "1004": ("Bad Request", "Malformed request body or parameters"),
+            "400": ("Bad Request", "Invalid request format"),
+            "401": ("Unauthorized", "Token expired or invalid"),
+            "403": ("Forbidden", "Insufficient permissions"),
+        },
+        "ZCC": {
+            "400": ("Bad Request", "Invalid parameters or request format"),
+            "401": ("Unauthorized", "Invalid or expired OAuth token"),
+            "403": ("Forbidden", "API key lacks required permissions"),
+            "404": ("Device Not Found", "Device ID or UDID does not exist"),
+            "409": ("Conflict", "Device already enrolled or token in use"),
+        },
+        "ZIdentity": {
+            "400": ("Bad Request", "Invalid SCIM request or parameters"),
+            "401": ("Unauthorized", "Invalid OAuth token"),
+            "403": ("Forbidden", "Client lacks required scopes"),
+            "404": ("Not Found", "User, group, or IdP not found"),
+            "409": ("Conflict", "User or group already exists"),
+            "422": ("Validation Error", "SCIM schema validation failed"),
+        },
+    }
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("API Error Codes Reference"))
+        self.setMinimumSize(700, 500)
+        
+        layout = QVBoxLayout(self)
+        
+        # Header
+        header = QLabel(self.tr("<h2>🔴 Zscaler API Error Codes</h2>"))
+        layout.addWidget(header)
+        
+        desc = QLabel(self.tr("Common error codes and their meanings for each API."))
+        desc.setStyleSheet("color: #666; margin-bottom: 10px;")
+        layout.addWidget(desc)
+        
+        # Tab widget for each API
+        tabs = QTabWidget()
+        
+        for api_name, codes in self.ERROR_CODES.items():
+            widget = QWidget()
+            api_layout = QVBoxLayout(widget)
+            
+            table = QTableWidget()
+            table.setColumnCount(3)
+            table.setHorizontalHeaderLabels([self.tr("Code"), self.tr("Name"), self.tr("Description")])
+            table.horizontalHeader().setStretchLastSection(True)
+            table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+            table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+            table.setRowCount(len(codes))
+            table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+            table.setAlternatingRowColors(True)
+            
+            for row, (code, (name, desc)) in enumerate(codes.items()):
+                table.setItem(row, 0, QTableWidgetItem(str(code)))
+                table.setItem(row, 1, QTableWidgetItem(name))
+                table.setItem(row, 2, QTableWidgetItem(desc))
+            
+            api_layout.addWidget(table)
+            tabs.addTab(widget, api_name)
+        
+        layout.addWidget(tabs)
+        
+        # Tips section
+        tips = QLabel(self.tr(
+            "<p><b>💡 Tips:</b></p>"
+            "<ul>"
+            "<li><b>401/403:</b> Re-authenticate using the Auth button</li>"
+            "<li><b>429:</b> Wait 60 seconds before retrying</li>"
+            "<li><b>500:</b> Check Zscaler status page for outages</li>"
+            "</ul>"
+        ))
+        tips.setStyleSheet("background: #f0f9ff; padding: 10px; border-radius: 5px;")
+        layout.addWidget(tips)
+        
+        # Close button
+        close_btn = QPushButton(self.tr("Close"))
+        close_btn.clicked.connect(self.accept)
+        layout.addWidget(close_btn)
+
+
 class BatchDialog(QDialog):
     """Dialog for batch operations."""
     
@@ -3373,6 +3549,10 @@ class MainWindow(QMainWindow):
         api_portal_action = QAction(self.tr("Zscaler API &Portal"), self)
         api_portal_action.triggered.connect(lambda: __import__("webbrowser").open("https://automate.zscaler.com/"))
         help_menu.addAction(api_portal_action)
+        
+        error_codes_action = QAction(self.tr("API &Error Codes..."), self)
+        error_codes_action.triggered.connect(self._show_error_codes)
+        help_menu.addAction(error_codes_action)
         
         help_menu.addSeparator()
         
@@ -4255,6 +4435,10 @@ class MainWindow(QMainWindow):
     
     def _show_about(self):
         dialog = AboutDialog(self)
+        dialog.exec()
+    
+    def _show_error_codes(self):
+        dialog = ErrorCodesDialog(self)
         dialog.exec()
 
 
