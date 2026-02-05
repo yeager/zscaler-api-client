@@ -348,49 +348,54 @@
         <translation>&amp;Om...</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3202" />
+        <location filename="../zscaler_api_client.py" line="3200" />
+        <source>About &amp;Qt...</source>
+        <translation>دربارۀ Qt</translation>
+    </message>
+    <message>
+        <location filename="../zscaler_api_client.py" line="3206" />
         <source>ZIA API &amp;Documentation</source>
         <translation>ZIA API-&amp;dokumentation</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3206" />
+        <location filename="../zscaler_api_client.py" line="3210" />
         <source>ZPA API D&amp;ocumentation</source>
         <translation>ZPA API-d&amp;okumentation</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3210" />
+        <location filename="../zscaler_api_client.py" line="3214" />
         <source>Zscaler API &amp;Portal</source>
         <translation>Zscaler API-&amp;portal</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3216" />
+        <location filename="../zscaler_api_client.py" line="3220" />
         <source>Check for &amp;Updates...</source>
         <translation>Sök efter &amp;uppdateringar...</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3332" />
-        <location filename="../zscaler_api_client.py" line="3563" />
-        <location filename="../zscaler_api_client.py" line="3599" />
+        <location filename="../zscaler_api_client.py" line="3336" />
+        <location filename="../zscaler_api_client.py" line="3567" />
+        <location filename="../zscaler_api_client.py" line="3603" />
         <source>Warning</source>
         <translation>Varning</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3332" />
+        <location filename="../zscaler_api_client.py" line="3336" />
         <source>Please enter a URL</source>
         <translation>Ange en URL</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3368" />
+        <location filename="../zscaler_api_client.py" line="3372" />
         <source>Error</source>
         <translation>خطا</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3372" />
+        <location filename="../zscaler_api_client.py" line="3376" />
         <source>Sending request...</source>
         <translation>Skickar begäran...</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3706" />
+        <location filename="../zscaler_api_client.py" line="3710" />
         <source>The application needs to restart to apply the new language.
 
 Restart now?</source>
@@ -403,98 +408,98 @@ Restart now?</source>
         <translation>موفق</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3418" />
+        <location filename="../zscaler_api_client.py" line="3422" />
         <source>Request successful</source>
         <translation>Begäran lyckades</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3424" />
+        <location filename="../zscaler_api_client.py" line="3428" />
         <source>ZIA authenticated successfully</source>
         <translation>ZIA autentiserad</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3427" />
+        <location filename="../zscaler_api_client.py" line="3431" />
         <source>ZPA authenticated successfully</source>
         <translation>ZPA autentiserad</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3433" />
+        <location filename="../zscaler_api_client.py" line="3437" />
         <source>Request failed</source>
         <translation>Begäran misslyckades</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3482" />
+        <location filename="../zscaler_api_client.py" line="3486" />
         <source>Batch</source>
         <translation>Batch</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3483" />
+        <location filename="../zscaler_api_client.py" line="3487" />
         <source>Processing {count} items...</source>
         <translation>Bearbetar {count} objekt...</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3508" />
+        <location filename="../zscaler_api_client.py" line="3512" />
         <source>Request loaded from history</source>
         <translation>Begäran laddad från historik</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3563" />
+        <location filename="../zscaler_api_client.py" line="3567" />
         <source>No URL to copy</source>
         <translation>Ingen URL att kopiera</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3590" />
+        <location filename="../zscaler_api_client.py" line="3594" />
         <source>cURL command copied to clipboard</source>
         <translation>cURL-kommando kopierat till urklipp</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3597" />
+        <location filename="../zscaler_api_client.py" line="3601" />
         <source>Response copied to clipboard</source>
         <translation>Respons kopierad till urklipp</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3599" />
+        <location filename="../zscaler_api_client.py" line="3603" />
         <source>No response to copy</source>
         <translation>پاسخی برای کپی وجود ندارد</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3610" />
+        <location filename="../zscaler_api_client.py" line="3614" />
         <source>Request cleared</source>
         <translation>Begäran rensad</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3623" />
-        <location filename="../zscaler_api_client.py" line="3673" />
+        <location filename="../zscaler_api_client.py" line="3627" />
+        <location filename="../zscaler_api_client.py" line="3677" />
         <source>Missing Credentials</source>
         <translation>Saknade autentiseringsuppgifter</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3624" />
+        <location filename="../zscaler_api_client.py" line="3628" />
         <source>Please configure ZIA credentials in Settings first.</source>
         <translation>Konfigurera ZIA-autentiseringsuppgifter i Inställningar först.</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3645" />
+        <location filename="../zscaler_api_client.py" line="3649" />
         <source>ZIA auth request prepared. Click Send to authenticate.</source>
         <translation>ZIA-autentiseringsbegäran förberedd. Klicka på Skicka för att autentisera.</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3674" />
+        <location filename="../zscaler_api_client.py" line="3678" />
         <source>Please configure ZPA credentials in Settings first.</source>
         <translation>Konfigurera ZPA-autentiseringsuppgifter i Inställningar först.</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3687" />
+        <location filename="../zscaler_api_client.py" line="3691" />
         <source>ZPA auth request prepared. Click Send to authenticate.</source>
         <translation>ZPA-autentiseringsbegäran förberedd. Klicka på Skicka för att autentisera.</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3693" />
+        <location filename="../zscaler_api_client.py" line="3697" />
         <source>All sessions cleared</source>
         <translation>همه نشست‌ها پاک شدند</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3705" />
+        <location filename="../zscaler_api_client.py" line="3709" />
         <source>Language Changed</source>
         <translation>زبان تغییر کرد</translation>
     </message>
@@ -503,54 +508,54 @@ Restart now?</source>
         <translation>لطفاً برنامه را برای اعمال زبان جدید راه‌اندازی مجدد کنید.</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3754" />
+        <location filename="../zscaler_api_client.py" line="3758" />
         <source>Checking for updates...</source>
         <translation>در حال بررسی به‌روزرسانی‌ها...</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3785" />
+        <location filename="../zscaler_api_client.py" line="3789" />
         <source>Update Available</source>
         <translation>به‌روزرسانی موجود است</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3787" />
+        <location filename="../zscaler_api_client.py" line="3791" />
         <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
         <translation>&lt;h3&gt;نسخه جدیدی در دسترس است!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;نسخه فعلی:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;آخرین نسخه:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;آیا می‌خواهید صفحه دانلود را باز کنید؟&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3797" />
+        <location filename="../zscaler_api_client.py" line="3801" />
         <source>Update available: v{version}</source>
         <translation>Uppdatering tillgänglig: v{version}</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3801" />
+        <location filename="../zscaler_api_client.py" line="3805" />
         <source>No Updates</source>
         <translation>Inga uppdateringar</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3803" />
+        <location filename="../zscaler_api_client.py" line="3807" />
         <source>&lt;p&gt;You are running the latest version.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Version:&lt;/b&gt; {version}&lt;/p&gt;</source>
         <translation>&lt;p&gt;شما از آخرین نسخه استفاده می‌کنید.&lt;/p&gt;&lt;p&gt;&lt;b&gt;نسخه:&lt;/b&gt; {version}&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3807" />
+        <location filename="../zscaler_api_client.py" line="3811" />
         <source>You are up to date (v{version})</source>
         <translation>Du har senaste versionen (v{version})</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3812" />
+        <location filename="../zscaler_api_client.py" line="3816" />
         <source>Update Check Failed</source>
         <translation>Kunde inte söka efter uppdateringar</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3813" />
+        <location filename="../zscaler_api_client.py" line="3817" />
         <source>Could not check for updates:
 {error}</source>
         <translation>Kunde inte söka efter uppdateringar:
 {error}</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3815" />
+        <location filename="../zscaler_api_client.py" line="3819" />
         <source>Update check failed</source>
         <translation>بررسی به‌روزرسانی ناموفق بود</translation>
     </message>
@@ -990,6 +995,19 @@ Restart now?</source>
         <location filename="../zscaler_api_client.py" line="1984" />
         <source>Get Started</source>
         <translation>شروع</translation>
+    </message>
+</context>
+<context>
+    <name>window</name>
+    <message>
+        <location filename="../zscaler_api_client.py" line="3943" />
+        <source>Automatic Update Check</source>
+        <translation>بررسی خودکار به روزرسانی</translation>
+    </message>
+    <message>
+        <location filename="../zscaler_api_client.py" line="3945" />
+        <source>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</source>
+        <translation>&lt;p style=";text-align:right;direction:rtl"&gt;آیا می‌خواهید هنگام شروع برنامه، به‌طور خودکار به‌روزرسانی‌ها را بررسی کنید؟&lt;/p&gt;&lt;p style=";text-align:right;direction:rtl"&gt; این دستور به گیت‌هاب متصل می‌شود تا نسخه‌های جدید را بررسی کند.&lt;/p&gt;</translation>
     </message>
 </context>
 </TS>

@@ -3197,6 +3197,10 @@ class MainWindow(QMainWindow):
         about_action.triggered.connect(self._show_about)
         help_menu.addAction(about_action)
         
+        about_qt_action = QAction(self.tr("About &Qt..."), self)
+        about_qt_action.triggered.connect(QApplication.aboutQt)
+        help_menu.addAction(about_qt_action)
+        
         help_menu.addSeparator()
         
         zia_docs_action = QAction(self.tr("ZIA API &Documentation"), self)
@@ -3930,10 +3934,32 @@ def main():
     # Show changelog if app was updated (after welcome dialog)
     QTimer.singleShot(500 if show_welcome else 100, window._show_changelog_if_updated)
     
-    # Auto-check for updates on startup
-    auto_update = settings.value("advanced/auto_update_check", "true") == "true"
-    if auto_update and not show_welcome:
-        QTimer.singleShot(2000, window._check_for_updates)
+    # Ask about auto-update on first run
+    auto_update_asked = settings.value("advanced/auto_update_asked", "false") == "true"
+    if not auto_update_asked:
+        def ask_auto_update():
+            reply = QMessageBox.question(
+                window,
+                window.tr("Automatic Update Check"),
+                window.tr(
+                    "<p>Would you like to automatically check for updates when the app starts?</p>"
+                    "<p>This will connect to GitHub to check for new versions.</p>"
+                ),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.Yes
+            )
+            settings.setValue("advanced/auto_update_asked", "true")
+            if reply == QMessageBox.StandardButton.Yes:
+                settings.setValue("advanced/auto_update_check", "true")
+                window._check_for_updates()
+            else:
+                settings.setValue("advanced/auto_update_check", "false")
+        QTimer.singleShot(1000 if show_welcome else 300, ask_auto_update)
+    else:
+        # Auto-check for updates on startup
+        auto_update = settings.value("advanced/auto_update_check", "true") == "true"
+        if auto_update and not show_welcome:
+            QTimer.singleShot(2000, window._check_for_updates)
     
     sys.exit(app.exec())
 
