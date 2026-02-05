@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.3] - 2026-02-05
+
+### Fixed
+- **ZIdentity authentication** – Added token support for ZIdentity, ZDX, ZCC, ZTW, ZWA, EASM APIs
+- **Empty response handling** – Fixed "Expecting value" JSON parse error for empty API responses
+- **HTTP error details** – Now shows full error response body for debugging
+
+### Added
+- Authorization header support for all 8 API types
+- Per-API token storage and management
+- Better error messages with HTTP status codes
+
 ## [1.8.2] - 2026-02-05
 
 ### Fixed

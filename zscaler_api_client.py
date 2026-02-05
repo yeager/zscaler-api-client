@@ -39,7 +39,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.8.2"
+__version__ = "1.8.3"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -1863,8 +1863,20 @@ class ApiWorker(QThread):
         
         request = urllib.request.Request(url, data=data, headers=headers, method=method)
         
-        with urllib.request.urlopen(request, timeout=30) as response:
-            return json.loads(response.read().decode("utf-8"))
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                response_data = response.read().decode("utf-8")
+                # Handle empty responses
+                if not response_data or not response_data.strip():
+                    return {"status": "success", "message": "Empty response (operation may have succeeded)"}
+                return json.loads(response_data)
+        except urllib.error.HTTPError as e:
+            error_body = ""
+            try:
+                error_body = e.read().decode("utf-8")
+            except:
+                pass
+            raise Exception(f"HTTP {e.code}: {e.reason}\n{error_body}")
 
 
 class WelcomeDialog(QDialog):
@@ -2953,6 +2965,12 @@ class MainWindow(QMainWindow):
         
         self.zia_session = None
         self.zpa_token = None
+        self.zdx_token = None
+        self.zcc_token = None
+        self.zidentity_token = None
+        self.ztw_token = None
+        self.zwa_token = None
+        self.easm_token = None
         self.request_history = []
         
         self._setup_ui()
@@ -3365,6 +3383,18 @@ class MainWindow(QMainWindow):
             headers["Cookie"] = f"JSESSIONID={self.zia_session}"
         elif api_type == "ZPA" and self.zpa_token:
             headers["Authorization"] = f"Bearer {self.zpa_token}"
+        elif api_type == "ZDX" and self.zdx_token:
+            headers["Authorization"] = f"Bearer {self.zdx_token}"
+        elif api_type == "ZCC" and self.zcc_token:
+            headers["Authorization"] = f"Bearer {self.zcc_token}"
+        elif api_type == "ZIdentity" and self.zidentity_token:
+            headers["Authorization"] = f"Bearer {self.zidentity_token}"
+        elif api_type == "ZTW" and self.ztw_token:
+            headers["Authorization"] = f"Bearer {self.ztw_token}"
+        elif api_type == "ZWA" and self.zwa_token:
+            headers["Authorization"] = f"Bearer {self.zwa_token}"
+        elif api_type == "EASM" and self.easm_token:
+            headers["Authorization"] = f"Bearer {self.easm_token}"
         
         # Build params
         params = {}
@@ -3436,14 +3466,40 @@ class MainWindow(QMainWindow):
                 self.response_body.setPlainText(json.dumps(res["data"], indent=indent_val))
                 self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms)")
                 
-                # Check for session token in response (ZIA)
+                # Check for session token in response
+                api_type = self.api_type.currentText()
                 if isinstance(res["data"], dict):
                     if "authCookie" in res["data"]:
                         self.zia_session = res["data"]["authCookie"]
                         self.status_bar.showMessage(self.tr("ZIA authenticated successfully"))
                     elif "access_token" in res["data"]:
-                        self.zpa_token = res["data"]["access_token"]
-                        self.status_bar.showMessage(self.tr("ZPA authenticated successfully"))
+                        token = res["data"]["access_token"]
+                        # Set token for the correct API type
+                        if api_type == "ZPA":
+                            self.zpa_token = token
+                            self.status_bar.showMessage(self.tr("ZPA authenticated successfully"))
+                        elif api_type == "ZDX":
+                            self.zdx_token = token
+                            self.status_bar.showMessage(self.tr("ZDX authenticated successfully"))
+                        elif api_type == "ZCC":
+                            self.zcc_token = token
+                            self.status_bar.showMessage(self.tr("ZCC authenticated successfully"))
+                        elif api_type == "ZIdentity":
+                            self.zidentity_token = token
+                            self.status_bar.showMessage(self.tr("ZIdentity authenticated successfully"))
+                        elif api_type == "ZTW":
+                            self.ztw_token = token
+                            self.status_bar.showMessage(self.tr("ZTW authenticated successfully"))
+                        elif api_type == "ZWA":
+                            self.zwa_token = token
+                            self.status_bar.showMessage(self.tr("ZWA authenticated successfully"))
+                        elif api_type == "EASM":
+                            self.easm_token = token
+                            self.status_bar.showMessage(self.tr("EASM authenticated successfully"))
+                        else:
+                            # Default to ZPA for backwards compatibility
+                            self.zpa_token = token
+                            self.status_bar.showMessage(self.tr("Authenticated successfully"))
             else:
                 self.response_info.setText(
                     f"<span style='color: red;'>✗ {self.tr('Error')} ({duration_ms}ms)</span>"
