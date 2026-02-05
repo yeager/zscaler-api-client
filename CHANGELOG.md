@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0] - 2026-02-05
+
+### Added
+- **What's New dialog** – Shows changelog after app update with option to disable
+- **Version tracking** – App remembers last known version to detect updates
+
+### Changed
+- Improved update flow with automatic changelog display
+
 ## [1.7.2] - 2026-02-04
 
 ### Changed

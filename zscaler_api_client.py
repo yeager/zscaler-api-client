@@ -39,7 +39,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.7.2"
+__version__ = "1.8.0"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -2163,6 +2163,84 @@ class AboutDialog(QDialog):
         layout.addWidget(buttons)
 
 
+class ChangelogDialog(QDialog):
+    """Dialog showing changelog after application update."""
+    
+    def __init__(self, parent=None, previous_version: str = None):
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("What's New"))
+        self.setMinimumSize(550, 450)
+        
+        layout = QVBoxLayout(self)
+        layout.setSpacing(15)
+        
+        # Header
+        header = QLabel(self.tr("<h2>🎉 Updated to version {version}</h2>").format(version=__version__))
+        header.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(header)
+        
+        if previous_version:
+            from_label = QLabel(self.tr("<p style='color: #666;'>Updated from version {prev}</p>").format(prev=previous_version))
+            from_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(from_label)
+        
+        # Changelog content
+        changelog_text = QTextEdit()
+        changelog_text.setReadOnly(True)
+        changelog_text.setMinimumHeight(300)
+        
+        # Load changelog
+        changelog_content = self._load_changelog()
+        changelog_text.setMarkdown(changelog_content)
+        
+        layout.addWidget(changelog_text)
+        
+        # Don't show again checkbox
+        self.dont_show = QCheckBox(self.tr("Don't show this after future updates"))
+        layout.addWidget(self.dont_show)
+        
+        # Close button
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+        buttons.accepted.connect(self.accept)
+        layout.addWidget(buttons)
+    
+    def _load_changelog(self) -> str:
+        """Load and return the changelog content, limited to recent versions."""
+        try:
+            # Find changelog file
+            if getattr(sys, 'frozen', False):
+                base_path = Path(sys.executable).parent
+                changelog_path = base_path / "CHANGELOG.md"
+                if not changelog_path.exists():
+                    changelog_path = base_path.parent / "Resources" / "CHANGELOG.md"
+            else:
+                changelog_path = Path(__file__).parent / "CHANGELOG.md"
+            
+            if not changelog_path.exists():
+                return self.tr("*Changelog not found*")
+            
+            with open(changelog_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            
+            # Extract only the latest 3 versions
+            lines = content.split('\n')
+            result = []
+            version_count = 0
+            
+            for line in lines:
+                if line.startswith('## ['):
+                    version_count += 1
+                    if version_count > 3:
+                        break
+                if version_count <= 3:
+                    result.append(line)
+            
+            return '\n'.join(result) if result else content[:2000]
+            
+        except Exception as e:
+            return self.tr("*Could not load changelog: {error}*").format(error=str(e))
+
+
 class SettingsDialog(QDialog):
     """Settings dialog for API credentials and advanced options."""
     
@@ -3653,6 +3731,24 @@ class MainWindow(QMainWindow):
             script = os.path.abspath(__file__)
             os.execv(executable, [executable, script])
     
+    def _show_changelog_if_updated(self):
+        """Show changelog dialog if the application was updated since last run."""
+        settings = QSettings("Zscaler", "APIClient")
+        last_known_version = settings.value("last_known_version", "")
+        show_changelog = settings.value("show_changelog_after_update", "true") == "true"
+        
+        if last_known_version and last_known_version != __version__ and show_changelog:
+            # Version changed - show changelog
+            dialog = ChangelogDialog(self, last_known_version)
+            dialog.exec()
+            
+            # Check if user doesn't want to see it again
+            if dialog.dont_show.isChecked():
+                settings.setValue("show_changelog_after_update", "false")
+        
+        # Update stored version
+        settings.setValue("last_known_version", __version__)
+    
     def _check_for_updates(self):
         """Check GitHub for newer releases."""
         self.status_bar.showMessage(self.tr("Checking for updates..."))
@@ -3830,6 +3926,9 @@ def main():
     show_welcome = settings.value("welcome/show_on_startup", "true") == "true"
     if show_welcome:
         QTimer.singleShot(100, lambda: WelcomeDialog(window).exec())
+    
+    # Show changelog if app was updated (after welcome dialog)
+    QTimer.singleShot(500 if show_welcome else 100, window._show_changelog_if_updated)
     
     # Auto-check for updates on startup
     auto_update = settings.value("advanced/auto_update_check", "true") == "true"
