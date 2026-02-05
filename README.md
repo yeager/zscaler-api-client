@@ -4,244 +4,237 @@
 
 [![Latest Release](https://img.shields.io/github/v/release/yeager/zscaler-api-client)](https://github.com/yeager/zscaler-api-client/releases)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%203.0-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)](https://github.com/yeager/zscaler-api-client/releases)
 
 ![Screenshot](screenshots/main.png)
 
-## Features
+## 🛡️ Security First
 
-- **8 APIs Supported** – ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA, EASM
-- **API Explorer** – Browse 200+ endpoints with inline documentation
-- **Request Builder** – Build requests with params, headers, and JSON body
-- **JSON Highlighting** – Syntax highlighting for responses
-- **Batch Operations** – Import CSV for bulk create/delete/update
-- **Request History** – Browse and reload previous requests
-- **Copy as cURL** – Export requests for command-line use
-- **Multi-language** – 8 languages: English, Swedish, German, French, Spanish, Japanese, Chinese, Farsi
-- **Secure Storage** – Credentials stored in system keychain
-- **Advanced Settings** – Timeouts, proxy, SSL verification, themes
+ZS API Client is built with security as a top priority:
+
+### Credential Security
+- **System Keychain Integration** – All credentials stored securely in macOS Keychain, Windows Credential Locker, or Linux Secret Service
+- **No Plain Text Storage** – Sensitive data never written to disk in readable format
+- **Memory Protection** – Credentials cleared from memory when not in use
+
+### Update Security
+- **Verified Updates** – Update checker verifies releases from trusted GitHub repository only
+- **Author Verification** – Only accepts releases from verified maintainer (yeager)
+- **SSL Enforcement** – All update checks use HTTPS with certificate verification
+- **Pre-release Warnings** – Clearly indicates when a release is a pre-release version
+
+### API Security
+- **Per-Session Tokens** – Each API type maintains its own authentication token
+- **Automatic Session Cleanup** – Sessions terminated when app closes
+- **No Telemetry** – Zero tracking, analytics, or external connections except Zscaler APIs
+- **OAuth 2.0 Support** – Modern authentication for all newer APIs
+
+## ✨ Features
+
+### API Coverage
+- **8 APIs Supported** – Complete coverage of the Zscaler platform:
+  - ZIA (Zscaler Internet Access)
+  - ZPA (Zscaler Private Access)
+  - ZDX (Zscaler Digital Experience)
+  - ZCC (Client Connector)
+  - ZIdentity (Identity & Access Management)
+  - ZTW (Zero Trust Workloads / Branch Connector)
+  - ZWA (Workflow Automation)
+  - EASM (External Attack Surface Management)
+
+### Developer Experience
+- **200+ Endpoints** – Browse all available API endpoints in an organized tree view
+- **Inline Documentation** – Direct links to official Zscaler API docs for each endpoint
+- **Request Builder** – Full control over URL, params, headers, and JSON body
+- **Syntax Highlighting** – Beautiful JSON response formatting
+- **Copy as cURL** – Export any request for command-line use or scripting
+- **Request History** – Browse and replay previous requests
+
+### Productivity
+- **Batch Operations** – Import CSV files for bulk create/delete/update operations
+- **Multi-language UI** – 8 languages: English, Swedish, German, French, Spanish, Japanese, Chinese, Farsi
 - **Light/Dark Themes** – Full theme support with system auto-detection
-- **Splash Screen** – Professional startup experience
-- **Welcome Guide** – Getting started help for new users
-- **Inline Documentation** – Links to API docs for each endpoint
-- **Auto-Update Check** – Automatically checks for new versions on startup
+- **Keyboard Shortcuts** – Efficient workflow with customizable shortcuts
+- **What's New Dialog** – See changes after each update
 
-## Supported APIs
+### Enterprise Ready
+- **Cross-Platform** – Native builds for macOS (Apple Silicon & Intel), Windows, and Linux
+- **Offline Capable** – Works without internet (except for API calls)
+- **No Installation Required** – Portable app, just download and run
+- **Open Source** – Full source code available for security audits
+
+## 📦 Installation
+
+### Download
+Get the latest release for your platform:
+- **macOS (Apple Silicon):** `ZS API Client-x.x.x-macos-arm64.dmg`
+- **Windows:** `ZS-API-Client-x.x.x-win64.zip`
+- **Linux:** `ZS-API-Client-x.x.x-linux-x64.tar.gz`
+
+👉 [Download Latest Release](https://github.com/yeager/zscaler-api-client/releases/latest)
+
+### From Source
+```bash
+# Clone repository
+git clone https://github.com/yeager/zscaler-api-client.git
+cd zscaler-api-client
+
+# Install dependencies
+pip install PySide6 keyring
+
+# Run
+python zscaler_api_client.py
+```
+
+### Build Standalone App
+```bash
+pip install pyinstaller
+pyinstaller "ZS API Client.spec"
+```
+
+## 🚀 Quick Start
+
+### 1. Configure Credentials
+**File → Settings** and enter your Zscaler credentials:
+
+| API | Required Credentials |
+|-----|---------------------|
+| ZIA | Cloud, API Key, Username, Password |
+| ZPA | Cloud, Client ID, Client Secret, Customer ID |
+| ZDX | Cloud, API Key, API Secret |
+| ZCC | Cloud, Client ID, Client Secret |
+| ZIdentity | Vanity Domain, Client ID, Client Secret |
+| ZTW | Cloud, Client ID, Client Secret |
+| ZWA | Cloud, Client ID, Client Secret |
+| EASM | Cloud, API Key, API Secret |
+
+### 2. Authenticate
+Select an API → Choose an **Authenticate** endpoint → Click **Send**
+
+### 3. Explore & Test
+Browse endpoints in the tree, modify parameters, and send requests!
+
+## 📋 Supported APIs
 
 ### ZIA (Zscaler Internet Access)
-- Authentication
-- Users, Groups, Departments
-- Locations
+Web security, URL filtering, and firewall policies.
+- User/Group/Department Management
 - URL Categories & Lookup
 - Firewall Policies
+- Security Insights & Risk Scores
+- Malware Protection Stats
+- Sandbox File Analysis
 - Admin Audit Logs
-- Activation
-- **Security Insights** (Company Risk Score, Threat Insights)
-- **Malware Protection** (Detection Stats, Blocked Malware, By Type)
-- **Reports** (Executive Summary, Traffic, Security, Bandwidth, Top Users/Apps/Threats)
-- **Sandbox** (Submit Files, Get Reports, Quota)
 
 ### ZPA (Zscaler Private Access)
-- Authentication (OAuth)
+Zero trust application access.
 - Application Segments
-- Segment Groups
-- Server Groups
-- Connectors
+- Server Groups & Connectors
 - Access Policies
 - SAML Attributes
 
 ### ZDX (Zscaler Digital Experience)
-- Authentication (OAuth)
-- Administration (Departments, Locations, Geolocations)
-- Devices & Health Metrics
-- Users & Scores
-- Applications & Performance
+End-user experience monitoring.
+- Device Health Metrics
+- User Experience Scores
+- Application Performance
+- Web Probes & Deep Traces
 - Alerts
-- Web Probes
-- Deep Traces
 
 ### ZCC (Client Connector)
-- Authentication (OAuth)
-- Device Management
-- **Compliance Status** (compliant/non-compliant devices)
-- Posture Profiles
-- Software Versions & Updates
+Endpoint agent management.
+- Device Inventory
+- Compliance Status
+- Software Updates
 - Enrollment Tokens
-- Troubleshooting & Logs
+- Troubleshooting Logs
 
 ### ZIdentity (Identity & Access Management)
-- OAuth 2.0 Authentication
-- User Management (CRUD)
-- Group Management
-- **SCIM 2.0** (Users, Groups provisioning)
-- Identity Providers (SAML, OIDC)
-- API Clients Management
+User identity and SSO.
+- User & Group Management
+- SCIM 2.0 Provisioning
+- Identity Providers (SAML/OIDC)
+- API Client Management
 - Audit Logs
 
 ### ZTW (Zero Trust Workloads)
-- OAuth Authentication
+Branch connector management.
 - Branch Connectors
-- Connector Groups
-- Locations
-- Service Edges & Health
-- Traffic Forwarding Rules
+- Service Edges
+- Traffic Forwarding
+- Location Management
 
 ### ZWA (Workflow Automation)
-- OAuth Authentication
-- Workflows (Create, Execute, Enable/Disable)
-- Execution History & Logs
-- Triggers & Webhooks
-- Actions & Integrations
+Security automation workflows.
+- Workflow Management
+- Execution History
+- Triggers & Actions
 - Templates
 
 ### EASM (External Attack Surface Management)
-- OAuth Authentication
-- **Asset Discovery** (domains, IPs, certificates)
+External threat discovery.
+- Asset Discovery
 - Vulnerability Management
-- Risk Assessment & Trends
+- Risk Assessment
 - Certificate Monitoring
 - Scan Management
-- Reports (Executive, Technical)
 
-## Installation
-
-### Requirements
-- Python 3.9+
-- PyQt6 or PySide6
-
-### Install
-```bash
-pip install PyQt6
-git clone https://github.com/yeager/zscaler-api-client.git
-cd zscaler-api-client
-python zscaler_api_client.py
-```
-
-### macOS App Bundle
-```bash
-pip install pyinstaller
-pyinstaller zscaler_api_client.spec
-```
-
-The included `.spec` file and `runtime_hook.py` handle Qt plugin paths correctly for bundled apps.
-
-## Usage
-
-### 1. Configure Credentials
-Go to **File → Settings** and enter your Zscaler credentials:
-
-**ZIA:**
-- Cloud (e.g., `zsapi.zscaler.net`)
-- API Key
-- Admin Username
-- Admin Password
-
-**ZPA:**
-- Cloud (e.g., `config.private.zscaler.com`)
-- Client ID
-- Client Secret
-- Customer ID
-
-### 2. Browse Endpoints
-Select **ZIA** or **ZPA** from the dropdown, then click on an endpoint in the tree to load it.
-
-### 3. Send Request
-1. Modify the URL, params, headers, or body as needed
-2. Click **Send**
-3. View the JSON response with syntax highlighting
-
-### 4. Batch Operations
-Go to **File → Batch Operations** to:
-1. Import a CSV file
-2. Select the operation (Create Users, Delete Users, etc.)
-3. Execute in bulk
-
-### CSV Format Examples
-
-**Create Users (ZIA):**
-```csv
-name,email,department_id,group_ids
-John Doe,john@example.com,123,"[456,789]"
-Jane Doe,jane@example.com,123,"[456]"
-```
-
-**URL Lookup (ZIA):**
-```csv
-url
-example.com
-test.com
-malware.com
-```
-
-## Keyboard Shortcuts
+## ⌨️ Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
-| Ctrl+Enter | Send Request |
-| Ctrl+, | Settings |
-| Ctrl+B | Batch Operations |
-| Ctrl+H | Request History |
-| Ctrl+Shift+C | Copy as cURL |
-| Ctrl+Shift+R | Copy Response |
-| Ctrl+Q | Quit |
+| `Ctrl+Enter` | Send Request |
+| `Ctrl+,` | Settings |
+| `Ctrl+B` | Batch Operations |
+| `Ctrl+H` | Request History |
+| `Ctrl+Shift+C` | Copy as cURL |
+| `Ctrl+Shift+R` | Copy Response |
+| `Ctrl+Q` | Quit |
 
-## Languages
+## 🌍 Languages
 
-The application supports:
-- 🇬🇧 English (default)
-- 🇸🇪 Svenska
-- 🇩🇪 Deutsch
-- 🇫🇷 Français
-- 🇪🇸 Español
-- 🇯🇵 日本語
-- 🇨🇳 中文
-- 🇮🇷 فارسی
+Change language via the **Language** menu:
 
-Change via **Language** menu.
+🇬🇧 English • 🇸🇪 Svenska • 🇩🇪 Deutsch • 🇫🇷 Français • 🇪🇸 Español • 🇯🇵 日本語 • 🇨🇳 中文 • 🇮🇷 فارسی
 
-## API Documentation
+## 📚 Documentation
 
-| API | Documentation |
+| API | Official Docs |
 |-----|---------------|
-| ZIA | [ZIA API Reference](https://help.zscaler.com/zia/api) |
-| ZPA | [ZPA API Reference](https://help.zscaler.com/zpa/api-reference) |
-| ZDX | [ZDX API Reference](https://help.zscaler.com/zdx/api-reference) |
-| ZCC | [ZCC API Reference](https://help.zscaler.com/zcc/api-reference) |
-| ZIdentity | [ZIdentity API](https://help.zscaler.com/zidentity/api-reference) |
-| ZTW | [Cloud Branch Connector API](https://help.zscaler.com/cloud-branch-connector/api-reference) |
-| ZWA | [Workflow Automation API](https://help.zscaler.com/workflow-automation/api-reference) |
-| EASM | [EASM API Reference](https://help.zscaler.com/easm/api-reference) |
+| ZIA | [help.zscaler.com/zia/api](https://help.zscaler.com/zia/api) |
+| ZPA | [help.zscaler.com/zpa/api-reference](https://help.zscaler.com/zpa/api-reference) |
+| ZDX | [help.zscaler.com/zdx/api-reference](https://help.zscaler.com/zdx/api-reference) |
+| ZCC | [help.zscaler.com/zcc/api-reference](https://help.zscaler.com/zcc/api-reference) |
+| ZIdentity | [help.zscaler.com/zidentity/api-reference](https://help.zscaler.com/zidentity/api-reference) |
+| ZTW | [help.zscaler.com/cloud-branch-connector/api-reference](https://help.zscaler.com/cloud-branch-connector/api-reference) |
+| ZWA | [help.zscaler.com/workflow-automation/api-reference](https://help.zscaler.com/workflow-automation/api-reference) |
+| EASM | [help.zscaler.com/easm/api-reference](https://help.zscaler.com/easm/api-reference) |
 
 **Official SDK:** [zscaler-sdk-python](https://github.com/zscaler/zscaler-sdk-python)
 
-## Security
+## ⚠️ Disclaimer
 
-- Credentials are stored securely using QSettings (platform keychain on macOS)
-- API sessions are automatically terminated when the app closes
-- No telemetry or external connections except to Zscaler APIs
+**This software is NOT affiliated with, endorsed by, or supported by Zscaler, Inc.**
 
-## Disclaimer
+This is an independent community project. Zscaler® is a registered trademark of Zscaler, Inc.
 
-⚠️ **This software is NOT affiliated with, endorsed by, or supported by Zscaler, Inc. in any way.** This is an independent community project.
+- **NO WARRANTY:** Software provided "as is" without warranty of any kind
+- **NO SUPPORT:** For Zscaler product support, contact Zscaler directly
+- **USE AT YOUR OWN RISK:** Author not responsible for any damage or data loss
 
-- Zscaler® is a registered trademark of Zscaler, Inc.
-- All product names, logos, and brands are property of their respective owners.
-- **NO WARRANTY:** This software is provided "as is" without warranty of any kind. Use at your own risk.
-- **NO SUPPORT:** For Zscaler product support, please contact Zscaler directly through official channels.
+## 📄 License
 
-The author is not responsible for any damage or data loss resulting from the use of this software.
+GPL-3.0-or-later – Free software, use and modify as you wish.
 
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for version history.
-
-## License
-
-GPL-3.0-or-later
-
-## Author
+## 👤 Author
 
 **Daniel Nylander** ([@yeager](https://github.com/yeager))
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
-Thanks to **Nima Samadi** for feature suggestions (ZDX, ZCC, compliance, splash screen, user guidance).
+- **Nima Samadi** – Feature suggestions (ZDX, ZCC, compliance, splash screen)
+- **Zscaler** – For building an amazing zero trust platform
+
+---
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
