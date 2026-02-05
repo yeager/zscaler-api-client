@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.4] - 2026-02-05
+
+### Added
+- **cURL button** – Quick "cURL" button next to Send for copying requests
+
 ## [1.8.3] - 2026-02-05
 
 ### Fixed

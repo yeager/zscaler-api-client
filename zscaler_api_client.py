@@ -39,7 +39,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.8.3"
+__version__ = "1.8.4"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -3032,6 +3032,11 @@ class MainWindow(QMainWindow):
         self.send_btn = QPushButton(self.tr("Send"))
         self.send_btn.clicked.connect(self._send_request)
         url_layout.addWidget(self.send_btn)
+        
+        self.curl_btn = QPushButton(self.tr("cURL"))
+        self.curl_btn.setToolTip(self.tr("Copy request as cURL command"))
+        self.curl_btn.clicked.connect(self._copy_as_curl)
+        url_layout.addWidget(self.curl_btn)
         
         request_layout.addLayout(url_layout)
         
