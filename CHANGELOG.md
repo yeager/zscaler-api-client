@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.8] - 2026-02-05
+
+### Fixed
+- **ZIdentity OAuth endpoint** – Now uses correct `/oauth2/v1/token` endpoint
+  - Tested and verified working with real credentials
+  - Token provides access to ZIA, ZPA, ZDX, ZWA and other services
+
 ## [1.8.7] - 2026-02-05
 
 ### Added

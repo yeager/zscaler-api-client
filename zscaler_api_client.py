@@ -39,7 +39,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.8.7"
+__version__ = "1.8.8"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -3531,7 +3531,8 @@ class MainWindow(QMainWindow):
                 url = f"https://{cloud}/signin"
             elif api_type == "ZIdentity":
                 domain = settings.value("zidentity/domain", "")
-                url = f"https://{domain}/oauth2/token" if domain else f"https://{cloud}/oauth2/token"
+                # ZIdentity uses /oauth2/v1/token endpoint
+                url = f"https://{domain}/oauth2/v1/token" if domain else f"https://{cloud}/oauth2/v1/token"
             else:
                 url = f"https://{cloud}/oauth2/token"
             
