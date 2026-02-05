@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.0] - 2026-02-05
+
+### Fixed
+- **Keychain multiple prompts** – Credentials now cached after first read
+  - Only one Keychain prompt per app launch (was prompting multiple times)
+  
+### Changed
+- **Compact Settings layout** – Each API section now uses 2-3 rows instead of 5+
+  - Horizontal layout with inline placeholders
+  - Much smaller dialog footprint
+
 ## [1.8.9] - 2026-02-05
 
 ### Fixed

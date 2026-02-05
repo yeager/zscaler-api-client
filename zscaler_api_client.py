@@ -40,34 +40,46 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.8.9"
+__version__ = "1.9.0"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
 
 def secure_store(key: str, value: str) -> bool:
     """Store credential securely in system keychain."""
+    global _credential_cache
     if not value:
         secure_delete(key)
         return True
     try:
         import keyring
         keyring.set_password(SERVICE_NAME, key, value)
+        _credential_cache[key] = value  # Update cache
         return True
     except Exception:
         return False
 
+_credential_cache: dict = {}
+
 def secure_get(key: str) -> str:
-    """Retrieve credential from system keychain."""
+    """Retrieve credential from system keychain (cached to avoid multiple prompts)."""
+    global _credential_cache
+    if key in _credential_cache:
+        return _credential_cache[key]
     try:
         import keyring
         value = keyring.get_password(SERVICE_NAME, key)
-        return value or ""
+        result = value or ""
+        _credential_cache[key] = result
+        return result
     except Exception:
+        _credential_cache[key] = ""
         return ""
 
 def secure_delete(key: str) -> bool:
     """Delete credential from system keychain."""
+    global _credential_cache
+    _credential_cache.pop(key, None)  # Clear from cache
     try:
         import keyring
         keyring.delete_password(SERVICE_NAME, key)
@@ -2274,172 +2286,232 @@ class SettingsDialog(QDialog):
         left_column = QVBoxLayout()
         right_column = QVBoxLayout()
         
-        # ZIA Settings (Left)
+        # ZIA Settings (Left) - Compact 3-row layout
         zia_group = QGroupBox(self.tr("ZIA (Zscaler Internet Access)"))
-        zia_layout = QFormLayout(zia_group)
+        zia_layout = QVBoxLayout(zia_group)
+        zia_layout.setSpacing(4)
         
+        # Row 1: Enabled + Cloud
+        zia_row1 = QHBoxLayout()
         self.zia_enabled = QCheckBox(self.tr("Enabled"))
         self.zia_enabled.setChecked(True)
-        zia_layout.addRow("", self.zia_enabled)
-        
+        zia_row1.addWidget(self.zia_enabled)
         self.zia_cloud = QLineEdit()
-        self.zia_cloud.setPlaceholderText("zsapi.zscaler.net")
-        zia_layout.addRow(self.tr("Cloud:"), self.zia_cloud)
+        self.zia_cloud.setPlaceholderText("Cloud (zsapi.zscaler.net)")
+        zia_row1.addWidget(self.zia_cloud, 1)
+        zia_layout.addLayout(zia_row1)
         
-        self.zia_api_key = QLineEdit()
-        self.zia_api_key.setEchoMode(QLineEdit.EchoMode.Password)
-        zia_layout.addRow(self.tr("API Key:"), self.zia_api_key)
-        
+        # Row 2: Username + Password
+        zia_row2 = QHBoxLayout()
         self.zia_username = QLineEdit()
-        zia_layout.addRow(self.tr("Username:"), self.zia_username)
-        
+        self.zia_username.setPlaceholderText("Username")
+        zia_row2.addWidget(self.zia_username, 1)
         self.zia_password = QLineEdit()
         self.zia_password.setEchoMode(QLineEdit.EchoMode.Password)
-        zia_layout.addRow(self.tr("Password:"), self.zia_password)
+        self.zia_password.setPlaceholderText("Password")
+        zia_row2.addWidget(self.zia_password, 1)
+        zia_layout.addLayout(zia_row2)
+        
+        # Row 3: API Key
+        self.zia_api_key = QLineEdit()
+        self.zia_api_key.setEchoMode(QLineEdit.EchoMode.Password)
+        self.zia_api_key.setPlaceholderText("API Key")
+        zia_layout.addWidget(self.zia_api_key)
         
         left_column.addWidget(zia_group)
         
-        # ZPA Settings (Left)
+        # ZPA Settings (Left) - Compact 3-row layout
         zpa_group = QGroupBox(self.tr("ZPA (Zscaler Private Access)"))
-        zpa_layout = QFormLayout(zpa_group)
+        zpa_layout = QVBoxLayout(zpa_group)
+        zpa_layout.setSpacing(4)
         
+        # Row 1: Enabled + Cloud
+        zpa_row1 = QHBoxLayout()
         self.zpa_enabled = QCheckBox(self.tr("Enabled"))
-        zpa_layout.addRow("", self.zpa_enabled)
-        
+        zpa_row1.addWidget(self.zpa_enabled)
         self.zpa_cloud = QLineEdit()
-        self.zpa_cloud.setPlaceholderText("config.private.zscaler.com")
-        zpa_layout.addRow(self.tr("Cloud:"), self.zpa_cloud)
+        self.zpa_cloud.setPlaceholderText("Cloud (config.private.zscaler.com)")
+        zpa_row1.addWidget(self.zpa_cloud, 1)
+        zpa_layout.addLayout(zpa_row1)
         
+        # Row 2: Client ID + Secret
+        zpa_row2 = QHBoxLayout()
         self.zpa_client_id = QLineEdit()
-        zpa_layout.addRow(self.tr("Client ID:"), self.zpa_client_id)
-        
+        self.zpa_client_id.setPlaceholderText("Client ID")
+        zpa_row2.addWidget(self.zpa_client_id, 1)
         self.zpa_client_secret = QLineEdit()
         self.zpa_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
-        zpa_layout.addRow(self.tr("Client Secret:"), self.zpa_client_secret)
+        self.zpa_client_secret.setPlaceholderText("Client Secret")
+        zpa_row2.addWidget(self.zpa_client_secret, 1)
+        zpa_layout.addLayout(zpa_row2)
         
+        # Row 3: Customer ID
         self.zpa_customer_id = QLineEdit()
-        zpa_layout.addRow(self.tr("Customer ID:"), self.zpa_customer_id)
+        self.zpa_customer_id.setPlaceholderText("Customer ID")
+        zpa_layout.addWidget(self.zpa_customer_id)
         
         left_column.addWidget(zpa_group)
         
-        # ZDX Settings (Left)
+        # ZDX Settings (Left) - Compact 2-row layout
         zdx_group = QGroupBox(self.tr("ZDX (Zscaler Digital Experience)"))
-        zdx_layout = QFormLayout(zdx_group)
+        zdx_layout = QVBoxLayout(zdx_group)
+        zdx_layout.setSpacing(4)
         
+        # Row 1: Enabled + Cloud
+        zdx_row1 = QHBoxLayout()
         self.zdx_enabled = QCheckBox(self.tr("Enabled"))
-        zdx_layout.addRow("", self.zdx_enabled)
-        
+        zdx_row1.addWidget(self.zdx_enabled)
         self.zdx_cloud = QLineEdit()
-        self.zdx_cloud.setPlaceholderText("api.zdxcloud.net")
-        zdx_layout.addRow(self.tr("Cloud:"), self.zdx_cloud)
+        self.zdx_cloud.setPlaceholderText("Cloud (api.zdxcloud.net)")
+        zdx_row1.addWidget(self.zdx_cloud, 1)
+        zdx_layout.addLayout(zdx_row1)
         
+        # Row 2: Key ID + Secret
+        zdx_row2 = QHBoxLayout()
         self.zdx_key_id = QLineEdit()
-        zdx_layout.addRow(self.tr("Key ID:"), self.zdx_key_id)
-        
+        self.zdx_key_id.setPlaceholderText("Key ID")
+        zdx_row2.addWidget(self.zdx_key_id, 1)
         self.zdx_key_secret = QLineEdit()
         self.zdx_key_secret.setEchoMode(QLineEdit.EchoMode.Password)
-        zdx_layout.addRow(self.tr("Key Secret:"), self.zdx_key_secret)
+        self.zdx_key_secret.setPlaceholderText("Key Secret")
+        zdx_row2.addWidget(self.zdx_key_secret, 1)
+        zdx_layout.addLayout(zdx_row2)
         
         left_column.addWidget(zdx_group)
         
-        # ZCC Settings (Left)
+        # ZCC Settings (Left) - Compact 2-row layout
         zcc_group = QGroupBox(self.tr("ZCC (Client Connector)"))
-        zcc_layout = QFormLayout(zcc_group)
+        zcc_layout = QVBoxLayout(zcc_group)
+        zcc_layout.setSpacing(4)
         
+        # Row 1: Enabled + Cloud
+        zcc_row1 = QHBoxLayout()
         self.zcc_enabled = QCheckBox(self.tr("Enabled"))
-        zcc_layout.addRow("", self.zcc_enabled)
-        
+        zcc_row1.addWidget(self.zcc_enabled)
         self.zcc_cloud = QLineEdit()
-        self.zcc_cloud.setPlaceholderText("api.zscaler.com")
-        zcc_layout.addRow(self.tr("Cloud:"), self.zcc_cloud)
+        self.zcc_cloud.setPlaceholderText("Cloud (api.zscaler.com)")
+        zcc_row1.addWidget(self.zcc_cloud, 1)
+        zcc_layout.addLayout(zcc_row1)
         
+        # Row 2: Client ID + Secret
+        zcc_row2 = QHBoxLayout()
         self.zcc_client_id = QLineEdit()
-        zcc_layout.addRow(self.tr("Client ID:"), self.zcc_client_id)
-        
+        self.zcc_client_id.setPlaceholderText("Client ID")
+        zcc_row2.addWidget(self.zcc_client_id, 1)
         self.zcc_client_secret = QLineEdit()
         self.zcc_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
-        zcc_layout.addRow(self.tr("Client Secret:"), self.zcc_client_secret)
+        self.zcc_client_secret.setPlaceholderText("Client Secret")
+        zcc_row2.addWidget(self.zcc_client_secret, 1)
+        zcc_layout.addLayout(zcc_row2)
         
         left_column.addWidget(zcc_group)
         left_column.addStretch()
         
-        # ZIdentity Settings (Right)
+        # ZIdentity Settings (Right) - Compact 2-row layout
         zidentity_group = QGroupBox(self.tr("ZIdentity (Identity & Access)"))
-        zidentity_layout = QFormLayout(zidentity_group)
+        zidentity_layout = QVBoxLayout(zidentity_group)
+        zidentity_layout.setSpacing(4)
         
+        # Row 1: Enabled + Domain
+        zid_row1 = QHBoxLayout()
         self.zidentity_enabled = QCheckBox(self.tr("Enabled"))
-        zidentity_layout.addRow("", self.zidentity_enabled)
-        
+        zid_row1.addWidget(self.zidentity_enabled)
         self.zidentity_domain = QLineEdit()
-        self.zidentity_domain.setPlaceholderText("your-tenant.zslogin.net")
-        zidentity_layout.addRow(self.tr("Vanity Domain:"), self.zidentity_domain)
+        self.zidentity_domain.setPlaceholderText("Domain (tenant.zslogin.net)")
+        zid_row1.addWidget(self.zidentity_domain, 1)
+        zidentity_layout.addLayout(zid_row1)
         
+        # Row 2: Client ID + Secret
+        zid_row2 = QHBoxLayout()
         self.zidentity_client_id = QLineEdit()
-        zidentity_layout.addRow(self.tr("Client ID:"), self.zidentity_client_id)
-        
+        self.zidentity_client_id.setPlaceholderText("Client ID")
+        zid_row2.addWidget(self.zidentity_client_id, 1)
         self.zidentity_client_secret = QLineEdit()
         self.zidentity_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
-        zidentity_layout.addRow(self.tr("Client Secret:"), self.zidentity_client_secret)
+        self.zidentity_client_secret.setPlaceholderText("Client Secret")
+        zid_row2.addWidget(self.zidentity_client_secret, 1)
+        zidentity_layout.addLayout(zid_row2)
         
         right_column.addWidget(zidentity_group)
         
-        # ZTW Settings (Right) (Zero Trust Workloads / Cloud Branch Connector)
+        # ZTW Settings (Right) - Compact 2-row layout
         ztw_group = QGroupBox(self.tr("ZTW (Zero Trust Workloads)"))
-        ztw_layout = QFormLayout(ztw_group)
+        ztw_layout = QVBoxLayout(ztw_group)
+        ztw_layout.setSpacing(4)
         
+        # Row 1: Enabled + Cloud
+        ztw_row1 = QHBoxLayout()
         self.ztw_enabled = QCheckBox(self.tr("Enabled"))
-        ztw_layout.addRow("", self.ztw_enabled)
-        
+        ztw_row1.addWidget(self.ztw_enabled)
         self.ztw_cloud = QLineEdit()
-        self.ztw_cloud.setPlaceholderText("api.zscaler.com")
-        ztw_layout.addRow(self.tr("Cloud:"), self.ztw_cloud)
+        self.ztw_cloud.setPlaceholderText("Cloud (api.zscaler.com)")
+        ztw_row1.addWidget(self.ztw_cloud, 1)
+        ztw_layout.addLayout(ztw_row1)
         
+        # Row 2: Client ID + Secret
+        ztw_row2 = QHBoxLayout()
         self.ztw_client_id = QLineEdit()
-        ztw_layout.addRow(self.tr("Client ID:"), self.ztw_client_id)
-        
+        self.ztw_client_id.setPlaceholderText("Client ID")
+        ztw_row2.addWidget(self.ztw_client_id, 1)
         self.ztw_client_secret = QLineEdit()
         self.ztw_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
-        ztw_layout.addRow(self.tr("Client Secret:"), self.ztw_client_secret)
+        self.ztw_client_secret.setPlaceholderText("Client Secret")
+        ztw_row2.addWidget(self.ztw_client_secret, 1)
+        ztw_layout.addLayout(ztw_row2)
         
         right_column.addWidget(ztw_group)
         
-        # ZWA Settings (Right) (Workflow Automation)
+        # ZWA Settings (Right) - Compact 2-row layout
         zwa_group = QGroupBox(self.tr("ZWA (Workflow Automation)"))
-        zwa_layout = QFormLayout(zwa_group)
+        zwa_layout = QVBoxLayout(zwa_group)
+        zwa_layout.setSpacing(4)
         
+        # Row 1: Enabled + Cloud
+        zwa_row1 = QHBoxLayout()
         self.zwa_enabled = QCheckBox(self.tr("Enabled"))
-        zwa_layout.addRow("", self.zwa_enabled)
-        
+        zwa_row1.addWidget(self.zwa_enabled)
         self.zwa_cloud = QLineEdit()
-        self.zwa_cloud.setPlaceholderText("api.zscaler.com")
-        zwa_layout.addRow(self.tr("Cloud:"), self.zwa_cloud)
+        self.zwa_cloud.setPlaceholderText("Cloud (api.zscaler.com)")
+        zwa_row1.addWidget(self.zwa_cloud, 1)
+        zwa_layout.addLayout(zwa_row1)
         
+        # Row 2: Client ID + Secret
+        zwa_row2 = QHBoxLayout()
         self.zwa_client_id = QLineEdit()
-        zwa_layout.addRow(self.tr("Client ID:"), self.zwa_client_id)
-        
+        self.zwa_client_id.setPlaceholderText("Client ID")
+        zwa_row2.addWidget(self.zwa_client_id, 1)
         self.zwa_client_secret = QLineEdit()
         self.zwa_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
-        zwa_layout.addRow(self.tr("Client Secret:"), self.zwa_client_secret)
+        self.zwa_client_secret.setPlaceholderText("Client Secret")
+        zwa_row2.addWidget(self.zwa_client_secret, 1)
+        zwa_layout.addLayout(zwa_row2)
         
         right_column.addWidget(zwa_group)
         
-        # EASM Settings (Right) (External Attack Surface Management)
+        # EASM Settings (Right) - Compact 2-row layout
         easm_group = QGroupBox(self.tr("EASM (Attack Surface Management)"))
-        easm_layout = QFormLayout(easm_group)
+        easm_layout = QVBoxLayout(easm_group)
+        easm_layout.setSpacing(4)
         
+        # Row 1: Enabled + Cloud
+        easm_row1 = QHBoxLayout()
         self.easm_enabled = QCheckBox(self.tr("Enabled"))
-        easm_layout.addRow("", self.easm_enabled)
-        
+        easm_row1.addWidget(self.easm_enabled)
         self.easm_cloud = QLineEdit()
-        self.easm_cloud.setPlaceholderText("api.zscaler.com")
-        easm_layout.addRow(self.tr("Cloud:"), self.easm_cloud)
+        self.easm_cloud.setPlaceholderText("Cloud (api.zscaler.com)")
+        easm_row1.addWidget(self.easm_cloud, 1)
+        easm_layout.addLayout(easm_row1)
         
+        # Row 2: Client ID + Secret
+        easm_row2 = QHBoxLayout()
         self.easm_client_id = QLineEdit()
-        easm_layout.addRow(self.tr("Client ID:"), self.easm_client_id)
-        
+        self.easm_client_id.setPlaceholderText("Client ID")
+        easm_row2.addWidget(self.easm_client_id, 1)
         self.easm_client_secret = QLineEdit()
         self.easm_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
-        easm_layout.addRow(self.tr("Client Secret:"), self.easm_client_secret)
+        self.easm_client_secret.setPlaceholderText("Client Secret")
+        easm_row2.addWidget(self.easm_client_secret, 1)
+        easm_layout.addLayout(easm_row2)
         
         right_column.addWidget(easm_group)
         right_column.addStretch()
