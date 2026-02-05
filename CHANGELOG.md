@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.1] - 2026-02-05
+
+### Added
+- **About Qt** – Added "About Qt..." to Help menu
+- **Auto-update prompt** – First-run dialog asking about automatic update checks
+
+### Security
+- **Secure update check** – Verifies releases come from trusted GitHub repo (yeager/zscaler-api-client)
+- **Author verification** – Only accepts releases from verified author
+- **SSL enforcement** – Requires valid SSL certificate for update checks
+- **Draft/prerelease handling** – Skips drafts, warns about pre-releases
+
 ## [1.8.0] - 2026-02-05
 
 ### Added

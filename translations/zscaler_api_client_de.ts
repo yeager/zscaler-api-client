@@ -404,6 +404,11 @@ Restart now?</source>
 Jetzt neu starten?</translation>
     </message>
     <message>
+        <location filename="../zscaler_api_client.py" line="3825" />
+        <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
+        <translation>&lt;h3&gt;Eine neue Version ist verfügbar!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Aktuelle Version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Letzte Version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Freigabe:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verifiziert von github.com/{repo}&lt;/p&gt;&lt;p&gt;Möchten Sie die Download-Seite öffnen?&lt;/p&gt;</translation>
+    </message>
+    <message>
         <source>Success</source>
         <translation>Erfolg</translation>
     </message>
@@ -513,49 +518,53 @@ Jetzt neu starten?</translation>
         <translation>Suche nach Updates...</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3789" />
+        <location filename="../zscaler_api_client.py" line="3819" />
+        <source>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</source>
+        <translation>&lt;p&gt;&lt;i&gt;⚠️ Dies ist eine Vorabversion&lt;/i&gt;&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="../zscaler_api_client.py" line="3823" />
         <source>Update Available</source>
         <translation>Update verfügbar</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3791" />
         <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
         <translation>&lt;h3&gt;Eine neue Version ist verfügbar!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Aktuelle Version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Neueste Version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;Möchten Sie die Download-Seite öffnen?&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3801" />
+        <location filename="../zscaler_api_client.py" line="3845" />
         <source>Update available: v{version}</source>
         <translation>Update verfügbar: v{version}</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3805" />
+        <location filename="../zscaler_api_client.py" line="3849" />
         <source>No Updates</source>
         <translation>Keine Updates</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3807" />
+        <location filename="../zscaler_api_client.py" line="3851" />
         <source>&lt;p&gt;You are running the latest version.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Version:&lt;/b&gt; {version}&lt;/p&gt;</source>
         <translation>&lt;p&gt;Sie verwenden die neueste Version.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Version:&lt;/b&gt; {version}&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3811" />
+        <location filename="../zscaler_api_client.py" line="3855" />
         <source>You are up to date (v{version})</source>
         <translation>Sie sind auf dem neuesten Stand (v{version})</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3816" />
+        <location filename="../zscaler_api_client.py" line="3860" />
         <source>Update Check Failed</source>
         <translation>Update-Prüfung fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3817" />
+        <location filename="../zscaler_api_client.py" line="3861" />
         <source>Could not check for updates:
 {error}</source>
         <translation>Konnte nicht nach Updates suchen:
 {error}</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3819" />
+        <location filename="../zscaler_api_client.py" line="3863" />
         <source>Update check failed</source>
         <translation>Update-Prüfung fehlgeschlagen</translation>
     </message>
@@ -996,12 +1005,12 @@ Jetzt neu starten?</translation>
 <context>
     <name>window</name>
     <message>
-        <location filename="../zscaler_api_client.py" line="3943" />
+        <location filename="../zscaler_api_client.py" line="3987" />
         <source>Automatic Update Check</source>
         <translation>Auto Update Check</translation>
     </message>
     <message>
-        <location filename="../zscaler_api_client.py" line="3945" />
+        <location filename="../zscaler_api_client.py" line="3989" />
         <source>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Möchten Sie beim Start der App automatisch nach Updates suchen?&lt;/p&gt;&lt;p&gt;Dadurch wird eine Verbindung zu GitHub hergestellt, um nach neuen Versionen zu suchen.&lt;/p&gt;</translation>
     </message>

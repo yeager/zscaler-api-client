@@ -39,7 +39,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.8.0"
+__version__ = "1.8.1"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -3754,36 +3754,70 @@ class MainWindow(QMainWindow):
         settings.setValue("last_known_version", __version__)
     
     def _check_for_updates(self):
-        """Check GitHub for newer releases."""
+        """Check GitHub for newer releases with security verification."""
         self.status_bar.showMessage(self.tr("Checking for updates..."))
         QApplication.processEvents()
         
+        # Security: Only trust releases from this specific repository
+        TRUSTED_REPO = "yeager/zscaler-api-client"
+        TRUSTED_AUTHOR = "yeager"
+        GITHUB_API_URL = f"https://api.github.com/repos/{TRUSTED_REPO}/releases/latest"
+        
         try:
             import ssl
-            # Create SSL context - try certifi first, fall back to unverified for bundled apps
+            # Create SSL context - require certificate verification for security
             try:
                 import certifi
                 ssl_context = ssl.create_default_context(cafile=certifi.where())
             except ImportError:
-                # Bundled app without certifi - use unverified context for GitHub API only
+                # Fall back to system certificates
                 ssl_context = ssl.create_default_context()
-                ssl_context.check_hostname = False
-                ssl_context.verify_mode = ssl.CERT_NONE
             
-            url = "https://api.github.com/repos/yeager/zscaler-api-client/releases/latest"
-            request = urllib.request.Request(url, headers={"User-Agent": "ZscalerAPIClient"})
+            # Always verify SSL for security
+            ssl_context.check_hostname = True
+            ssl_context.verify_mode = ssl.CERT_REQUIRED
+            
+            request = urllib.request.Request(
+                GITHUB_API_URL, 
+                headers={"User-Agent": "ZscalerAPIClient", "Accept": "application/vnd.github.v3+json"}
+            )
             
             with urllib.request.urlopen(request, timeout=10, context=ssl_context) as response:
                 data = json.loads(response.read().decode("utf-8"))
             
+            # Security verification
+            html_url = data.get("html_url", "")
+            author_login = data.get("author", {}).get("login", "")
+            is_draft = data.get("draft", False)
+            is_prerelease = data.get("prerelease", False)
+            
+            # Verify the release URL points to our trusted repository
+            if not html_url.startswith(f"https://github.com/{TRUSTED_REPO}/"):
+                raise ValueError(f"Security: Release URL does not match trusted repository")
+            
+            # Verify the author
+            if author_login.lower() != TRUSTED_AUTHOR.lower():
+                raise ValueError(f"Security: Release author '{author_login}' is not trusted")
+            
+            # Skip draft releases
+            if is_draft:
+                raise ValueError("Release is a draft and not yet published")
+            
             latest_version = data.get("tag_name", "").lstrip("v")
             current_version = __version__
+            release_name = data.get("name", f"v{latest_version}")
             
-            # Simple version comparison
+            # Version validation
             def version_tuple(v):
-                return tuple(map(int, v.split(".")))
+                try:
+                    return tuple(map(int, v.split(".")))
+                except (ValueError, AttributeError):
+                    return (0, 0, 0)
             
             if version_tuple(latest_version) > version_tuple(current_version):
+                # Build info message with security details
+                prerelease_warning = self.tr("<p><i>⚠️ This is a pre-release version</i></p>") if is_prerelease else ""
+                
                 reply = QMessageBox.information(
                     self,
                     self.tr("Update Available"),
@@ -3791,13 +3825,23 @@ class MainWindow(QMainWindow):
                         "<h3>A new version is available!</h3>"
                         "<p><b>Current version:</b> {current}</p>"
                         "<p><b>Latest version:</b> {latest}</p>"
+                        "<p><b>Release:</b> {name}</p>"
+                        "{prerelease}"
+                        "<p style='color: #666; font-size: 11px;'>✓ Verified from github.com/{repo}</p>"
                         "<p>Would you like to open the download page?</p>"
-                    ).format(current=current_version, latest=latest_version),
+                    ).format(
+                        current=current_version, 
+                        latest=latest_version,
+                        name=release_name,
+                        prerelease=prerelease_warning,
+                        repo=TRUSTED_REPO
+                    ),
                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
                 )
                 if reply == QMessageBox.StandardButton.Yes:
                     import webbrowser
-                    webbrowser.open(data.get("html_url", "https://github.com/yeager/zscaler-api-client/releases"))
+                    # Only open verified URL
+                    webbrowser.open(html_url)
                 self.status_bar.showMessage(self.tr("Update available: v{version}").format(version=latest_version))
             else:
                 QMessageBox.information(
