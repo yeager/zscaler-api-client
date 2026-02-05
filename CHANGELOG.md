@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.1] - 2026-02-05
+
+### Fixed
+- **ZDX OAuth endpoint** – Now uses correct `/v1/oauth/token` with JSON body
+  - Uses `key_id`, `key_secret`, and `timestamp` parameters
+  - Was incorrectly using `/oauth2/token` with form-urlencoded
+
 ## [1.9.0] - 2026-02-05
 
 ### Fixed

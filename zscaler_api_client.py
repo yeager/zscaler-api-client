@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.9.0"
+__version__ = "1.9.1"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -3604,17 +3604,32 @@ class MainWindow(QMainWindow):
                 domain = settings.value("zidentity/domain", "")
                 # ZIdentity uses /oauth2/v1/token endpoint
                 url = f"https://{domain}/oauth2/v1/token" if domain else f"https://{cloud}/oauth2/v1/token"
+            elif api_type == "ZDX":
+                # ZDX uses /v1/oauth/token with JSON body
+                url = f"https://{cloud}/v1/oauth/token"
             else:
                 url = f"https://{cloud}/oauth2/token"
             
             self.url_input.setText(url)
             self.method_combo.setCurrentText("POST")
             
-            # Set form-urlencoded content type
-            self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
-            self.headers_table.setItem(0, 1, QTableWidgetItem("application/x-www-form-urlencoded"))
+            # Set content type and body based on API type
+            if api_type == "ZDX":
+                # ZDX uses JSON body with key_id/key_secret
+                self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
+                self.headers_table.setItem(0, 1, QTableWidgetItem("application/json"))
+                import time
+                body = json.dumps({
+                    "key_id": client_id,
+                    "key_secret": client_secret,
+                    "timestamp": int(time.time() * 1000)
+                }, indent=2)
+            else:
+                # Other APIs use form-urlencoded
+                self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
+                self.headers_table.setItem(0, 1, QTableWidgetItem("application/x-www-form-urlencoded"))
+                body = f"client_id={client_id}&client_secret={client_secret}&grant_type=client_credentials"
             
-            body = f"client_id={client_id}&client_secret={client_secret}&grant_type=client_credentials"
             self.body_input.setPlainText(body)
             self._send_request()
     
