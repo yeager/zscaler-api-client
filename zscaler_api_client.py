@@ -39,7 +39,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.8.4"
+__version__ = "1.8.5"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -3007,6 +3007,18 @@ class MainWindow(QMainWindow):
         self.endpoint_tree.itemClicked.connect(self._on_endpoint_selected)
         left_layout.addWidget(self.endpoint_tree)
         
+        # Output/Audit panel
+        output_group = QGroupBox(self.tr("Output"))
+        output_layout = QVBoxLayout(output_group)
+        self.output_log = QPlainTextEdit()
+        self.output_log.setReadOnly(True)
+        self.output_log.setMaximumHeight(150)
+        self.output_log.setPlaceholderText(self.tr("Authentication status, requests, and audit info..."))
+        output_font = QFont("Menlo, Monaco, Consolas, monospace", 10)
+        self.output_log.setFont(output_font)
+        output_layout.addWidget(self.output_log)
+        left_layout.addWidget(output_group)
+        
         # Right panel - Request/Response
         right_panel = QWidget()
         right_layout = QVBoxLayout(right_panel)
@@ -3366,6 +3378,16 @@ class MainWindow(QMainWindow):
         self.help_text.setText(f"<b>{item.text(0)}</b><br><br>{details['description']}{doc_link}")
         self.help_text.setOpenExternalLinks(True)
     
+    def _log_output(self, message: str, level: str = "info"):
+        """Log a message to the output panel."""
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        prefix = {"info": "ℹ️", "success": "✅", "error": "❌", "warning": "⚠️"}.get(level, "")
+        self.output_log.appendPlainText(f"[{timestamp}] {prefix} {message}")
+        # Auto-scroll to bottom
+        scrollbar = self.output_log.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
+    
     def _send_request(self):
         url = self.url_input.text()
         method = self.method_combo.currentText()
@@ -3426,6 +3448,9 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(self.tr("Sending request..."))
         self.send_btn.setEnabled(False)
         
+        # Log the request
+        self._log_output(f"{method} {url[:60]}{'...' if len(url) > 60 else ''}")
+        
         request = {
             "url": url,
             "method": method,
@@ -3477,40 +3502,53 @@ class MainWindow(QMainWindow):
                     if "authCookie" in res["data"]:
                         self.zia_session = res["data"]["authCookie"]
                         self.status_bar.showMessage(self.tr("ZIA authenticated successfully"))
+                        self._log_output("ZIA session established", "success")
                     elif "access_token" in res["data"]:
                         token = res["data"]["access_token"]
                         # Set token for the correct API type
                         if api_type == "ZPA":
                             self.zpa_token = token
                             self.status_bar.showMessage(self.tr("ZPA authenticated successfully"))
+                            self._log_output("ZPA token acquired", "success")
                         elif api_type == "ZDX":
                             self.zdx_token = token
                             self.status_bar.showMessage(self.tr("ZDX authenticated successfully"))
+                            self._log_output("ZDX token acquired", "success")
                         elif api_type == "ZCC":
                             self.zcc_token = token
                             self.status_bar.showMessage(self.tr("ZCC authenticated successfully"))
+                            self._log_output("ZCC token acquired", "success")
                         elif api_type == "ZIdentity":
                             self.zidentity_token = token
                             self.status_bar.showMessage(self.tr("ZIdentity authenticated successfully"))
+                            self._log_output("ZIdentity token acquired", "success")
                         elif api_type == "ZTW":
                             self.ztw_token = token
                             self.status_bar.showMessage(self.tr("ZTW authenticated successfully"))
+                            self._log_output("ZTW token acquired", "success")
                         elif api_type == "ZWA":
                             self.zwa_token = token
                             self.status_bar.showMessage(self.tr("ZWA authenticated successfully"))
+                            self._log_output("ZWA token acquired", "success")
                         elif api_type == "EASM":
                             self.easm_token = token
                             self.status_bar.showMessage(self.tr("EASM authenticated successfully"))
+                            self._log_output("EASM token acquired", "success")
                         else:
                             # Default to ZPA for backwards compatibility
                             self.zpa_token = token
                             self.status_bar.showMessage(self.tr("Authenticated successfully"))
+                            self._log_output("Token acquired", "success")
+                
+                # Log success
+                self._log_output(f"Response: {duration_ms}ms", "success")
             else:
                 self.response_info.setText(
                     f"<span style='color: red;'>✗ {self.tr('Error')} ({duration_ms}ms)</span>"
                 )
                 self.response_body.setPlainText(res["error"])
                 self.status_bar.showMessage(self.tr("Request failed"))
+                self._log_output(f"Error: {res['error'][:50]}...", "error")
             
             # Save to history
             if hasattr(self, "_pending_request") and self._pending_request:

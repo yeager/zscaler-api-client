@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.5] - 2026-02-05
+
+### Added
+- **Output panel** – New panel at bottom-left showing:
+  - Request activity log
+  - Authentication status
+  - Success/error messages with timestamps
+  - Audit trail for all API calls
+
 ## [1.8.4] - 2026-02-05
 
 ### Added
