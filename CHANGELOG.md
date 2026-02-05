@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.6] - 2026-02-05
+
+### Added
+- **Auth button** – Quick "Auth" button next to API selector
+  - One-click authentication for any API
+  - Auto-fills credentials from Settings
+  - Supports both session cookie (ZIA) and OAuth (ZPA, ZDX, etc.)
+
+### Fixed
+- Output panel now expands properly (removed max height limit)
+- Better layout for output text area
+
 ## [1.8.5] - 2026-02-05
 
 ### Added

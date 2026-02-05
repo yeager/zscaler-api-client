@@ -39,7 +39,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.8.5"
+__version__ = "1.8.6"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -2998,6 +2998,13 @@ class MainWindow(QMainWindow):
         self.api_type.addItems(["ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"])
         self.api_type.currentTextChanged.connect(self._update_endpoint_tree)
         api_selector.addWidget(self.api_type)
+        
+        # Authenticate button
+        self.auth_btn = QPushButton(self.tr("Auth"))
+        self.auth_btn.setToolTip(self.tr("Authenticate with selected API"))
+        self.auth_btn.clicked.connect(self._authenticate_api)
+        api_selector.addWidget(self.auth_btn)
+        
         api_selector.addStretch()
         left_layout.addLayout(api_selector)
         
@@ -3010,9 +3017,10 @@ class MainWindow(QMainWindow):
         # Output/Audit panel
         output_group = QGroupBox(self.tr("Output"))
         output_layout = QVBoxLayout(output_group)
+        output_layout.setContentsMargins(4, 4, 4, 4)
         self.output_log = QPlainTextEdit()
         self.output_log.setReadOnly(True)
-        self.output_log.setMaximumHeight(150)
+        self.output_log.setMinimumHeight(120)
         self.output_log.setPlaceholderText(self.tr("Authentication status, requests, and audit info..."))
         output_font = QFont("Menlo, Monaco, Consolas, monospace", 10)
         self.output_log.setFont(output_font)
@@ -3387,6 +3395,76 @@ class MainWindow(QMainWindow):
         # Auto-scroll to bottom
         scrollbar = self.output_log.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
+    
+    def _authenticate_api(self):
+        """Authenticate with the currently selected API."""
+        api_type = self.api_type.currentText()
+        settings = QSettings("Zscaler", "APIClient")
+        
+        self._log_output(f"Authenticating {api_type}...")
+        
+        if api_type == "ZIA":
+            # ZIA uses session cookie auth
+            cloud = settings.value("zia/cloud", "")
+            api_key = settings.value("zia/api_key", "")
+            username = settings.value("zia/username", "")
+            password = settings.value("zia/password", "")
+            
+            if not all([cloud, api_key, username, password]):
+                self._log_output("ZIA credentials not configured. Go to Settings.", "error")
+                QMessageBox.warning(self, self.tr("Error"), 
+                    self.tr("ZIA credentials not configured. Please go to Settings."))
+                return
+            
+            # Build auth URL and body
+            url = f"https://{cloud}/api/v1/authenticatedSession"
+            self.url_input.setText(url)
+            self.method_combo.setCurrentText("POST")
+            
+            # Generate timestamp and obfuscated key
+            import time
+            timestamp = str(int(time.time() * 1000))
+            key = self._obfuscate_api_key(api_key, timestamp)
+            
+            body = {
+                "apiKey": key,
+                "username": username,
+                "password": password,
+                "timestamp": timestamp
+            }
+            self.body_input.setPlainText(json.dumps(body, indent=2))
+            self._send_request()
+            
+        elif api_type in ["ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"]:
+            # OAuth-based APIs
+            cloud = settings.value(f"{api_type.lower()}/cloud", "")
+            client_id = settings.value(f"{api_type.lower()}/client_id", "")
+            client_secret = settings.value(f"{api_type.lower()}/client_secret", "")
+            
+            if not all([cloud, client_id, client_secret]):
+                self._log_output(f"{api_type} credentials not configured. Go to Settings.", "error")
+                QMessageBox.warning(self, self.tr("Error"), 
+                    self.tr(f"{api_type} credentials not configured. Please go to Settings."))
+                return
+            
+            # Build OAuth URL
+            if api_type == "ZPA":
+                url = f"https://{cloud}/signin"
+            elif api_type == "ZIdentity":
+                url = f"https://{cloud}/oauth2/token"
+            else:
+                url = f"https://{cloud}/oauth2/token"
+            
+            self.url_input.setText(url)
+            self.method_combo.setCurrentText("POST")
+            
+            # Set form-urlencoded content type
+            self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
+            self.headers_table.setItem(0, 1, QTableWidgetItem("application/x-www-form-urlencoded"))
+            
+            body = f"client_id={client_id}&client_secret={client_secret}&grant_type=client_credentials"
+            self.body_input.setPlainText(body)
+            self._send_request()
     
     def _send_request(self):
         url = self.url_input.text()
