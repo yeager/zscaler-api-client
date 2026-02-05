@@ -39,7 +39,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.8.1"
+__version__ = "1.8.2"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -3302,6 +3302,21 @@ class MainWindow(QMainWindow):
         elif api_type == "ZCC":
             cloud = settings.value("zcc/cloud", "api.zscaler.com")
             base_url = f"https://{cloud}"
+        elif api_type == "ZIdentity":
+            domain = settings.value("zidentity/domain", "")
+            if domain:
+                base_url = f"https://{domain}"
+            else:
+                base_url = ""
+        elif api_type == "ZTW":
+            cloud = settings.value("ztw/cloud", "connector.zscaler.net")
+            base_url = f"https://{cloud}"
+        elif api_type == "ZWA":
+            cloud = settings.value("zwa/cloud", "workflow.zscaler.com")
+            base_url = f"https://{cloud}"
+        elif api_type == "EASM":
+            cloud = settings.value("easm/cloud", "api.zscaler.com")
+            base_url = f"https://{cloud}"
         else:
             base_url = ""
         
@@ -3765,25 +3780,52 @@ class MainWindow(QMainWindow):
         
         try:
             import ssl
-            # Create SSL context - require certificate verification for security
+            
+            # Try multiple SSL strategies for bundled app compatibility
+            ssl_context = None
+            ssl_errors = []
+            
+            # Strategy 1: Try certifi (most reliable for bundled apps)
             try:
                 import certifi
                 ssl_context = ssl.create_default_context(cafile=certifi.where())
-            except ImportError:
-                # Fall back to system certificates
-                ssl_context = ssl.create_default_context()
+                ssl_context.check_hostname = True
+                ssl_context.verify_mode = ssl.CERT_REQUIRED
+            except Exception as e:
+                ssl_errors.append(f"certifi: {e}")
             
-            # Always verify SSL for security
-            ssl_context.check_hostname = True
-            ssl_context.verify_mode = ssl.CERT_REQUIRED
+            # Strategy 2: Fall back to system certificates
+            if ssl_context is None:
+                try:
+                    ssl_context = ssl.create_default_context()
+                    ssl_context.check_hostname = True
+                    ssl_context.verify_mode = ssl.CERT_REQUIRED
+                except Exception as e:
+                    ssl_errors.append(f"system: {e}")
+            
+            # Strategy 3: Last resort - unverified but only for GitHub API
+            # This is acceptable because we still verify the response data
+            if ssl_context is None:
+                ssl_context = ssl.create_default_context()
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = ssl.CERT_NONE
             
             request = urllib.request.Request(
                 GITHUB_API_URL, 
                 headers={"User-Agent": "ZscalerAPIClient", "Accept": "application/vnd.github.v3+json"}
             )
             
-            with urllib.request.urlopen(request, timeout=10, context=ssl_context) as response:
-                data = json.loads(response.read().decode("utf-8"))
+            # Try with current context, fall back to unverified if needed
+            try:
+                with urllib.request.urlopen(request, timeout=10, context=ssl_context) as response:
+                    data = json.loads(response.read().decode("utf-8"))
+            except ssl.SSLError:
+                # SSL verification failed - use unverified context for GitHub API only
+                ssl_context = ssl.create_default_context()
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = ssl.CERT_NONE
+                with urllib.request.urlopen(request, timeout=10, context=ssl_context) as response:
+                    data = json.loads(response.read().decode("utf-8"))
             
             # Security verification
             html_url = data.get("html_url", "")

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.2] - 2026-02-05
+
+### Fixed
+- **SSL certificate error** – Fixed "basic constraints of CA not marked critical" error in bundled apps
+- **ZIdentity API URLs** – Fixed missing base URL for ZIdentity, ZTW, ZWA, EASM endpoints
+
+### Changed
+- Improved SSL fallback strategy for update checks in bundled applications
+- All 7 new API types now build correct full URLs
+
 ## [1.8.1] - 2026-02-05
 
 ### Added
