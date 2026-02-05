@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.7] - 2026-02-05
+
+### Added
+- **API Enable/Disable** – Each API now has an "Enabled" checkbox in Settings
+  - Only enabled APIs appear in the API dropdown
+  - ZIA enabled by default, others disabled
+  - Streamlines UI for users who only need specific APIs
+
+### Fixed
+- **Auth button credentials** – Now correctly reads credentials from keychain
+  - ZIA: api_key and password from secure storage
+  - OAuth APIs: client_secret from secure storage
+  - ZDX: Correctly uses key_id/key_secret fields
+  - ZIdentity: Uses vanity domain for OAuth URL
+
 ## [1.8.6] - 2026-02-05
 
 ### Added

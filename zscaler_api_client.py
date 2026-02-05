@@ -39,7 +39,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.8.6"
+__version__ = "1.8.7"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -2279,6 +2279,10 @@ class SettingsDialog(QDialog):
         zia_group = QGroupBox(self.tr("ZIA (Zscaler Internet Access)"))
         zia_layout = QFormLayout(zia_group)
         
+        self.zia_enabled = QCheckBox(self.tr("Enabled"))
+        self.zia_enabled.setChecked(True)
+        zia_layout.addRow("", self.zia_enabled)
+        
         self.zia_cloud = QLineEdit()
         self.zia_cloud.setPlaceholderText("zsapi.zscaler.net")
         zia_layout.addRow(self.tr("Cloud:"), self.zia_cloud)
@@ -2300,6 +2304,9 @@ class SettingsDialog(QDialog):
         zpa_group = QGroupBox(self.tr("ZPA (Zscaler Private Access)"))
         zpa_layout = QFormLayout(zpa_group)
         
+        self.zpa_enabled = QCheckBox(self.tr("Enabled"))
+        zpa_layout.addRow("", self.zpa_enabled)
+        
         self.zpa_cloud = QLineEdit()
         self.zpa_cloud.setPlaceholderText("config.private.zscaler.com")
         zpa_layout.addRow(self.tr("Cloud:"), self.zpa_cloud)
@@ -2320,6 +2327,9 @@ class SettingsDialog(QDialog):
         zdx_group = QGroupBox(self.tr("ZDX (Zscaler Digital Experience)"))
         zdx_layout = QFormLayout(zdx_group)
         
+        self.zdx_enabled = QCheckBox(self.tr("Enabled"))
+        zdx_layout.addRow("", self.zdx_enabled)
+        
         self.zdx_cloud = QLineEdit()
         self.zdx_cloud.setPlaceholderText("api.zdxcloud.net")
         zdx_layout.addRow(self.tr("Cloud:"), self.zdx_cloud)
@@ -2336,6 +2346,9 @@ class SettingsDialog(QDialog):
         # ZCC Settings (Left)
         zcc_group = QGroupBox(self.tr("ZCC (Client Connector)"))
         zcc_layout = QFormLayout(zcc_group)
+        
+        self.zcc_enabled = QCheckBox(self.tr("Enabled"))
+        zcc_layout.addRow("", self.zcc_enabled)
         
         self.zcc_cloud = QLineEdit()
         self.zcc_cloud.setPlaceholderText("api.zscaler.com")
@@ -2355,6 +2368,9 @@ class SettingsDialog(QDialog):
         zidentity_group = QGroupBox(self.tr("ZIdentity (Identity & Access)"))
         zidentity_layout = QFormLayout(zidentity_group)
         
+        self.zidentity_enabled = QCheckBox(self.tr("Enabled"))
+        zidentity_layout.addRow("", self.zidentity_enabled)
+        
         self.zidentity_domain = QLineEdit()
         self.zidentity_domain.setPlaceholderText("your-tenant.zslogin.net")
         zidentity_layout.addRow(self.tr("Vanity Domain:"), self.zidentity_domain)
@@ -2371,6 +2387,9 @@ class SettingsDialog(QDialog):
         # ZTW Settings (Right) (Zero Trust Workloads / Cloud Branch Connector)
         ztw_group = QGroupBox(self.tr("ZTW (Zero Trust Workloads)"))
         ztw_layout = QFormLayout(ztw_group)
+        
+        self.ztw_enabled = QCheckBox(self.tr("Enabled"))
+        ztw_layout.addRow("", self.ztw_enabled)
         
         self.ztw_cloud = QLineEdit()
         self.ztw_cloud.setPlaceholderText("api.zscaler.com")
@@ -2389,6 +2408,9 @@ class SettingsDialog(QDialog):
         zwa_group = QGroupBox(self.tr("ZWA (Workflow Automation)"))
         zwa_layout = QFormLayout(zwa_group)
         
+        self.zwa_enabled = QCheckBox(self.tr("Enabled"))
+        zwa_layout.addRow("", self.zwa_enabled)
+        
         self.zwa_cloud = QLineEdit()
         self.zwa_cloud.setPlaceholderText("api.zscaler.com")
         zwa_layout.addRow(self.tr("Cloud:"), self.zwa_cloud)
@@ -2405,6 +2427,9 @@ class SettingsDialog(QDialog):
         # EASM Settings (Right) (External Attack Surface Management)
         easm_group = QGroupBox(self.tr("EASM (Attack Surface Management)"))
         easm_layout = QFormLayout(easm_group)
+        
+        self.easm_enabled = QCheckBox(self.tr("Enabled"))
+        easm_layout.addRow("", self.easm_enabled)
         
         self.easm_cloud = QLineEdit()
         self.easm_cloud.setPlaceholderText("api.zscaler.com")
@@ -2615,6 +2640,16 @@ class SettingsDialog(QDialog):
     def _load_settings(self):
         settings = QSettings("Zscaler", "APIClient")
         
+        # API Enabled states
+        self.zia_enabled.setChecked(settings.value("zia/enabled", "true") == "true")
+        self.zpa_enabled.setChecked(settings.value("zpa/enabled", "false") == "true")
+        self.zdx_enabled.setChecked(settings.value("zdx/enabled", "false") == "true")
+        self.zcc_enabled.setChecked(settings.value("zcc/enabled", "false") == "true")
+        self.zidentity_enabled.setChecked(settings.value("zidentity/enabled", "false") == "true")
+        self.ztw_enabled.setChecked(settings.value("ztw/enabled", "false") == "true")
+        self.zwa_enabled.setChecked(settings.value("zwa/enabled", "false") == "true")
+        self.easm_enabled.setChecked(settings.value("easm/enabled", "false") == "true")
+        
         # Credentials (non-sensitive from QSettings, sensitive from Keychain)
         self.zia_cloud.setText(settings.value("zia/cloud", ""))
         self.zia_api_key.setText(secure_get("zia_api_key"))
@@ -2677,6 +2712,16 @@ class SettingsDialog(QDialog):
     
     def accept(self):
         settings = QSettings("Zscaler", "APIClient")
+        
+        # API Enabled states
+        settings.setValue("zia/enabled", "true" if self.zia_enabled.isChecked() else "false")
+        settings.setValue("zpa/enabled", "true" if self.zpa_enabled.isChecked() else "false")
+        settings.setValue("zdx/enabled", "true" if self.zdx_enabled.isChecked() else "false")
+        settings.setValue("zcc/enabled", "true" if self.zcc_enabled.isChecked() else "false")
+        settings.setValue("zidentity/enabled", "true" if self.zidentity_enabled.isChecked() else "false")
+        settings.setValue("ztw/enabled", "true" if self.ztw_enabled.isChecked() else "false")
+        settings.setValue("zwa/enabled", "true" if self.zwa_enabled.isChecked() else "false")
+        settings.setValue("easm/enabled", "true" if self.easm_enabled.isChecked() else "false")
         
         # Credentials (non-sensitive to QSettings, sensitive to Keychain)
         settings.setValue("zia/cloud", self.zia_cloud.text())
@@ -2995,7 +3040,7 @@ class MainWindow(QMainWindow):
         self.api_type.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.api_type.setMinimumContentsLength(10)
         self.api_type.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
-        self.api_type.addItems(["ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"])
+        self._update_api_list()  # Populate based on enabled APIs
         self.api_type.currentTextChanged.connect(self._update_endpoint_tree)
         api_selector.addWidget(self.api_type)
         
@@ -3386,6 +3431,33 @@ class MainWindow(QMainWindow):
         self.help_text.setText(f"<b>{item.text(0)}</b><br><br>{details['description']}{doc_link}")
         self.help_text.setOpenExternalLinks(True)
     
+    def _update_api_list(self):
+        """Update API dropdown based on enabled APIs in settings."""
+        settings = QSettings("Zscaler", "APIClient")
+        
+        all_apis = ["ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"]
+        enabled_apis = []
+        
+        for api in all_apis:
+            api_lower = api.lower()
+            if settings.value(f"{api_lower}/enabled", "true" if api == "ZIA" else "false") == "true":
+                enabled_apis.append(api)
+        
+        # If no APIs enabled, show all (fallback)
+        if not enabled_apis:
+            enabled_apis = all_apis
+        
+        current = self.api_type.currentText()
+        self.api_type.blockSignals(True)
+        self.api_type.clear()
+        self.api_type.addItems(enabled_apis)
+        
+        # Restore selection if still available
+        if current in enabled_apis:
+            self.api_type.setCurrentText(current)
+        
+        self.api_type.blockSignals(False)
+    
     def _log_output(self, message: str, level: str = "info"):
         """Log a message to the output panel."""
         from datetime import datetime
@@ -3406,9 +3478,9 @@ class MainWindow(QMainWindow):
         if api_type == "ZIA":
             # ZIA uses session cookie auth
             cloud = settings.value("zia/cloud", "")
-            api_key = settings.value("zia/api_key", "")
+            api_key = secure_get("zia_api_key")  # From keychain
             username = settings.value("zia/username", "")
-            password = settings.value("zia/password", "")
+            password = secure_get("zia_password")  # From keychain
             
             if not all([cloud, api_key, username, password]):
                 self._log_output("ZIA credentials not configured. Go to Settings.", "error")
@@ -3437,9 +3509,16 @@ class MainWindow(QMainWindow):
             
         elif api_type in ["ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"]:
             # OAuth-based APIs
-            cloud = settings.value(f"{api_type.lower()}/cloud", "")
-            client_id = settings.value(f"{api_type.lower()}/client_id", "")
-            client_secret = settings.value(f"{api_type.lower()}/client_secret", "")
+            api_lower = api_type.lower()
+            cloud = settings.value(f"{api_lower}/cloud", "")
+            
+            # Handle different credential field names
+            if api_type == "ZDX":
+                client_id = settings.value("zdx/key_id", "")
+                client_secret = secure_get("zdx_key_secret")
+            else:
+                client_id = settings.value(f"{api_lower}/client_id", "")
+                client_secret = secure_get(f"{api_lower}_client_secret")
             
             if not all([cloud, client_id, client_secret]):
                 self._log_output(f"{api_type} credentials not configured. Go to Settings.", "error")
@@ -3447,11 +3526,12 @@ class MainWindow(QMainWindow):
                     self.tr(f"{api_type} credentials not configured. Please go to Settings."))
                 return
             
-            # Build OAuth URL
+            # Build OAuth URL based on API type
             if api_type == "ZPA":
                 url = f"https://{cloud}/signin"
             elif api_type == "ZIdentity":
-                url = f"https://{cloud}/oauth2/token"
+                domain = settings.value("zidentity/domain", "")
+                url = f"https://{domain}/oauth2/token" if domain else f"https://{cloud}/oauth2/token"
             else:
                 url = f"https://{cloud}/oauth2/token"
             
@@ -3644,6 +3724,7 @@ class MainWindow(QMainWindow):
         dialog = SettingsDialog(self)
         if dialog.exec():
             self._apply_settings()
+            self._update_api_list()  # Refresh API dropdown based on enabled APIs
     
     def _apply_settings(self):
         """Apply settings that can be changed without restart."""
