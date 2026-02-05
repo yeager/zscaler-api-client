@@ -40,10 +40,11 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.9.2"
+__version__ = "1.9.3"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
+_credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
 
 def secure_store(key: str, value: str) -> bool:
     """Store credential securely in system keychain."""
@@ -58,8 +59,6 @@ def secure_store(key: str, value: str) -> bool:
         return True
     except Exception:
         return False
-
-_credential_cache: dict = {}
 
 def secure_get(key: str) -> str:
     """Retrieve credential from system keychain (cached to avoid multiple prompts)."""

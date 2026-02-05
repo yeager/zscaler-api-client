@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.3] - 2026-02-05
+
+### Fixed
+- **Keychain cache initialization** – Cache variable now declared before use
+  - Fixes multiple Keychain prompt issue on macOS
+  - Credentials properly cached after first access
+
 ## [1.9.2] - 2026-02-05
 
 ### Added
