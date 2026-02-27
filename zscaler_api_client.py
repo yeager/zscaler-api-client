@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "1.9.3"
+__version__ = "2.0.0"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -1805,6 +1805,138 @@ EASM_ENDPOINTS = {
     },
 }
 
+# OneAPI Unified Endpoints (v3 framework via ZIdentity OAuth2)
+# Base URL: https://api.zsapi.net (production) or https://api.{cloud}.zsapi.net
+# Auth URL: https://{vanity_domain}.zslogin.net/oauth2/v1/token
+ONEAPI_ENDPOINTS = {
+    "Authentication": {
+        "Get OAuth Token": {
+            "method": "POST",
+            "path": "/oauth2/v1/token",
+            "description": "Get OAuth 2.0 access token via ZIdentity (uses vanity domain auth URL)",
+            "body": {"client_id": "", "client_secret": "", "grant_type": "client_credentials", "audience": "https://api.zscaler.com"},
+            "doc_url": "https://help.zscaler.com/oneapi/understanding-oneapi",
+            "auth_endpoint": True,
+        },
+    },
+    "ZIA Endpoints": {
+        "List URL Categories": {
+            "method": "GET",
+            "path": "/zia/api/v1/urlCategories",
+            "description": "List all URL categories",
+        },
+        "Get URL Category": {
+            "method": "GET",
+            "path": "/zia/api/v1/urlCategories/{id}",
+            "description": "Get URL category by ID",
+        },
+        "List Firewall Rules": {
+            "method": "GET",
+            "path": "/zia/api/v1/webApplicationRules",
+            "description": "List firewall filtering rules",
+        },
+        "List DLP Dictionaries": {
+            "method": "GET",
+            "path": "/zia/api/v1/dlpDictionaries",
+            "description": "List DLP dictionaries",
+        },
+        "List URL Filtering Rules": {
+            "method": "GET",
+            "path": "/zia/api/v1/urlFilteringRules",
+            "description": "List URL filtering rules",
+        },
+        "List Locations": {
+            "method": "GET",
+            "path": "/zia/api/v1/locations",
+            "description": "List all locations",
+        },
+        "List Users": {
+            "method": "GET",
+            "path": "/zia/api/v1/users",
+            "description": "List all users",
+            "params": {"page": "1", "pageSize": "100"},
+        },
+        "Activate Changes": {
+            "method": "POST",
+            "path": "/zia/api/v1/status/activate",
+            "description": "Activate configuration changes",
+        },
+    },
+    "ZPA Endpoints": {
+        "List Application Segments": {
+            "method": "GET",
+            "path": "/zpa/mgmtconfig/v1/admin/customers/{customerId}/application",
+            "description": "List all application segments",
+        },
+        "List Server Groups": {
+            "method": "GET",
+            "path": "/zpa/mgmtconfig/v1/admin/customers/{customerId}/serverGroup",
+            "description": "List all server groups",
+        },
+        "List Connectors": {
+            "method": "GET",
+            "path": "/zpa/mgmtconfig/v1/admin/customers/{customerId}/connector",
+            "description": "List all app connectors",
+        },
+        "List Connector Groups": {
+            "method": "GET",
+            "path": "/zpa/mgmtconfig/v1/admin/customers/{customerId}/appConnectorGroup",
+            "description": "List all connector groups",
+        },
+        "List Segment Groups": {
+            "method": "GET",
+            "path": "/zpa/mgmtconfig/v1/admin/customers/{customerId}/segmentGroup",
+            "description": "List all segment groups",
+        },
+        "List Access Policies": {
+            "method": "GET",
+            "path": "/zpa/mgmtconfig/v1/admin/customers/{customerId}/policySet/rules/policyType/ACCESS_POLICY",
+            "description": "List access policy rules",
+        },
+    },
+    "ZCC Endpoints": {
+        "List Devices": {
+            "method": "GET",
+            "path": "/zcc/papi/public/v1/getDevices",
+            "description": "Get all enrolled devices",
+            "params": {"page": "1", "pageSize": "100"},
+        },
+        "Get Device by ID": {
+            "method": "GET",
+            "path": "/zcc/papi/public/v1/getDevices/{deviceId}",
+            "description": "Get device by ID",
+        },
+        "Force Remove Device": {
+            "method": "POST",
+            "path": "/zcc/papi/public/v1/removeDevices",
+            "description": "Force remove a device",
+            "body": {"clientConnectorVersion": [], "deviceType": 0, "osType": 0, "udids": ""},
+        },
+    },
+    "ZIdentity Admin Endpoints": {
+        "List Users": {
+            "method": "GET",
+            "path": "/admin/api/v1/users",
+            "description": "List all ZIdentity users",
+            "params": {"page": "1", "pageSize": "100"},
+            "use_zidentity_base": True,
+        },
+        "List Groups": {
+            "method": "GET",
+            "path": "/admin/api/v1/groups",
+            "description": "List all ZIdentity groups",
+            "params": {"page": "1", "pageSize": "100"},
+            "use_zidentity_base": True,
+        },
+        "List API Clients": {
+            "method": "GET",
+            "path": "/admin/api/v1/apiClients",
+            "description": "List all API clients",
+            "use_zidentity_base": True,
+        },
+    },
+}
+
 # API Documentation URLs
 API_DOCS = {
     "ZIA": {
@@ -1854,6 +1986,12 @@ API_DOCS = {
         "getting_started": "https://help.zscaler.com/easm/getting-started-api",
         "authentication": "https://help.zscaler.com/easm/api-authentication",
         "rate_limits": "https://help.zscaler.com/easm/api-rate-limiting",
+    },
+    "OneAPI": {
+        "base": "https://help.zscaler.com/oneapi/understanding-oneapi",
+        "getting_started": "https://help.zscaler.com/oneapi/understanding-oneapi",
+        "authentication": "https://help.zscaler.com/zidentity/about-api-clients",
+        "rate_limits": "https://help.zscaler.com/oneapi/understanding-oneapi",
     },
 }
 
@@ -2474,6 +2612,43 @@ class SettingsDialog(QDialog):
         
         left_column.addWidget(zcc_group)
         left_column.addStretch()
+        
+        # OneAPI Settings (Right) - New unified auth
+        oneapi_group = QGroupBox(self.tr("OneAPI (Unified v3 Framework)"))
+        oneapi_layout = QVBoxLayout(oneapi_group)
+        oneapi_layout.setSpacing(4)
+        
+        # Row 1: Enabled + Vanity Domain
+        oneapi_row1 = QHBoxLayout()
+        self.oneapi_enabled = QCheckBox(self.tr("Enabled"))
+        oneapi_row1.addWidget(self.oneapi_enabled)
+        self.oneapi_vanity_domain = QLineEdit()
+        self.oneapi_vanity_domain.setPlaceholderText("Vanity Domain (e.g. acme)")
+        oneapi_row1.addWidget(self.oneapi_vanity_domain, 1)
+        oneapi_layout.addLayout(oneapi_row1)
+        
+        # Row 2: Client ID + Secret
+        oneapi_row2 = QHBoxLayout()
+        self.oneapi_client_id = QLineEdit()
+        self.oneapi_client_id.setPlaceholderText("Client ID (from ZIdentity API Clients)")
+        oneapi_row2.addWidget(self.oneapi_client_id, 1)
+        self.oneapi_client_secret = QLineEdit()
+        self.oneapi_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
+        self.oneapi_client_secret.setPlaceholderText("Client Secret")
+        oneapi_row2.addWidget(self.oneapi_client_secret, 1)
+        oneapi_layout.addLayout(oneapi_row2)
+        
+        # Row 3: Cloud + Customer ID (for ZPA endpoints)
+        oneapi_row3 = QHBoxLayout()
+        self.oneapi_cloud = QLineEdit()
+        self.oneapi_cloud.setPlaceholderText("Cloud (empty=production, or: beta, alpha)")
+        oneapi_row3.addWidget(self.oneapi_cloud, 1)
+        self.oneapi_customer_id = QLineEdit()
+        self.oneapi_customer_id.setPlaceholderText("ZPA Customer ID (optional)")
+        oneapi_row3.addWidget(self.oneapi_customer_id, 1)
+        oneapi_layout.addLayout(oneapi_row3)
+        
+        right_column.addWidget(oneapi_group)
         
         # ZIdentity Settings (Right) - Compact 2-row layout
         zidentity_group = QGroupBox(self.tr("ZIdentity (Identity & Access)"))
@@ -3262,6 +3437,7 @@ class MainWindow(QMainWindow):
         self.ztw_token = None
         self.zwa_token = None
         self.easm_token = None
+        self.oneapi_token = None
         self.request_history = []
         
         self._setup_ui()
@@ -3586,6 +3762,7 @@ class MainWindow(QMainWindow):
             "ZTW": ZTW_ENDPOINTS,
             "ZWA": ZWA_ENDPOINTS,
             "EASM": EASM_ENDPOINTS,
+            "OneAPI": ONEAPI_ENDPOINTS,
         }
         endpoints = endpoint_map.get(api_type, ZIA_ENDPOINTS)
         
@@ -3655,6 +3832,31 @@ class MainWindow(QMainWindow):
         elif api_type == "EASM":
             cloud = settings.value("easm/cloud", "api.zscaler.com")
             base_url = f"https://{cloud}"
+        elif api_type == "OneAPI":
+            # OneAPI: unified base URL
+            cloud = settings.value("oneapi/cloud", "")
+            vanity_domain = settings.value("oneapi/vanity_domain", "")
+            if details.get("auth_endpoint"):
+                # Auth endpoint uses zslogin domain
+                if cloud and cloud.upper() != "PRODUCTION":
+                    base_url = f"https://{vanity_domain}.zslogin{cloud.lower()}.net"
+                else:
+                    base_url = f"https://{vanity_domain}.zslogin.net"
+            elif details.get("use_zidentity_base"):
+                # ZIdentity admin endpoints
+                if cloud and cloud.upper() != "PRODUCTION":
+                    base_url = f"https://{vanity_domain}-admin.zslogin{cloud.lower()}.net"
+                else:
+                    base_url = f"https://{vanity_domain}-admin.zslogin.net"
+            else:
+                # Regular API endpoints
+                if cloud and cloud.upper() != "PRODUCTION":
+                    base_url = f"https://api.{cloud.lower()}.zsapi.net"
+                else:
+                    base_url = "https://api.zsapi.net"
+            # Replace customerId placeholder for ZPA endpoints
+            customer_id = settings.value("oneapi/customer_id", "")
+            path = path.replace("{customerId}", customer_id)
         else:
             base_url = ""
         
@@ -3685,12 +3887,12 @@ class MainWindow(QMainWindow):
         """Update API dropdown based on enabled APIs in settings."""
         settings = QSettings("Zscaler", "APIClient")
         
-        all_apis = ["ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"]
+        all_apis = ["OneAPI", "ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"]
         enabled_apis = []
         
         for api in all_apis:
             api_lower = api.lower()
-            if settings.value(f"{api_lower}/enabled", "true" if api == "ZIA" else "false") == "true":
+            if settings.value(f"{api_lower}/enabled", "true" if api in ("ZIA", "OneAPI") else "false") == "true":
                 enabled_apis.append(api)
         
         # If no APIs enabled, show all (fallback)
@@ -3781,8 +3983,15 @@ class MainWindow(QMainWindow):
                 url = f"https://{cloud}/signin"
             elif api_type == "ZIdentity":
                 domain = settings.value("zidentity/domain", "")
-                # ZIdentity uses /oauth2/v1/token endpoint
-                url = f"https://{domain}/oauth2/v1/token" if domain else f"https://{cloud}/oauth2/v1/token"
+                # ZIdentity uses /oauth2/v1/token endpoint on zslogin domain
+                if domain:
+                    # If domain looks like a vanity domain (no dots), construct zslogin URL
+                    if "." not in domain:
+                        url = f"https://{domain}.zslogin.net/oauth2/v1/token"
+                    else:
+                        url = f"https://{domain}/oauth2/v1/token"
+                else:
+                    url = f"https://{cloud}/oauth2/v1/token"
             elif api_type == "ZDX":
                 # ZDX uses /v1/oauth/token with JSON body
                 url = f"https://{cloud}/v1/oauth/token"
@@ -3808,6 +4017,36 @@ class MainWindow(QMainWindow):
                 self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
                 self.headers_table.setItem(0, 1, QTableWidgetItem("application/x-www-form-urlencoded"))
                 body = f"client_id={client_id}&client_secret={client_secret}&grant_type=client_credentials"
+            
+            self.body_input.setPlainText(body)
+            self._send_request()
+            
+        elif api_type == "OneAPI":
+            # OneAPI uses ZIdentity OAuth2 with vanity domain
+            vanity_domain = settings.value("oneapi/vanity_domain", "")
+            client_id = settings.value("oneapi/client_id", "")
+            client_secret = secure_get("oneapi_client_secret")
+            cloud = settings.value("oneapi/cloud", "")
+            
+            if not all([vanity_domain, client_id, client_secret]):
+                self._log_output("OneAPI credentials not configured. Go to Settings.", "error")
+                QMessageBox.warning(self, self.tr("Error"), 
+                    self.tr("OneAPI credentials not configured. Please go to Settings."))
+                return
+            
+            # Build auth URL: https://{vanity_domain}.zslogin{cloud}.net/oauth2/v1/token
+            if cloud and cloud.upper() != "PRODUCTION":
+                auth_url = f"https://{vanity_domain}.zslogin{cloud.lower()}.net/oauth2/v1/token"
+            else:
+                auth_url = f"https://{vanity_domain}.zslogin.net/oauth2/v1/token"
+            
+            self.url_input.setText(auth_url)
+            self.method_combo.setCurrentText("POST")
+            
+            # OneAPI uses form-urlencoded with audience parameter
+            self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
+            self.headers_table.setItem(0, 1, QTableWidgetItem("application/x-www-form-urlencoded"))
+            body = f"client_id={client_id}&client_secret={client_secret}&grant_type=client_credentials&audience=https://api.zscaler.com"
             
             self.body_input.setPlainText(body)
             self._send_request()
@@ -3846,6 +4085,8 @@ class MainWindow(QMainWindow):
             headers["Authorization"] = f"Bearer {self.zwa_token}"
         elif api_type == "EASM" and self.easm_token:
             headers["Authorization"] = f"Bearer {self.easm_token}"
+        elif api_type == "OneAPI" and self.oneapi_token:
+            headers["Authorization"] = f"Bearer {self.oneapi_token}"
         
         # Build params
         params = {}
@@ -3958,6 +4199,10 @@ class MainWindow(QMainWindow):
                             self.easm_token = token
                             self.status_bar.showMessage(self.tr("EASM authenticated successfully"))
                             self._log_output("EASM token acquired", "success")
+                        elif api_type == "OneAPI":
+                            self.oneapi_token = token
+                            self.status_bar.showMessage(self.tr("OneAPI authenticated successfully"))
+                            self._log_output("OneAPI token acquired (unified auth)", "success")
                         else:
                             # Default to ZPA for backwards compatibility
                             self.zpa_token = token

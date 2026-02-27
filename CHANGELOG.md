@@ -2,7 +2,60 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2026-02-27
+
+### Added
+- **OneAPI v3 Framework Support** — New unified authentication via ZIdentity OAuth2
+  - Single token works across ZIA, ZPA, ZCC, and ZIdentity endpoints
+  - Auth via `https://{vanity_domain}.zslogin.net/oauth2/v1/token`
+  - API base URL: `https://api.zsapi.net` (production) or `https://api.{cloud}.zsapi.net`
+  - Supports production, beta, and alpha environments via cloud parameter
+  - Includes `audience` parameter (`https://api.zscaler.com`) per Zscaler SDK spec
+- **OneAPI Endpoint Browser** — Pre-built endpoints for:
+  - ZIA: URL categories, firewall rules, DLP dictionaries, locations, users
+  - ZPA: Application segments, server groups, connectors, segment groups, access policies
+  - ZCC: Device management (list, get, force remove)
+  - ZIdentity Admin: Users, groups, API clients
+- **OneAPI Settings** — New settings panel with:
+  - Vanity Domain (organization identifier for zslogin)
+  - Client ID / Client Secret (from ZIdentity API Clients)
+  - Cloud selection (production/beta/alpha)
+  - ZPA Customer ID (for ZPA endpoint paths)
+- OneAPI appears first in API dropdown and defaults to enabled
+
+### Fixed
+- **ZIdentity auth URL** — Now correctly constructs `zslogin.net` URLs from vanity domain
+  - Plain vanity domains (e.g. "acme") → `https://acme.zslogin.net/oauth2/v1/token`
+  - Full domains with dots pass through unchanged
+
+
 ## [1.9.3] - 2026-02-05
+## [2.0.0] - 2026-02-27
+
+### Added
+- **OneAPI v3 Framework Support** — New unified authentication via ZIdentity OAuth2
+  - Single token works across ZIA, ZPA, ZCC, and ZIdentity endpoints
+  - Auth via `https://{vanity_domain}.zslogin.net/oauth2/v1/token`
+  - API base URL: `https://api.zsapi.net` (production) or `https://api.{cloud}.zsapi.net`
+  - Supports production, beta, and alpha environments via cloud parameter
+  - Includes `audience` parameter (`https://api.zscaler.com`) per Zscaler SDK spec
+- **OneAPI Endpoint Browser** — Pre-built endpoints for:
+  - ZIA: URL categories, firewall rules, DLP dictionaries, locations, users
+  - ZPA: Application segments, server groups, connectors, segment groups, access policies
+  - ZCC: Device management (list, get, force remove)
+  - ZIdentity Admin: Users, groups, API clients
+- **OneAPI Settings** — New settings panel with:
+  - Vanity Domain (organization identifier for zslogin)
+  - Client ID / Client Secret (from ZIdentity API Clients)
+  - Cloud selection (production/beta/alpha)
+  - ZPA Customer ID (for ZPA endpoint paths)
+- OneAPI appears first in API dropdown and defaults to enabled
+
+### Fixed
+- **ZIdentity auth URL** — Now correctly constructs `zslogin.net` URLs from vanity domain
+  - Plain vanity domains (e.g. "acme") → `https://acme.zslogin.net/oauth2/v1/token`
+  - Full domains with dots pass through unchanged
+
 
 ### Fixed
 - **Keychain cache initialization** – Cache variable now declared before use
