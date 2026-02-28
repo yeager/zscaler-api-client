@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-02-28
+
+### Fixed
+- **Critical: OAuth2 authentication broken for all APIs** — `_make_request()` always
+  JSON-encoded the request body and overrode `Content-Type` to `application/json`, even
+  for OAuth2 token endpoints that require `application/x-www-form-urlencoded`. This caused
+  all OAuth-based authentication (ZPA, ZCC, ZIdentity, ZTW, ZWA, EASM, OneAPI) to fail.
+- **Critical: Form-urlencoded body rejected by JSON parser** — `_send_request()` tried
+  to `json.loads()` the form-urlencoded auth body string, which failed with a JSON decode
+  error dialog, preventing the auth request from being sent at all.
+- **ZCC/ZTW/ZWA/EASM auth URL path** — These APIs use `/oauth/token` but the code was
+  sending to `/oauth2/token`. Fixed to use the correct endpoint path.
+
 ## [2.0.0] - 2026-02-27
 
 ### Added

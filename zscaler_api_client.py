@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -2075,8 +2075,14 @@ class ApiWorker(QThread):
         
         data = None
         if body:
-            data = json.dumps(body).encode("utf-8")
-            headers["Content-Type"] = "application/json"
+            content_type = headers.get("Content-Type", "")
+            if content_type == "application/x-www-form-urlencoded" and isinstance(body, str):
+                # Form-urlencoded body (used by OAuth2 token endpoints)
+                data = body.encode("utf-8")
+            else:
+                data = json.dumps(body).encode("utf-8")
+                if "Content-Type" not in headers:
+                    headers["Content-Type"] = "application/json"
         
         request = urllib.request.Request(url, data=data, headers=headers, method=method)
         
@@ -3995,6 +4001,9 @@ class MainWindow(QMainWindow):
             elif api_type == "ZDX":
                 # ZDX uses /v1/oauth/token with JSON body
                 url = f"https://{cloud}/v1/oauth/token"
+            elif api_type in ("ZCC", "ZTW", "ZWA", "EASM"):
+                # These APIs use /oauth/token
+                url = f"https://{cloud}/oauth/token"
             else:
                 url = f"https://{cloud}/oauth2/token"
             
@@ -4103,11 +4112,17 @@ class MainWindow(QMainWindow):
         body = None
         body_text = self.body_input.toPlainText().strip()
         if body_text and method in ["POST", "PUT", "PATCH"]:
-            try:
-                body = json.loads(body_text)
-            except json.JSONDecodeError as e:
-                QMessageBox.warning(self, self.tr("Error"), f"Invalid JSON: {e}")
-                return
+            # Check if content type is form-urlencoded (used by OAuth2 endpoints)
+            content_type = headers.get("Content-Type", "")
+            if content_type == "application/x-www-form-urlencoded":
+                # Pass form-urlencoded body as raw string
+                body = body_text
+            else:
+                try:
+                    body = json.loads(body_text)
+                except json.JSONDecodeError as e:
+                    QMessageBox.warning(self, self.tr("Error"), f"Invalid JSON: {e}")
+                    return
         
         # Send request
         self.status_bar.showMessage(self.tr("Sending request..."))
