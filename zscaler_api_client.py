@@ -3010,6 +3010,14 @@ class SettingsDialog(QDialog):
         self.easm_client_id.setText(settings.value("easm/client_id", ""))
         self.easm_client_secret.setText(secure_get("easm_client_secret"))
         
+        # OneAPI
+        self.oneapi_enabled.setChecked(settings.value("oneapi/enabled", "true") == "true")
+        self.oneapi_vanity_domain.setText(settings.value("oneapi/vanity_domain", ""))
+        self.oneapi_client_id.setText(settings.value("oneapi/client_id", ""))
+        self.oneapi_client_secret.setText(secure_get("oneapi_client_secret"))
+        self.oneapi_cloud.setText(settings.value("oneapi/cloud", ""))
+        self.oneapi_customer_id.setText(settings.value("oneapi/customer_id", ""))
+        
         # Advanced
         self.timeout_spin.setCurrentText(settings.value("advanced/timeout", "30"))
         self.verify_ssl.setCurrentIndex(0 if settings.value("advanced/verify_ssl", "true") == "true" else 1)
@@ -3082,6 +3090,14 @@ class SettingsDialog(QDialog):
         settings.setValue("easm/cloud", self.easm_cloud.text())
         settings.setValue("easm/client_id", self.easm_client_id.text())
         secure_store("easm_client_secret", self.easm_client_secret.text())
+        
+        # OneAPI
+        settings.setValue("oneapi/enabled", "true" if self.oneapi_enabled.isChecked() else "false")
+        settings.setValue("oneapi/vanity_domain", self.oneapi_vanity_domain.text())
+        settings.setValue("oneapi/client_id", self.oneapi_client_id.text())
+        secure_store("oneapi_client_secret", self.oneapi_client_secret.text())
+        settings.setValue("oneapi/cloud", self.oneapi_cloud.text())
+        settings.setValue("oneapi/customer_id", self.oneapi_customer_id.text())
         
         # Advanced
         settings.setValue("advanced/timeout", self.timeout_spin.currentText())

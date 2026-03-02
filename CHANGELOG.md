@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2026-03-02
+
+### Fixed
+- **macOS About menu** — Now shows "About ZS API Client" instead of "About Qt"
+- **SSL certificate handling** — Update check handles corporate SSL inspection
+  (e.g. Zscaler) where CA certificates have non-critical Basic Constraints
+
 ## [2.1.0] - 2026-02-28
 
 ### Fixed
