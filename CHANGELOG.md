@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.2] - 2026-03-02
+
+### Fixed
+- **OneAPI settings** — Vanity domain, client ID/secret, cloud and customer ID now properly saved and loaded
+
 ## [2.1.1] - 2026-03-02
 
 ### Fixed

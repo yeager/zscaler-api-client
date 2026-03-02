@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.1.1"
+__version__ = "2.1.2"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
