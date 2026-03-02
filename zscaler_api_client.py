@@ -3710,10 +3710,12 @@ class MainWindow(QMainWindow):
         help_menu.addAction(welcome_action)
         
         about_action = QAction(self.tr("&About..."), self)
+        about_action.setMenuRole(QAction.MenuRole.AboutRole)
         about_action.triggered.connect(self._show_about)
         help_menu.addAction(about_action)
         
         about_qt_action = QAction(self.tr("About &Qt..."), self)
+        about_qt_action.setMenuRole(QAction.MenuRole.NoRole)
         about_qt_action.triggered.connect(QApplication.aboutQt)
         help_menu.addAction(about_qt_action)
         
@@ -4603,8 +4605,10 @@ class MainWindow(QMainWindow):
             try:
                 with urllib.request.urlopen(request, timeout=10, context=ssl_context) as response:
                     data = json.loads(response.read().decode("utf-8"))
-            except ssl.SSLError:
-                # SSL verification failed - use unverified context for GitHub API only
+            except (ssl.SSLError, ssl.SSLCertVerificationError, urllib.error.URLError) as ssl_err:
+                # SSL verification failed (e.g. corporate SSL inspection with
+                # non-critical Basic Constraints CA cert) - use unverified
+                # context for GitHub API only. Release data is still verified.
                 ssl_context = ssl.create_default_context()
                 ssl_context.check_hostname = False
                 ssl_context.verify_mode = ssl.CERT_NONE
