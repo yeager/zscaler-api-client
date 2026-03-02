@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.2.3"
+__version__ = "2.2.4"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -4363,12 +4363,36 @@ class MainWindow(QMainWindow):
             self._send_request()
     
     def _send_request(self):
-        url = self.url_input.text()
+        url = self.url_input.text().strip()
         method = self.method_combo.currentText().replace("● ", "")
         
         if not url:
             QMessageBox.warning(self, self.tr("Warning"), self.tr("Please enter a URL"))
             return
+        
+        # If URL is a relative path, prepend the appropriate base URL
+        if url.startswith("/"):
+            settings = QSettings("Zscaler", "APIClient")
+            api_type = self.api_type.currentText()
+            if api_type == "OneAPI":
+                cloud = settings.value("oneapi/cloud", "").strip()
+                is_non_prod = cloud and cloud.upper() != "PRODUCTION" and "." not in cloud
+                if is_non_prod:
+                    base = f"https://api.{cloud.lower()}.zsapi.net"
+                else:
+                    base = "https://api.zsapi.net"
+            elif api_type == "ZIA":
+                base = f"https://{settings.value("zia/cloud", "zsapi.zscaler.net")}"
+            elif api_type == "ZPA":
+                base = f"https://{settings.value("zpa/cloud", "config.private.zscaler.com")}"
+            elif api_type == "ZDX":
+                base = f"https://{settings.value("zdx/cloud", "api.zdxcloud.net")}"
+            elif api_type == "ZCC":
+                base = f"https://{settings.value("zcc/cloud", "api.zscaler.com")}"
+            else:
+                base = ""
+            url = base + url
+            self.url_input.setText(url)
         
         # Build headers
         headers = {}
