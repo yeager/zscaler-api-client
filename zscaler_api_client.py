@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.2.2"
+__version__ = "2.2.3"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -2114,8 +2114,27 @@ class ApiWorker(QThread):
         
         request = urllib.request.Request(url, data=data, headers=headers, method=method)
         
+        # Build SSL context based on settings
+        import ssl
+        settings = QSettings("Zscaler", "APIClient")
+        verify_ssl = settings.value("advanced/verify_ssl", "true") == "true"
+        timeout = int(settings.value("advanced/timeout", "30"))
+        
+        ssl_context = None
+        if not verify_ssl:
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+        else:
+            # Try certifi first, fall back to default
+            try:
+                import certifi
+                ssl_context = ssl.create_default_context(cafile=certifi.where())
+            except (ImportError, Exception):
+                ssl_context = ssl.create_default_context()
+        
         try:
-            with urllib.request.urlopen(request, timeout=30) as response:
+            with urllib.request.urlopen(request, timeout=timeout, context=ssl_context) as response:
                 response_data = response.read()
                 response_size = len(response_data)
                 status_code = response.status
