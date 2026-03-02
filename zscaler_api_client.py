@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.2.4"
+__version__ = "2.2.5"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -4371,6 +4371,7 @@ class MainWindow(QMainWindow):
             return
         
         # If URL is a relative path, prepend the appropriate base URL
+        self._log_output(f"URL before fix: {url[:80]}", "info")
         if url.startswith("/"):
             settings = QSettings("Zscaler", "APIClient")
             api_type = self.api_type.currentText()
