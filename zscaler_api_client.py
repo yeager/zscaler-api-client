@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.2.6"
+__version__ = "2.2.7"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -4020,7 +4020,7 @@ class MainWindow(QMainWindow):
         
         # Build URL
         settings = QSettings("Zscaler", "APIClient")
-        api_type = self.api_type.currentText()
+        api_type = self.api_type.currentText().replace("🟢 ", "").replace("🔴 ", "")
         path = details["path"]
         
         if api_type == "ZIA":
@@ -4218,6 +4218,10 @@ class MainWindow(QMainWindow):
         }
         return bool(token_map.get(api_type))
 
+    def _current_api_type(self) -> str:
+        """Get current API type without indicator emoji."""
+        return self.api_type.currentText().replace("🟢 ", "").replace("🔴 ", "")
+
     def _update_auth_indicators(self):
         """Update api_type combo with auth indicators."""
         for i in range(self.api_type.count()):
@@ -4230,7 +4234,7 @@ class MainWindow(QMainWindow):
 
     def _authenticate_api(self):
         """Authenticate with the currently selected API."""
-        api_type = self.api_type.currentText()
+        api_type = self._current_api_type()
         settings = QSettings("Zscaler", "APIClient")
         
         self._log_output(f"Authenticating {api_type}...")
@@ -4374,7 +4378,7 @@ class MainWindow(QMainWindow):
         self._log_output(f"URL before fix: {url[:80]}", "info")
         if url.startswith("/"):
             settings = QSettings("Zscaler", "APIClient")
-            api_type = self.api_type.currentText()
+            api_type = self.api_type.currentText().replace("🟢 ", "").replace("🔴 ", "")
             if api_type == "OneAPI":
                 cloud = settings.value("oneapi/cloud", "").strip()
                 is_non_prod = cloud and cloud.upper() != "PRODUCTION" and "." not in cloud
@@ -4404,7 +4408,7 @@ class MainWindow(QMainWindow):
                 headers[key_item.text()] = value_item.text()
         
         # Add session/token headers
-        api_type = self.api_type.currentText()
+        api_type = self._current_api_type()
         if api_type == "ZIA" and self.zia_session:
             headers["Cookie"] = f"JSESSIONID={self.zia_session}"
         elif api_type == "ZPA" and self.zpa_token:
@@ -4525,7 +4529,7 @@ class MainWindow(QMainWindow):
                 self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms · {size_str})")
                 
                 # Check for session token in response
-                api_type = self.api_type.currentText()
+                api_type = self._current_api_type()
                 if isinstance(res["data"], dict):
                     if "authCookie" in res["data"]:
                         self.zia_session = res["data"]["authCookie"]
