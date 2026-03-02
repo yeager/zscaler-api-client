@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2026-03-02
+
+### Added
+- **Polish translation** (71/210 strings)
+- **Hungarian translation** (71/210 strings)
+
 ## [2.1.3] - 2026-03-02
 
 ### Fixed

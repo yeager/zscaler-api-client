@@ -2115,11 +2115,21 @@ class ApiWorker(QThread):
         
         try:
             with urllib.request.urlopen(request, timeout=30) as response:
-                response_data = response.read().decode("utf-8")
-                # Handle empty responses
-                if not response_data or not response_data.strip():
-                    return {"status": "success", "message": "Empty response (operation may have succeeded)"}
-                return json.loads(response_data)
+                response_data = response.read()
+                response_size = len(response_data)
+                status_code = response.status
+                reason = response.reason
+                response_text = response_data.decode("utf-8")
+                if not response_text or not response_text.strip():
+                    return {"_status_code": status_code, "_reason": reason,
+                            "_size": response_size,
+                            "status": "success", "message": "Empty response (operation may have succeeded)"}
+                parsed = json.loads(response_text)
+                if isinstance(parsed, dict):
+                    parsed["_status_code"] = status_code
+                    parsed["_reason"] = reason
+                    parsed["_size"] = response_size
+                return parsed
         except urllib.error.HTTPError as e:
             error_body = ""
             try:
@@ -3517,17 +3527,26 @@ class MainWindow(QMainWindow):
         
         # Authenticate button
         self.auth_btn = QPushButton(self.tr("Auth"))
-        self.auth_btn.setToolTip(self.tr("Authenticate with selected API"))
+        self.auth_btn.setToolTip(self.tr("Authenticate with selected API (Ctrl+Shift+A)"))
+        self.auth_btn.setShortcut("Ctrl+Shift+A")
         self.auth_btn.clicked.connect(self._authenticate_api)
         api_selector.addWidget(self.auth_btn)
         
         api_selector.addStretch()
         left_layout.addLayout(api_selector)
         
+        # Endpoint search filter
+        self.endpoint_filter = QLineEdit()
+        self.endpoint_filter.setPlaceholderText(self.tr("🔍 Filter endpoints..."))
+        self.endpoint_filter.setClearButtonEnabled(True)
+        self.endpoint_filter.textChanged.connect(self._filter_endpoints)
+        left_layout.addWidget(self.endpoint_filter)
+
         # Endpoint tree
         self.endpoint_tree = QTreeWidget()
         self.endpoint_tree.setHeaderLabel(self.tr("Endpoints"))
         self.endpoint_tree.itemClicked.connect(self._on_endpoint_selected)
+        self.endpoint_tree.itemDoubleClicked.connect(self._on_endpoint_double_clicked)
         left_layout.addWidget(self.endpoint_tree)
         
         # Output/Audit panel
@@ -3558,7 +3577,17 @@ class MainWindow(QMainWindow):
         self.method_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.method_combo.setMinimumContentsLength(10)
         self.method_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
-        self.method_combo.addItems(["GET", "POST", "PUT", "DELETE", "PATCH"])
+        self._method_colors = {
+            "GET": "#2e7d32", "POST": "#1565c0", "PUT": "#e65100",
+            "DELETE": "#c62828", "PATCH": "#6a1b9a"
+        }
+        for method, color in self._method_colors.items():
+            self.method_combo.addItem(f"● {method}")
+        self.method_combo.setStyleSheet(
+            "QComboBox { font-weight: bold; }"
+        )
+        self.method_combo.currentIndexChanged.connect(self._update_method_color)
+        self._update_method_color()
         url_layout.addWidget(self.method_combo)
         
         self.url_input = QLineEdit()
@@ -3566,11 +3595,14 @@ class MainWindow(QMainWindow):
         url_layout.addWidget(self.url_input)
         
         self.send_btn = QPushButton(self.tr("Send"))
+        self.send_btn.setToolTip(self.tr("Send request (Ctrl+Return)"))
+        self.send_btn.setShortcut("Ctrl+Return")
         self.send_btn.clicked.connect(self._send_request)
         url_layout.addWidget(self.send_btn)
         
         self.curl_btn = QPushButton(self.tr("cURL"))
-        self.curl_btn.setToolTip(self.tr("Copy request as cURL command"))
+        self.curl_btn.setToolTip(self.tr("Copy request as cURL command (Ctrl+Shift+C)"))
+        self.curl_btn.setShortcut("Ctrl+Shift+C")
         self.curl_btn.clicked.connect(self._copy_as_curl)
         url_layout.addWidget(self.curl_btn)
         
@@ -3614,10 +3646,22 @@ class MainWindow(QMainWindow):
         response_group = QGroupBox(self.tr("Response"))
         response_layout = QVBoxLayout(response_group)
         
-        # Response info
+        # Response info bar
+        response_info_bar = QHBoxLayout()
         self.response_info = QLabel()
-        response_layout.addWidget(self.response_info)
-        
+        response_info_bar.addWidget(self.response_info)
+        response_info_bar.addStretch()
+        self.pretty_print_enabled = True
+        self.pretty_print_btn = QPushButton(self.tr("Pretty"))
+        self.pretty_print_btn.setCheckable(True)
+        self.pretty_print_btn.setChecked(True)
+        self.pretty_print_btn.setToolTip(self.tr("Toggle pretty-print JSON (Ctrl+P)"))
+        self.pretty_print_btn.setShortcut("Ctrl+P")
+        self.pretty_print_btn.clicked.connect(self._toggle_pretty_print)
+        self.pretty_print_btn.setMaximumWidth(60)
+        response_info_bar.addWidget(self.pretty_print_btn)
+        response_layout.addLayout(response_info_bar)
+
         # Response body
         self.response_body = QPlainTextEdit()
         self.response_body.setReadOnly(True)
@@ -3819,9 +3863,11 @@ class MainWindow(QMainWindow):
         }
         endpoints = endpoint_map.get(api_type, ZIA_ENDPOINTS)
         
+        first_category = True
         for category, items in endpoints.items():
             category_item = QTreeWidgetItem([category])
-            category_item.setExpanded(True)
+            category_item.setExpanded(first_category)
+            first_category = False
             
             for name, details in items.items():
                 endpoint_item = QTreeWidgetItem([f"{details['method']} {name}"])
@@ -3848,7 +3894,7 @@ class MainWindow(QMainWindow):
             return
         
         # Update request
-        self.method_combo.setCurrentText(details["method"])
+        self.method_combo.setCurrentText(f"● {details['method']}")
         
         # Build URL
         settings = QSettings("Zscaler", "APIClient")
@@ -3973,6 +4019,90 @@ class MainWindow(QMainWindow):
         scrollbar = self.output_log.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
     
+    def _update_method_color(self):
+        """Update method combo color based on selected HTTP method."""
+        text = self.method_combo.currentText().replace("● ", "")
+        color = self._method_colors.get(text, "#000000")
+        self.method_combo.setStyleSheet(
+            f"QComboBox {{ font-weight: bold; color: {color}; }}"
+        )
+
+    def _filter_endpoints(self, text: str):
+        """Filter endpoint tree items by search text."""
+        text = text.lower()
+        for i in range(self.endpoint_tree.topLevelItemCount()):
+            category = self.endpoint_tree.topLevelItem(i)
+            any_visible = False
+            for j in range(category.childCount()):
+                child = category.child(j)
+                visible = not text or text in child.text(0).lower()
+                child.setHidden(not visible)
+                if visible:
+                    any_visible = True
+            category.setHidden(not any_visible)
+            if any_visible and text:
+                category.setExpanded(True)
+
+    def _on_endpoint_double_clicked(self, item, column: int):
+        """Double-click an endpoint to select and send."""
+        details = item.data(0, Qt.ItemDataRole.UserRole)
+        if not details:
+            return
+        self._on_endpoint_selected(item, column)
+        self._send_request()
+
+    def _toggle_pretty_print(self):
+        """Toggle pretty-print for JSON response."""
+        self.pretty_print_enabled = self.pretty_print_btn.isChecked()
+        text = self.response_body.toPlainText()
+        if not text:
+            return
+        try:
+            data = json.loads(text)
+            if self.pretty_print_enabled:
+                settings = QSettings("Zscaler", "APIClient")
+                indent = settings.value("display/json_indent", "2")
+                indent_val = None if indent == "Tab" else int(indent)
+                self.response_body.setPlainText(json.dumps(data, indent=indent_val))
+            else:
+                self.response_body.setPlainText(json.dumps(data, separators=(',', ':')))
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    def _format_size(self, size_bytes: int) -> str:
+        """Format byte size to human readable."""
+        if size_bytes < 1024:
+            return f"{size_bytes} B"
+        elif size_bytes < 1024 * 1024:
+            return f"{size_bytes / 1024:.1f} KB"
+        else:
+            return f"{size_bytes / (1024 * 1024):.1f} MB"
+
+    def _get_auth_status(self, api_type: str) -> bool:
+        """Check if an API type is authenticated."""
+        token_map = {
+            "ZIA": self.zia_session,
+            "ZPA": self.zpa_token,
+            "ZDX": self.zdx_token,
+            "ZCC": self.zcc_token,
+            "ZIdentity": self.zidentity_token,
+            "ZTW": self.ztw_token,
+            "ZWA": self.zwa_token,
+            "EASM": self.easm_token,
+            "OneAPI": self.oneapi_token,
+        }
+        return bool(token_map.get(api_type))
+
+    def _update_auth_indicators(self):
+        """Update api_type combo with auth indicators."""
+        for i in range(self.api_type.count()):
+            api = self.api_type.itemText(i)
+            clean = api.replace("🟢 ", "").replace("🔴 ", "")
+            if self._get_auth_status(clean):
+                self.api_type.setItemText(i, f"🟢 {clean}")
+            else:
+                self.api_type.setItemText(i, f"🔴 {clean}")
+
     def _authenticate_api(self):
         """Authenticate with the currently selected API."""
         api_type = self.api_type.currentText()
@@ -3996,7 +4126,7 @@ class MainWindow(QMainWindow):
             # Build auth URL and body
             url = f"https://{cloud}/api/v1/authenticatedSession"
             self.url_input.setText(url)
-            self.method_combo.setCurrentText("POST")
+            self.method_combo.setCurrentText("● POST")
             
             # Generate timestamp and obfuscated key
             import time
@@ -4055,7 +4185,7 @@ class MainWindow(QMainWindow):
                 url = f"https://{cloud}/oauth2/token"
             
             self.url_input.setText(url)
-            self.method_combo.setCurrentText("POST")
+            self.method_combo.setCurrentText("● POST")
             
             # Set content type and body based on API type
             if api_type == "ZDX":
@@ -4097,7 +4227,7 @@ class MainWindow(QMainWindow):
                 auth_url = f"https://{vanity_domain}.zslogin.net/oauth2/v1/token"
             
             self.url_input.setText(auth_url)
-            self.method_combo.setCurrentText("POST")
+            self.method_combo.setCurrentText("● POST")
             
             # OneAPI uses form-urlencoded with audience parameter
             self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
@@ -4109,7 +4239,7 @@ class MainWindow(QMainWindow):
     
     def _send_request(self):
         url = self.url_input.text()
-        method = self.method_combo.currentText()
+        method = self.method_combo.currentText().replace("● ", "")
         
         if not url:
             QMessageBox.warning(self, self.tr("Warning"), self.tr("Please enter a URL"))
@@ -4211,8 +4341,26 @@ class MainWindow(QMainWindow):
             status = 200 if res["success"] else 0
             
             if res["success"]:
+                # Extract metadata from response
+                status_code = res["data"].pop("_status_code", 200) if isinstance(res["data"], dict) else 200
+                reason = res["data"].pop("_reason", "OK") if isinstance(res["data"], dict) else "OK"
+                resp_size = res["data"].pop("_size", 0) if isinstance(res["data"], dict) else 0
+                size_str = self._format_size(resp_size)
+                
+                # Color based on status code range
+                if status_code < 300:
+                    badge_color = "#2e7d32"
+                elif status_code < 400:
+                    badge_color = "#1565c0"
+                elif status_code < 500:
+                    badge_color = "#e65100"
+                else:
+                    badge_color = "#c62828"
+                
                 self.response_info.setText(
-                    f"<span style='color: green;'>✓ {self.tr('Success')} ({duration_ms}ms)</span>"
+                    f"<span style='color: {badge_color}; font-weight: bold;'>"
+                    f"{status_code} {reason}</span>"
+                    f" · {duration_ms}ms · {size_str}"
                 )
                 
                 # Get indent setting
@@ -4220,8 +4368,11 @@ class MainWindow(QMainWindow):
                 indent = settings.value("display/json_indent", "2")
                 indent_val = None if indent == "Tab" else int(indent)
                 
-                self.response_body.setPlainText(json.dumps(res["data"], indent=indent_val))
-                self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms)")
+                if self.pretty_print_enabled:
+                    self.response_body.setPlainText(json.dumps(res["data"], indent=indent_val))
+                else:
+                    self.response_body.setPlainText(json.dumps(res["data"], separators=(',', ':')))
+                self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms · {size_str})")
                 
                 # Check for session token in response
                 api_type = self.api_type.currentText()
@@ -4230,6 +4381,7 @@ class MainWindow(QMainWindow):
                         self.zia_session = res["data"]["authCookie"]
                         self.status_bar.showMessage(self.tr("ZIA authenticated successfully"))
                         self._log_output("ZIA session established", "success")
+                        self._update_auth_indicators()
                     elif "access_token" in res["data"]:
                         token = res["data"]["access_token"]
                         # Set token for the correct API type
@@ -4265,6 +4417,7 @@ class MainWindow(QMainWindow):
                             self.oneapi_token = token
                             self.status_bar.showMessage(self.tr("OneAPI authenticated successfully"))
                             self._log_output("OneAPI token acquired (unified auth)", "success")
+                        self._update_auth_indicators()
                         else:
                             # Default to ZPA for backwards compatibility
                             self.zpa_token = token
@@ -4407,7 +4560,7 @@ class MainWindow(QMainWindow):
     def _copy_as_curl(self):
         """Copy current request as cURL command."""
         url = self.url_input.text()
-        method = self.method_combo.currentText()
+        method = self.method_combo.currentText().replace("● ", "")
         
         if not url:
             QMessageBox.warning(self, self.tr("Warning"), self.tr("No URL to copy"))
@@ -4482,7 +4635,7 @@ class MainWindow(QMainWindow):
         
         # Set up auth request
         self.api_type.setCurrentText("ZIA")
-        self.method_combo.setCurrentText("POST")
+        self.method_combo.setCurrentText("● POST")
         self.url_input.setText(f"https://{cloud}/api/v1/authenticatedSession")
         self.body_input.setPlainText(json.dumps({
             "apiKey": obf_key,
@@ -4526,7 +4679,7 @@ class MainWindow(QMainWindow):
             return
         
         self.api_type.setCurrentText("ZPA")
-        self.method_combo.setCurrentText("POST")
+        self.method_combo.setCurrentText("● POST")
         self.url_input.setText(f"https://{cloud}/signin")
         self.body_input.setPlainText(json.dumps({
             "client_id": client_id,
