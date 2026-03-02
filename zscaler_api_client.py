@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.1.3"
+__version__ = "2.2.0"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -3736,6 +3736,7 @@ class MainWindow(QMainWindow):
             ("🇪🇸 Español", "es"),
             ("🇯🇵 日本語", "ja"),
             ("🇨🇳 中文", "zh"),
+            ("🇵🇱 Polski", "pl"),
             ("🇮🇷 فارسی", "fa"),
         ]
         
