@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 ## [2.2.0] - 2026-03-02
 
 ### Added
+- **Color-coded HTTP methods** — GET (green), POST (blue), PUT (orange), DELETE (red), PATCH (purple) with colored indicators in dropdown
+- **Response status badge** — colored status code display (2xx green, 3xx blue, 4xx orange, 5xx red) with format "200 OK · 234ms · 1.2 KB"
+- **Request timing** — elapsed time displayed in status bar and response info for every request
+- **Auth status indicators** — 🟢/🔴 dots next to API names in the selector showing authentication state
+- **Keyboard shortcuts in tooltips** — Send (Ctrl+Return), Auth (Ctrl+Shift+A), cURL (Ctrl+Shift+C)
+- **Auto-expand first endpoint category** when switching APIs in the tree
+- **Response size** shown in response info label
+- **Endpoint search/filter** — filter box above the endpoint tree to find endpoints by name
+- **Double-click to send** — double-clicking a configured endpoint auto-sends the request
+- **Pretty-print toggle** (Ctrl+P) for JSON response formatting
 - **Polish translation** (71/210 strings)
 - **Hungarian translation** (71/210 strings)
 

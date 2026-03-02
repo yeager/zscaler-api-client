@@ -4417,12 +4417,12 @@ class MainWindow(QMainWindow):
                             self.oneapi_token = token
                             self.status_bar.showMessage(self.tr("OneAPI authenticated successfully"))
                             self._log_output("OneAPI token acquired (unified auth)", "success")
-                        self._update_auth_indicators()
                         else:
                             # Default to ZPA for backwards compatibility
                             self.zpa_token = token
                             self.status_bar.showMessage(self.tr("Authenticated successfully"))
                             self._log_output("Token acquired", "success")
+                        self._update_auth_indicators()
                 
                 # Log success
                 self._log_output(f"Response: {duration_ms}ms", "success")
