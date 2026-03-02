@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.2.8"
+__version__ = "2.2.9"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -4578,6 +4578,12 @@ class MainWindow(QMainWindow):
                             self.status_bar.showMessage(self.tr("Authenticated successfully"))
                             self._log_output("Token acquired", "success")
                         self._update_auth_indicators()
+                        # Clear auth-specific headers/body so they don't leak into API requests
+                        for row in range(self.headers_table.rowCount()):
+                            self.headers_table.setItem(row, 0, None)
+                            self.headers_table.setItem(row, 1, None)
+                        self.body_input.clear()
+                        self.url_input.clear()
                 
                 # Log success
                 self._log_output(f"Response: {duration_ms}ms", "success")
