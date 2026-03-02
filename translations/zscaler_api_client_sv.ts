@@ -271,7 +271,7 @@
     <message>
         <location filename="../zscaler_api_client.py" line="3137"/>
         <source>Body</source>
-        <translation>Kropp</translation>
+        <translation>Text</translation>
     </message>
     <message>
         <location filename="../zscaler_api_client.py" line="3143"/>
