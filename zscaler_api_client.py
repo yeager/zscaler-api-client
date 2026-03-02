@@ -4382,13 +4382,13 @@ class MainWindow(QMainWindow):
                 else:
                     base = "https://api.zsapi.net"
             elif api_type == "ZIA":
-                base = f"https://{settings.value("zia/cloud", "zsapi.zscaler.net")}"
+                base = f"https://{settings.value('zia/cloud', 'zsapi.zscaler.net')}"
             elif api_type == "ZPA":
-                base = f"https://{settings.value("zpa/cloud", "config.private.zscaler.com")}"
+                base = f"https://{settings.value('zpa/cloud', 'config.private.zscaler.com')}"
             elif api_type == "ZDX":
-                base = f"https://{settings.value("zdx/cloud", "api.zdxcloud.net")}"
+                base = f"https://{settings.value('zdx/cloud', 'api.zdxcloud.net')}"
             elif api_type == "ZCC":
-                base = f"https://{settings.value("zcc/cloud", "api.zscaler.com")}"
+                base = f"https://{settings.value('zcc/cloud', 'api.zscaler.com')}"
             else:
                 base = ""
             url = base + url
