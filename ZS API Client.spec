@@ -5,7 +5,7 @@ a = Analysis(
     ['zscaler_api_client.py'],
     pathex=[],
     binaries=[],
-    datas=[('translations', 'translations')],
+    datas=[('translations', 'translations'), ('CHANGELOG.md', '.')],
     hiddenimports=['keyring.backends.macOS'],
     hookspath=[],
     hooksconfig={},
