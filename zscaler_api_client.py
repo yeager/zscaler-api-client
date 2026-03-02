@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.2.7"
+__version__ = "2.2.8"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -3969,6 +3969,7 @@ class MainWindow(QMainWindow):
         event.accept()
     
     def _update_endpoint_tree(self, api_type: str):
+        api_type = api_type.replace("🟢 ", "").replace("🔴 ", "")
         self.endpoint_tree.clear()
         
         # Select endpoints based on API type
