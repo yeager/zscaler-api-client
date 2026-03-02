@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.2.5"
+__version__ = "2.2.6"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -5022,14 +5022,7 @@ class MainWindow(QMainWindow):
                     webbrowser.open(html_url)
                 self.status_bar.showMessage(self.tr("Update available: v{version}").format(version=latest_version))
             else:
-                QMessageBox.information(
-                    self,
-                    self.tr("No Updates"),
-                    self.tr(
-                        "<p>You are running the latest version.</p>"
-                        "<p><b>Version:</b> {version}</p>"
-                    ).format(version=current_version)
-                )
+                # No popup if already on latest — only show in status bar
                 self.status_bar.showMessage(self.tr("You are up to date (v{version})").format(version=current_version))
         
         except Exception as e:
