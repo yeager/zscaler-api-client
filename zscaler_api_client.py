@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.2.9"
+__version__ = "2.3.0"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -3780,7 +3780,7 @@ class MainWindow(QMainWindow):
         self.pretty_print_btn.setToolTip(self.tr("Toggle pretty-print JSON (Ctrl+P)"))
         self.pretty_print_btn.setShortcut("Ctrl+P")
         self.pretty_print_btn.clicked.connect(self._toggle_pretty_print)
-        self.pretty_print_btn.setMaximumWidth(60)
+        self.pretty_print_btn.setMinimumWidth(70)
         response_info_bar.addWidget(self.pretty_print_btn)
         response_layout.addLayout(response_info_bar)
 
