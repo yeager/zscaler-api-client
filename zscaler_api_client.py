@@ -40,40 +40,67 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.1.2"
+__version__ = "2.1.3"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
 _credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
 
+def _load_all_credentials():
+    """Load all credentials from a single keychain entry (one prompt)."""
+    global _credential_cache, _credentials_loaded
+    if _credentials_loaded:
+        return
+    _credentials_loaded = True
+    try:
+        import keyring
+        blob = keyring.get_password(SERVICE_NAME, "_all_credentials")
+        if blob:
+            _credential_cache.update(json.loads(blob))
+        else:
+            # Migrate from individual keychain entries (one-time)
+            keys = ["zia_api_key", "zia_password", "zpa_client_secret",
+                    "zdx_key_secret", "zcc_client_secret", "zidentity_client_secret",
+                    "ztw_client_secret", "zwa_client_secret", "easm_client_secret",
+                    "oneapi_client_secret", "proxy_password"]
+            migrated = {}
+            for k in keys:
+                try:
+                    v = keyring.get_password(SERVICE_NAME, k)
+                    if v:
+                        migrated[k] = v
+                except Exception:
+                    pass
+            if migrated:
+                _credential_cache.update(migrated)
+                _save_all_credentials()
+    except Exception:
+        pass
+
+def _save_all_credentials():
+    """Save all credentials to a single keychain entry (one prompt)."""
+    try:
+        import keyring
+        blob = json.dumps({k: v for k, v in _credential_cache.items() if v})
+        keyring.set_password(SERVICE_NAME, "_all_credentials", blob)
+    except Exception:
+        pass
+
 def secure_store(key: str, value: str) -> bool:
     """Store credential securely in system keychain."""
     global _credential_cache
+    _load_all_credentials()
     if not value:
-        secure_delete(key)
-        return True
-    try:
-        import keyring
-        keyring.set_password(SERVICE_NAME, key, value)
-        _credential_cache[key] = value  # Update cache
-        return True
-    except Exception:
-        return False
+        _credential_cache.pop(key, None)
+    else:
+        _credential_cache[key] = value
+    _save_all_credentials()
+    return True
 
 def secure_get(key: str) -> str:
-    """Retrieve credential from system keychain (cached to avoid multiple prompts)."""
-    global _credential_cache
-    if key in _credential_cache:
-        return _credential_cache[key]
-    try:
-        import keyring
-        value = keyring.get_password(SERVICE_NAME, key)
-        result = value or ""
-        _credential_cache[key] = result
-        return result
-    except Exception:
-        _credential_cache[key] = ""
-        return ""
+    """Retrieve credential from system keychain (single keychain access)."""
+    _load_all_credentials()
+    return _credential_cache.get(key, "")
 
 def secure_delete(key: str) -> bool:
     """Delete credential from system keychain."""

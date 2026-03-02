@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.3] - 2026-03-02
+
+### Fixed
+- **Single keychain prompt** — All credentials stored in one keychain entry instead of individual ones, eliminating repeated unlock prompts on macOS
+- Automatic migration from old individual keychain entries
+
 ## [2.1.2] - 2026-03-02
 
 ### Fixed
