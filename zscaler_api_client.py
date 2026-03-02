@@ -40,11 +40,12 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.2.0"
+__version__ = "2.2.1"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
 _credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
+_credentials_loaded = False
 
 def _load_all_credentials():
     """Load all credentials from a single keychain entry (one prompt)."""
@@ -3075,7 +3076,109 @@ class SettingsDialog(QDialog):
         self.font_size.setCurrentText(settings.value("display/font_size", "11"))
         self.theme.setCurrentIndex(int(settings.value("display/theme", "2")))
     
+    def _validate_and_sanitize(self) -> bool:
+        """Validate inputs and show warnings for common mistakes. Returns True if OK."""
+        warnings = []
+        
+        # --- ZIA Cloud ---
+        zia_cloud = self.zia_cloud.text().strip()
+        if zia_cloud:
+            # Strip https:// if pasted
+            if zia_cloud.startswith(("https://", "http://")):
+                zia_cloud = zia_cloud.split("://", 1)[1].rstrip("/")
+                self.zia_cloud.setText(zia_cloud)
+                warnings.append(self.tr("ZIA Cloud: Removed URL prefix (only hostname needed)"))
+        
+        # --- ZPA Cloud ---
+        zpa_cloud = self.zpa_cloud.text().strip()
+        if zpa_cloud and zpa_cloud.startswith(("https://", "http://")):
+            zpa_cloud = zpa_cloud.split("://", 1)[1].rstrip("/")
+            self.zpa_cloud.setText(zpa_cloud)
+            warnings.append(self.tr("ZPA Cloud: Removed URL prefix (only hostname needed)"))
+        
+        # --- ZPA Customer ID ---
+        zpa_cid = self.zpa_customer_id.text().strip()
+        if self.zpa_enabled.isChecked() and self.zpa_client_id.text().strip() and not zpa_cid:
+            warnings.append(self.tr("ZPA: Customer ID is empty — required for most ZPA endpoints"))
+        if zpa_cid and not zpa_cid.isdigit():
+            warnings.append(self.tr("ZPA: Customer ID should be numeric (got '{value}')").format(value=zpa_cid[:20]))
+        
+        # --- OneAPI Vanity Domain ---
+        vanity = self.oneapi_vanity_domain.text().strip()
+        if vanity:
+            if vanity.startswith(("https://", "http://")):
+                vanity = vanity.split("://", 1)[1].rstrip("/")
+                self.oneapi_vanity_domain.setText(vanity)
+                warnings.append(self.tr("OneAPI: Removed URL prefix from vanity domain"))
+            if ".zslogin.net" in vanity:
+                vanity = vanity.replace(".zslogin.net", "")
+                self.oneapi_vanity_domain.setText(vanity)
+                warnings.append(self.tr("OneAPI: Removed .zslogin.net suffix — only the prefix is needed (e.g. 'acme')"))
+            if "." in vanity:
+                warnings.append(self.tr("OneAPI: Vanity domain usually has no dots (e.g. 'acme', not '{value}')").format(value=vanity[:30]))
+        
+        # --- OneAPI Cloud ---
+        oneapi_cloud = self.oneapi_cloud.text().strip()
+        if oneapi_cloud:
+            if "." in oneapi_cloud:
+                warnings.append(self.tr("OneAPI: Cloud should be empty (production) or a simple name like 'beta'/'alpha'. Got '{value}' — this looks like a full domain. Leave empty for production.").format(value=oneapi_cloud[:30]))
+            if oneapi_cloud.startswith(("https://", "http://")):
+                oneapi_cloud = oneapi_cloud.split("://", 1)[1].rstrip("/")
+                self.oneapi_cloud.setText(oneapi_cloud)
+        
+        # --- OneAPI Customer ID ---
+        oneapi_cid = self.oneapi_customer_id.text().strip()
+        if oneapi_cid and not oneapi_cid.isdigit():
+            warnings.append(self.tr("OneAPI: Customer ID should be numeric (got '{value}')").format(value=oneapi_cid[:20]))
+        
+        # --- ZIdentity Domain ---
+        zid_domain = self.zidentity_domain.text().strip()
+        if zid_domain:
+            if zid_domain.startswith(("https://", "http://")):
+                zid_domain = zid_domain.split("://", 1)[1].rstrip("/")
+                self.zidentity_domain.setText(zid_domain)
+                warnings.append(self.tr("ZIdentity: Removed URL prefix from domain"))
+        
+        # --- Enabled but missing credentials ---
+        if self.zia_enabled.isChecked() and not self.zia_cloud.text().strip():
+            warnings.append(self.tr("ZIA is enabled but Cloud is empty"))
+        if self.oneapi_enabled.isChecked() and not vanity:
+            warnings.append(self.tr("OneAPI is enabled but Vanity Domain is empty"))
+        if self.oneapi_enabled.isChecked() and not self.oneapi_client_id.text().strip():
+            warnings.append(self.tr("OneAPI is enabled but Client ID is empty"))
+        
+        # --- Strip whitespace from all text fields ---
+        for field in [self.zia_cloud, self.zia_username, self.zpa_cloud, self.zpa_client_id,
+                      self.zpa_customer_id, self.zdx_cloud, self.zdx_key_id,
+                      self.zcc_cloud, self.zcc_client_id, self.zidentity_domain,
+                      self.zidentity_client_id, self.ztw_cloud, self.ztw_client_id,
+                      self.zwa_cloud, self.zwa_client_id, self.easm_cloud,
+                      self.easm_client_id, self.oneapi_vanity_domain,
+                      self.oneapi_client_id, self.oneapi_cloud, self.oneapi_customer_id]:
+            field.setText(field.text().strip())
+        
+        if warnings:
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle(self.tr("Settings Validation"))
+            msg.setText(self.tr("Some settings were adjusted or may need attention:"))
+            msg.setDetailedText("\n".join(f"• {w}" for w in warnings))
+            msg.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+            msg.setDefaultButton(QMessageBox.StandardButton.Ok)
+            msg.button(QMessageBox.StandardButton.Ok).setText(self.tr("Save Anyway"))
+            msg.button(QMessageBox.StandardButton.Cancel).setText(self.tr("Go Back"))
+            # Auto-show details
+            for btn in msg.buttons():
+                if msg.buttonRole(btn) == QMessageBox.ButtonRole.ActionRole:
+                    btn.click()
+                    break
+            return msg.exec() == QMessageBox.StandardButton.Ok
+        
+        return True
+
     def accept(self):
+        if not self._validate_and_sanitize():
+            return
         settings = QSettings("Zscaler", "APIClient")
         
         # API Enabled states
@@ -3933,23 +4036,26 @@ class MainWindow(QMainWindow):
             base_url = f"https://{cloud}"
         elif api_type == "OneAPI":
             # OneAPI: unified base URL
-            cloud = settings.value("oneapi/cloud", "")
+            cloud = settings.value("oneapi/cloud", "").strip()
             vanity_domain = settings.value("oneapi/vanity_domain", "")
+            # Cloud should be empty (production), or a simple prefix like 'beta'/'alpha'
+            # If it contains dots (e.g. 'zscalerthree.net'), treat as production
+            is_non_prod = cloud and cloud.upper() != "PRODUCTION" and "." not in cloud
             if details.get("auth_endpoint"):
                 # Auth endpoint uses zslogin domain
-                if cloud and cloud.upper() != "PRODUCTION":
+                if is_non_prod:
                     base_url = f"https://{vanity_domain}.zslogin{cloud.lower()}.net"
                 else:
                     base_url = f"https://{vanity_domain}.zslogin.net"
             elif details.get("use_zidentity_base"):
                 # ZIdentity admin endpoints
-                if cloud and cloud.upper() != "PRODUCTION":
+                if is_non_prod:
                     base_url = f"https://{vanity_domain}-admin.zslogin{cloud.lower()}.net"
                 else:
                     base_url = f"https://{vanity_domain}-admin.zslogin.net"
             else:
                 # Regular API endpoints
-                if cloud and cloud.upper() != "PRODUCTION":
+                if is_non_prod:
                     base_url = f"https://api.{cloud.lower()}.zsapi.net"
                 else:
                     base_url = "https://api.zsapi.net"

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.1] - 2026-03-02
+
+### Fixed
+- **Settings dialog crash** — Missing global variable caused Settings to not open
+- **OneAPI base URL** — Cloud names containing dots (e.g. zscalerthree.net) no longer produce malformed URLs
+
 ## [2.2.0] - 2026-03-02
 
 ### Added
