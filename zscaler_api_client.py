@@ -3927,8 +3927,8 @@ class MainWindow(QMainWindow):
                         self.zia_session = res["data"]["authCookie"]
                         self.status_bar.showMessage(self.tr("ZIA authenticated successfully"))
                         self._log_output("ZIA session established", "success")
-                    elif "access_token" in res["data"]:
-                        token = res["data"]["access_token"]
+                    elif "access_token" in res["data"] or "token" in res["data"]:
+                        token = res["data"].get("access_token") or res["data"].get("token")
                         # Set token for the correct API type
                         if api_type == "ZPA":
                             self.zpa_token = token
