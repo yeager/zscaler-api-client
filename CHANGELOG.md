@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.0] - 2026-08-25
+
+### Added
+- Secure GraphQL query presets, variables, per-endpoint introspection reuse, and schema inspection
+- Bar, line, and pie visualizations for numeric API results
+- AI request parameter, pagination, and filter suggestions with mandatory preview and approval
+- Guided API tasks and guided AI questions for ZIA, ZPA, ZDX, Client Connector, ZIdentity, and AI Security
+- Safe exports for CSV, XLSX, NDJSON, JSON, Markdown, HTML, PDF, PNG, SVG, cURL, and Postman collections
+
+### Security
+- AI key clearing, masked LLM connection diagnostics, sanitized request exports, and additional secret-handling tests
+
+### Changed
+- Qt `.qm` catalogs are generated from `.ts` files during packaging and are no longer versioned
+
 ## [2.5.1] - 2026-08-25
 
 ### Added

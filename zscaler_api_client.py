@@ -45,7 +45,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.5.1"
+__version__ = "2.6.0"
 
 # Locale registry. App translations are loaded from translations/ at startup;
 # English is the explicit source-language fallback when a catalog is absent.
