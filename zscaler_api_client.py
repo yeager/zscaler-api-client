@@ -3381,7 +3381,7 @@ class SettingsDialog(QDialog):
         """Keep first-time configuration focused while preserving expert controls."""
         advanced = self.mode_choice.currentData() == "advanced"
         for group in self.findChildren(QGroupBox):
-            if group.title().startswith("OneAPI"):
+            if group.title().startswith("OneAPI") or group.title() in {self.tr("Language"), self.tr("AI / LLM")}:
                 continue
             group.setVisible(advanced)
         for index in range(self.settings_tabs.count()):
@@ -4947,6 +4947,23 @@ class MainWindow(QMainWindow):
                 writer.writerows(safe_rows)
         self.status_bar.showMessage(self.tr("AI result exported"))
 
+    def _show_ai_visualization(self, data: Any):
+        """Render common API collections as a safe table for quick inspection."""
+        rows = data if isinstance(data, list) else next((value for value in data.values() if isinstance(value, list)), []) if isinstance(data, dict) else []
+        rows = [redact_sensitive(row) for row in rows if isinstance(row, dict)]
+        if not rows:
+            return
+        columns = list(dict.fromkeys(key for row in rows[:100] for key in row))[:12]
+        self.ai_table.setRowCount(min(len(rows), 100))
+        self.ai_table.setColumnCount(len(columns))
+        self.ai_table.setHorizontalHeaderLabels(columns)
+        for row_index, row in enumerate(rows[:100]):
+            for column_index, column in enumerate(columns):
+                value = row.get(column, "")
+                self.ai_table.setItem(row_index, column_index, QTableWidgetItem(str(value)))
+        self.ai_table.resizeColumnsToContents()
+        self.ai_summary.setText(self.tr("Visualized {count} records as a masked table. Export is available from the AI Assistant tab.").format(count=len(rows)))
+
     def _send_request(self):
         url = self.url_input.text().strip()
         method = self.method_combo.currentText().replace("● ", "")
@@ -5138,6 +5155,7 @@ class MainWindow(QMainWindow):
                     self.response_body.setPlainText(json.dumps(res["data"], indent=indent_val))
                 else:
                     self.response_body.setPlainText(json.dumps(res["data"], separators=(',', ':')))
+                self._show_ai_visualization(res["data"])
                 self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms · {size_str})")
                 
                 # Check for session token in response

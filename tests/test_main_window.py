@@ -89,6 +89,7 @@ class MainWindowTests(unittest.TestCase):
         settings = client.SettingsDialog(self.window)
         settings.mode_choice.setCurrentIndex(settings.mode_choice.findData("basic"))
         self.assertFalse(settings.settings_tabs.isTabVisible(1))
+        self.assertFalse(next(group for group in settings.findChildren(client.QGroupBox) if group.title() == "Language").isHidden())
         settings.mode_choice.setCurrentIndex(settings.mode_choice.findData("advanced"))
         self.assertTrue(settings.settings_tabs.isTabVisible(1))
         wizard = client.SetupWizard(self.window)
@@ -98,6 +99,11 @@ class MainWindowTests(unittest.TestCase):
         self.assertTrue(wizard.cloud_input.isHidden() is False)
         wizard.close()
         settings.close()
+
+    def test_ai_visualization_masks_sensitive_response_columns(self):
+        self.window._show_ai_visualization([{"id": "1", "client_secret": "hidden"}])
+        self.assertEqual(self.window.ai_table.item(0, 0).text(), "1")
+        self.assertNotIn("hidden", " ".join(self.window.ai_table.item(0, col).text() for col in range(self.window.ai_table.columnCount())))
 
     def test_ai_assistant_suggests_catalog_backed_request(self):
         self.window.ai_question.setText("list ZPA application segments")
