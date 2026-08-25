@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -17,6 +18,11 @@ SBOM_SPEC = importlib.util.spec_from_file_location(
 )
 SBOM_BUILDER = importlib.util.module_from_spec(SBOM_SPEC)
 SBOM_SPEC.loader.exec_module(SBOM_BUILDER)
+TRANSLATION_SPEC = importlib.util.spec_from_file_location(
+    "compile_translations", ROOT / "scripts" / "compile_translations.py"
+)
+TRANSLATION_BUILDER = importlib.util.module_from_spec(TRANSLATION_SPEC)
+TRANSLATION_SPEC.loader.exec_module(TRANSLATION_BUILDER)
 
 
 class ApiCatalogTests(unittest.TestCase):
@@ -75,6 +81,21 @@ class ApiCatalogTests(unittest.TestCase):
         self.assertEqual(application["name"], "ZS API Client")
         self.assertEqual(application["checksums"][0]["algorithm"], "SHA256")
         self.assertGreater(len(document["packages"]), 1)
+
+    def test_qm_compilation_requires_more_than_twenty_percent_real_translation(self):
+        source = """<?xml version=\"1.0\"?><TS><context>
+        <message><source>One</source><translation>Ett</translation></message>
+        <message><source>Two</source><translation>Two</translation></message>
+        <message><source>Three</source><translation></translation></message>
+        <message><source>Four</source><translation></translation></message>
+        <message><source>Five</source><translation></translation></message>
+        </context></TS>"""
+        with tempfile.TemporaryDirectory() as directory:
+            catalog = Path(directory) / "test.ts"
+            catalog.write_text(source, encoding="utf-8")
+            self.assertEqual(TRANSLATION_BUILDER.translation_coverage(catalog), 0.2)
+            self.assertEqual(TRANSLATION_BUILDER.eligible_catalogs([catalog], 0.2), [])
+            self.assertEqual(TRANSLATION_BUILDER.eligible_catalogs([catalog], 0.19), [catalog])
 
 
 if __name__ == "__main__":
