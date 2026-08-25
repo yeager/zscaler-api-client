@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.2] - 2026-08-25
+
+### Fixed
+- Updated artifact upload/download Actions to the Node 24-compatible v7 line
+
 ## [2.6.1] - 2026-08-25
 
 ### Changed
