@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.1] - 2026-08-25
+
+### Added
+- First-run setup wizard for OneAPI credentials, tenant configuration, authentication, and common API tasks
+
 ## [2.4.0] - 2026-08-25
 
 ### Added

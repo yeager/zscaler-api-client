@@ -42,6 +42,21 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(self.window.response_tabs.count(), 2)
         self.assertEqual(self.window.request_tabs.count(), 4)
 
+    def test_wizard_loads_common_request_with_path_variables(self):
+        self.window._load_wizard_request(
+            "GET",
+            "https://api.zsapi.net/zpa/customers/:customerId/application",
+            "List ZPA application segments",
+        )
+        self.assertEqual(self.window.method_combo.currentText(), "● GET")
+        self.assertEqual(self.window.variables_table.item(0, 0).text(), "customerId")
+
+    def test_setup_wizard_has_guided_pages(self):
+        wizard = client.SetupWizard(self.window)
+        self.assertEqual(wizard.pages.count(), 4)
+        self.assertIn("List ZIA users", wizard.COMMON_TASKS)
+        wizard.close()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -34,13 +34,13 @@ from PySide6.QtWidgets import (
     QTableWidgetItem, QHeaderView, QFileDialog, QMessageBox,
     QGroupBox, QFormLayout, QDialog, QDialogButtonBox, QProgressBar,
     QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
-    QCheckBox, QScrollArea, QFrame
+    QCheckBox, QScrollArea, QFrame, QStackedWidget
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.4.0"
+__version__ = "2.4.1"
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -2419,6 +2419,165 @@ class WelcomeDialog(QDialog):
         super().accept()
 
 
+class SetupWizard(QDialog):
+    """A practical first-run guide for configuration and common API tasks."""
+
+    COMMON_TASKS = {
+        "List ZIA users": ("GET", "https://api.zsapi.net/zia/api/v1/users"),
+        "List URL categories": ("GET", "https://api.zsapi.net/zia/api/v1/urlCategories"),
+        "Check ZIA activation status": ("GET", "https://api.zsapi.net/zia/api/v1/status"),
+        "List ZPA application segments": ("GET", "https://api.zsapi.net/zpa/mgmtconfig/v1/admin/customers/:customerId/application"),
+        "List Client Connector devices": ("GET", "https://api.zsapi.net/zcc/papi/public/v1/getDevices"),
+    }
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("Getting Started Wizard"))
+        self.setMinimumSize(720, 500)
+        layout = QVBoxLayout(self)
+
+        self.step_label = QLabel()
+        self.step_label.setObjectName("mutedLabel")
+        layout.addWidget(self.step_label)
+        self.pages = QStackedWidget()
+        layout.addWidget(self.pages)
+
+        self.pages.addWidget(self._make_welcome_page())
+        self.pages.addWidget(self._make_setup_page())
+        self.pages.addWidget(self._make_tasks_page())
+        self.pages.addWidget(self._make_finish_page())
+
+        controls = QHBoxLayout()
+        self.back_btn = QPushButton(self.tr("Back"))
+        self.back_btn.clicked.connect(lambda: self._go(-1))
+        controls.addWidget(self.back_btn)
+        controls.addStretch()
+        self.skip_setup = QPushButton(self.tr("Open full settings"))
+        self.skip_setup.clicked.connect(self._open_full_settings)
+        controls.addWidget(self.skip_setup)
+        self.next_btn = QPushButton(self.tr("Continue"))
+        self.next_btn.setDefault(True)
+        self.next_btn.clicked.connect(lambda: self._go(1))
+        controls.addWidget(self.next_btn)
+        layout.addLayout(controls)
+        self._update_controls()
+
+    def _make_welcome_page(self):
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        title = QLabel(self.tr("<h1>Welcome to ZS API Client</h1>"))
+        layout.addWidget(title)
+        intro = QLabel(self.tr(
+            "<p>This guide sets up secure OneAPI access and prepares common requests. "
+            "Credentials are stored in your system keychain; you can change any setting later.</p>"
+            "<p><b>Recommended:</b> use OneAPI for a unified token across supported Zscaler services.</p>"
+        ))
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+        layout.addStretch()
+        return page
+
+    def _make_setup_page(self):
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.addWidget(QLabel(self.tr("<h2>Connect your Zscaler tenant</h2>")))
+        note = QLabel(self.tr("Create an API client with the required roles in ZIdentity, then enter its details below."))
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        form = QFormLayout()
+        self.vanity_input = QLineEdit()
+        self.vanity_input.setPlaceholderText("acme")
+        form.addRow(self.tr("Vanity domain"), self.vanity_input)
+        self.client_id_input = QLineEdit()
+        form.addRow(self.tr("Client ID"), self.client_id_input)
+        self.client_secret_input = QLineEdit()
+        self.client_secret_input.setEchoMode(QLineEdit.EchoMode.Password)
+        form.addRow(self.tr("Client secret"), self.client_secret_input)
+        self.cloud_input = QLineEdit()
+        self.cloud_input.setPlaceholderText(self.tr("Leave empty for production; use beta or alpha when applicable"))
+        form.addRow(self.tr("Cloud"), self.cloud_input)
+        self.customer_id_input = QLineEdit()
+        self.customer_id_input.setPlaceholderText(self.tr("Optional; required for many ZPA requests"))
+        form.addRow(self.tr("ZPA customer ID"), self.customer_id_input)
+        layout.addLayout(form)
+        layout.addStretch()
+        return page
+
+    def _make_tasks_page(self):
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.addWidget(QLabel(self.tr("<h2>What would you like to do first?</h2>")))
+        description = QLabel(self.tr("Choose a common operation. The wizard will load it into the request builder with required path variables highlighted."))
+        description.setWordWrap(True)
+        layout.addWidget(description)
+        self.task_choice = QComboBox()
+        self.task_choice.addItems([self.tr("Just explore the API catalog"), *self.COMMON_TASKS.keys()])
+        layout.addWidget(self.task_choice)
+        self.authenticate_after_finish = QCheckBox(self.tr("Authenticate immediately after finishing"))
+        self.authenticate_after_finish.setChecked(True)
+        layout.addWidget(self.authenticate_after_finish)
+        layout.addStretch()
+        return page
+
+    def _make_finish_page(self):
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.addWidget(QLabel(self.tr("<h2>You are ready to make your first request</h2>")))
+        message = QLabel(self.tr(
+            "The API Explorer contains the complete bundled catalog. Use the Documentation tab for endpoint details, "
+            "the Console tab for request activity, and Request History to replay safe, redacted requests."
+        ))
+        message.setWordWrap(True)
+        layout.addWidget(message)
+        layout.addStretch()
+        return page
+
+    def _go(self, direction: int):
+        target = self.pages.currentIndex() + direction
+        if target >= self.pages.count():
+            self._finish()
+            return
+        self.pages.setCurrentIndex(max(0, target))
+        self._update_controls()
+
+    def _update_controls(self):
+        index = self.pages.currentIndex()
+        self.step_label.setText(self.tr("Step {current} of {total}").format(current=index + 1, total=self.pages.count()))
+        self.back_btn.setEnabled(index > 0)
+        self.next_btn.setText(self.tr("Finish") if index == self.pages.count() - 1 else self.tr("Continue"))
+
+    def _open_full_settings(self):
+        self.reject()
+        if self.parent():
+            self.parent()._show_settings()
+
+    def _finish(self):
+        settings = QSettings("Zscaler", "APIClient")
+        vanity = self.vanity_input.text().strip()
+        client_id = self.client_id_input.text().strip()
+        client_secret = self.client_secret_input.text()
+        if any((vanity, client_id, client_secret)):
+            settings.setValue("oneapi/enabled", "true")
+            settings.setValue("oneapi/vanity_domain", vanity)
+            settings.setValue("oneapi/client_id", client_id)
+            settings.setValue("oneapi/cloud", self.cloud_input.text().strip())
+            settings.setValue("oneapi/customer_id", self.customer_id_input.text().strip())
+            if client_secret:
+                secure_store("oneapi_client_secret", client_secret)
+        settings.setValue("welcome/show_on_startup", "false")
+        if self.parent():
+            parent = self.parent()
+            parent._update_api_list()
+            parent.api_type.setCurrentText("OneAPI")
+            task = self.task_choice.currentText()
+            if task in self.COMMON_TASKS:
+                method, url = self.COMMON_TASKS[task]
+                parent._load_wizard_request(method, url, task)
+            if self.authenticate_after_finish.isChecked() and all((vanity, client_id, client_secret)):
+                QTimer.singleShot(0, parent._authenticate_api)
+        self.accept()
+
+
 def create_splash_pixmap() -> QPixmap:
     """Create a splash screen pixmap."""
     pixmap = QPixmap(500, 300)
@@ -4390,6 +4549,19 @@ class MainWindow(QMainWindow):
         self._on_endpoint_selected(item, column)
         self._send_request()
 
+    def _load_wizard_request(self, method: str, url: str, task_name: str):
+        """Load a common task selected by the first-run wizard."""
+        self.method_combo.setCurrentText(f"● {method}")
+        self.url_input.setText(url)
+        self.params_table.clearContents()
+        self.headers_table.clearContents()
+        self.body_input.clear()
+        self._populate_path_variables(url)
+        self.help_text.setText(
+            f"<h3>{task_name}</h3><p>Prepared by the Getting Started Wizard. "
+            "Enter any highlighted path variables, then send the request.</p>"
+        )
+
     def _toggle_pretty_print(self):
         """Toggle pretty-print for JSON response."""
         self.pretty_print_enabled = self.pretty_print_btn.isChecked()
@@ -5298,7 +5470,7 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage(self.tr("Update check failed"))
     
     def _show_welcome(self):
-        dialog = WelcomeDialog(self)
+        dialog = SetupWizard(self)
         dialog.exec()
     
     def _show_about(self):
@@ -5412,7 +5584,7 @@ def main():
     # Show welcome dialog on first run or if enabled
     show_welcome = settings.value("welcome/show_on_startup", "true") == "true"
     if show_welcome:
-        QTimer.singleShot(100, lambda: WelcomeDialog(window).exec())
+        QTimer.singleShot(100, lambda: SetupWizard(window).exec())
     
     # Show changelog if app was updated (after welcome dialog)
     QTimer.singleShot(500 if show_welcome else 100, window._show_changelog_if_updated)
