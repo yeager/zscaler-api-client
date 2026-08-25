@@ -2323,6 +2323,7 @@ class WelcomeDialog(QDialog):
         self.setMinimumSize(700, 600)
         
         layout = QVBoxLayout(self)
+
         layout.setSpacing(20)
         
         # Header
@@ -2479,6 +2480,9 @@ class SetupWizard(QDialog):
         self.pages.addWidget(self._make_setup_page())
         self.pages.addWidget(self._make_tasks_page())
         self.pages.addWidget(self._make_finish_page())
+        settings = QSettings("Zscaler", "APIClient")
+        self.mode_choice.setCurrentIndex(0 if settings.value("ui/mode", "basic") == "basic" else 1)
+        self._apply_mode()
 
         controls = QHBoxLayout()
         self.back_btn = QPushButton(self.tr("Back"))
@@ -2507,6 +2511,13 @@ class SetupWizard(QDialog):
         ))
         intro.setWordWrap(True)
         layout.addWidget(intro)
+        mode_form = QFormLayout()
+        self.mode_choice = QComboBox()
+        self.mode_choice.addItem(self.tr("Basic"), "basic")
+        self.mode_choice.addItem(self.tr("Advanced"), "advanced")
+        self.mode_choice.currentIndexChanged.connect(self._apply_mode)
+        mode_form.addRow(self.tr("Setup mode:"), self.mode_choice)
+        layout.addLayout(mode_form)
         layout.addStretch()
         return page
 
@@ -2532,9 +2543,28 @@ class SetupWizard(QDialog):
         self.customer_id_input = QLineEdit()
         self.customer_id_input.setPlaceholderText(self.tr("Optional; required for many ZPA requests"))
         form.addRow(self.tr("ZPA customer ID"), self.customer_id_input)
+        self._advanced_setup_widgets = (self.cloud_input, self.customer_id_input)
+        self._advanced_setup_labels = (form.labelForField(self.cloud_input), form.labelForField(self.customer_id_input))
         layout.addLayout(form)
         layout.addStretch()
         return page
+
+    def _apply_mode(self):
+        advanced = self.mode_choice.currentData() == "advanced"
+        for widget in getattr(self, "_advanced_setup_widgets", ()):
+            widget.setVisible(advanced)
+        for label in getattr(self, "_advanced_setup_labels", ()):
+            label.setVisible(advanced)
+        if hasattr(self, "authenticate_after_finish"):
+            self.authenticate_after_finish.setVisible(advanced)
+        if hasattr(self, "task_choice"):
+            current = self.task_choice.currentText()
+            tasks = list(self.COMMON_TASKS)
+            if not advanced:
+                tasks = tasks[:3]
+            self.task_choice.clear()
+            self.task_choice.addItems([self.tr("Just explore the API catalog"), *tasks])
+            self.task_choice.setCurrentText(current)
 
     def _make_tasks_page(self):
         page = QWidget()
@@ -2598,6 +2628,7 @@ class SetupWizard(QDialog):
             if client_secret:
                 secure_store("oneapi_client_secret", client_secret)
         settings.setValue("welcome/show_on_startup", "false")
+        settings.setValue("ui/mode", self.mode_choice.currentData())
         if self.parent():
             parent = self.parent()
             parent._update_api_list()
@@ -2856,9 +2887,17 @@ class SettingsDialog(QDialog):
         self.setMinimumWidth(550)
         
         layout = QVBoxLayout(self)
+        mode_form = QFormLayout()
+        self.mode_choice = QComboBox()
+        self.mode_choice.addItem(self.tr("Basic"), "basic")
+        self.mode_choice.addItem(self.tr("Advanced"), "advanced")
+        self.mode_choice.currentIndexChanged.connect(self._apply_mode)
+        mode_form.addRow(self.tr("Interface mode:"), self.mode_choice)
+        layout.addLayout(mode_form)
         
         # Create tab widget for organized settings
         tabs = QTabWidget()
+        self.settings_tabs = tabs
         
         # === Credentials Tab ===
         creds_widget = QWidget()
@@ -3310,6 +3349,7 @@ class SettingsDialog(QDialog):
         layout.addWidget(buttons)
         
         self._load_settings()
+        self._apply_mode()
         self._on_proxy_changed()
     
     def _on_proxy_changed(self):
@@ -3319,6 +3359,17 @@ class SettingsDialog(QDialog):
         self.proxy_port.setEnabled(manual)
         self.proxy_username.setEnabled(manual)
         self.proxy_password.setEnabled(manual)
+
+    def _apply_mode(self):
+        """Keep first-time configuration focused while preserving expert controls."""
+        advanced = self.mode_choice.currentData() == "advanced"
+        for group in self.findChildren(QGroupBox):
+            if group.title().startswith("OneAPI"):
+                continue
+            group.setVisible(advanced)
+        for index in range(self.settings_tabs.count()):
+            title = self.settings_tabs.tabText(index)
+            self.settings_tabs.setTabVisible(index, advanced or title in {self.tr("Credentials"), self.tr("Language")})
     
     def _restore_defaults(self):
         """Restore default settings."""
@@ -3427,6 +3478,7 @@ class SettingsDialog(QDialog):
         self.theme.setCurrentIndex(int(settings.value("display/theme", "2")))
         language = str(settings.value("language", "system"))
         self.language_choice.setCurrentIndex(max(0, self.language_choice.findData(language)))
+        self.mode_choice.setCurrentIndex(0 if settings.value("ui/mode", "basic") == "basic" else 1)
     
     def _validate_and_sanitize(self) -> bool:
         """Validate inputs and show warnings for common mistakes. Returns True if OK."""
@@ -3611,6 +3663,7 @@ class SettingsDialog(QDialog):
         settings.setValue("display/font_size", self.font_size.currentText())
         settings.setValue("display/theme", str(self.theme.currentIndex()))
         settings.setValue("language", self.language_choice.currentData())
+        settings.setValue("ui/mode", self.mode_choice.currentData())
         
         super().accept()
 

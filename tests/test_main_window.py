@@ -85,6 +85,20 @@ class MainWindowTests(unittest.TestCase):
         self.assertGreaterEqual(dialog.language_choice.findData("sv"), 0)
         dialog.close()
 
+    def test_basic_and_advanced_modes_change_visible_controls(self):
+        settings = client.SettingsDialog(self.window)
+        settings.mode_choice.setCurrentIndex(settings.mode_choice.findData("basic"))
+        self.assertFalse(settings.settings_tabs.isTabVisible(1))
+        settings.mode_choice.setCurrentIndex(settings.mode_choice.findData("advanced"))
+        self.assertTrue(settings.settings_tabs.isTabVisible(1))
+        wizard = client.SetupWizard(self.window)
+        wizard.mode_choice.setCurrentIndex(wizard.mode_choice.findData("basic"))
+        self.assertTrue(wizard.cloud_input.isHidden())
+        wizard.mode_choice.setCurrentIndex(wizard.mode_choice.findData("advanced"))
+        self.assertTrue(wizard.cloud_input.isHidden() is False)
+        wizard.close()
+        settings.close()
+
 
 if __name__ == "__main__":
     unittest.main()
