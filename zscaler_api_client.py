@@ -93,6 +93,14 @@ def redact_sensitive(value: Any) -> Any:
         }
     if isinstance(value, list):
         return [redact_sensitive(item) for item in value]
+    if isinstance(value, str):
+        masked = re.sub(
+            r"(?i)\b(authorization|cookie|password|(?:client_)?secret|(?:access|refresh)_token|api_?key)\s*=\s*([^\s,;&]+)",
+            r"\1=***",
+            value,
+        )
+        if masked != value:
+            return masked
     if isinstance(value, str) and "=" in value:
         pairs = urllib.parse.parse_qsl(value, keep_blank_values=True)
         if pairs:

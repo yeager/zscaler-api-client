@@ -139,6 +139,12 @@ class MainWindowTests(unittest.TestCase):
         with self.assertRaises(PermissionError):
             self.window._ask_configured_llm("list users", [])
 
+    def test_llm_failure_masks_secret_like_text(self):
+        self.window.ai_summary.setText("Asking configured LLM…")
+        self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")
+        self.assertNotIn("do-not-show", self.window.ai_summary.text())
+        self.assertIn("***", self.window.ai_summary.text())
+
     def test_ai_assistant_suggests_catalog_backed_request(self):
         self.window.ai_question.setText("list ZPA application segments")
         self.window._run_ai_assistant()
