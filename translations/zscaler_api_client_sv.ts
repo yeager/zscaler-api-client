@@ -1338,17 +1338,17 @@ Starta om nu?</translation>
         <message>
             <location filename="../zscaler_api_client.py" line="4195" />
             <source>Export policy as JSON</source>
-            <translation>Export policy as JSON</translation>
+            <translation>Exportera policy som JSON</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="4196" />
             <source>Export policy as YAML</source>
-            <translation>Export policy as YAML</translation>
+            <translation>Exportera policy som YAML</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="4197" />
             <source>Run compliance checks</source>
-            <translation>Run compliance checks</translation>
+            <translation>Kör efterlevnadskontroller</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="4198" />
@@ -1489,17 +1489,17 @@ Ada,ada@example.com</translation>
         <message>
             <location filename="../zscaler_api_client.py" line="4260" />
             <source>Policy export</source>
-            <translation>Policy export</translation>
+            <translation>Policyexport</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="4261" />
             <source>Export policy</source>
-            <translation>Export policy</translation>
+            <translation>Exportera policy</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="4268" />
             <source>Compliance</source>
-            <translation>Compliance</translation>
+            <translation>Efterlevnad</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="4282" />
