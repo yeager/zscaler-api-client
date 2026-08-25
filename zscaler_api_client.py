@@ -4782,9 +4782,7 @@ class MainWindow(QMainWindow):
                         self._log_output("ZIA session established", "success")
                         self._update_auth_indicators()
                     elif "access_token" in res["data"] or "token" in res["data"]:
-                        # ZDX currently returns `token`; OAuth-compliant services
-                        # generally return `access_token`.
-                        token = res["data"].get("access_token") or res["data"]["token"]
+                        token = res["data"].get("access_token") or res["data"].get("token")
                         # Set token for the correct API type
                         if api_type == "ZPA":
                             self.zpa_token = token
