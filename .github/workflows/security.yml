@@ -21,7 +21,7 @@ jobs:
       - name: Install Qt runtime libraries
         run: |
           sudo apt-get update
-          sudo apt-get install -y libxcb-cursor0 libxkbcommon0
+          sudo apt-get install -y libegl1 libxcb-cursor0 libxkbcommon0
       - name: Install test dependencies
         run: pip install -r requirements.txt
       - name: Run tests
