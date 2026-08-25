@@ -4904,6 +4904,8 @@ class MainWindow(QMainWindow):
         question = self.ai_question.text().strip()
         if not question:
             return
+        settings = QSettings("Zscaler", "APIClient")
+        provider = settings.value("ai/provider", "catalog")
         words = {word for word in re.findall(r"[a-z0-9]+", question.lower()) if len(word) > 2}
         def score(endpoint):
             haystack = " ".join(str(endpoint.get(key, "")) for key in ("product", "category", "name", "description", "url")).lower()
@@ -4919,7 +4921,15 @@ class MainWindow(QMainWindow):
         self.method_combo.setCurrentText(f"● {best['method']}")
         self.url_input.setText(best["url"])
         self._populate_path_variables(best["url"])
-        self.ai_summary.setText(self.tr("Suggested request: {method} {name}. Review path variables before running.").format(method=best["method"], name=best["name"]))
+        summary = self.tr("Suggested request: {method} {name}. Review path variables before running.").format(method=best["method"], name=best["name"])
+        if provider in {"openai", "local"}:
+            try:
+                answer = self._ask_configured_llm(question, matches[:5])
+                if answer:
+                    summary = f"{summary}\n\n{redact_sensitive(answer)}"
+            except Exception as error:
+                summary = f"{summary}\n\n{self.tr('LLM unavailable; using the local catalog assistant.')}: {redact_sensitive(str(error))}"
+        self.ai_summary.setText(summary)
         self.ai_table.setRowCount(len(matches))
         self.ai_table.setColumnCount(4)
         self.ai_table.setHorizontalHeaderLabels([self.tr("Product"), self.tr("Operation"), self.tr("Method"), self.tr("URL")])
@@ -4928,6 +4938,30 @@ class MainWindow(QMainWindow):
                 self.ai_table.setItem(row, column, QTableWidgetItem(value))
         self.ai_table.resizeColumnsToContents()
         self._log_output(f"AI catalog match: {best['method']} {redact_url(best['url'])}", "info")
+
+    def _ask_configured_llm(self, question: str, candidates: list[dict]) -> str:
+        """Call a configured OpenAI-compatible endpoint without credentials or API responses."""
+        settings = QSettings("Zscaler", "APIClient")
+        endpoint = str(settings.value("ai/endpoint", "")).rstrip("/")
+        model = str(settings.value("ai/model", "")).strip()
+        key = secure_get("ai_api_key")
+        if not endpoint or not model:
+            raise ValueError(self.tr("Configure an AI endpoint and model in Settings."))
+        url = endpoint if endpoint.endswith("/chat/completions") else f"{endpoint}/chat/completions"
+        catalog = [{key: item[key] for key in ("product", "name", "method", "url", "description")} for item in candidates]
+        prompt = (
+            "You are a Zscaler OneAPI assistant. Use only the supplied API catalog candidates. "
+            "Do not request, reveal, or include secrets. Explain the best safe request in concise plain text.\n"
+            f"Question: {question}\nCandidates: {json.dumps(catalog)}"
+        )
+        headers = {"Content-Type": "application/json"}
+        if key:
+            headers["Authorization"] = f"Bearer {key}"
+        payload = json.dumps({"model": model, "messages": [{"role": "user", "content": prompt}], "temperature": 0.1}).encode("utf-8")
+        request = urllib.request.Request(url, data=payload, headers=headers, method="POST")
+        with urllib.request.urlopen(request, timeout=30) as response:
+            result = json.loads(response.read().decode("utf-8"))
+        return str(result["choices"][0]["message"]["content"]).strip()
 
     def _export_ai_result(self):
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Export AI result"), "ai-result.csv", "CSV (*.csv);;JSON (*.json)")
