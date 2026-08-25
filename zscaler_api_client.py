@@ -39,7 +39,7 @@ from PySide6.QtWidgets import (
     QTableWidgetItem, QHeaderView, QFileDialog, QMessageBox,
     QGroupBox, QFormLayout, QDialog, QDialogButtonBox, QProgressBar,
     QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
-    QCheckBox, QScrollArea, QFrame, QStackedWidget
+    QCheckBox, QScrollArea, QFrame, QStackedWidget, QGridLayout
     , QInputDialog
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
@@ -4185,8 +4185,23 @@ class OperationsDialog(QDialog):
         layout.addWidget(tabs)
 
         dashboard = QWidget(); dashboard_layout = QVBoxLayout(dashboard)
-        self.dashboard = QPlainTextEdit(); self.dashboard.setReadOnly(True)
-        dashboard_layout.addWidget(self.dashboard)
+        cards = QGridLayout()
+        self.dashboard_cards = {}
+        for index, (key, label) in enumerate((("requests", self.tr("Requests")), ("success", self.tr("Success rate")), ("audit", self.tr("Audit integrity")), ("environment", self.tr("Active environment")))):
+            card = QFrame(); card.setObjectName("metricCard")
+            card_layout = QVBoxLayout(card)
+            label_widget = QLabel(label); label_widget.setObjectName("mutedLabel"); card_layout.addWidget(label_widget)
+            value = QLabel("—"); value.setObjectName("sectionTitle")
+            value_font = value.font(); value_font.setPointSize(18); value_font.setBold(True); value.setFont(value_font)
+            card_layout.addWidget(value); self.dashboard_cards[key] = value
+            cards.addWidget(card, 0, index)
+        dashboard_layout.addLayout(cards)
+        self.dashboard_chart = NumericBarChart(); self.dashboard_chart.set_style("bar")
+        dashboard_layout.addWidget(QLabel(self.tr("Recent request outcomes")))
+        dashboard_layout.addWidget(self.dashboard_chart)
+        self.dashboard_events = QTableWidget(0, 3); self.dashboard_events.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Activity"), self.tr("Status")]); self.dashboard_events.horizontalHeader().setStretchLastSection(True); self.dashboard_events.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        dashboard_layout.addWidget(QLabel(self.tr("Recent activity")))
+        dashboard_layout.addWidget(self.dashboard_events)
         refresh = QPushButton(self.tr("Refresh dashboard")); refresh.clicked.connect(self.refresh_dashboard)
         dashboard_layout.addWidget(refresh); tabs.addTab(dashboard, self.tr("Dashboard"))
 
@@ -4248,13 +4263,22 @@ class OperationsDialog(QDialog):
         history = getattr(self.window, "request_history", [])
         events = AuditTrail(self.settings).events()
         successful = sum(1 for item in history if str(item.get("status", "")).startswith("2"))
-        self.dashboard.setPlainText(json.dumps({
-            "requests_recorded": len(history), "successful_requests": successful,
-            "audit_events": len(events), "audit_chain_valid": AuditTrail(self.settings).verify(),
-            "environment": self.settings.value("profiles/active", "default"),
-            "scheduled_reports": self.settings.value("automation/schedules", "[]"),
-            "note": self.tr("Metrics are local and contain no credentials."),
-        }, indent=2))
+        total = len(history)
+        self.dashboard_cards["requests"].setText(str(total))
+        self.dashboard_cards["success"].setText(f"{(successful / total * 100):.0f}%" if total else "—")
+        valid = AuditTrail(self.settings).verify()
+        self.dashboard_cards["audit"].setText("✓" if valid else "!")
+        self.dashboard_cards["audit"].setToolTip(self.tr("Audit chain is valid") if valid else self.tr("Audit chain needs review"))
+        self.dashboard_cards["environment"].setText(str(self.settings.value("profiles/active", "default")))
+        outcome = {self.tr("Success"): successful, self.tr("Other"): max(0, total - successful)}
+        self.dashboard_chart.set_values([(label, float(value)) for label, value in outcome.items()])
+        recent = list(reversed(events[-12:]))
+        self.dashboard_events.setRowCount(len(recent))
+        for row, event in enumerate(recent):
+            timestamp = time.strftime("%H:%M:%S", time.localtime(event.get("timestamp", 0)))
+            self.dashboard_events.setItem(row, 0, QTableWidgetItem(timestamp))
+            self.dashboard_events.setItem(row, 1, QTableWidgetItem(event.get("action", "")))
+            self.dashboard_events.setItem(row, 2, QTableWidgetItem("✓" if valid else "!"))
 
     def compare_policies(self):
         try: self.diff_result.setPlainText(json.dumps(policy_diff(self._json(self.before_policy, {}), self._json(self.after_policy, {})), indent=2))
