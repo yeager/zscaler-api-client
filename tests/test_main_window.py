@@ -74,6 +74,17 @@ class MainWindowTests(unittest.TestCase):
             unfinished = ET.parse(catalog).findall(".//translation[@type='unfinished']")
             self.assertEqual(unfinished, [], catalog)
 
+    def test_system_language_is_resolved_with_supported_fallback(self):
+        self.assertEqual(client.resolve_language("system", "sv_SE"), "sv")
+        self.assertEqual(client.resolve_language("system", "pt_PT"), "pt_BR")
+        self.assertEqual(client.resolve_language("system", "unrecognized_LOCALE"), "en")
+
+    def test_settings_has_language_override(self):
+        dialog = client.SettingsDialog(self.window)
+        self.assertGreaterEqual(dialog.language_choice.findData("system"), 0)
+        self.assertGreaterEqual(dialog.language_choice.findData("sv"), 0)
+        dialog.close()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -59,6 +59,22 @@ QT_LANGUAGE_CODES = {
     "zh_CN": "zh_CN",
 }
 
+
+def resolve_language(language: str | None, system_locale: str | None = None) -> str:
+    """Resolve an explicit preference, or use the supported system locale."""
+    requested = str(language or "system")
+    if requested == "system":
+        requested = system_locale or QLocale.system().name()
+    requested = requested.replace("-", "_")
+    if requested in LANGUAGE_CODES:
+        return requested
+    base = requested.split("_", 1)[0]
+    if base == "pt":
+        return "pt_BR"
+    if base == "zh":
+        return "zh_CN"
+    return base if base in LANGUAGE_CODES else "en"
+
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
 _credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
@@ -3260,6 +3276,23 @@ class SettingsDialog(QDialog):
         display_layout.addStretch()
         
         tabs.addTab(display_widget, self.tr("Display"))
+
+        # === Language Tab ===
+        language_widget = QWidget()
+        language_layout = QVBoxLayout(language_widget)
+        language_group = QGroupBox(self.tr("Language"))
+        language_form = QFormLayout(language_group)
+        self.language_choice = QComboBox()
+        self.language_choice.addItem(self.tr("System default"), "system")
+        for name, code in LANGUAGES:
+            self.language_choice.addItem(name, code)
+        language_form.addRow(self.tr("Application language:"), self.language_choice)
+        language_hint = QLabel(self.tr("System default follows your operating system language. Restart after saving to apply a change."))
+        language_hint.setWordWrap(True)
+        language_layout.addWidget(language_group)
+        language_layout.addWidget(language_hint)
+        language_layout.addStretch()
+        tabs.addTab(language_widget, self.tr("Language"))
         
         layout.addWidget(tabs)
         
@@ -3392,6 +3425,8 @@ class SettingsDialog(QDialog):
         self.word_wrap.setCurrentIndex(1 if settings.value("display/word_wrap", "false") == "true" else 0)
         self.font_size.setCurrentText(settings.value("display/font_size", "11"))
         self.theme.setCurrentIndex(int(settings.value("display/theme", "2")))
+        language = str(settings.value("language", "system"))
+        self.language_choice.setCurrentIndex(max(0, self.language_choice.findData(language)))
     
     def _validate_and_sanitize(self) -> bool:
         """Validate inputs and show warnings for common mistakes. Returns True if OK."""
@@ -3575,6 +3610,7 @@ class SettingsDialog(QDialog):
         settings.setValue("display/word_wrap", "true" if self.word_wrap.currentIndex() == 1 else "false")
         settings.setValue("display/font_size", self.font_size.currentText())
         settings.setValue("display/theme", str(self.theme.currentIndex()))
+        settings.setValue("language", self.language_choice.currentData())
         
         super().accept()
 
@@ -5540,7 +5576,7 @@ def main():
     settings = QSettings("Zscaler", "APIClient")
     
     # Load translation BEFORE splash screen (so "Loading..." is translated)
-    lang = settings.value("language", QLocale.system().name()[:2])
+    lang = resolve_language(settings.value("language", "system"))
     
     # Handle both frozen (bundled) and script modes
     if getattr(sys, 'frozen', False):
