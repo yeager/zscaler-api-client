@@ -119,6 +119,18 @@ class MainWindowTests(unittest.TestCase):
         self.assertTrue(self.window.graphql_mode.isChecked())
         self.assertIn("__schema", self.window.body_input.toPlainText())
 
+    def test_graphql_introspection_is_scoped_to_its_endpoint(self):
+        self.assertNotEqual(
+            self.window._graphql_schema_key("https://first.example.test/graphql"),
+            self.window._graphql_schema_key("https://second.example.test/graphql"),
+        )
+
+    def test_ai_export_payload_preserves_table_shape(self):
+        self.window._show_ai_visualization([{"name": "A", "count": 3}])
+        headers, rows = self.window._ai_export_payload()
+        self.assertEqual(headers, ["name", "count"])
+        self.assertEqual(rows, [["A", "3"]])
+
     def test_external_llm_is_opt_in(self):
         settings = client.QSettings("Zscaler", "APIClient")
         settings.setValue("ai/endpoint", "https://example.test/v1")

@@ -4244,6 +4244,9 @@ class MainWindow(QMainWindow):
         introspect_btn = QPushButton(self.tr("Introspect schema"))
         introspect_btn.clicked.connect(self._prepare_graphql_introspection)
         graphql_presets.addWidget(introspect_btn)
+        load_schema_btn = QPushButton(self.tr("Load saved schema"))
+        load_schema_btn.clicked.connect(self._load_graphql_introspection)
+        graphql_presets.addWidget(load_schema_btn)
         request_layout.addLayout(graphql_presets)
         
         # Request tabs (Params, Headers, Body)
@@ -5104,19 +5107,21 @@ class MainWindow(QMainWindow):
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Export AI result"), "ai-result.csv", "CSV (*.csv);;JSON (*.json)")
         if not path:
             return
-        rows = []
-        for row in range(self.ai_table.rowCount()):
-            rows.append([self.ai_table.item(row, col).text() if self.ai_table.item(row, col) else "" for col in range(self.ai_table.columnCount())])
-        safe_rows = redact_sensitive(rows)
+        headers, safe_rows = self._ai_export_payload()
         if path.lower().endswith(".json"):
-            Path(path).write_text(json.dumps(safe_rows, indent=2), encoding="utf-8")
+            Path(path).write_text(json.dumps({"columns": headers, "rows": safe_rows}, indent=2), encoding="utf-8")
         else:
             import csv
             with open(path, "w", newline="", encoding="utf-8") as export_file:
                 writer = csv.writer(export_file)
-                writer.writerow([self.ai_table.horizontalHeaderItem(col).text() for col in range(self.ai_table.columnCount())])
+                writer.writerow(headers)
                 writer.writerows(safe_rows)
         self.status_bar.showMessage(self.tr("AI result exported"))
+
+    def _ai_export_payload(self) -> tuple[list[str], list[list[str]]]:
+        headers = [self.ai_table.horizontalHeaderItem(col).text() if self.ai_table.horizontalHeaderItem(col) else "" for col in range(self.ai_table.columnCount())]
+        rows = [[self.ai_table.item(row, col).text() if self.ai_table.item(row, col) else "" for col in range(self.ai_table.columnCount())] for row in range(self.ai_table.rowCount())]
+        return headers, redact_sensitive(rows)
 
     def _show_ai_visualization(self, data: Any):
         """Render common API collections as a safe table for quick inspection."""
@@ -5185,9 +5190,28 @@ class MainWindow(QMainWindow):
 
     def _prepare_graphql_introspection(self):
         self.graphql_mode.setChecked(True)
+        self._graphql_introspection_pending = True
         self.body_input.setPlainText(json.dumps({"query": "query IntrospectionQuery { __schema { queryType { name } types { name kind fields { name } } } }"}, indent=2))
         self.request_tabs.setCurrentIndex(2)
         self.status_bar.showMessage(self.tr("GraphQL introspection query prepared. Review the endpoint before sending."))
+
+    def _graphql_schema_key(self, url: str) -> str:
+        host = urllib.parse.urlsplit(url).netloc.replace(".", "_").replace(":", "_")
+        return f"graphql_introspection_{host or 'default'}"
+
+    def _save_graphql_introspection(self, url: str, payload: dict):
+        secure_store(self._graphql_schema_key(url), json.dumps(payload))
+        self.status_bar.showMessage(self.tr("GraphQL schema saved securely"))
+
+    def _load_graphql_introspection(self):
+        raw = secure_get(self._graphql_schema_key(self.url_input.text().strip()))
+        if not raw:
+            QMessageBox.information(self, self.tr("GraphQL schema"), self.tr("No saved introspection result exists for this endpoint."))
+            return
+        payload = json.loads(raw)
+        self.response_body.setPlainText(json.dumps(redact_sensitive(payload), indent=2))
+        self._show_graphql_output(payload)
+        self.response_tabs.setCurrentIndex(0)
 
     @staticmethod
     def _table_values(table: QTableWidget) -> dict:
@@ -5414,6 +5438,9 @@ class MainWindow(QMainWindow):
                 self._show_ai_visualization(res["data"])
                 if self.graphql_mode.isChecked() and isinstance(res["data"], dict):
                     self._show_graphql_output(res["data"])
+                    if getattr(self, "_graphql_introspection_pending", False):
+                        self._save_graphql_introspection(self.url_input.text().strip(), res["data"])
+                        self._graphql_introspection_pending = False
                 self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms · {size_str})")
                 
                 # Check for session token in response
