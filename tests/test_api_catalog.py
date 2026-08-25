@@ -12,6 +12,11 @@ SPEC = importlib.util.spec_from_file_location(
 )
 CATALOG_BUILDER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CATALOG_BUILDER)
+SBOM_SPEC = importlib.util.spec_from_file_location(
+    "generate_spdx_sbom", ROOT / "scripts" / "generate_spdx_sbom.py"
+)
+SBOM_BUILDER = importlib.util.module_from_spec(SBOM_SPEC)
+SBOM_SPEC.loader.exec_module(SBOM_BUILDER)
 
 
 class ApiCatalogTests(unittest.TestCase):
@@ -61,6 +66,15 @@ class ApiCatalogTests(unittest.TestCase):
             <= products
         )
         self.assertTrue(all(entry["url"].startswith("https://") for entry in catalog))
+
+    def test_spdx_sbom_describes_artifact_with_hash_and_dependencies(self):
+        document = SBOM_BUILDER.build_document(ROOT / "README.md")
+        self.assertEqual(document["spdxVersion"], "SPDX-2.3")
+        self.assertTrue(document["documentNamespace"].startswith("https://github.com/yeager/"))
+        application = document["packages"][0]
+        self.assertEqual(application["name"], "ZS API Client")
+        self.assertEqual(application["checksums"][0]["algorithm"], "SHA256")
+        self.assertGreater(len(document["packages"]), 1)
 
 
 if __name__ == "__main__":

@@ -55,13 +55,14 @@ ZS API Client is built with security as a top priority:
 
 ### Productivity
 - **Batch Operations** – Import CSV files for bulk create/delete/update operations
-- **Multi-language UI** – 8 languages: English, Swedish, German, French, Spanish, Japanese, Chinese, Farsi
+- **Multi-language UI** – 20 language profiles, including Swedish, European languages, Arabic, Persian, Japanese, Korean, and Simplified Chinese
 - **Light/Dark Themes** – Full theme support with system auto-detection
 - **Keyboard Shortcuts** – Efficient workflow with customizable shortcuts
 - **What's New Dialog** – See changes after each update
 
 ### Enterprise Ready
-- **Cross-Platform** – Native builds for macOS (Apple Silicon & Intel), Windows, and Linux
+- **Cross-Platform** – Native builds for macOS, Windows, and Linux
+- **Verifiable releases** – SHA-256 checksums, SPDX SBOMs, and GitHub build attestations are generated for each release archive
 - **Offline Capable** – Works without internet (except for API calls)
 - **No Installation Required** – Portable app, just download and run
 - **Open Source** – Full source code available for security audits
@@ -70,8 +71,8 @@ ZS API Client is built with security as a top priority:
 
 ### Download
 Get the latest release for your platform:
-- **macOS (Apple Silicon):** `ZS API Client-x.x.x-macos-arm64.dmg`
-- **Windows:** `ZS-API-Client-x.x.x-win64.zip`
+- **macOS:** `ZS-API-Client-macos-x64.zip`
+- **Windows:** `ZS-API-Client-windows-x64.zip`
 - **Linux:** `ZS-API-Client-x.x.x-linux-x64.tar.gz`
 
 👉 [Download Latest Release](https://github.com/yeager/zscaler-api-client/releases/latest)
@@ -82,17 +83,17 @@ Get the latest release for your platform:
 git clone https://github.com/yeager/zscaler-api-client.git
 cd zscaler-api-client
 
-# Install dependencies
-pip install PySide6 keyring
+# Install dependencies and compile application translations
+pip install -r requirements.txt
+python scripts/compile_translations.py
 
 # Run
 python zscaler_api_client.py
 ```
 
-### Build Standalone App
+### Build standalone app
 ```bash
-pip install pyinstaller
-pyinstaller "ZS API Client.spec"
+pyinstaller --noconfirm --name "ZS API Client" --add-data "translations:translations" --add-data "data:data" --add-data "CHANGELOG.md:." zscaler_api_client.py
 ```
 
 ## 🚀 Quick Start
