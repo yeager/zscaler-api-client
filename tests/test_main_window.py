@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 from io import BytesIO
 from pathlib import Path
+from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -137,6 +138,36 @@ class MainWindowTests(unittest.TestCase):
             self.window._graphql_schema_key("https://first.example.test/graphql"),
             self.window._graphql_schema_key("https://second.example.test/graphql"),
         )
+
+    def test_graphql_preset_round_trip_preserves_query_and_variables(self):
+        saved = {}
+        settings = client.QSettings("Zscaler", "APIClient")
+        settings.remove("graphql/presets")
+        self.window.graphql_preset_name.setText("test-query")
+        self.window.url_input.setText("https://example.test/graphql")
+        self.window.body_input.setPlainText('{"query":"query($id: ID!) { user(id: $id) { id } }"}')
+        self.window._populate_table(self.window.params_table, {"id": "user-1"})
+        with patch.object(client, "secure_store", lambda key, value: saved.__setitem__(key, value)), \
+             patch.object(client, "secure_get", lambda key: saved.get(key, "")):
+            self.window._save_graphql_query()
+            self.window.url_input.clear()
+            self.window.body_input.clear()
+            self.window._populate_table(self.window.params_table, {})
+            self.window._load_graphql_query()
+        self.assertIn("graphql_preset_test-query", saved)
+        self.assertIn("user(id", self.window.body_input.toPlainText())
+        self.assertEqual(self.window._table_values(self.window.params_table), {"id": "user-1"})
+        settings.remove("graphql/presets")
+
+    def test_clear_ai_key_removes_keychain_value_and_field(self):
+        deleted = []
+        settings = client.SettingsDialog(self.window)
+        settings.ai_api_key.setText("not-persisted")
+        with patch.object(client, "secure_delete", lambda key: deleted.append(key)):
+            settings._clear_ai_key()
+        self.assertEqual(deleted, ["ai_api_key"])
+        self.assertFalse(settings.ai_api_key.text())
+        settings.close()
 
     def test_ai_export_payload_preserves_table_shape(self):
         self.window._show_ai_visualization([{"name": "A", "count": 3}])

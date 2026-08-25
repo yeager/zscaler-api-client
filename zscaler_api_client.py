@@ -41,7 +41,7 @@ from PySide6.QtWidgets import (
     QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
     QCheckBox, QScrollArea, QFrame, QStackedWidget
 )
-from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer
+from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
@@ -6324,7 +6324,11 @@ def main():
     qt_translator = QTranslator()
     app_lang = "zh" if str(lang).startswith("zh") else str(lang).split("_", 1)[0]
     qt_lang = QT_LANGUAGE_CODES.get(str(lang), app_lang)
-    if qt_translator.load(f"qtbase_{qt_lang}", str(translations_dir)):
+    # The application's catalogs are bundled beside the executable. Qt's own
+    # catalogs are normally supplied by the installed/bundled Qt runtime, so
+    # they do not need to be versioned in this project.
+    qt_translation_dirs = (str(translations_dir), QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath))
+    if any(qt_translator.load(f"qtbase_{qt_lang}", directory) for directory in qt_translation_dirs if directory):
         app.installTranslator(qt_translator)
     
     # Load app translations
