@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Added
+- Bundled Automation Hub catalog with 900+ executable REST operations across 12 Zscaler products
+- Reproducible catalog updater sourced from the official Automation Hub search index
+- Three-pane advanced workspace with resizable API explorer, request/response editor, and documentation/console inspector
+- Automatic path-variable extraction and URL-safe substitution
+- Response headers view and plain-text response support for CSV and download endpoints
+
+### Fixed
+- Preserve the documented product URL when selecting OneAPI endpoints
+- Accept both `access_token` and ZDX's `token` authentication response fields
+- Include the API catalog in PyInstaller builds
+
 ## [2.2.1] - 2026-03-02
 
 ### Fixed

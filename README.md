@@ -32,18 +32,21 @@ ZS API Client is built with security as a top priority:
 ## ✨ Features
 
 ### API Coverage
-- **8 APIs Supported** – Complete coverage of the Zscaler platform:
+- **Automation Hub catalog** – 900+ executable REST operations generated from
+  [Zscaler Automation Hub](https://automate.zscaler.com), including:
+  - AI Security, Business Insights, EASM, Event Monitoring, and URBAC
   - ZIA (Zscaler Internet Access)
   - ZPA (Zscaler Private Access)
   - ZDX (Zscaler Digital Experience)
   - ZCC (Client Connector)
   - ZIdentity (Identity & Access Management)
-  - ZTW (Zero Trust Workloads / Branch Connector)
+  - Zscaler Cellular and Cloud/Branch Connector
   - ZWA (Workflow Automation)
-  - EASM (External Attack Surface Management)
+- **Reproducible updates** – `python3 scripts/update_api_catalog.py` refreshes
+  the bundled catalog directly from the official documentation index.
 
 ### Developer Experience
-- **200+ Endpoints** – Browse all available API endpoints in an organized tree view
+- **900+ Endpoints** – Browse all executable Automation Hub REST operations in an organized tree view
 - **Inline Documentation** – Direct links to official Zscaler API docs for each endpoint
 - **Request Builder** – Full control over URL, params, headers, and JSON body
 - **Syntax Highlighting** – Beautiful JSON response formatting

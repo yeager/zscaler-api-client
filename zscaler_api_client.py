@@ -45,6 +45,40 @@ __version__ = "2.3.0"
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
 _credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
+SENSITIVE_FIELDS = {
+    "authorization", "cookie", "password", "secret", "client_secret",
+    "key_secret", "api_key", "apikey", "access_token", "refresh_token", "token",
+}
+
+
+def redact_sensitive(value: Any) -> Any:
+    """Return a history-safe copy of JSON or form-urlencoded request data."""
+    if isinstance(value, dict):
+        return {
+            key: "***" if key.lower() in SENSITIVE_FIELDS else redact_sensitive(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [redact_sensitive(item) for item in value]
+    if isinstance(value, str) and "=" in value:
+        pairs = urllib.parse.parse_qsl(value, keep_blank_values=True)
+        if pairs:
+            return urllib.parse.urlencode([
+                (key, "***" if key.lower() in SENSITIVE_FIELDS else item)
+                for key, item in pairs
+            ])
+    return value
+
+
+def redact_url(url: str) -> str:
+    """Mask sensitive query-string values before persisting history."""
+    parts = urllib.parse.urlsplit(url)
+    query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
+    safe_query = urllib.parse.urlencode([
+        (key, "***" if key.lower() in SENSITIVE_FIELDS else value)
+        for key, value in query
+    ])
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, parts.fragment))
 _credentials_loaded = False
 
 def _load_all_credentials():
@@ -279,6 +313,32 @@ QLabel {
 }
 QLabel a {
     color: #3794ff;
+}
+"""
+
+WORKSPACE_STYLE = """
+QLabel#sectionTitle {
+    font-size: 18px;
+    font-weight: 700;
+    padding: 2px 0 6px 0;
+}
+QLabel#mutedLabel {
+    color: #7b8490;
+    font-size: 11px;
+    padding: 0 2px 4px 2px;
+}
+QGroupBox {
+    font-size: 12px;
+}
+QLineEdit, QComboBox, QPushButton {
+    min-height: 24px;
+}
+QTabWidget::pane {
+    top: -1px;
+}
+QSplitter::handle {
+    width: 5px;
+    height: 5px;
 }
 """
 
@@ -1965,6 +2025,57 @@ ONEAPI_ENDPOINTS = {
     },
 }
 
+
+def _resource_path(relative_path: str) -> Path:
+    """Resolve a bundled resource both from source and a PyInstaller build."""
+    bundle_root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+    return bundle_root / relative_path
+
+
+def _load_automation_hub_catalog() -> List[Dict[str, Any]]:
+    """Read the bundled Automation Hub catalog."""
+    catalog_path = _resource_path("data/zscaler_api_catalog.json")
+    try:
+        return json.loads(catalog_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        print(f"Unable to load Automation Hub catalog: {error}", file=sys.stderr)
+        return []
+
+
+def _load_automation_hub_endpoints() -> Dict[str, Dict[str, Dict[str, Any]]]:
+    """Load every usable REST endpoint published by Automation Hub."""
+    catalog = AUTOMATION_HUB_CATALOG
+    if not catalog:
+        return ONEAPI_ENDPOINTS
+
+    endpoints: Dict[str, Dict[str, Dict[str, Any]]] = {}
+    for entry in catalog:
+        product = entry.get("product", "other").upper()
+        category = entry.get("category", "Other")
+        group = f"{product} · {category}"
+        details = {
+            "method": entry["method"],
+            "path": urllib.parse.urlsplit(entry["url"]).path,
+            "absolute_url": entry["url"],
+            "description": entry.get("description", ""),
+            "doc_url": entry.get("doc_url", ""),
+        }
+        group_items = endpoints.setdefault(group, {})
+        base_name = entry["name"]
+        name = base_name
+        duplicate = 2
+        while name in group_items:
+            name = f"{base_name} ({entry['method']} #{duplicate})"
+            duplicate += 1
+        group_items[name] = details
+    return endpoints
+
+
+# Automation Hub is the source of truth. The small built-in dictionary above is
+# retained as a safe fallback for damaged or incomplete installations.
+AUTOMATION_HUB_CATALOG = _load_automation_hub_catalog()
+ONEAPI_ENDPOINTS = _load_automation_hub_endpoints()
+
 # API Documentation URLs
 API_DOCS = {
     "ZIA": {
@@ -2016,10 +2127,10 @@ API_DOCS = {
         "rate_limits": "https://help.zscaler.com/easm/api-rate-limiting",
     },
     "OneAPI": {
-        "base": "https://help.zscaler.com/oneapi/understanding-oneapi",
-        "getting_started": "https://help.zscaler.com/oneapi/understanding-oneapi",
-        "authentication": "https://help.zscaler.com/zidentity/about-api-clients",
-        "rate_limits": "https://help.zscaler.com/oneapi/understanding-oneapi",
+        "base": "https://automate.zscaler.com/docs/api-reference-and-guides/guides/UnderstandingOneAPI",
+        "getting_started": "https://automate.zscaler.com/docs/getting-started/getting-started",
+        "authentication": "https://automate.zscaler.com/docs/getting-started/getting-started",
+        "rate_limits": "https://automate.zscaler.com/docs/api-reference-and-guides/guides/rate-limiting/",
     },
 }
 
@@ -2139,16 +2250,27 @@ class ApiWorker(QThread):
                 response_size = len(response_data)
                 status_code = response.status
                 reason = response.reason
-                response_text = response_data.decode("utf-8")
+                response_headers = dict(response.headers.items())
+                response_text = response_data.decode("utf-8", errors="replace")
                 if not response_text or not response_text.strip():
                     return {"_status_code": status_code, "_reason": reason,
-                            "_size": response_size,
+                            "_size": response_size, "_headers": response_headers,
                             "status": "success", "message": "Empty response (operation may have succeeded)"}
-                parsed = json.loads(response_text)
+                try:
+                    parsed = json.loads(response_text)
+                except json.JSONDecodeError:
+                    return {
+                        "_status_code": status_code,
+                        "_reason": reason,
+                        "_size": response_size,
+                        "_headers": response_headers,
+                        "_raw_text": response_text,
+                    }
                 if isinstance(parsed, dict):
                     parsed["_status_code"] = status_code
                     parsed["_reason"] = reason
                     parsed["_size"] = response_size
+                    parsed["_headers"] = response_headers
                 return parsed
         except urllib.error.HTTPError as e:
             error_body = ""
@@ -3628,8 +3750,11 @@ class MainWindow(QMainWindow):
     
     def _setup_ui(self):
         central = QWidget()
+        central.setObjectName("workspace")
         self.setCentralWidget(central)
         layout = QHBoxLayout(central)
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(8)
         
         # Left panel - API Explorer
         left_panel = QWidget()
@@ -3638,7 +3763,10 @@ class MainWindow(QMainWindow):
         
         # API type selector
         api_selector = QHBoxLayout()
-        api_selector.addWidget(QLabel(self.tr("API:")))
+        explorer_title = QLabel(self.tr("API Explorer"))
+        explorer_title.setObjectName("sectionTitle")
+        left_layout.addWidget(explorer_title)
+        api_selector.addWidget(QLabel(self.tr("Product")))
         self.api_type = QComboBox()
         self.api_type.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.api_type.setMinimumContentsLength(10)
@@ -3664,6 +3792,10 @@ class MainWindow(QMainWindow):
         self.endpoint_filter.textChanged.connect(self._filter_endpoints)
         left_layout.addWidget(self.endpoint_filter)
 
+        self.endpoint_count = QLabel()
+        self.endpoint_count.setObjectName("mutedLabel")
+        left_layout.addWidget(self.endpoint_count)
+
         # Endpoint tree
         self.endpoint_tree = QTreeWidget()
         self.endpoint_tree.setHeaderLabel(self.tr("Endpoints"))
@@ -3682,7 +3814,6 @@ class MainWindow(QMainWindow):
         output_font = QFont("Menlo, Monaco, Consolas, monospace", 10)
         self.output_log.setFont(output_font)
         output_layout.addWidget(self.output_log)
-        left_layout.addWidget(output_group)
         
         # Right panel - Request/Response
         right_panel = QWidget()
@@ -3690,7 +3821,7 @@ class MainWindow(QMainWindow):
         right_layout.setContentsMargins(0, 0, 0, 0)
         
         # Request section
-        request_group = QGroupBox(self.tr("Request"))
+        request_group = QGroupBox(self.tr("Request Builder"))
         request_layout = QVBoxLayout(request_group)
         
         # Method and URL
@@ -3736,7 +3867,7 @@ class MainWindow(QMainWindow):
         # Params tab
         params_widget = QWidget()
         params_layout = QVBoxLayout(params_widget)
-        self.params_table = QTableWidget(5, 2)
+        self.params_table = QTableWidget(12, 2)
         self.params_table.setHorizontalHeaderLabels([self.tr("Key"), self.tr("Value")])
         self.params_table.horizontalHeader().setStretchLastSection(True)
         params_layout.addWidget(self.params_table)
@@ -3745,7 +3876,7 @@ class MainWindow(QMainWindow):
         # Headers tab
         headers_widget = QWidget()
         headers_layout = QVBoxLayout(headers_widget)
-        self.headers_table = QTableWidget(5, 2)
+        self.headers_table = QTableWidget(12, 2)
         self.headers_table.setHorizontalHeaderLabels([self.tr("Key"), self.tr("Value")])
         self.headers_table.horizontalHeader().setStretchLastSection(True)
         headers_layout.addWidget(self.headers_table)
@@ -3760,9 +3891,18 @@ class MainWindow(QMainWindow):
         self.body_input.setFont(font)
         body_layout.addWidget(self.body_input)
         self.request_tabs.addTab(body_widget, self.tr("Body"))
+
+        # Path variables are extracted automatically from :name and {name}
+        # placeholders in the selected Automation Hub endpoint.
+        variables_widget = QWidget()
+        variables_layout = QVBoxLayout(variables_widget)
+        self.variables_table = QTableWidget(0, 2)
+        self.variables_table.setHorizontalHeaderLabels([self.tr("Variable"), self.tr("Value")])
+        self.variables_table.horizontalHeader().setStretchLastSection(True)
+        variables_layout.addWidget(self.variables_table)
+        self.request_tabs.addTab(variables_widget, self.tr("Path Variables"))
         
         request_layout.addWidget(self.request_tabs)
-        right_layout.addWidget(request_group)
         
         # Response section
         response_group = QGroupBox(self.tr("Response"))
@@ -3784,14 +3924,19 @@ class MainWindow(QMainWindow):
         response_info_bar.addWidget(self.pretty_print_btn)
         response_layout.addLayout(response_info_bar)
 
-        # Response body
+        # Response body and headers
         self.response_body = QPlainTextEdit()
         self.response_body.setReadOnly(True)
         self.response_body.setFont(font)
         self.json_highlighter = JsonHighlighter(self.response_body.document())
-        response_layout.addWidget(self.response_body)
+        self.response_headers = QPlainTextEdit()
+        self.response_headers.setReadOnly(True)
+        self.response_headers.setFont(font)
+        self.response_tabs = QTabWidget()
+        self.response_tabs.addTab(self.response_body, self.tr("Body"))
+        self.response_tabs.addTab(self.response_headers, self.tr("Headers"))
+        response_layout.addWidget(self.response_tabs)
         
-        right_layout.addWidget(response_group)
         
         # Help panel
         help_group = QGroupBox(self.tr("Help"))
@@ -3801,12 +3946,27 @@ class MainWindow(QMainWindow):
         self.help_text.setAlignment(Qt.AlignmentFlag.AlignTop)
         help_layout.addWidget(self.help_text)
         
-        # Splitter
+        # Resizable editor and inspector regions
+        editor_splitter = QSplitter(Qt.Orientation.Vertical)
+        editor_splitter.addWidget(request_group)
+        editor_splitter.addWidget(response_group)
+        editor_splitter.setSizes([360, 440])
+        editor_splitter.setChildrenCollapsible(False)
+        self.editor_splitter = editor_splitter
+        right_layout.addWidget(editor_splitter)
+
+        inspector_tabs = QTabWidget()
+        inspector_tabs.addTab(help_group, self.tr("Documentation"))
+        inspector_tabs.addTab(output_group, self.tr("Console"))
+
+        # Main workspace splitter
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(left_panel)
         splitter.addWidget(right_panel)
-        splitter.addWidget(help_group)
-        splitter.setSizes([250, 600, 250])
+        splitter.addWidget(inspector_tabs)
+        splitter.setSizes([320, 760, 300])
+        splitter.setChildrenCollapsible(False)
+        self.main_splitter = splitter
         
         layout.addWidget(splitter)
         
@@ -3816,7 +3976,7 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(self.tr("Ready"))
         
         # Initialize endpoint tree
-        self._update_endpoint_tree("ZIA")
+        self._update_endpoint_tree(self.api_type.currentText())
     
     def _setup_menu(self):
         menubar = self.menuBar()
@@ -3959,10 +4119,18 @@ class MainWindow(QMainWindow):
         geometry = settings.value("geometry")
         if geometry:
             self.restoreGeometry(geometry)
+        splitter_sizes = settings.value("main_splitter_sizes")
+        if splitter_sizes:
+            self.main_splitter.setSizes([int(size) for size in splitter_sizes])
+        editor_sizes = settings.value("editor_splitter_sizes")
+        if editor_sizes:
+            self.editor_splitter.setSizes([int(size) for size in editor_sizes])
     
     def _save_settings(self):
         settings = QSettings("Zscaler", "APIClient")
         settings.setValue("geometry", self.saveGeometry())
+        settings.setValue("main_splitter_sizes", self.main_splitter.sizes())
+        settings.setValue("editor_splitter_sizes", self.editor_splitter.sizes())
     
     def closeEvent(self, event):
         self._save_settings()
@@ -3985,6 +4153,12 @@ class MainWindow(QMainWindow):
             "OneAPI": ONEAPI_ENDPOINTS,
         }
         endpoints = endpoint_map.get(api_type, ZIA_ENDPOINTS)
+        endpoint_total = sum(len(items) for items in endpoints.values())
+        self.endpoint_count.setText(
+            self.tr("{count} operations · {groups} groups").format(
+                count=endpoint_total, groups=len(endpoints)
+            )
+        )
         
         first_category = True
         for category, items in endpoints.items():
@@ -4024,7 +4198,17 @@ class MainWindow(QMainWindow):
         api_type = self.api_type.currentText().replace("🟢 ", "").replace("🔴 ", "")
         path = details["path"]
         
-        if api_type == "ZIA":
+        if details.get("absolute_url"):
+            # Automation Hub publishes the authoritative host per product.
+            base_url = ""
+            path = details["absolute_url"]
+            cloud = settings.value("oneapi/cloud", "").strip().lower()
+            if cloud and cloud.upper() != "PRODUCTION" and "." not in cloud:
+                path = path.replace("https://api.zsapi.net", f"https://api.{cloud}.zsapi.net")
+            customer_id = settings.value("oneapi/customer_id", "")
+            if customer_id:
+                path = path.replace(":customerId", customer_id)
+        elif api_type == "ZIA":
             cloud = settings.value("zia/cloud", "zsapi.zscaler.net")
             base_url = f"https://{cloud}"
         elif api_type == "ZPA":
@@ -4086,6 +4270,7 @@ class MainWindow(QMainWindow):
             base_url = ""
         
         self.url_input.setText(base_url + path)
+        self._populate_path_variables(base_url + path)
         
         # Update body if present
         if "body" in details:
@@ -4107,6 +4292,25 @@ class MainWindow(QMainWindow):
         doc_link = f"<br><br><a href='{doc_url}'>📖 View Documentation</a>" if doc_url else ""
         self.help_text.setText(f"<b>{item.text(0)}</b><br><br>{details['description']}{doc_link}")
         self.help_text.setOpenExternalLinks(True)
+
+    def _populate_path_variables(self, url: str):
+        """Populate editable values for placeholders in an endpoint URL."""
+        names = []
+        url_path = urllib.parse.urlsplit(url).path
+        for colon_name, brace_name in re.findall(
+            r":([A-Za-z][A-Za-z0-9_]*)|\{([A-Za-z][A-Za-z0-9_]*)\}", url_path
+        ):
+            name = colon_name or brace_name
+            if name not in names:
+                names.append(name)
+        self.variables_table.setRowCount(len(names))
+        for row, name in enumerate(names):
+            name_item = QTableWidgetItem(name)
+            name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.variables_table.setItem(row, 0, name_item)
+            self.variables_table.setItem(row, 1, QTableWidgetItem(""))
+        if names:
+            self.request_tabs.setCurrentIndex(3)
     
     def _update_api_list(self):
         """Update API dropdown based on enabled APIs in settings."""
@@ -4156,18 +4360,27 @@ class MainWindow(QMainWindow):
     def _filter_endpoints(self, text: str):
         """Filter endpoint tree items by search text."""
         text = text.lower()
+        visible_count = 0
         for i in range(self.endpoint_tree.topLevelItemCount()):
             category = self.endpoint_tree.topLevelItem(i)
             any_visible = False
             for j in range(category.childCount()):
                 child = category.child(j)
-                visible = not text or text in child.text(0).lower()
+                details = child.data(0, Qt.ItemDataRole.UserRole) or {}
+                haystack = " ".join([
+                    category.text(0), child.text(0), details.get("description", ""),
+                    details.get("absolute_url", details.get("path", "")),
+                ]).lower()
+                visible = not text or text in haystack
                 child.setHidden(not visible)
                 if visible:
                     any_visible = True
+                    visible_count += 1
             category.setHidden(not any_visible)
             if any_visible and text:
                 category.setExpanded(True)
+        label = self.tr("{count} matching operations") if text else self.tr("{count} operations")
+        self.endpoint_count.setText(label.format(count=visible_count))
 
     def _on_endpoint_double_clicked(self, item, column: int):
         """Double-click an endpoint to select and send."""
@@ -4374,6 +4587,30 @@ class MainWindow(QMainWindow):
         if not url:
             QMessageBox.warning(self, self.tr("Warning"), self.tr("Please enter a URL"))
             return
+
+        # Resolve endpoint path variables before building query parameters.
+        missing_variables = []
+        for row in range(self.variables_table.rowCount()):
+            name_item = self.variables_table.item(row, 0)
+            value_item = self.variables_table.item(row, 1)
+            if not name_item:
+                continue
+            name = name_item.text()
+            value = value_item.text().strip() if value_item else ""
+            if not value:
+                missing_variables.append(name)
+                continue
+            encoded = urllib.parse.quote(value, safe="")
+            url = url.replace(f":{name}", encoded).replace(f"{{{name}}}", encoded)
+        if missing_variables:
+            self.request_tabs.setCurrentIndex(3)
+            QMessageBox.warning(
+                self,
+                self.tr("Missing Path Variables"),
+                self.tr("Enter values for: {names}").format(names=", ".join(missing_variables)),
+            )
+            return
+        self.url_input.setText(url)
         
         # If URL is a relative path, prepend the appropriate base URL
         self._log_output(f"URL before fix: {url[:80]}", "info")
@@ -4500,7 +4737,12 @@ class MainWindow(QMainWindow):
                 status_code = res["data"].pop("_status_code", 200) if isinstance(res["data"], dict) else 200
                 reason = res["data"].pop("_reason", "OK") if isinstance(res["data"], dict) else "OK"
                 resp_size = res["data"].pop("_size", 0) if isinstance(res["data"], dict) else 0
+                response_headers = res["data"].pop("_headers", {}) if isinstance(res["data"], dict) else {}
+                raw_text = res["data"].pop("_raw_text", None) if isinstance(res["data"], dict) else None
                 size_str = self._format_size(resp_size)
+                self.response_headers.setPlainText(
+                    "\n".join(f"{key}: {value}" for key, value in response_headers.items())
+                )
                 
                 # Color based on status code range
                 if status_code < 300:
@@ -4523,7 +4765,9 @@ class MainWindow(QMainWindow):
                 indent = settings.value("display/json_indent", "2")
                 indent_val = None if indent == "Tab" else int(indent)
                 
-                if self.pretty_print_enabled:
+                if raw_text is not None:
+                    self.response_body.setPlainText(raw_text)
+                elif self.pretty_print_enabled:
                     self.response_body.setPlainText(json.dumps(res["data"], indent=indent_val))
                 else:
                     self.response_body.setPlainText(json.dumps(res["data"], separators=(',', ':')))
@@ -4537,8 +4781,10 @@ class MainWindow(QMainWindow):
                         self.status_bar.showMessage(self.tr("ZIA authenticated successfully"))
                         self._log_output("ZIA session established", "success")
                         self._update_auth_indicators()
-                    elif "access_token" in res["data"]:
-                        token = res["data"]["access_token"]
+                    elif "access_token" in res["data"] or "token" in res["data"]:
+                        # ZDX currently returns `token`; OAuth-compliant services
+                        # generally return `access_token`.
+                        token = res["data"].get("access_token") or res["data"]["token"]
                         # Set token for the correct API type
                         if api_type == "ZPA":
                             self.zpa_token = token
@@ -4655,7 +4901,7 @@ class MainWindow(QMainWindow):
     
     def _load_from_history(self, entry: Dict):
         """Load a request from history."""
-        self.method_combo.setCurrentText(entry.get("method", "GET"))
+        self.method_combo.setCurrentText(f"● {entry.get('method', 'GET')}")
         self.url_input.setText(entry.get("url", ""))
         
         if entry.get("body"):
@@ -4678,6 +4924,14 @@ class MainWindow(QMainWindow):
             try:
                 with open(history_file, "r", encoding="utf-8") as f:
                     self.request_history = json.load(f)
+                    for entry in self.request_history:
+                        entry["url"] = redact_url(entry.get("url", ""))
+                        entry["headers"] = redact_sensitive(entry.get("headers", {}))
+                        entry["body"] = redact_sensitive(entry.get("body"))
+                # Rewrite legacy history immediately so old plaintext secrets
+                # do not remain on disk after upgrading.
+                with open(history_file, "w", encoding="utf-8") as f:
+                    json.dump(self.request_history, f, indent=2)
             except Exception:
                 self.request_history = []
     
@@ -4709,9 +4963,9 @@ class MainWindow(QMainWindow):
         entry = {
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "method": method,
-            "url": url,
-            "headers": {k: v for k, v in headers.items() if k.lower() not in ("cookie", "authorization")},
-            "body": body,
+            "url": redact_url(url),
+            "headers": redact_sensitive(headers),
+            "body": redact_sensitive(body),
             "status": status,
             "duration_ms": duration_ms,
         }
@@ -4769,6 +5023,7 @@ class MainWindow(QMainWindow):
         self.params_table.clearContents()
         self.headers_table.clearContents()
         self.response_body.clear()
+        self.response_headers.clear()
         self.response_info.clear()
         self.help_text.clear()
         self.status_bar.showMessage(self.tr("Request cleared"))
@@ -5080,9 +5335,9 @@ def apply_theme(app: QApplication, theme: int):
         use_dark = (theme == 1)
     
     if use_dark:
-        app.setStyleSheet(DARK_STYLE)
+        app.setStyleSheet(DARK_STYLE + WORKSPACE_STYLE)
     else:
-        app.setStyleSheet(LIGHT_STYLE)
+        app.setStyleSheet(LIGHT_STYLE + WORKSPACE_STYLE)
 
 
 def main():
