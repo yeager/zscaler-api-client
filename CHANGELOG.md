@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.5.1] - 2026-08-25
+
+### Added
+- GraphQL request mode with complete `data`, `errors`, and `extensions` output handling
+- Masked GraphQL result visualization and export
+- OpenAI-compatible AI endpoint execution with a local catalog fallback
+
+### Fixed
+- Basic settings mode keeps language and AI controls available
+- CI installs Qt runtime dependencies before GUI tests and secret scanning
+
 ## [2.5.0] - 2026-08-25
 
 ### Added
