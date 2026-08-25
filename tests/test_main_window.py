@@ -59,8 +59,17 @@ class MainWindowTests(unittest.TestCase):
     def test_setup_wizard_has_guided_pages(self):
         wizard = client.SetupWizard(self.window)
         self.assertEqual(wizard.pages.count(), 4)
-        self.assertIn("List ZIA users", wizard.COMMON_TASKS)
+        self.assertGreaterEqual(len(wizard.COMMON_TASKS), 14)
+        self.assertIn("ZIA · List users", wizard.COMMON_TASKS)
+        self.assertIn("ZIdentity · List groups", wizard.COMMON_TASKS)
         wizard.close()
+
+    def test_guided_ai_example_loads_question_without_executing(self):
+        self.assertGreaterEqual(self.window.ai_example_choice.count(), 13)
+        self.window.ai_example_choice.setCurrentIndex(1)
+        self.assertEqual(self.window.ai_question.text(), "List ZIA users with pagination")
+        self.assertFalse(self.window.ai_preview.toPlainText())
+        self.assertIn("Guided example loaded", self.window.ai_summary.text())
 
     def test_twenty_language_profiles_are_available(self):
         self.assertEqual(len(client.LANGUAGES), 20)

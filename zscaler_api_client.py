@@ -2537,12 +2537,40 @@ class SetupWizard(QDialog):
     """A practical first-run guide for configuration and common API tasks."""
 
     COMMON_TASKS = {
-        "List ZIA users": ("GET", "https://api.zsapi.net/zia/api/v1/users"),
-        "List URL categories": ("GET", "https://api.zsapi.net/zia/api/v1/urlCategories"),
-        "Check ZIA activation status": ("GET", "https://api.zsapi.net/zia/api/v1/status"),
-        "List ZPA application segments": ("GET", "https://api.zsapi.net/zpa/mgmtconfig/v1/admin/customers/:customerId/application"),
-        "List Client Connector devices": ("GET", "https://api.zsapi.net/zcc/papi/public/v1/getDevices"),
+        "ZIA · List users": ("GET", "https://api.zsapi.net/zia/api/v1/users"),
+        "ZIA · List URL categories": ("GET", "https://api.zsapi.net/zia/api/v1/urlCategories"),
+        "ZIA · Check activation status": ("GET", "https://api.zsapi.net/zia/api/v1/status"),
+        "ZIA · List cloud firewall policies": ("GET", "https://api.zsapi.net/zia/api/v1/firewallPolicies"),
+        "ZPA · List application segments": ("GET", "https://api.zsapi.net/zpa/mgmtconfig/v1/admin/customers/:customerId/application"),
+        "ZPA · List segment groups": ("GET", "https://api.zsapi.net/zpa/mgmtconfig/v1/admin/customers/:customerId/segmentGroup"),
+        "ZPA · List connectors": ("GET", "https://api.zsapi.net/zpa/mgmtconfig/v1/admin/customers/:customerId/connector"),
+        "ZDX · List devices and experience scores": ("GET", "https://api.zsapi.net/zdx/v1/devices"),
+        "ZDX · List active alerts": ("GET", "https://api.zsapi.net/zdx/v1/alerts"),
+        "ZDX · List monitored applications": ("GET", "https://api.zsapi.net/zdx/v1/apps"),
+        "Client Connector · List devices": ("GET", "https://api.zsapi.net/zcc/papi/public/v1/getDevices"),
+        "ZIdentity · List users": ("GET", "https://api.zsapi.net/zidentity/admin/api/v1/users"),
+        "ZIdentity · List groups": ("GET", "https://api.zsapi.net/zidentity/admin/api/v1/groups"),
+        "AI Security · List workloads": ("GET", "https://api.zsapi.net/aisecurity/aispm/v1/resources/workloads"),
     }
+
+    def _task_label(self, task: str) -> str:
+        labels = {
+            "ZIA · List users": self.tr("ZIA · List users"),
+            "ZIA · List URL categories": self.tr("ZIA · List URL categories"),
+            "ZIA · Check activation status": self.tr("ZIA · Check activation status"),
+            "ZIA · List cloud firewall policies": self.tr("ZIA · List cloud firewall policies"),
+            "ZPA · List application segments": self.tr("ZPA · List application segments"),
+            "ZPA · List segment groups": self.tr("ZPA · List segment groups"),
+            "ZPA · List connectors": self.tr("ZPA · List connectors"),
+            "ZDX · List devices and experience scores": self.tr("ZDX · List devices and experience scores"),
+            "ZDX · List active alerts": self.tr("ZDX · List active alerts"),
+            "ZDX · List monitored applications": self.tr("ZDX · List monitored applications"),
+            "Client Connector · List devices": self.tr("Client Connector · List devices"),
+            "ZIdentity · List users": self.tr("ZIdentity · List users"),
+            "ZIdentity · List groups": self.tr("ZIdentity · List groups"),
+            "AI Security · List workloads": self.tr("AI Security · List workloads"),
+        }
+        return labels[task]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -2638,13 +2666,16 @@ class SetupWizard(QDialog):
         if hasattr(self, "authenticate_after_finish"):
             self.authenticate_after_finish.setVisible(advanced)
         if hasattr(self, "task_choice"):
-            current = self.task_choice.currentText()
+            current = self.task_choice.currentData()
             tasks = list(self.COMMON_TASKS)
             if not advanced:
-                tasks = tasks[:3]
+                tasks = tasks[:4]
             self.task_choice.clear()
-            self.task_choice.addItems([self.tr("Just explore the API catalog"), *tasks])
-            self.task_choice.setCurrentText(current)
+            self.task_choice.addItem(self.tr("Just explore the API catalog"), "")
+            for task in tasks:
+                self.task_choice.addItem(self._task_label(task), task)
+            index = self.task_choice.findData(current)
+            self.task_choice.setCurrentIndex(index if index >= 0 else 0)
 
     def _make_tasks_page(self):
         page = QWidget()
@@ -2654,7 +2685,9 @@ class SetupWizard(QDialog):
         description.setWordWrap(True)
         layout.addWidget(description)
         self.task_choice = QComboBox()
-        self.task_choice.addItems([self.tr("Just explore the API catalog"), *self.COMMON_TASKS.keys()])
+        self.task_choice.addItem(self.tr("Just explore the API catalog"), "")
+        for task in self.COMMON_TASKS:
+            self.task_choice.addItem(self._task_label(task), task)
         layout.addWidget(self.task_choice)
         self.authenticate_after_finish = QCheckBox(self.tr("Authenticate immediately after finishing"))
         self.authenticate_after_finish.setChecked(True)
@@ -2713,7 +2746,7 @@ class SetupWizard(QDialog):
             parent = self.parent()
             parent._update_api_list()
             parent.api_type.setCurrentText("OneAPI")
-            task = self.task_choice.currentText()
+            task = self.task_choice.currentData()
             if task in self.COMMON_TASKS:
                 method, url = self.COMMON_TASKS[task]
                 parent._load_wizard_request(method, url, task)
@@ -4134,6 +4167,23 @@ class HistoryDialog(QDialog):
 
 class MainWindow(QMainWindow):
     """Main application window."""
+
+    def _guided_ai_examples(self) -> tuple[tuple[str, str], ...]:
+        """Localized, non-executing prompts for common OneAPI exploration."""
+        return (
+            (self.tr("ZIA · List users"), self.tr("List ZIA users with pagination")),
+            (self.tr("ZIA · Find URL categories"), self.tr("Search ZIA URL categories for social media")),
+            (self.tr("ZIA · Review firewall policies"), self.tr("List ZIA cloud firewall policies")),
+            (self.tr("ZPA · Application segments"), self.tr("List ZPA application segments")),
+            (self.tr("ZPA · Connector inventory"), self.tr("List ZPA connectors")),
+            (self.tr("ZDX · Experience overview"), self.tr("List ZDX devices and experience scores")),
+            (self.tr("ZDX · Active alerts"), self.tr("List active ZDX alerts with pagination")),
+            (self.tr("ZDX · Application monitoring"), self.tr("List monitored ZDX applications")),
+            (self.tr("Client Connector · Devices"), self.tr("List Client Connector devices")),
+            (self.tr("ZIdentity · Users"), self.tr("List ZIdentity users with pagination")),
+            (self.tr("ZIdentity · Groups"), self.tr("List ZIdentity groups")),
+            (self.tr("AI Security · Workloads"), self.tr("List AI Security workloads")),
+        )
     
     def __init__(self):
         super().__init__()
@@ -4389,6 +4439,12 @@ class MainWindow(QMainWindow):
         self.ai_question.setPlaceholderText(self.tr("Ask a OneAPI question, e.g. list ZPA application segments"))
         self.ai_question.returnPressed.connect(self._run_ai_assistant)
         ai_layout.addWidget(self.ai_question)
+        self.ai_example_choice = QComboBox()
+        self.ai_example_choice.addItem(self.tr("Choose a guided AI example…"), "")
+        for title, question in self._guided_ai_examples():
+            self.ai_example_choice.addItem(title, question)
+        self.ai_example_choice.currentIndexChanged.connect(self._load_ai_example)
+        ai_layout.addWidget(self.ai_example_choice)
         ai_actions = QHBoxLayout()
         self.ai_run_btn = QPushButton(self.tr("Find API request"))
         self.ai_run_btn.clicked.connect(self._run_ai_assistant)
@@ -4874,6 +4930,16 @@ class MainWindow(QMainWindow):
             f"<h3>{task_name}</h3><p>Prepared by the Getting Started Wizard. "
             "Enter any highlighted path variables, then send the request.</p>"
         )
+
+    def _load_ai_example(self, index: int):
+        """Load a catalog-only example; execution still requires preview and approval."""
+        question = self.ai_example_choice.itemData(index)
+        if not question:
+            return
+        self.ai_question.setText(question)
+        self.ai_preview.clear()
+        self.ai_summary.setText(self.tr("Guided example loaded. Find the API request, review the preview, then choose whether to run it."))
+        self.ai_question.setFocus()
 
     def _toggle_pretty_print(self):
         """Toggle pretty-print for JSON response."""

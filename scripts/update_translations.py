@@ -30,6 +30,48 @@ SWEDISH_REVIEW = {
     "<h1>Welcome to ZS API Client</h1>": "<h1>Välkommen till ZS API Client</h1>", "<h2>Connect your Zscaler tenant</h2>": "<h2>Anslut din Zscaler-tenant</h2>", "Create an API client with the required roles in ZIdentity, then enter its details below.": "Skapa en API-klient med nödvändiga roller i ZIdentity och ange sedan uppgifterna nedan.", "Leave empty for production; use beta or alpha when applicable": "Lämna tomt för produktion; använd beta eller alpha när det är tillämpligt", "Optional; required for many ZPA requests": "Valfritt; krävs för många ZPA-begäranden", "<h2>What would you like to do first?</h2>": "<h2>Vad vill du göra först?</h2>", "Choose a common operation. The wizard will load it into the request builder with required path variables highlighted.": "Välj en vanlig åtgärd. Guiden läser in den i begärandebyggaren med obligatoriska sökvägsvariabler markerade.", "<h2>You are ready to make your first request</h2>": "<h2>Du är redo att göra din första begäran</h2>", "The API Explorer contains the complete bundled catalog. Use the Documentation tab for endpoint details, the Console tab for request activity, and Request History to replay safe, redacted requests.": "API-utforskaren innehåller hela den medföljande katalogen. Använd fliken Dokumentation för information om slutpunkter, Konsol för begärandeaktivitet och Begärandehistorik för att spela upp säkra, maskerade begäranden.",
 }
 
+SWEDISH_REVIEW.update({
+    "Choose a guided AI example…": "Välj ett guidat AI-exempel…",
+    "Guided example loaded. Find the API request, review the preview, then choose whether to run it.": "Guidat exempel inläst. Hitta API-begäran, granska förhandsvisningen och välj sedan om du vill köra den.",
+    "ZIA · List users": "ZIA · Lista användare",
+    "ZIA · List URL categories": "ZIA · Lista URL-kategorier",
+    "ZIA · Check activation status": "ZIA · Kontrollera aktiveringsstatus",
+    "ZIA · List cloud firewall policies": "ZIA · Lista molnbrandväggspolicyer",
+    "ZPA · List application segments": "ZPA · Lista applikationssegment",
+    "ZPA · List segment groups": "ZPA · Lista segmentgrupper",
+    "ZPA · List connectors": "ZPA · Lista anslutningar",
+    "ZDX · List devices and experience scores": "ZDX · Lista enheter och upplevelsepoäng",
+    "ZDX · List active alerts": "ZDX · Lista aktiva aviseringar",
+    "ZDX · List monitored applications": "ZDX · Lista övervakade applikationer",
+    "Client Connector · List devices": "Client Connector · Lista enheter",
+    "ZIdentity · List users": "ZIdentity · Lista användare",
+    "ZIdentity · List groups": "ZIdentity · Lista grupper",
+    "AI Security · List workloads": "AI Security · Lista arbetsbelastningar",
+    "ZIA · Find URL categories": "ZIA · Hitta URL-kategorier",
+    "ZIA · Review firewall policies": "ZIA · Granska brandväggspolicyer",
+    "ZPA · Application segments": "ZPA · Applikationssegment",
+    "ZPA · Connector inventory": "ZPA · Anslutningsinventering",
+    "ZDX · Experience overview": "ZDX · Upplevelseöversikt",
+    "ZDX · Active alerts": "ZDX · Aktiva aviseringar",
+    "ZDX · Application monitoring": "ZDX · Applikationsövervakning",
+    "Client Connector · Devices": "Client Connector · Enheter",
+    "ZIdentity · Users": "ZIdentity · Användare",
+    "ZIdentity · Groups": "ZIdentity · Grupper",
+    "AI Security · Workloads": "AI Security · Arbetsbelastningar",
+    "List ZIA users with pagination": "Lista ZIA-användare med sidindelning",
+    "Search ZIA URL categories for social media": "Sök ZIA-URL-kategorier för sociala medier",
+    "List ZIA cloud firewall policies": "Lista ZIA-molnbrandväggspolicyer",
+    "List ZPA application segments": "Lista ZPA-applikationssegment",
+    "List ZPA connectors": "Lista ZPA-anslutningar",
+    "List ZDX devices and experience scores": "Lista ZDX-enheter och upplevelsepoäng",
+    "List active ZDX alerts with pagination": "Lista aktiva ZDX-aviseringar med sidindelning",
+    "List monitored ZDX applications": "Lista övervakade ZDX-applikationer",
+    "List Client Connector devices": "Lista Client Connector-enheter",
+    "List ZIdentity users with pagination": "Lista ZIdentity-användare med sidindelning",
+    "List ZIdentity groups": "Lista ZIdentity-grupper",
+    "List AI Security workloads": "Lista AI Security-arbetsbelastningar",
+})
+
 
 def protect(text: str) -> tuple[str, list[str]]:
     values: list[str] = []
