@@ -2314,6 +2314,22 @@ class ApiWorker(QThread):
             raise Exception(f"HTTP {e.code}: {e.reason}\n{error_body}")
 
 
+class LlmWorker(QThread):
+    """Runs an LLM request away from the GUI thread."""
+    completed = Signal(str)
+    failed = Signal(str)
+
+    def __init__(self, request_fn):
+        super().__init__()
+        self.request_fn = request_fn
+
+    def run(self):
+        try:
+            self.completed.emit(self.request_fn())
+        except Exception as error:
+            self.failed.emit(str(error))
+
+
 class WelcomeDialog(QDialog):
     """Welcome dialog for new users with getting started guidance."""
     
@@ -4927,12 +4943,11 @@ class MainWindow(QMainWindow):
         self._populate_path_variables(best["url"])
         summary = self.tr("Suggested request: {method} {name}. Review path variables before running.").format(method=best["method"], name=best["name"])
         if provider in {"openai", "local"}:
-            try:
-                answer = self._ask_configured_llm(question, matches[:5])
-                if answer:
-                    summary = f"{summary}\n\n{redact_sensitive(answer)}"
-            except Exception as error:
-                summary = f"{summary}\n\n{self.tr('LLM unavailable; using the local catalog assistant.')}: {redact_sensitive(str(error))}"
+            summary = f"{summary}\n\n{self.tr('Asking configured LLM…') }"
+            self.ai_llm_worker = LlmWorker(lambda: self._ask_configured_llm(question, matches[:5]))
+            self.ai_llm_worker.completed.connect(self._on_llm_completed)
+            self.ai_llm_worker.failed.connect(self._on_llm_failed)
+            self.ai_llm_worker.start()
         self.ai_summary.setText(summary)
         self.ai_table.setRowCount(len(matches))
         self.ai_table.setColumnCount(4)
@@ -4942,6 +4957,13 @@ class MainWindow(QMainWindow):
                 self.ai_table.setItem(row, column, QTableWidgetItem(value))
         self.ai_table.resizeColumnsToContents()
         self._log_output(f"AI catalog match: {best['method']} {redact_url(best['url'])}", "info")
+
+    def _on_llm_completed(self, answer: str):
+        self.ai_summary.setText(self.ai_summary.text().replace(self.tr("Asking configured LLM…"), redact_sensitive(answer)))
+
+    def _on_llm_failed(self, error: str):
+        fallback = self.tr("LLM unavailable; using the local catalog assistant.")
+        self.ai_summary.setText(self.ai_summary.text().replace(self.tr("Asking configured LLM…"), f"{fallback}: {redact_sensitive(error)}"))
 
     def _ask_configured_llm(self, question: str, candidates: list[dict]) -> str:
         """Call a configured OpenAI-compatible endpoint without credentials or API responses."""
