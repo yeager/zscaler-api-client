@@ -23,6 +23,12 @@ ROOT = Path(__file__).resolve().parents[1]
 TRANSLATIONS = ROOT / "translations"
 PROVIDER_URL = "https://api.mymemory.translated.net/get"
 PROTECTED = re.compile(r"<[^>]+>|&[A-Za-z0-9#]+;|\{[^}]+\}|%\d+|%n")
+SWEDISH_REVIEW = {
+    "Operation:": "Åtgärd:", "API Error Codes Reference": "Referens för API-felkoder", "Code": "Kod", "Name": "Namn", "Description": "Beskrivning", "Close": "Stäng", "Status": "Status", "Auth": "Autentisering", "Variable": "Variabel", "Path Variables": "Sökvägsvariabler", "Pretty": "Formatera", "Console": "Konsol", "API Explorer": "API-utforskaren", "Product": "Produkt", "Request Builder": "Begärandebyggare", "Missing Path Variables": "Saknade sökvägsvariabler", "Batch": "Batch", "Proxy": "Proxy", "System": "System", "Settings Validation": "Inställningsvalidering", "Save Anyway": "Spara ändå", "Go Back": "Gå tillbaka", "Getting Started Wizard": "Kom igång-guiden", "Back": "Tillbaka", "Open full settings": "Öppna fullständiga inställningar", "Continue": "Fortsätt", "Vanity domain": "Vanity-domän", "Client ID": "Klient-ID", "Client secret": "Klienthemlighet", "Cloud": "Moln", "ZPA customer ID": "ZPA-kund-ID", "Just explore the API catalog": "Utforska bara API-katalogen", "Authenticate immediately after finishing": "Autentisera direkt när du är klar", "Finish": "Slutför",
+    "Common error codes and their meanings for each API.": "Vanliga felkoder och deras betydelse för varje API.", "Toggle pretty-print JSON (Ctrl+P)": "Växla formaterad JSON (Ctrl+P)", "Authenticate with selected API (Ctrl+Shift+A)": "Autentisera med valt API (Ctrl+Shift+A)", "🔍 Filter endpoints...": "🔍 Filtrera slutpunkter...", "Send request (Ctrl+Return)": "Skicka begäran (Ctrl+Retur)", "Copy request as cURL command (Ctrl+Shift+C)": "Kopiera begäran som cURL-kommando (Ctrl+Skift+C)", "Enter values for: {names}": "Ange värden för: {names}", "OneAPI authenticated successfully": "OneAPI har autentiserats", "OneAPI credentials not configured. Please go to Settings.": "OneAPI-autentiseringsuppgifter är inte konfigurerade. Gå till Inställningar.", "{count} operations · {groups} groups": "{count} åtgärder · {groups} grupper", "{count} matching operations": "{count} matchande åtgärder", "{count} operations": "{count} åtgärder", "Step {current} of {total}": "Steg {current} av {total}",
+    "<h2>🔴 Zscaler API Error Codes</h2>": "<h2>🔴 Zscaler API-felkoder</h2>", "<p><b>💡 Tips:</b></p><ul><li><b>401/403:</b> Re-authenticate using the Auth button</li><li><b>429:</b> Wait 60 seconds before retrying</li><li><b>500:</b> Check Zscaler status page for outages</li></ul>": "<p><b>💡 Tips:</b></p><ul><li><b>401/403:</b> Autentisera igen med knappen Autentisering</li><li><b>429:</b> Vänta 60 sekunder innan nytt försök</li><li><b>500:</b> Kontrollera Zscalers statussida för driftstörningar</li></ul>",
+    "<h1>Welcome to ZS API Client</h1>": "<h1>Välkommen till ZS API Client</h1>", "<h2>Connect your Zscaler tenant</h2>": "<h2>Anslut din Zscaler-tenant</h2>", "Create an API client with the required roles in ZIdentity, then enter its details below.": "Skapa en API-klient med nödvändiga roller i ZIdentity och ange sedan uppgifterna nedan.", "Leave empty for production; use beta or alpha when applicable": "Lämna tomt för produktion; använd beta eller alpha när det är tillämpligt", "Optional; required for many ZPA requests": "Valfritt; krävs för många ZPA-begäranden", "<h2>What would you like to do first?</h2>": "<h2>Vad vill du göra först?</h2>", "Choose a common operation. The wizard will load it into the request builder with required path variables highlighted.": "Välj en vanlig åtgärd. Guiden läser in den i begärandebyggaren med obligatoriska sökvägsvariabler markerade.", "<h2>You are ready to make your first request</h2>": "<h2>Du är redo att göra din första begäran</h2>", "The API Explorer contains the complete bundled catalog. Use the Documentation tab for endpoint details, the Console tab for request activity, and Request History to replay safe, redacted requests.": "API-utforskaren innehåller hela den medföljande katalogen. Använd fliken Dokumentation för information om slutpunkter, Konsol för begärandeaktivitet och Begärandehistorik för att spela upp säkra, maskerade begäranden.",
+}
 
 
 def protect(text: str) -> tuple[str, list[str]]:
@@ -61,7 +67,7 @@ def translate(text: str, target: str, email: str) -> str:
     return result
 
 
-def fill_catalog(path: Path, target: str, email: str, workers: int, delay: float) -> tuple[int, int]:
+def fill_catalog(path: Path, target: str, email: str, workers: int, delay: float, translate_fallbacks: bool) -> tuple[int, int]:
     tree = ET.parse(path)
     root = tree.getroot()
     canonical_locales = {"fa": "fa_IR", "pt": "pt_BR", "zh": "zh_CN"}
@@ -73,7 +79,7 @@ def fill_catalog(path: Path, target: str, email: str, workers: int, delay: float
         translation = message.find("translation")
         if translation is None or not source:
             continue
-        if translation.text and translation.get("type") != "unfinished":
+        if translation.text and translation.get("type") != "unfinished" and not (translate_fallbacks and translation.text == source):
             skipped += 1
             continue
         safe_source, protected = protect(source)
@@ -104,8 +110,10 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=1, help="parallel translation requests (default: 1)")
     parser.add_argument("--delay", type=float, default=0.5, help="pause between requests per worker")
     parser.add_argument("--fallback-source", action="store_true", help="fill remaining messages with English for offline review")
+    parser.add_argument("--translate-fallbacks", action="store_true", help="replace English review fallbacks")
+    parser.add_argument("--swedish-review", action="store_true", help="apply reviewed Swedish UI translations")
     args = parser.parse_args()
-    if not args.fallback_source and not args.email:
+    if not (args.fallback_source or args.swedish_review) and not args.email:
         parser.error("--email is required unless --fallback-source is used")
     target_codes = {"pt": "pt-BR", "nb": "no", "zh": "zh-CN"}
     for code in args.language:
@@ -126,7 +134,22 @@ def main() -> int:
             tree.write(path, encoding="utf-8", xml_declaration=True)
             print(f"{code}: filled {fallback_count} English review fallbacks")
             continue
-        translated, skipped = fill_catalog(path, target_codes.get(code, code), args.email, args.workers, args.delay)
+        if args.swedish_review:
+            tree = ET.parse(path)
+            translated = 0
+            for message in tree.findall(".//message"):
+                source = message.findtext("source", default="")
+                translation = message.find("translation")
+                if translation is not None and source in SWEDISH_REVIEW and translation.text == source:
+                    translation.text = SWEDISH_REVIEW[source]
+                    translated += 1
+            ET.indent(tree, space="    ")
+            tree.write(path, encoding="utf-8", xml_declaration=True)
+            print(f"{code}: applied {translated} reviewed Swedish translations")
+            continue
+        translated, skipped = fill_catalog(
+            path, target_codes.get(code, code), args.email, args.workers, args.delay, args.translate_fallbacks
+        )
         print(f"{code}: translated {translated}, retained {skipped}")
     return 0
 
