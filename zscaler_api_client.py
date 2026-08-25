@@ -200,6 +200,11 @@ QWidget {
     background-color: #1e1e1e;
     color: #d4d4d4;
 }
+QFrame#commandBar {
+    background-color: #252526;
+    border: 1px solid #3c3c3c;
+    border-radius: 8px;
+}
 QGroupBox {
     border: 1px solid #3c3c3c;
     border-radius: 4px;
@@ -4354,9 +4359,30 @@ class MainWindow(QMainWindow):
         central = QWidget()
         central.setObjectName("workspace")
         self.setCentralWidget(central)
-        layout = QHBoxLayout(central)
+        layout = QVBoxLayout(central)
         layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(8)
+
+        # A persistent command bar keeps the primary workflow visible instead
+        # of making users hunt through menus as the client grows.
+        command_bar = QFrame()
+        command_bar.setObjectName("commandBar")
+        command_layout = QHBoxLayout(command_bar)
+        command_layout.setContentsMargins(12, 8, 12, 8)
+        title = QLabel(self.tr("ZS API Client"))
+        title.setObjectName("sectionTitle")
+        command_layout.addWidget(title)
+        self.workspace_context = QLabel(self.tr("Explore APIs, review changes, and operate safely"))
+        self.workspace_context.setObjectName("mutedLabel")
+        command_layout.addWidget(self.workspace_context)
+        command_layout.addStretch()
+        operations_shortcut = QPushButton(self.tr("Operations Center"))
+        operations_shortcut.clicked.connect(self._show_operations)
+        command_layout.addWidget(operations_shortcut)
+        settings_shortcut = QPushButton(self.tr("Settings"))
+        settings_shortcut.clicked.connect(self._show_settings)
+        command_layout.addWidget(settings_shortcut)
+        layout.addWidget(command_bar)
         
         # Left panel - API Explorer
         left_panel = QWidget()
