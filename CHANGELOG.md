@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Twenty language profiles: English, Swedish, German, French, Spanish, Brazilian Portuguese, Italian, Dutch, Danish, Norwegian Bokmål, Finnish, Polish, Czech, Hungarian, Turkish, Arabic, Persian, Japanese, Korean, and Simplified Chinese
 - Complete Qt translation catalogs and bundled Qt standard-dialog translations for the added locales
+- Natural-language OneAPI assistant with secure local, cloud, and OpenAI-compatible LLM configuration
+- Basic and Advanced modes for the setup wizard and settings UI
+- Masked table visualization and CSV/JSON export for AI-assisted results
+
+### Security
+- System-keychain storage for AI credentials and automated GitHub secret scanning
 
 ### Changed
 - Updated every localized catalog for the setup wizard and advanced workspace; unavailable machine translations use English review fallbacks so no UI text disappears
