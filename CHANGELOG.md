@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Operations Center with local dashboards, policy diff, policy simulation, bulk CSV validation, report scheduling, environment profiles, and an audit trail.
 - Hash-linked, redacted audit events and exportable redacted support bundles.
+- Local read-only enforcement, configurable alert thresholds, and inert webhook/local-automation configuration guarded by explicit approval.
 - Swedish translations and review fallbacks for all new Operations Center strings.
 
 ## [2.6.2] - 2026-08-25

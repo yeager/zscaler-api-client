@@ -4210,6 +4210,17 @@ class OperationsDialog(QDialog):
         bulk_btn = QPushButton(self.tr("Validate bulk import")); bulk_btn.clicked.connect(self.validate_bulk)
         bulk_layout.addWidget(bulk_btn); tabs.addTab(bulk_page, self.tr("Bulk operations"))
 
+        governance_page = QWidget(); governance_layout = QFormLayout(governance_page)
+        self.role_choice = QComboBox(); self.role_choice.addItem(self.tr("Administrator"), "admin"); self.role_choice.addItem(self.tr("Analyst"), "analyst"); self.role_choice.addItem(self.tr("Read only"), "readonly")
+        self.role_choice.setCurrentIndex(max(0, self.role_choice.findData(self.settings.value("access/role", "admin"))))
+        self.alert_threshold = QLineEdit(str(self.settings.value("monitoring/error_threshold", "10")))
+        self.webhook_url = QLineEdit(str(self.settings.value("automation/webhook_url", ""))); self.webhook_url.setPlaceholderText("https://hooks.example.invalid/...")
+        self.plugin_path = QLineEdit(str(self.settings.value("automation/local_plugin", ""))); self.plugin_path.setPlaceholderText(self.tr("Optional local automation script; never runs without approval"))
+        governance_layout.addRow(self.tr("Local role:"), self.role_choice); governance_layout.addRow(self.tr("Alert threshold (errors):"), self.alert_threshold); governance_layout.addRow(self.tr("Webhook endpoint (disabled until approved):"), self.webhook_url); governance_layout.addRow(self.tr("Local automation:"), self.plugin_path)
+        governance_save = QPushButton(self.tr("Save governance settings")); governance_save.clicked.connect(self.save_governance); governance_layout.addRow(governance_save)
+        governance_note = QLabel(self.tr("Read-only mode blocks write requests. Webhooks and local automation are saved only; this app will ask before any execution.")); governance_note.setWordWrap(True); governance_layout.addRow(governance_note)
+        tabs.addTab(governance_page, self.tr("Governance"))
+
         audit_page = QWidget(); audit_layout = QVBoxLayout(audit_page)
         self.audit_output = QPlainTextEdit(); self.audit_output.setReadOnly(True); audit_layout.addWidget(self.audit_output)
         audit_controls = QHBoxLayout()
@@ -4247,6 +4258,17 @@ class OperationsDialog(QDialog):
     def validate_bulk(self):
         required = [item.strip() for item in self.bulk_required.text().split(",") if item.strip()]
         self.bulk_result.setPlainText(json.dumps(validate_bulk_csv(self.bulk_csv.toPlainText(), required), indent=2))
+
+    def save_governance(self):
+        try: threshold = max(1, int(self.alert_threshold.text()))
+        except ValueError:
+            QMessageBox.warning(self, self.tr("Governance"), self.tr("Alert threshold must be a positive integer.")); return
+        self.settings.setValue("access/role", self.role_choice.currentData())
+        self.settings.setValue("monitoring/error_threshold", str(threshold))
+        self.settings.setValue("automation/webhook_url", self.webhook_url.text().strip())
+        self.settings.setValue("automation/local_plugin", self.plugin_path.text().strip())
+        AuditTrail(self.settings).append("governance_updated", {"role": self.role_choice.currentData(), "threshold": threshold, "webhook_configured": bool(self.webhook_url.text().strip()), "plugin_configured": bool(self.plugin_path.text().strip())})
+        QMessageBox.information(self, self.tr("Governance"), self.tr("Governance settings saved."))
 
     def refresh_audit(self):
         trail = AuditTrail(self.settings)
@@ -5753,6 +5775,11 @@ class MainWindow(QMainWindow):
         method = self.method_combo.currentText().replace("● ", "")
         if self.graphql_mode.isChecked():
             method = "POST"
+        if (QSettings("Zscaler", "APIClient").value("access/role", "admin") == "readonly"
+                and method in {"POST", "PUT", "PATCH", "DELETE"}):
+            self._log_output("Read-only role blocked a write request", "warning")
+            QMessageBox.warning(self, self.tr("Read only"), self.tr("Read-only mode blocks write requests. Change the local role in Operations Center to continue."))
+            return
         
         if not url:
             QMessageBox.warning(self, self.tr("Warning"), self.tr("Please enter a URL"))
