@@ -41,7 +41,7 @@ class MainWindowTests(unittest.TestCase):
 
     def test_workspace_has_explorer_editor_and_inspector(self):
         self.assertEqual(self.window.main_splitter.count(), 3)
-        self.assertEqual(self.window.response_tabs.count(), 2)
+        self.assertEqual(self.window.response_tabs.count(), 3)
         self.assertEqual(self.window.request_tabs.count(), 4)
 
     def test_wizard_loads_common_request_with_path_variables(self):
@@ -108,11 +108,22 @@ class MainWindowTests(unittest.TestCase):
     def test_numeric_results_render_a_chart(self):
         self.window._show_ai_visualization([{"name": "A", "count": 3}, {"name": "B", "count": 7}])
         self.assertEqual(self.window.ai_chart.values, [("A", 3.0), ("B", 7.0)])
+        self.window.ai_chart.set_style("pie")
+        self.assertEqual(self.window.ai_chart.style, "pie")
 
     def test_graphql_output_includes_nested_data_and_errors(self):
         self.window._show_graphql_output({"data": {"users": [{"id": "1"}]}, "errors": [{"message": "partial"}], "extensions": {"trace": "x"}})
         self.assertEqual(self.window.ai_table.item(0, 0).text(), "1")
         self.assertIn("GraphQL errors", self.window.ai_summary.text())
+
+    def test_graphql_schema_tree_uses_introspection_types(self):
+        self.window._populate_graphql_schema_tree({"data": {"__schema": {"types": [{"name": "User", "kind": "OBJECT", "fields": [{"name": "id"}]}]}}})
+        self.assertEqual(self.window.graphql_schema_tree.topLevelItem(0).text(0), "User (OBJECT)")
+
+    def test_ai_preview_applies_only_concrete_parameters(self):
+        self.window.ai_preview.setPlainText('{"suggested_params":{"pageSize":"100","search":"<review-required>"}}')
+        self.window._apply_ai_suggestions()
+        self.assertEqual(self.window.params_table.item(0, 0).text(), "pageSize")
 
     def test_graphql_introspection_prepares_a_safe_query(self):
         self.window._prepare_graphql_introspection()

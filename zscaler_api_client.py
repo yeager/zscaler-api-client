@@ -2337,11 +2337,16 @@ class NumericBarChart(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.values: list[tuple[str, float]] = []
+        self.style = "bar"
         self.setMinimumHeight(150)
 
     def set_values(self, values: list[tuple[str, float]]):
         self.values = values[:12]
         self.setVisible(bool(self.values))
+        self.update()
+
+    def set_style(self, style: str):
+        self.style = style
         self.update()
 
     def paintEvent(self, event):
@@ -2351,6 +2356,29 @@ class NumericBarChart(QWidget):
             return
         maximum = max(value for _, value in self.values) or 1
         chart = self.rect().adjusted(45, 12, -12, -30)
+        if self.style == "pie":
+            total = sum(value for _, value in self.values) or 1
+            start = 0
+            colors = ("#0078d4", "#2e7d32", "#e65100", "#6a1b9a", "#c62828")
+            for index, (label, value) in enumerate(self.values):
+                span = int(5760 * value / total)
+                painter.setBrush(QColor(colors[index % len(colors)]))
+                painter.drawPie(chart, start, span)
+                start += span
+            return
+        if self.style == "line":
+            points = []
+            for index, (_, value) in enumerate(self.values):
+                x = chart.left() + (chart.width() * index // max(1, len(self.values) - 1))
+                y = chart.bottom() - int(chart.height() * value / maximum)
+                points.append((x, y))
+            painter.setPen(QColor("#0078d4"))
+            for first, second in zip(points, points[1:]):
+                painter.drawLine(first[0], first[1], second[0], second[1])
+            for x, y in points:
+                painter.setBrush(QColor("#0078d4"))
+                painter.drawEllipse(x - 3, y - 3, 6, 6)
+            return
         width = max(8, chart.width() // len(self.values) - 8)
         for index, (label, value) in enumerate(self.values):
             height = int(chart.height() * (value / maximum))
@@ -3574,13 +3602,15 @@ class SettingsDialog(QDialog):
         if not endpoint:
             QMessageBox.warning(self, self.tr("AI connection"), self.tr("Enter an AI endpoint first."))
             return
-        try:
+        def check_connection():
             request = urllib.request.Request(f"{endpoint}/models", headers={"Authorization": f"Bearer {secure_get('ai_api_key')}"} if secure_get("ai_api_key") else {})
             with urllib.request.urlopen(request, timeout=10) as response:
                 response.read(1)
-            QMessageBox.information(self, self.tr("AI connection"), self.tr("AI connection succeeded."))
-        except Exception as error:
-            QMessageBox.warning(self, self.tr("AI connection"), self.tr("AI connection failed: {error}").format(error=redact_sensitive(str(error))))
+            return self.tr("AI connection succeeded.")
+        self.ai_test_worker = LlmWorker(check_connection)
+        self.ai_test_worker.completed.connect(lambda message: QMessageBox.information(self, self.tr("AI connection"), message))
+        self.ai_test_worker.failed.connect(lambda error: QMessageBox.warning(self, self.tr("AI connection"), self.tr("AI connection failed: {error}").format(error=redact_sensitive(error))))
+        self.ai_test_worker.start()
     
     def _validate_and_sanitize(self) -> bool:
         """Validate inputs and show warnings for common mistakes. Returns True if OK."""
@@ -4249,6 +4279,12 @@ class MainWindow(QMainWindow):
         load_graphql_btn = QPushButton(self.tr("Load query"))
         load_graphql_btn.clicked.connect(self._load_graphql_query)
         graphql_presets.addWidget(load_graphql_btn)
+        rename_graphql_btn = QPushButton(self.tr("Rename query"))
+        rename_graphql_btn.clicked.connect(self._rename_graphql_query)
+        graphql_presets.addWidget(rename_graphql_btn)
+        delete_graphql_btn = QPushButton(self.tr("Delete query"))
+        delete_graphql_btn.clicked.connect(self._delete_graphql_query)
+        graphql_presets.addWidget(delete_graphql_btn)
         introspect_btn = QPushButton(self.tr("Introspect schema"))
         introspect_btn.clicked.connect(self._prepare_graphql_introspection)
         graphql_presets.addWidget(introspect_btn)
@@ -4319,6 +4355,9 @@ class MainWindow(QMainWindow):
         self.pretty_print_btn.clicked.connect(self._toggle_pretty_print)
         self.pretty_print_btn.setMinimumWidth(70)
         response_info_bar.addWidget(self.pretty_print_btn)
+        self.export_response_btn = QPushButton(self.tr("Export response"))
+        self.export_response_btn.clicked.connect(self._export_full_response)
+        response_info_bar.addWidget(self.export_response_btn)
         response_layout.addLayout(response_info_bar)
 
         # Response body and headers
@@ -4332,6 +4371,9 @@ class MainWindow(QMainWindow):
         self.response_tabs = QTabWidget()
         self.response_tabs.addTab(self.response_body, self.tr("Body"))
         self.response_tabs.addTab(self.response_headers, self.tr("Headers"))
+        self.graphql_schema_tree = QTreeWidget()
+        self.graphql_schema_tree.setHeaderLabel(self.tr("GraphQL schema"))
+        self.response_tabs.addTab(self.graphql_schema_tree, self.tr("Schema"))
         response_layout.addWidget(self.response_tabs)
 
         # Natural-language assistant. It operates locally against the bundled
@@ -4364,6 +4406,12 @@ class MainWindow(QMainWindow):
         self.ai_chart = NumericBarChart()
         self.ai_chart.setVisible(False)
         ai_layout.addWidget(self.ai_chart)
+        self.ai_chart_style = QComboBox()
+        self.ai_chart_style.addItem(self.tr("Bar chart"), "bar")
+        self.ai_chart_style.addItem(self.tr("Line chart"), "line")
+        self.ai_chart_style.addItem(self.tr("Pie chart"), "pie")
+        self.ai_chart_style.currentIndexChanged.connect(lambda: self.ai_chart.set_style(self.ai_chart_style.currentData()))
+        ai_layout.addWidget(self.ai_chart_style)
         self.ai_table = QTableWidget(0, 0)
         self.ai_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         ai_layout.addWidget(self.ai_table)
@@ -5068,7 +5116,22 @@ class MainWindow(QMainWindow):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No,
         )
         if review == QMessageBox.StandardButton.Yes:
+            self._apply_ai_suggestions()
             self._send_request()
+
+    def _apply_ai_suggestions(self):
+        """Apply only reviewed, concrete AI parameters; placeholders remain user input."""
+        try:
+            suggestions = json.loads(self.ai_preview.toPlainText()).get("suggested_params", {})
+        except json.JSONDecodeError:
+            return
+        concrete = {key: value for key, value in suggestions.items() if value and not str(value).startswith("<")}
+        if not concrete:
+            return
+        values = self._table_values(self.params_table)
+        values.update(concrete)
+        self._populate_table(self.params_table, values)
+        self.request_tabs.setCurrentIndex(0)
 
     def _on_llm_completed(self, answer: str):
         self.ai_summary.setText(self.ai_summary.text().replace(self.tr("Asking configured LLM…"), redact_sensitive(answer)))
@@ -5110,6 +5173,20 @@ class MainWindow(QMainWindow):
         with urllib.request.urlopen(request, timeout=30) as response:
             result = json.loads(response.read().decode("utf-8"))
         return str(result["choices"][0]["message"]["content"]).strip()
+
+    def _export_full_response(self):
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export response"), "response.json", "JSON (*.json)")
+        if not path:
+            return
+        raw = self.response_body.toPlainText()
+        try:
+            body = json.loads(raw)
+        except json.JSONDecodeError:
+            body = raw
+        headers = dict(line.split(": ", 1) for line in self.response_headers.toPlainText().splitlines() if ": " in line)
+        payload = redact_sensitive({"body": body, "headers": headers})
+        Path(path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        self.status_bar.showMessage(self.tr("Masked response exported"))
 
     def _export_ai_result(self):
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Export AI result"), "ai-result.csv", "CSV (*.csv);;JSON (*.json)")
@@ -5196,6 +5273,31 @@ class MainWindow(QMainWindow):
         self._populate_table(self.params_table, payload.get("params", {}))
         self.graphql_preset_name.setText(name)
 
+    def _rename_graphql_query(self):
+        old_name = self.graphql_preset_choice.currentText()
+        new_name = self.graphql_preset_name.text().strip()
+        if not old_name or not new_name or old_name == new_name:
+            return
+        raw = secure_get(f"graphql_preset_{old_name}")
+        if not raw:
+            return
+        secure_store(f"graphql_preset_{new_name}", raw)
+        secure_delete(f"graphql_preset_{old_name}")
+        settings = QSettings("Zscaler", "APIClient")
+        names = settings.value("graphql/presets", [], type=list)
+        settings.setValue("graphql/presets", sorted(set((new_name if name == old_name else name) for name in names)))
+        self._refresh_graphql_presets()
+        self.graphql_preset_choice.setCurrentText(new_name)
+
+    def _delete_graphql_query(self):
+        name = self.graphql_preset_choice.currentText()
+        if not name:
+            return
+        secure_delete(f"graphql_preset_{name}")
+        settings = QSettings("Zscaler", "APIClient")
+        settings.setValue("graphql/presets", [item for item in settings.value("graphql/presets", [], type=list) if item != name])
+        self._refresh_graphql_presets()
+
     def _prepare_graphql_introspection(self):
         self.graphql_mode.setChecked(True)
         self._graphql_introspection_pending = True
@@ -5219,7 +5321,20 @@ class MainWindow(QMainWindow):
         payload = json.loads(raw)
         self.response_body.setPlainText(json.dumps(redact_sensitive(payload), indent=2))
         self._show_graphql_output(payload)
-        self.response_tabs.setCurrentIndex(0)
+        self._populate_graphql_schema_tree(payload)
+        self.response_tabs.setCurrentWidget(self.graphql_schema_tree)
+
+    def _populate_graphql_schema_tree(self, payload: dict):
+        self.graphql_schema_tree.clear()
+        schema = payload.get("data", {}).get("__schema", {})
+        for type_info in schema.get("types", []):
+            name = type_info.get("name", "")
+            if not name or name.startswith("__"):
+                continue
+            item = QTreeWidgetItem([f"{name} ({type_info.get('kind', '')})"])
+            for field in type_info.get("fields") or []:
+                item.addChild(QTreeWidgetItem([field.get("name", "")]))
+            self.graphql_schema_tree.addTopLevelItem(item)
 
     @staticmethod
     def _table_values(table: QTableWidget) -> dict:
@@ -5448,6 +5563,7 @@ class MainWindow(QMainWindow):
                     self._show_graphql_output(res["data"])
                     if getattr(self, "_graphql_introspection_pending", False):
                         self._save_graphql_introspection(self.url_input.text().strip(), res["data"])
+                        self._populate_graphql_schema_tree(res["data"])
                         self._graphql_introspection_pending = False
                 self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms · {size_str})")
                 
