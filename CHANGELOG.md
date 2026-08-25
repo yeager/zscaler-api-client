@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.7.0] - 2026-08-25
 
 ### Added
 - Operations Center with local dashboards, policy diff, policy simulation, bulk CSV validation, report scheduling, environment profiles, and an audit trail.
