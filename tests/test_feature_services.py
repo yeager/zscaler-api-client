@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings
 
 
 class MemorySettings:
@@ -53,3 +53,10 @@ class FeatureServicesTests(unittest.TestCase):
                 self.assertNotIn("hidden", archive.read("diagnostics.json").decode())
         finally:
             os.unlink(path)
+
+    def test_policy_as_code_is_redacted_and_compliance_is_transparent(self):
+        exported = policy_as_code({"api_key": "hidden", "rules": [{"name": "Open", "action": "allow", "conditions": {}}]})
+        self.assertIn('"***"', exported)
+        self.assertNotIn("hidden", exported)
+        findings = compliance_findings({"rules": [{"name": "Open", "action": "allow", "conditions": {}}]})
+        self.assertEqual("high", findings[0]["severity"])

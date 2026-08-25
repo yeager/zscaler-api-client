@@ -44,7 +44,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.6.2"
@@ -4191,7 +4191,11 @@ class OperationsDialog(QDialog):
         self.diff_result = QPlainTextEdit(); self.diff_result.setReadOnly(True)
         for widget in (self.before_policy, self.after_policy, self.diff_result): diff_layout.addWidget(widget)
         diff_btn = QPushButton(self.tr("Compare policies")); diff_btn.clicked.connect(self.compare_policies)
-        diff_layout.addWidget(diff_btn); tabs.addTab(diff_page, self.tr("Policy diff"))
+        policy_actions = QHBoxLayout(); policy_actions.addWidget(diff_btn)
+        export_json = QPushButton(self.tr("Export policy as JSON")); export_json.clicked.connect(lambda: self.export_policy("json")); policy_actions.addWidget(export_json)
+        export_yaml = QPushButton(self.tr("Export policy as YAML")); export_yaml.clicked.connect(lambda: self.export_policy("yaml")); policy_actions.addWidget(export_yaml)
+        compliance = QPushButton(self.tr("Run compliance checks")); compliance.clicked.connect(self.run_compliance); policy_actions.addWidget(compliance)
+        diff_layout.addLayout(policy_actions); tabs.addTab(diff_page, self.tr("Policy diff"))
 
         simulate_page = QWidget(); simulate_layout = QVBoxLayout(simulate_page)
         self.rules_input = QPlainTextEdit(); self.rules_input.setPlaceholderText(self.tr("Rules JSON: [{\"name\": \"Allow staff\", \"conditions\": {\"group\": \"staff\"}, \"action\": \"allow\"}]"))
@@ -4250,6 +4254,19 @@ class OperationsDialog(QDialog):
     def compare_policies(self):
         try: self.diff_result.setPlainText(json.dumps(policy_diff(self._json(self.before_policy, {}), self._json(self.after_policy, {})), indent=2))
         except ValueError as exc: QMessageBox.warning(self, self.tr("Policy diff"), str(exc))
+
+    def export_policy(self, format_name):
+        try: payload = policy_as_code(self._json(self.after_policy, {}), format_name)
+        except ValueError as exc: QMessageBox.warning(self, self.tr("Policy export"), str(exc)); return
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export policy"), f"policy.{format_name}", f"{format_name.upper()} (*.{format_name})")
+        if path:
+            Path(path).write_text(payload, encoding="utf-8")
+            AuditTrail(self.settings).append("policy_exported", {"format": format_name, "file": os.path.basename(path)})
+
+    def run_compliance(self):
+        try: findings = compliance_findings(self._json(self.after_policy, {}))
+        except ValueError as exc: QMessageBox.warning(self, self.tr("Compliance"), str(exc)); return
+        self.diff_result.setPlainText(json.dumps({"findings": findings, "count": len(findings)}, indent=2))
 
     def run_simulation(self):
         try: self.simulation_result.setPlainText(json.dumps(simulate_policy(self._json(self.rules_input, []), self._json(self.context_input, {})), indent=2))

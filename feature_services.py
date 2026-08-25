@@ -130,3 +130,36 @@ def support_bundle(path: str, diagnostics: dict[str, Any], audit_events: list[di
         archive.writestr("diagnostics.json", json.dumps(mask(diagnostics), indent=2, ensure_ascii=False))
         archive.writestr("audit.json", json.dumps(mask(audit_events), indent=2, ensure_ascii=False))
         archive.writestr("README.txt", "ZS API Client support bundle. Credentials and sensitive fields are redacted.\n")
+
+
+def policy_as_code(policy: Any, format_name: str = "json") -> str:
+    """Export a redacted policy document for Git review; YAML is dependency-free."""
+    safe = mask(policy)
+    if format_name == "json":
+        return json.dumps(safe, indent=2, ensure_ascii=False) + "\n"
+    if format_name == "yaml":
+        def emit(value: Any, indent: int = 0) -> list[str]:
+            pad = "  " * indent
+            if isinstance(value, dict):
+                return sum(([f"{pad}{key}:"] + emit(item, indent + 1) for key, item in value.items()), [])
+            if isinstance(value, list):
+                return sum(([f"{pad}-"] + emit(item, indent + 1) for item in value), [])
+            return [f"{pad}{json.dumps(value, ensure_ascii=False)}"]
+        return "\n".join(emit(safe)) + "\n"
+    raise ValueError("format_name must be json or yaml")
+
+
+def compliance_findings(policy: Any) -> list[dict[str, str]]:
+    """Small transparent baseline, suitable for local review rather than enforcement."""
+    findings: list[dict[str, str]] = []
+    rules = policy if isinstance(policy, list) else policy.get("rules", []) if isinstance(policy, dict) else []
+    for index, rule in enumerate(rules, 1):
+        if not isinstance(rule, dict):
+            continue
+        action = str(rule.get("action", "")).lower()
+        conditions = rule.get("conditions", {})
+        if action in {"allow", "permit"} and not conditions:
+            findings.append({"severity": "high", "rule": str(rule.get("name", index)), "message": "Allow rule has no conditions"})
+        if rule.get("enabled") is False:
+            findings.append({"severity": "info", "rule": str(rule.get("name", index)), "message": "Rule is disabled"})
+    return findings
