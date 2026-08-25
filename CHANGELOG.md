@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.1] - 2026-08-25
+
+### Changed
+- Updated GitHub Actions dependencies to Node 24-compatible releases
+- Compile Qt `.qm` catalogs only when the associated `.ts` contains more than 20% genuine translations
+- Release builds now include SHA-256 checksums, SPDX SBOMs, and GitHub attestations
+
 ## [2.6.0] - 2026-08-25
 
 ### Added
