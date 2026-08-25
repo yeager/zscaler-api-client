@@ -1,6 +1,8 @@
 import os
 import unittest
 import xml.etree.ElementTree as ET
+import zipfile
+from io import BytesIO
 from pathlib import Path
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -141,6 +143,33 @@ class MainWindowTests(unittest.TestCase):
         headers, rows = self.window._ai_export_payload()
         self.assertEqual(headers, ["name", "count"])
         self.assertEqual(rows, [["A", "3"]])
+
+    def test_tabular_exports_cover_portable_formats(self):
+        headers, rows = ["name", "count"], [["A", "3"], ["B", "7"]]
+        self.assertIn(b'"name": "A"', self.window._tabular_export_bytes(".jsonl", headers, rows))
+        self.assertIn(b"| name | count |", self.window._tabular_export_bytes(".md", headers, rows))
+        self.assertIn(b"<table>", self.window._tabular_export_bytes(".html", headers, rows))
+        self.assertTrue(self.window._tabular_export_bytes(".pdf", headers, rows).startswith(b"%PDF-"))
+        workbook = zipfile.ZipFile(BytesIO(self.window._tabular_export_bytes(".xlsx", headers, rows)))
+        self.assertIn("xl/worksheets/sheet1.xml", workbook.namelist())
+        self.assertIn("name", workbook.read("xl/worksheets/sheet1.xml").decode())
+
+    def test_request_exports_are_sanitized(self):
+        self.window.url_input.setText("https://example.test/users?access_token=do-not-export")
+        self.window.headers_table.setItem(0, 0, client.QTableWidgetItem("Authorization"))
+        self.window.headers_table.setItem(0, 1, client.QTableWidgetItem("Bearer do-not-export"))
+        self.window.body_input.setPlainText('{"client_secret": "do-not-export"}')
+        curl = self.window._masked_curl_command()
+        collection = self.window._postman_collection()
+        self.assertNotIn("do-not-export", curl)
+        self.assertNotIn("do-not-export", str(collection))
+        self.assertIn("***", curl)
+
+    def test_svg_chart_export_uses_current_chart_data(self):
+        self.window._show_ai_visualization([{"name": "A", "count": 3}])
+        self.window.ai_chart.set_style("line")
+        self.assertIn("<svg", self.window._svg_chart())
+        self.assertIn("polyline", self.window._svg_chart())
 
     def test_external_llm_is_opt_in(self):
         settings = client.QSettings("Zscaler", "APIClient")

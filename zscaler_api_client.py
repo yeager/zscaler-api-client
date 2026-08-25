@@ -14,17 +14,22 @@ Supports:
 """
 
 import csv
+import html
+import io
 import json
 import os
 import re
+import shlex
 import sys
 import time
 import urllib.request
 import urllib.parse
 import urllib.error
+import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, Dict, List, Any
+from xml.sax.saxutils import escape as xml_escape
 
 # Use PySide6 for Qt bindings
 from PySide6.QtWidgets import (
@@ -5175,7 +5180,10 @@ class MainWindow(QMainWindow):
         return str(result["choices"][0]["message"]["content"]).strip()
 
     def _export_full_response(self):
-        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export response"), "response.json", "JSON (*.json)")
+        path, _ = QFileDialog.getSaveFileName(
+            self, self.tr("Export response"), "response.json",
+            "JSON (*.json);;Markdown (*.md);;HTML (*.html);;PDF (*.pdf)"
+        )
         if not path:
             return
         raw = self.response_body.toPlainText()
@@ -5185,28 +5193,195 @@ class MainWindow(QMainWindow):
             body = raw
         headers = dict(line.split(": ", 1) for line in self.response_headers.toPlainText().splitlines() if ": " in line)
         payload = redact_sensitive({"body": body, "headers": headers})
-        Path(path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        suffix = Path(path).suffix.lower()
+        if suffix == ".md":
+            content = "# ZS API Client response\n\n```json\n" + json.dumps(payload, indent=2) + "\n```\n"
+            Path(path).write_text(content, encoding="utf-8")
+        elif suffix == ".html":
+            content = "<!doctype html><html><head><meta charset=\"utf-8\"><title>ZS API Client response</title></head><body><h1>ZS API Client response</h1><pre>" + html.escape(json.dumps(payload, indent=2)) + "</pre></body></html>"
+            Path(path).write_text(content, encoding="utf-8")
+        elif suffix == ".pdf":
+            Path(path).write_bytes(self._pdf_bytes("ZS API Client response", json.dumps(payload, indent=2).splitlines()))
+        else:
+            Path(path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
         self.status_bar.showMessage(self.tr("Masked response exported"))
 
     def _export_ai_result(self):
-        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export AI result"), "ai-result.csv", "CSV (*.csv);;JSON (*.json)")
+        path, _ = QFileDialog.getSaveFileName(
+            self, self.tr("Export AI result"), "ai-result.csv",
+            "CSV (*.csv);;Excel (*.xlsx);;NDJSON (*.jsonl);;JSON (*.json);;Markdown (*.md);;HTML (*.html);;PDF (*.pdf);;PNG chart (*.png);;SVG chart (*.svg);;cURL (*.sh);;Postman Collection (*.postman_collection.json)"
+        )
         if not path:
             return
         headers, safe_rows = self._ai_export_payload()
-        if path.lower().endswith(".json"):
-            Path(path).write_text(json.dumps({"columns": headers, "rows": safe_rows}, indent=2), encoding="utf-8")
+        suffix = Path(path).suffix.lower()
+        if suffix == ".png":
+            if not self.ai_chart.values:
+                QMessageBox.information(self, self.tr("Export AI result"), self.tr("No chart data is available to export."))
+                return
+            self.ai_chart.grab().save(path, "PNG")
+        elif suffix == ".svg":
+            if not self.ai_chart.values:
+                QMessageBox.information(self, self.tr("Export AI result"), self.tr("No chart data is available to export."))
+                return
+            Path(path).write_text(self._svg_chart(), encoding="utf-8")
+        elif suffix == ".sh":
+            Path(path).write_text(self._masked_curl_command() + "\n", encoding="utf-8")
+        elif path.lower().endswith(".postman_collection.json"):
+            Path(path).write_text(json.dumps(self._postman_collection(), indent=2), encoding="utf-8")
         else:
-            import csv
-            with open(path, "w", newline="", encoding="utf-8") as export_file:
-                writer = csv.writer(export_file)
-                writer.writerow(headers)
-                writer.writerows(safe_rows)
+            Path(path).write_bytes(self._tabular_export_bytes(suffix, headers, safe_rows))
         self.status_bar.showMessage(self.tr("AI result exported"))
+
+    @staticmethod
+    def _tabular_export_bytes(suffix: str, headers: list[str], rows: list[list[str]]) -> bytes:
+        """Serialize a masked table without optional third-party dependencies."""
+        suffix = suffix.lower()
+        if suffix == ".json":
+            return json.dumps({"columns": headers, "rows": rows}, indent=2).encode("utf-8")
+        if suffix == ".jsonl":
+            return ("\n".join(json.dumps(dict(zip(headers, row)), ensure_ascii=False) for row in rows) + ("\n" if rows else "")).encode("utf-8")
+        if suffix == ".md":
+            escape_cell = lambda value: str(value).replace("|", "\\|").replace("\n", "<br>")
+            lines = ["| " + " | ".join(escape_cell(value) for value in headers) + " |", "| " + " | ".join("---" for _ in headers) + " |"]
+            lines.extend("| " + " | ".join(escape_cell(value) for value in row) + " |" for row in rows)
+            return ("\n".join(lines) + "\n").encode("utf-8")
+        if suffix == ".html":
+            cells = lambda tag, values: "<tr>" + "".join(f"<{tag}>{html.escape(str(value))}</{tag}>" for value in values) + "</tr>"
+            document = "<!doctype html><html><head><meta charset=\"utf-8\"><title>ZS API Client export</title></head><body><table><thead>" + cells("th", headers) + "</thead><tbody>" + "".join(cells("td", row) for row in rows) + "</tbody></table></body></html>"
+            return document.encode("utf-8")
+        if suffix == ".pdf":
+            lines = [" | ".join(headers)] + [" | ".join(str(value) for value in row) for row in rows]
+            return MainWindow._pdf_bytes("ZS API Client export", lines)
+        if suffix == ".xlsx":
+            return MainWindow._xlsx_bytes(headers, rows)
+        output = io.StringIO(newline="")
+        writer = csv.writer(output)
+        writer.writerow(headers)
+        writer.writerows(rows)
+        return output.getvalue().encode("utf-8")
+
+    @staticmethod
+    def _xlsx_bytes(headers: list[str], rows: list[list[str]]) -> bytes:
+        """Create a standards-compatible single-sheet XLSX using inline strings."""
+        sheet_rows = []
+        for row_number, row in enumerate([headers, *rows], 1):
+            cells = "".join(
+                f'<c r="{chr(65 + column)}{row_number}" t="inlineStr"><is><t>{xml_escape(str(value))}</t></is></c>'
+                for column, value in enumerate(row[:26])
+            )
+            sheet_rows.append(f'<row r="{row_number}">{cells}</row>')
+        sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>' + "".join(sheet_rows) + "</sheetData></worksheet>"
+        archive = io.BytesIO()
+        with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as workbook:
+            workbook.writestr("[Content_Types].xml", '<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>')
+            workbook.writestr("_rels/.rels", '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>')
+            workbook.writestr("xl/workbook.xml", '<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Export" sheetId="1" r:id="rId1"/></sheets></workbook>')
+            workbook.writestr("xl/_rels/workbook.xml.rels", '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>')
+            workbook.writestr("xl/worksheets/sheet1.xml", sheet)
+        return archive.getvalue()
+
+    @staticmethod
+    def _pdf_bytes(title: str, lines: list[str]) -> bytes:
+        """Write a small portable PDF report; data is text-only and already masked."""
+        safe_lines = [title, ""] + [str(line)[:150] for line in lines[:55]]
+        escape_pdf = lambda value: value.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+        stream = "BT\n/F1 10 Tf\n50 790 Td\n" + "\n".join(f"({escape_pdf(line)}) Tj\n0 -13 Td" for line in safe_lines) + "\nET"
+        objects = [
+            "<< /Type /Catalog /Pages 2 0 R >>",
+            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>",
+            f"<< /Length {len(stream.encode('latin-1', 'replace'))} >>\nstream\n{stream}\nendstream",
+            "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        ]
+        output = io.BytesIO()
+        output.write(b"%PDF-1.4\n")
+        offsets = [0]
+        for index, value in enumerate(objects, 1):
+            offsets.append(output.tell())
+            output.write(f"{index} 0 obj\n{value}\nendobj\n".encode("latin-1", "replace"))
+        xref = output.tell()
+        output.write(f"xref\n0 {len(objects) + 1}\n0000000000 65535 f \n".encode())
+        output.write("".join(f"{offset:010d} 00000 n \n" for offset in offsets[1:]).encode())
+        output.write(f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n".encode())
+        return output.getvalue()
 
     def _ai_export_payload(self) -> tuple[list[str], list[list[str]]]:
         headers = [self.ai_table.horizontalHeaderItem(col).text() if self.ai_table.horizontalHeaderItem(col) else "" for col in range(self.ai_table.columnCount())]
         rows = [[self.ai_table.item(row, col).text() if self.ai_table.item(row, col) else "" for col in range(self.ai_table.columnCount())] for row in range(self.ai_table.rowCount())]
         return headers, redact_sensitive(rows)
+
+    def _svg_chart(self) -> str:
+        """Export the current masked chart as a portable, dependency-free SVG."""
+        values = self.ai_chart.values
+        width, height = 800, 360
+        maximum = max((value for _, value in values), default=1) or 1
+        palette = ("#0078d4", "#2e7d32", "#e65100", "#6a1b9a", "#c62828")
+        content = ['<rect width="800" height="360" fill="#252526"/>']
+        if self.ai_chart.style == "pie":
+            import math
+            total = sum(value for _, value in values) or 1
+            start = -90.0
+            for index, (label, value) in enumerate(values):
+                end = start + 360 * value / total
+                start_x, start_y = 400 + 130 * math.cos(math.radians(start)), 180 + 130 * math.sin(math.radians(start))
+                end_x, end_y = 400 + 130 * math.cos(math.radians(end)), 180 + 130 * math.sin(math.radians(end))
+                large = 1 if end - start > 180 else 0
+                content.append(f'<path d="M 400 180 L {start_x:.1f} {start_y:.1f} A 130 130 0 {large} 1 {end_x:.1f} {end_y:.1f} Z" fill="{palette[index % len(palette)]}"/><text x="20" y="{25 + index * 18}" fill="white">{html.escape(str(label))}: {value:g}</text>')
+                start = end
+        elif self.ai_chart.style == "line":
+            points = [f"{55 + index * (720 / max(1, len(values) - 1)):.1f},{310 - value / maximum * 250:.1f}" for index, (_, value) in enumerate(values)]
+            content.append('<polyline points="' + " ".join(points) + '" fill="none" stroke="#0078d4" stroke-width="3"/>')
+            content.extend(f'<circle cx="{point.split(",")[0]}" cy="{point.split(",")[1]}" r="4" fill="#0078d4"/><text x="{55 + index * (720 / max(1, len(values) - 1)):.1f}" y="340" text-anchor="middle" fill="white">{html.escape(str(label))[:12]}</text>' for index, ((label, _), point) in enumerate(zip(values, points)))
+        else:
+            bar_width = max(12, 700 / max(1, len(values)) - 8)
+            for index, (label, value) in enumerate(values):
+                x = 55 + index * (700 / len(values))
+                bar_height = value / maximum * 250
+                content.append(f'<rect x="{x:.1f}" y="{310 - bar_height:.1f}" width="{bar_width:.1f}" height="{bar_height:.1f}" fill="#0078d4"/><text x="{x + bar_width / 2:.1f}" y="330" text-anchor="middle" fill="white">{html.escape(str(label))[:12]}</text>')
+        return '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360">' + "".join(content) + "</svg>"
+
+    def _masked_request_parts(self) -> tuple[str, str, dict[str, str], str]:
+        method = self.method_combo.currentText().replace("● ", "")
+        url = redact_url(self.url_input.text())
+        headers: dict[str, str] = {}
+        for row in range(self.headers_table.rowCount()):
+            key_item, value_item = self.headers_table.item(row, 0), self.headers_table.item(row, 1)
+            if key_item and value_item and key_item.text().strip():
+                key = key_item.text().strip()
+                headers[key] = "***" if key.lower() in SENSITIVE_FIELDS else str(redact_sensitive(value_item.text()))
+        raw_body = self.body_input.toPlainText().strip()
+        try:
+            body = json.dumps(redact_sensitive(json.loads(raw_body)), indent=2) if raw_body else ""
+        except json.JSONDecodeError:
+            body = str(redact_sensitive(raw_body))
+        return method, url, headers, body
+
+    def _masked_curl_command(self) -> str:
+        method, url, headers, body = self._masked_request_parts()
+        parts = ["curl", "-X", method]
+        for key, value in headers.items():
+            parts.extend(["-H", shlex.quote(f"{key}: {value}")])
+        if body and method in {"POST", "PUT", "PATCH", "DELETE"}:
+            if not any(key.lower() == "content-type" for key in headers):
+                parts.extend(["-H", shlex.quote("Content-Type: application/json")])
+            parts.extend(["--data", shlex.quote(body)])
+        parts.append(shlex.quote(url))
+        return " \\\n  ".join(parts)
+
+    def _postman_collection(self) -> dict:
+        method, url, headers, body = self._masked_request_parts()
+        request: dict[str, Any] = {
+            "method": method,
+            "header": [{"key": key, "value": value, "type": "text"} for key, value in headers.items()],
+            "url": url,
+        }
+        if body and method in {"POST", "PUT", "PATCH", "DELETE"}:
+            request["body"] = {"mode": "raw", "raw": body, "options": {"raw": {"language": "json"}}}
+        return {
+            "info": {"name": "ZS API Client (sanitized)", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+            "item": [{"name": f"{method} request (sanitized)", "request": request}],
+        }
 
     def _show_ai_visualization(self, data: Any):
         """Render common API collections as a safe table for quick inspection."""
@@ -5765,39 +5940,13 @@ class MainWindow(QMainWindow):
         self._save_history()
     
     def _copy_as_curl(self):
-        """Copy current request as cURL command."""
+        """Copy a sanitized current request as cURL command."""
         url = self.url_input.text()
-        method = self.method_combo.currentText().replace("● ", "")
-        
         if not url:
             QMessageBox.warning(self, self.tr("Warning"), self.tr("No URL to copy"))
             return
-        
-        # Build cURL command
-        parts = ["curl", "-X", method]
-        
-        # Add headers
-        for row in range(self.headers_table.rowCount()):
-            key_item = self.headers_table.item(row, 0)
-            value_item = self.headers_table.item(row, 1)
-            if key_item and value_item and key_item.text():
-                parts.extend(["-H", f"'{key_item.text()}: {value_item.text()}'"])
-        
-        # Add body
-        body_text = self.body_input.toPlainText().strip()
-        if body_text and method in ["POST", "PUT", "PATCH"]:
-            parts.extend(["-H", "'Content-Type: application/json'"])
-            # Escape single quotes in body
-            escaped_body = body_text.replace("'", "'\\''")
-            parts.extend(["-d", f"'{escaped_body}'"])
-        
-        parts.append(f"'{url}'")
-        
-        curl_cmd = " \\\n  ".join(parts)
-        
-        # Copy to clipboard
-        QApplication.clipboard().setText(curl_cmd)
-        self.status_bar.showMessage(self.tr("cURL command copied to clipboard"))
+        QApplication.clipboard().setText(self._masked_curl_command())
+        self.status_bar.showMessage(self.tr("Masked cURL command copied to clipboard"))
     
     def _copy_response(self):
         """Copy response body to clipboard."""
