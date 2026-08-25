@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.5.0] - 2026-08-25
+
+### Added
+- Twenty language profiles: English, Swedish, German, French, Spanish, Brazilian Portuguese, Italian, Dutch, Danish, Norwegian Bokmål, Finnish, Polish, Czech, Hungarian, Turkish, Arabic, Persian, Japanese, Korean, and Simplified Chinese
+- Complete Qt translation catalogs and bundled Qt standard-dialog translations for the added locales
+
+### Changed
+- Updated every localized catalog for the setup wizard and advanced workspace; unavailable machine translations use English review fallbacks so no UI text disappears
+
 ## [2.4.1] - 2026-08-25
 
 ### Added

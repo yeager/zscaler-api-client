@@ -1,5 +1,7 @@
 import os
 import unittest
+import xml.etree.ElementTree as ET
+from pathlib import Path
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -56,6 +58,21 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(wizard.pages.count(), 4)
         self.assertIn("List ZIA users", wizard.COMMON_TASKS)
         wizard.close()
+
+    def test_twenty_language_profiles_are_available(self):
+        self.assertEqual(len(client.LANGUAGES), 20)
+        self.assertIn("sv", client.LANGUAGE_CODES)
+        self.assertIn("zh_CN", client.LANGUAGE_CODES)
+        self.assertEqual(client.QT_LANGUAGE_CODES["pt_BR"], "pt_BR")
+
+    def test_localized_catalogs_are_complete(self):
+        root = Path(client.__file__).parent / "translations"
+        for code in client.LANGUAGE_CODES - {"en"}:
+            catalog_code = "zh" if code == "zh_CN" else code.split("_", 1)[0]
+            catalog = root / f"zscaler_api_client_{catalog_code}.ts"
+            self.assertTrue(catalog.exists(), catalog)
+            unfinished = ET.parse(catalog).findall(".//translation[@type='unfinished']")
+            self.assertEqual(unfinished, [], catalog)
 
 
 if __name__ == "__main__":

@@ -40,7 +40,24 @@ from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale,
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.4.1"
+__version__ = "2.5.0"
+
+# Locale registry. App translations are loaded from translations/ at startup;
+# English is the explicit source-language fallback when a catalog is absent.
+LANGUAGES = (
+    ("🇬🇧 English", "en"), ("🇸🇪 Svenska", "sv"), ("🇩🇪 Deutsch", "de"),
+    ("🇫🇷 Français", "fr"), ("🇪🇸 Español", "es"), ("🇵🇹 Português (Brasil)", "pt_BR"),
+    ("🇮🇹 Italiano", "it"), ("🇳🇱 Nederlands", "nl"), ("🇩🇰 Dansk", "da"),
+    ("🇳🇴 Norsk bokmål", "nb"), ("🇫🇮 Suomi", "fi"), ("🇵🇱 Polski", "pl"),
+    ("🇨🇿 Čeština", "cs"), ("🇭🇺 Magyar", "hu"), ("🇹🇷 Türkçe", "tr"),
+    ("🇸🇦 العربية", "ar"), ("🇮🇷 فارسی", "fa"), ("🇯🇵 日本語", "ja"),
+    ("🇰🇷 한국어", "ko"), ("🇨🇳 简体中文", "zh_CN"),
+)
+LANGUAGE_CODES = frozenset(code for _, code in LANGUAGES)
+QT_LANGUAGE_CODES = {
+    "pt_BR": "pt_BR",
+    "zh_CN": "zh_CN",
+}
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -4213,20 +4230,7 @@ class MainWindow(QMainWindow):
         # Language menu
         lang_menu = menubar.addMenu(self.tr("&Language"))
         
-        languages = [
-            ("🇬🇧 English", "en"),
-            ("🇸🇪 Svenska", "sv"),
-            ("🇩🇪 Deutsch", "de"),
-            ("🇫🇷 Français", "fr"),
-            ("🇪🇸 Español", "es"),
-            ("🇯🇵 日本語", "ja"),
-            ("🇨🇳 中文", "zh"),
-            ("🇵🇱 Polski", "pl"),
-            ("🇭🇺 Magyar", "hu"),
-            ("🇮🇷 فارسی", "fa"),
-        ]
-        
-        for name, code in languages:
+        for name, code in LANGUAGES:
             action = QAction(name, self)
             action.setData(code)
             action.triggered.connect(self._change_language)
@@ -5551,13 +5555,14 @@ def main():
     
     # Load Qt base translations (for standard dialogs, buttons, etc.)
     qt_translator = QTranslator()
-    qt_lang = "zh_CN" if lang == "zh" else lang  # Handle Chinese variant
+    app_lang = "zh" if str(lang).startswith("zh") else str(lang).split("_", 1)[0]
+    qt_lang = QT_LANGUAGE_CODES.get(str(lang), app_lang)
     if qt_translator.load(f"qtbase_{qt_lang}", str(translations_dir)):
         app.installTranslator(qt_translator)
     
     # Load app translations
     translator = QTranslator()
-    if translator.load(f"zscaler_api_client_{lang}", str(translations_dir)):
+    if translator.load(f"zscaler_api_client_{app_lang}", str(translations_dir)):
         app.installTranslator(translator)
     
     # Show splash screen (now with translated "Loading...")
