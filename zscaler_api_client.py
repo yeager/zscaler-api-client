@@ -172,14 +172,8 @@ def secure_get(key: str) -> str:
 
 def secure_delete(key: str) -> bool:
     """Delete credential from system keychain."""
-    global _credential_cache
-    _credential_cache.pop(key, None)  # Clear from cache
-    try:
-        import keyring
-        keyring.delete_password(SERVICE_NAME, key)
-        return True
-    except Exception:
-        return False
+    secure_store(key, "")
+    return not bool(secure_get(key))
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -2330,6 +2324,35 @@ class LlmWorker(QThread):
             self.failed.emit(str(error))
 
 
+class NumericBarChart(QWidget):
+    """Small dependency-free bar chart for numeric API result fields."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.values: list[tuple[str, float]] = []
+        self.setMinimumHeight(150)
+
+    def set_values(self, values: list[tuple[str, float]]):
+        self.values = values[:12]
+        self.setVisible(bool(self.values))
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.fillRect(self.rect(), QColor("#252526"))
+        if not self.values:
+            return
+        maximum = max(value for _, value in self.values) or 1
+        chart = self.rect().adjusted(45, 12, -12, -30)
+        width = max(8, chart.width() // len(self.values) - 8)
+        for index, (label, value) in enumerate(self.values):
+            height = int(chart.height() * (value / maximum))
+            x = chart.left() + index * (chart.width() // len(self.values)) + 4
+            y = chart.bottom() - height
+            painter.fillRect(x, y, width, height, QColor("#0078d4"))
+            painter.drawText(x, chart.bottom() + 18, width, 12, Qt.AlignmentFlag.AlignHCenter, label[:9])
+        painter.drawText(4, 18, f"max {maximum:g}")
+
+
 class WelcomeDialog(QDialog):
     """Welcome dialog for new users with getting started guidance."""
     
@@ -3361,6 +3384,16 @@ class SettingsDialog(QDialog):
         self.ai_api_key.setEchoMode(QLineEdit.EchoMode.Password)
         self.ai_api_key.setPlaceholderText(self.tr("Stored securely in your system keychain"))
         ai_form.addRow(self.tr("API key:"), self.ai_api_key)
+        self.ai_allow_external = QCheckBox(self.tr("Allow this app to send the masked question and catalog metadata to an external AI service"))
+        ai_form.addRow(self.ai_allow_external)
+        ai_buttons = QHBoxLayout()
+        clear_ai_key = QPushButton(self.tr("Clear AI key"))
+        clear_ai_key.clicked.connect(self._clear_ai_key)
+        ai_buttons.addWidget(clear_ai_key)
+        test_ai = QPushButton(self.tr("Test AI connection"))
+        test_ai.clicked.connect(self._test_ai_connection)
+        ai_buttons.addWidget(test_ai)
+        ai_form.addRow(ai_buttons)
         language_layout.addWidget(ai_group)
         language_layout.addWidget(language_hint)
         language_layout.addStretch()
@@ -3517,6 +3550,29 @@ class SettingsDialog(QDialog):
         self.ai_model.setText(settings.value("ai/model", ""))
         if secure_get("ai_api_key"):
             self.ai_api_key.setPlaceholderText(self.tr("Configured securely in your system keychain"))
+        self.ai_allow_external.setChecked(settings.value("ai/allow_external", "false") == "true")
+
+    def _clear_ai_key(self):
+        secure_delete("ai_api_key")
+        self.ai_api_key.clear()
+        self.ai_api_key.setPlaceholderText(self.tr("AI key cleared"))
+
+    def _test_ai_connection(self):
+        endpoint = self.ai_endpoint.text().strip().rstrip("/")
+        provider = self.ai_provider.currentData()
+        if provider == "catalog":
+            QMessageBox.information(self, self.tr("AI connection"), self.tr("Local catalog assistant is ready."))
+            return
+        if not endpoint:
+            QMessageBox.warning(self, self.tr("AI connection"), self.tr("Enter an AI endpoint first."))
+            return
+        try:
+            request = urllib.request.Request(f"{endpoint}/models", headers={"Authorization": f"Bearer {secure_get('ai_api_key')}"} if secure_get("ai_api_key") else {})
+            with urllib.request.urlopen(request, timeout=10) as response:
+                response.read(1)
+            QMessageBox.information(self, self.tr("AI connection"), self.tr("AI connection succeeded."))
+        except Exception as error:
+            QMessageBox.warning(self, self.tr("AI connection"), self.tr("AI connection failed: {error}").format(error=redact_sensitive(str(error))))
     
     def _validate_and_sanitize(self) -> bool:
         """Validate inputs and show warnings for common mistakes. Returns True if OK."""
@@ -3705,6 +3761,7 @@ class SettingsDialog(QDialog):
         settings.setValue("ai/provider", self.ai_provider.currentData())
         settings.setValue("ai/endpoint", self.ai_endpoint.text().strip())
         settings.setValue("ai/model", self.ai_model.text().strip())
+        settings.setValue("ai/allow_external", "true" if self.ai_allow_external.isChecked() else "false")
         if self.ai_api_key.text():
             secure_store("ai_api_key", self.ai_api_key.text())
         
@@ -4172,6 +4229,22 @@ class MainWindow(QMainWindow):
         self.graphql_mode.setToolTip(self.tr("Send the request body as a GraphQL query and preserve data, errors, and extensions."))
         self.graphql_mode.toggled.connect(lambda enabled: self.method_combo.setCurrentText("● POST") if enabled else None)
         request_layout.addWidget(self.graphql_mode)
+        graphql_presets = QHBoxLayout()
+        self.graphql_preset_name = QLineEdit()
+        self.graphql_preset_name.setPlaceholderText(self.tr("Saved GraphQL query name"))
+        graphql_presets.addWidget(self.graphql_preset_name)
+        self.graphql_preset_choice = QComboBox()
+        graphql_presets.addWidget(self.graphql_preset_choice)
+        save_graphql_btn = QPushButton(self.tr("Save query"))
+        save_graphql_btn.clicked.connect(self._save_graphql_query)
+        graphql_presets.addWidget(save_graphql_btn)
+        load_graphql_btn = QPushButton(self.tr("Load query"))
+        load_graphql_btn.clicked.connect(self._load_graphql_query)
+        graphql_presets.addWidget(load_graphql_btn)
+        introspect_btn = QPushButton(self.tr("Introspect schema"))
+        introspect_btn.clicked.connect(self._prepare_graphql_introspection)
+        graphql_presets.addWidget(introspect_btn)
+        request_layout.addLayout(graphql_presets)
         
         # Request tabs (Params, Headers, Body)
         self.request_tabs = QTabWidget()
@@ -4215,6 +4288,7 @@ class MainWindow(QMainWindow):
         self.request_tabs.addTab(variables_widget, self.tr("Path Variables"))
         
         request_layout.addWidget(self.request_tabs)
+        self._refresh_graphql_presets()
         
         # Response section
         response_group = QGroupBox(self.tr("Response"))
@@ -4262,7 +4336,7 @@ class MainWindow(QMainWindow):
         self.ai_run_btn.clicked.connect(self._run_ai_assistant)
         ai_actions.addWidget(self.ai_run_btn)
         self.ai_execute_btn = QPushButton(self.tr("Run selected request"))
-        self.ai_execute_btn.clicked.connect(self._send_request)
+        self.ai_execute_btn.clicked.connect(self._review_ai_request)
         ai_actions.addWidget(self.ai_execute_btn)
         self.ai_export_btn = QPushButton(self.tr("Export result"))
         self.ai_export_btn.clicked.connect(self._export_ai_result)
@@ -4271,6 +4345,14 @@ class MainWindow(QMainWindow):
         self.ai_summary = QLabel(self.tr("Ask in plain language. Sensitive values are masked before display or export."))
         self.ai_summary.setWordWrap(True)
         ai_layout.addWidget(self.ai_summary)
+        self.ai_preview = QPlainTextEdit()
+        self.ai_preview.setReadOnly(True)
+        self.ai_preview.setMaximumHeight(95)
+        self.ai_preview.setPlaceholderText(self.tr("AI request preview appears here before execution."))
+        ai_layout.addWidget(self.ai_preview)
+        self.ai_chart = NumericBarChart()
+        self.ai_chart.setVisible(False)
+        ai_layout.addWidget(self.ai_chart)
         self.ai_table = QTableWidget(0, 0)
         self.ai_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         ai_layout.addWidget(self.ai_table)
@@ -4957,6 +5039,25 @@ class MainWindow(QMainWindow):
                 self.ai_table.setItem(row, column, QTableWidgetItem(value))
         self.ai_table.resizeColumnsToContents()
         self._log_output(f"AI catalog match: {best['method']} {redact_url(best['url'])}", "info")
+        suggestions = {}
+        if any(token in words for token in {"all", "many", "page", "pagination", "limit"}):
+            suggestions["pageSize"] = "100"
+        if "filter" in words or "search" in words:
+            suggestions["search"] = "<review-required>"
+        self.ai_preview.setPlainText(json.dumps(redact_sensitive({"method": best["method"], "url": best["url"], "suggested_params": suggestions}), indent=2))
+
+    def _review_ai_request(self):
+        """Require a human acknowledgement before executing an AI-derived request."""
+        if not self.ai_preview.toPlainText():
+            QMessageBox.warning(self, self.tr("Warning"), self.tr("Ask the AI assistant for a request first."))
+            return
+        review = QMessageBox.question(
+            self, self.tr("Review AI request"),
+            self.tr("Review the URL, path variables, and parameters in the preview before sending. Send this request now?"),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No,
+        )
+        if review == QMessageBox.StandardButton.Yes:
+            self._send_request()
 
     def _on_llm_completed(self, answer: str):
         self.ai_summary.setText(self.ai_summary.text().replace(self.tr("Asking configured LLM…"), redact_sensitive(answer)))
@@ -4973,12 +5074,22 @@ class MainWindow(QMainWindow):
         key = secure_get("ai_api_key")
         if not endpoint or not model:
             raise ValueError(self.tr("Configure an AI endpoint and model in Settings."))
+        parsed_endpoint = urllib.parse.urlsplit(endpoint)
+        local_host = parsed_endpoint.hostname in {"localhost", "127.0.0.1", "::1"}
+        if parsed_endpoint.scheme not in {"http", "https"}:
+            raise ValueError(self.tr("AI endpoint must use HTTP or HTTPS."))
+        if not local_host and settings.value("ai/allow_external", "false") != "true":
+            raise PermissionError(self.tr("External AI is disabled. Enable it explicitly in Settings."))
+        if not local_host and parsed_endpoint.scheme != "https":
+            raise ValueError(self.tr("External AI endpoints must use HTTPS."))
+        if len(question) > 2000:
+            raise ValueError(self.tr("AI question is too long (maximum 2000 characters)."))
         url = endpoint if endpoint.endswith("/chat/completions") else f"{endpoint}/chat/completions"
         catalog = [{key: item[key] for key in ("product", "name", "method", "url", "description")} for item in candidates]
         prompt = (
             "You are a Zscaler OneAPI assistant. Use only the supplied API catalog candidates. "
             "Do not request, reveal, or include secrets. Explain the best safe request in concise plain text.\n"
-            f"Question: {question}\nCandidates: {json.dumps(catalog)}"
+            f"Question: {redact_sensitive(question)}\nCandidates: {json.dumps(redact_sensitive(catalog))}"
         )
         headers = {"Content-Type": "application/json"}
         if key:
@@ -5031,7 +5142,65 @@ class MainWindow(QMainWindow):
                 value = row.get(column, "")
                 self.ai_table.setItem(row_index, column_index, QTableWidgetItem(str(value)))
         self.ai_table.resizeColumnsToContents()
+        numeric_fields = [column for column in columns if all(isinstance(row.get(column), (int, float)) and not isinstance(row.get(column), bool) for row in rows[: min(len(rows), 12)])]
+        if numeric_fields:
+            field = numeric_fields[0]
+            labels = [str(row.get("name") or row.get("id") or index + 1) for index, row in enumerate(rows[:12])]
+            self.ai_chart.set_values(list(zip(labels, [float(row[field]) for row in rows[:12]])))
+        else:
+            self.ai_chart.set_values([])
         self.ai_summary.setText(self.tr("Visualized {count} records as a masked table. Export is available from the AI Assistant tab.").format(count=len(rows)))
+
+    def _refresh_graphql_presets(self):
+        names = QSettings("Zscaler", "APIClient").value("graphql/presets", [], type=list)
+        self.graphql_preset_choice.clear()
+        self.graphql_preset_choice.addItems(sorted(set(names)))
+
+    def _save_graphql_query(self):
+        name = self.graphql_preset_name.text().strip()
+        if not name:
+            QMessageBox.warning(self, self.tr("Warning"), self.tr("Enter a name before saving the GraphQL query."))
+            return
+        payload = {"url": self.url_input.text().strip(), "body": self.body_input.toPlainText(), "params": self._table_values(self.params_table)}
+        secure_store(f"graphql_preset_{name}", json.dumps(payload))
+        settings = QSettings("Zscaler", "APIClient")
+        names = settings.value("graphql/presets", [], type=list)
+        settings.setValue("graphql/presets", sorted(set(names + [name])))
+        self._refresh_graphql_presets()
+        self.graphql_preset_choice.setCurrentText(name)
+        self.status_bar.showMessage(self.tr("GraphQL query saved securely"))
+
+    def _load_graphql_query(self):
+        name = self.graphql_preset_choice.currentText()
+        raw = secure_get(f"graphql_preset_{name}")
+        if not raw:
+            QMessageBox.warning(self, self.tr("Warning"), self.tr("Saved GraphQL query is unavailable."))
+            return
+        payload = json.loads(raw)
+        self.graphql_mode.setChecked(True)
+        self.url_input.setText(payload.get("url", ""))
+        self.body_input.setPlainText(payload.get("body", ""))
+        self._populate_table(self.params_table, payload.get("params", {}))
+        self.graphql_preset_name.setText(name)
+
+    def _prepare_graphql_introspection(self):
+        self.graphql_mode.setChecked(True)
+        self.body_input.setPlainText(json.dumps({"query": "query IntrospectionQuery { __schema { queryType { name } types { name kind fields { name } } } }"}, indent=2))
+        self.request_tabs.setCurrentIndex(2)
+        self.status_bar.showMessage(self.tr("GraphQL introspection query prepared. Review the endpoint before sending."))
+
+    @staticmethod
+    def _table_values(table: QTableWidget) -> dict:
+        return {table.item(row, 0).text(): table.item(row, 1).text() for row in range(table.rowCount()) if table.item(row, 0) and table.item(row, 1) and table.item(row, 0).text()}
+
+    @staticmethod
+    def _populate_table(table: QTableWidget, values: dict):
+        table.clearContents()
+        for row, (key, value) in enumerate(values.items()):
+            if row >= table.rowCount():
+                table.insertRow(row)
+            table.setItem(row, 0, QTableWidgetItem(str(key)))
+            table.setItem(row, 1, QTableWidgetItem(str(value)))
 
     def _show_graphql_output(self, payload: dict):
         """Summarize all GraphQL result sections while keeping the complete raw body visible."""
