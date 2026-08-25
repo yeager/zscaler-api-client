@@ -3329,6 +3329,23 @@ class SettingsDialog(QDialog):
         language_hint = QLabel(self.tr("System default follows your operating system language. Restart after saving to apply a change."))
         language_hint.setWordWrap(True)
         language_layout.addWidget(language_group)
+        ai_group = QGroupBox(self.tr("AI / LLM"))
+        ai_form = QFormLayout(ai_group)
+        self.ai_provider = QComboBox()
+        self.ai_provider.addItem(self.tr("Local catalog assistant"), "catalog")
+        self.ai_provider.addItem(self.tr("OpenAI-compatible cloud"), "openai")
+        self.ai_provider.addItem(self.tr("Local OpenAI-compatible server"), "local")
+        ai_form.addRow(self.tr("AI provider:"), self.ai_provider)
+        self.ai_endpoint = QLineEdit()
+        self.ai_endpoint.setPlaceholderText("http://localhost:11434/v1")
+        ai_form.addRow(self.tr("AI endpoint:"), self.ai_endpoint)
+        self.ai_model = QLineEdit()
+        ai_form.addRow(self.tr("Model:"), self.ai_model)
+        self.ai_api_key = QLineEdit()
+        self.ai_api_key.setEchoMode(QLineEdit.EchoMode.Password)
+        self.ai_api_key.setPlaceholderText(self.tr("Stored securely in your system keychain"))
+        ai_form.addRow(self.tr("API key:"), self.ai_api_key)
+        language_layout.addWidget(ai_group)
         language_layout.addWidget(language_hint)
         language_layout.addStretch()
         tabs.addTab(language_widget, self.tr("Language"))
@@ -3479,6 +3496,11 @@ class SettingsDialog(QDialog):
         language = str(settings.value("language", "system"))
         self.language_choice.setCurrentIndex(max(0, self.language_choice.findData(language)))
         self.mode_choice.setCurrentIndex(0 if settings.value("ui/mode", "basic") == "basic" else 1)
+        self.ai_provider.setCurrentIndex(max(0, self.ai_provider.findData(settings.value("ai/provider", "catalog"))))
+        self.ai_endpoint.setText(settings.value("ai/endpoint", ""))
+        self.ai_model.setText(settings.value("ai/model", ""))
+        if secure_get("ai_api_key"):
+            self.ai_api_key.setPlaceholderText(self.tr("Configured securely in your system keychain"))
     
     def _validate_and_sanitize(self) -> bool:
         """Validate inputs and show warnings for common mistakes. Returns True if OK."""
@@ -3664,6 +3686,11 @@ class SettingsDialog(QDialog):
         settings.setValue("display/theme", str(self.theme.currentIndex()))
         settings.setValue("language", self.language_choice.currentData())
         settings.setValue("ui/mode", self.mode_choice.currentData())
+        settings.setValue("ai/provider", self.ai_provider.currentData())
+        settings.setValue("ai/endpoint", self.ai_endpoint.text().strip())
+        settings.setValue("ai/model", self.ai_model.text().strip())
+        if self.ai_api_key.text():
+            secure_store("ai_api_key", self.ai_api_key.text())
         
         super().accept()
 
@@ -4201,6 +4228,32 @@ class MainWindow(QMainWindow):
         self.response_tabs.addTab(self.response_body, self.tr("Body"))
         self.response_tabs.addTab(self.response_headers, self.tr("Headers"))
         response_layout.addWidget(self.response_tabs)
+
+        # Natural-language assistant. It operates locally against the bundled
+        # OneAPI catalog and never receives credentials or unredacted output.
+        ai_group = QGroupBox(self.tr("AI Assistant"))
+        ai_layout = QVBoxLayout(ai_group)
+        self.ai_question = QLineEdit()
+        self.ai_question.setPlaceholderText(self.tr("Ask a OneAPI question, e.g. list ZPA application segments"))
+        self.ai_question.returnPressed.connect(self._run_ai_assistant)
+        ai_layout.addWidget(self.ai_question)
+        ai_actions = QHBoxLayout()
+        self.ai_run_btn = QPushButton(self.tr("Find API request"))
+        self.ai_run_btn.clicked.connect(self._run_ai_assistant)
+        ai_actions.addWidget(self.ai_run_btn)
+        self.ai_execute_btn = QPushButton(self.tr("Run selected request"))
+        self.ai_execute_btn.clicked.connect(self._send_request)
+        ai_actions.addWidget(self.ai_execute_btn)
+        self.ai_export_btn = QPushButton(self.tr("Export result"))
+        self.ai_export_btn.clicked.connect(self._export_ai_result)
+        ai_actions.addWidget(self.ai_export_btn)
+        ai_layout.addLayout(ai_actions)
+        self.ai_summary = QLabel(self.tr("Ask in plain language. Sensitive values are masked before display or export."))
+        self.ai_summary.setWordWrap(True)
+        ai_layout.addWidget(self.ai_summary)
+        self.ai_table = QTableWidget(0, 0)
+        self.ai_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        ai_layout.addWidget(self.ai_table)
         
         
         # Help panel
@@ -4223,6 +4276,7 @@ class MainWindow(QMainWindow):
         inspector_tabs = QTabWidget()
         inspector_tabs.addTab(help_group, self.tr("Documentation"))
         inspector_tabs.addTab(output_group, self.tr("Console"))
+        inspector_tabs.addTab(ai_group, self.tr("AI Assistant"))
 
         # Main workspace splitter
         splitter = QSplitter(Qt.Orientation.Horizontal)
@@ -4845,6 +4899,54 @@ class MainWindow(QMainWindow):
             self.body_input.setPlainText(body)
             self._send_request()
     
+    def _run_ai_assistant(self):
+        """Turn a natural-language question into a safe catalog-backed request."""
+        question = self.ai_question.text().strip()
+        if not question:
+            return
+        words = {word for word in re.findall(r"[a-z0-9]+", question.lower()) if len(word) > 2}
+        def score(endpoint):
+            haystack = " ".join(str(endpoint.get(key, "")) for key in ("product", "category", "name", "description", "url")).lower()
+            product = str(endpoint.get("product", "")).lower()
+            return sum(word in haystack for word in words) + (10 if product in words else 0)
+        matches = sorted(AUTOMATION_HUB_CATALOG, key=score, reverse=True)
+        matches = [match for match in matches if score(match)][:20]
+        if not matches:
+            self.ai_summary.setText(self.tr("No matching API operation was found. Try product and resource names."))
+            self.ai_table.setRowCount(0)
+            return
+        best = matches[0]
+        self.method_combo.setCurrentText(f"● {best['method']}")
+        self.url_input.setText(best["url"])
+        self._populate_path_variables(best["url"])
+        self.ai_summary.setText(self.tr("Suggested request: {method} {name}. Review path variables before running.").format(method=best["method"], name=best["name"]))
+        self.ai_table.setRowCount(len(matches))
+        self.ai_table.setColumnCount(4)
+        self.ai_table.setHorizontalHeaderLabels([self.tr("Product"), self.tr("Operation"), self.tr("Method"), self.tr("URL")])
+        for row, endpoint in enumerate(matches):
+            for column, value in enumerate((endpoint["product"].upper(), endpoint["name"], endpoint["method"], redact_url(endpoint["url"]))):
+                self.ai_table.setItem(row, column, QTableWidgetItem(value))
+        self.ai_table.resizeColumnsToContents()
+        self._log_output(f"AI catalog match: {best['method']} {redact_url(best['url'])}", "info")
+
+    def _export_ai_result(self):
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export AI result"), "ai-result.csv", "CSV (*.csv);;JSON (*.json)")
+        if not path:
+            return
+        rows = []
+        for row in range(self.ai_table.rowCount()):
+            rows.append([self.ai_table.item(row, col).text() if self.ai_table.item(row, col) else "" for col in range(self.ai_table.columnCount())])
+        safe_rows = redact_sensitive(rows)
+        if path.lower().endswith(".json"):
+            Path(path).write_text(json.dumps(safe_rows, indent=2), encoding="utf-8")
+        else:
+            import csv
+            with open(path, "w", newline="", encoding="utf-8") as export_file:
+                writer = csv.writer(export_file)
+                writer.writerow([self.ai_table.horizontalHeaderItem(col).text() for col in range(self.ai_table.columnCount())])
+                writer.writerows(safe_rows)
+        self.status_bar.showMessage(self.tr("AI result exported"))
+
     def _send_request(self):
         url = self.url_input.text().strip()
         method = self.method_combo.currentText().replace("● ", "")

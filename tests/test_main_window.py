@@ -99,6 +99,13 @@ class MainWindowTests(unittest.TestCase):
         wizard.close()
         settings.close()
 
+    def test_ai_assistant_suggests_catalog_backed_request(self):
+        self.window.ai_question.setText("list ZPA application segments")
+        self.window._run_ai_assistant()
+        self.assertEqual(self.window.method_combo.currentText(), "● GET")
+        self.assertIn("/zpa/", self.window.url_input.text())
+        self.assertGreater(self.window.ai_table.rowCount(), 0)
+
 
 if __name__ == "__main__":
     unittest.main()
