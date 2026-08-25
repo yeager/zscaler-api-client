@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- Operations Center with local dashboards, policy diff, policy simulation, bulk CSV validation, report scheduling, environment profiles, and an audit trail.
+- Hash-linked, redacted audit events and exportable redacted support bundles.
+- Swedish translations and review fallbacks for all new Operations Center strings.
+
 ## [2.6.2] - 2026-08-25
 
 ### Fixed

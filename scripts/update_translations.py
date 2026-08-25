@@ -31,6 +31,13 @@ SWEDISH_REVIEW = {
 }
 
 SWEDISH_REVIEW.update({
+    "&Operations": "&Åtgärder", "Operations &Center...": "&Åtgärdscenter...", "Environment &Profiles...": "&Miljöprofiler...",
+    "Create new profile…": "Skapa ny profil…", "Environment profiles": "Miljöprofiler", "Profile:": "Profil:", "New profile name:": "Nytt profilnamn:", "Environment profile active: ": "Aktiv miljöprofil: ",
+    "Operations Center": "Åtgärdscenter", "Refresh dashboard": "Uppdatera instrumentpanel", "Dashboard": "Instrumentpanel", "Previous policy JSON": "Föregående policy-JSON", "Proposed policy JSON": "Föreslagen policy-JSON", "Compare policies": "Jämför policyer", "Policy diff": "Policyjämförelse",
+    "Rules JSON: [{\"name\": \"Allow staff\", \"conditions\": {\"group\": \"staff\"}, \"action\": \"allow\"}]": "Regel-JSON: [{\"name\": \"Tillåt personal\", \"conditions\": {\"group\": \"personal\"}, \"action\": \"allow\"}]",
+    "Request context JSON: {\"group\": \"staff\"}": "Begärandekontext-JSON: {\"group\": \"personal\"}", "Simulate policy (local only)": "Simulera policy (endast lokalt)", "Simulation": "Simulering",
+    "CSV data, e.g. name,email\nAda,ada@example.com": "CSV-data, t.ex. namn,e-post\nAda,ada@example.com", "Required columns (comma separated)": "Obligatoriska kolumner (kommaseparerade)", "Validate bulk import": "Validera massimport", "Bulk operations": "Massåtgärder", "Refresh audit trail": "Uppdatera revisionsspår", "Schedule report": "Schemalägg rapport", "Create redacted support bundle": "Skapa maskerat supportpaket", "Audit & automation": "Revision och automatisering",
+    "Invalid JSON: ": "Ogiltig JSON: ", "Metrics are local and contain no credentials.": "Mätvärden är lokala och innehåller inga autentiseringsuppgifter.", "Scheduled report": "Schemalagd rapport", "Report name and cadence:": "Rapportnamn och intervall:", "Save support bundle": "Spara supportpaket", "Support bundle": "Supportpaket", "A redacted support bundle was created.": "Ett maskerat supportpaket skapades.",
     "Choose a guided AI example…": "Välj ett guidat AI-exempel…",
     "Guided example loaded. Find the API request, review the preview, then choose whether to run it.": "Guidat exempel inläst. Hitta API-begäran, granska förhandsvisningen och välj sedan om du vill köra den.",
     "ZIA · List users": "ZIA · Lista användare",
@@ -182,8 +189,9 @@ def main() -> int:
             for message in tree.findall(".//message"):
                 source = message.findtext("source", default="")
                 translation = message.find("translation")
-                if translation is not None and source in SWEDISH_REVIEW and translation.text == source:
+                if translation is not None and source in SWEDISH_REVIEW and (translation.text == source or translation.get("type") == "unfinished"):
                     translation.text = SWEDISH_REVIEW[source]
+                    translation.attrib.pop("type", None)
                     translated += 1
             ET.indent(tree, space="    ")
             tree.write(path, encoding="utf-8", xml_declaration=True)

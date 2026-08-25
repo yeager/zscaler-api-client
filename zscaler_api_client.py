@@ -40,9 +40,11 @@ from PySide6.QtWidgets import (
     QGroupBox, QFormLayout, QDialog, QDialogButtonBox, QProgressBar,
     QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
     QCheckBox, QScrollArea, QFrame, QStackedWidget
+    , QInputDialog
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.6.2"
@@ -4165,6 +4167,109 @@ class HistoryDialog(QDialog):
                     self.accept()
 
 
+class OperationsDialog(QDialog):
+    """Advanced local operations: no action is sent to Zscaler without Send."""
+    def __init__(self, window):
+        super().__init__(window)
+        self.window = window
+        self.settings = QSettings("Zscaler", "APIClient")
+        self.setWindowTitle(self.tr("Operations Center"))
+        self.resize(900, 620)
+        layout = QVBoxLayout(self)
+        tabs = QTabWidget()
+        layout.addWidget(tabs)
+
+        dashboard = QWidget(); dashboard_layout = QVBoxLayout(dashboard)
+        self.dashboard = QPlainTextEdit(); self.dashboard.setReadOnly(True)
+        dashboard_layout.addWidget(self.dashboard)
+        refresh = QPushButton(self.tr("Refresh dashboard")); refresh.clicked.connect(self.refresh_dashboard)
+        dashboard_layout.addWidget(refresh); tabs.addTab(dashboard, self.tr("Dashboard"))
+
+        diff_page = QWidget(); diff_layout = QVBoxLayout(diff_page)
+        self.before_policy = QPlainTextEdit(); self.before_policy.setPlaceholderText(self.tr("Previous policy JSON"))
+        self.after_policy = QPlainTextEdit(); self.after_policy.setPlaceholderText(self.tr("Proposed policy JSON"))
+        self.diff_result = QPlainTextEdit(); self.diff_result.setReadOnly(True)
+        for widget in (self.before_policy, self.after_policy, self.diff_result): diff_layout.addWidget(widget)
+        diff_btn = QPushButton(self.tr("Compare policies")); diff_btn.clicked.connect(self.compare_policies)
+        diff_layout.addWidget(diff_btn); tabs.addTab(diff_page, self.tr("Policy diff"))
+
+        simulate_page = QWidget(); simulate_layout = QVBoxLayout(simulate_page)
+        self.rules_input = QPlainTextEdit(); self.rules_input.setPlaceholderText(self.tr("Rules JSON: [{\"name\": \"Allow staff\", \"conditions\": {\"group\": \"staff\"}, \"action\": \"allow\"}]"))
+        self.context_input = QPlainTextEdit(); self.context_input.setPlaceholderText(self.tr("Request context JSON: {\"group\": \"staff\"}"))
+        self.simulation_result = QPlainTextEdit(); self.simulation_result.setReadOnly(True)
+        for widget in (self.rules_input, self.context_input, self.simulation_result): simulate_layout.addWidget(widget)
+        simulate_btn = QPushButton(self.tr("Simulate policy (local only)")); simulate_btn.clicked.connect(self.run_simulation)
+        simulate_layout.addWidget(simulate_btn); tabs.addTab(simulate_page, self.tr("Simulation"))
+
+        bulk_page = QWidget(); bulk_layout = QVBoxLayout(bulk_page)
+        self.bulk_csv = QPlainTextEdit(); self.bulk_csv.setPlaceholderText(self.tr("CSV data, e.g. name,email\nAda,ada@example.com"))
+        self.bulk_required = QLineEdit("name,email")
+        self.bulk_result = QPlainTextEdit(); self.bulk_result.setReadOnly(True)
+        bulk_layout.addWidget(QLabel(self.tr("Required columns (comma separated)"))); bulk_layout.addWidget(self.bulk_required)
+        bulk_layout.addWidget(self.bulk_csv); bulk_layout.addWidget(self.bulk_result)
+        bulk_btn = QPushButton(self.tr("Validate bulk import")); bulk_btn.clicked.connect(self.validate_bulk)
+        bulk_layout.addWidget(bulk_btn); tabs.addTab(bulk_page, self.tr("Bulk operations"))
+
+        audit_page = QWidget(); audit_layout = QVBoxLayout(audit_page)
+        self.audit_output = QPlainTextEdit(); self.audit_output.setReadOnly(True); audit_layout.addWidget(self.audit_output)
+        audit_controls = QHBoxLayout()
+        audit_refresh = QPushButton(self.tr("Refresh audit trail")); audit_refresh.clicked.connect(self.refresh_audit); audit_controls.addWidget(audit_refresh)
+        schedule = QPushButton(self.tr("Schedule report")); schedule.clicked.connect(self.configure_schedule); audit_controls.addWidget(schedule)
+        bundle = QPushButton(self.tr("Create redacted support bundle")); bundle.clicked.connect(self.create_support_bundle); audit_controls.addWidget(bundle)
+        audit_layout.addLayout(audit_controls); tabs.addTab(audit_page, self.tr("Audit & automation"))
+        close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
+        self.refresh_dashboard(); self.refresh_audit()
+
+    def _json(self, editor, fallback):
+        try: return json.loads(editor.toPlainText() or fallback)
+        except ValueError as exc: raise ValueError(self.tr("Invalid JSON: ") + str(exc))
+
+    def refresh_dashboard(self):
+        history = getattr(self.window, "request_history", [])
+        events = AuditTrail(self.settings).events()
+        successful = sum(1 for item in history if str(item.get("status", "")).startswith("2"))
+        self.dashboard.setPlainText(json.dumps({
+            "requests_recorded": len(history), "successful_requests": successful,
+            "audit_events": len(events), "audit_chain_valid": AuditTrail(self.settings).verify(),
+            "environment": self.settings.value("profiles/active", "default"),
+            "scheduled_reports": self.settings.value("automation/schedules", "[]"),
+            "note": self.tr("Metrics are local and contain no credentials."),
+        }, indent=2))
+
+    def compare_policies(self):
+        try: self.diff_result.setPlainText(json.dumps(policy_diff(self._json(self.before_policy, {}), self._json(self.after_policy, {})), indent=2))
+        except ValueError as exc: QMessageBox.warning(self, self.tr("Policy diff"), str(exc))
+
+    def run_simulation(self):
+        try: self.simulation_result.setPlainText(json.dumps(simulate_policy(self._json(self.rules_input, []), self._json(self.context_input, {})), indent=2))
+        except ValueError as exc: QMessageBox.warning(self, self.tr("Simulation"), str(exc))
+
+    def validate_bulk(self):
+        required = [item.strip() for item in self.bulk_required.text().split(",") if item.strip()]
+        self.bulk_result.setPlainText(json.dumps(validate_bulk_csv(self.bulk_csv.toPlainText(), required), indent=2))
+
+    def refresh_audit(self):
+        trail = AuditTrail(self.settings)
+        self.audit_output.setPlainText(json.dumps({"valid": trail.verify(), "events": trail.events()}, indent=2))
+
+    def configure_schedule(self):
+        name, ok = QInputDialog.getText(self, self.tr("Scheduled report"), self.tr("Report name and cadence:"), text="Security dashboard — daily")
+        if ok and name.strip():
+            try: schedules = json.loads(self.settings.value("automation/schedules", "[]"))
+            except ValueError: schedules = []
+            schedules.append({"name": name.strip(), "enabled": True, "created": int(time.time())})
+            self.settings.setValue("automation/schedules", json.dumps(schedules))
+            AuditTrail(self.settings).append("scheduled_report_created", {"name": name.strip()})
+            self.refresh_dashboard(); self.refresh_audit()
+
+    def create_support_bundle(self):
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Save support bundle"), "zs-api-client-support.zip", "ZIP (*.zip)")
+        if path:
+            support_bundle(path, {"version": __version__, "settings": {"language": self.settings.value("language", "system"), "mode": self.settings.value("ui/mode", "basic")}}, AuditTrail(self.settings).events())
+            AuditTrail(self.settings).append("support_bundle_created", {"file": os.path.basename(path)})
+            QMessageBox.information(self, self.tr("Support bundle"), self.tr("A redacted support bundle was created."))
+
+
 class MainWindow(QMainWindow):
     """Main application window."""
 
@@ -4591,6 +4696,15 @@ class MainWindow(QMainWindow):
         logout_action = QAction(self.tr("&Logout All Sessions"), self)
         logout_action.triggered.connect(self._logout_all)
         request_menu.addAction(logout_action)
+
+        operations_menu = menubar.addMenu(self.tr("&Operations"))
+        operations_action = QAction(self.tr("Operations &Center..."), self)
+        operations_action.setShortcut("Ctrl+Shift+O")
+        operations_action.triggered.connect(self._show_operations)
+        operations_menu.addAction(operations_action)
+        profiles_action = QAction(self.tr("Environment &Profiles..."), self)
+        profiles_action.triggered.connect(self._manage_profiles)
+        operations_menu.addAction(profiles_action)
         
         # Language menu
         lang_menu = menubar.addMenu(self.tr("&Language"))
@@ -4876,6 +4990,36 @@ class MainWindow(QMainWindow):
         # Auto-scroll to bottom
         scrollbar = self.output_log.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
+        AuditTrail(QSettings("Zscaler", "APIClient")).append("console", {"level": level, "message": message})
+
+    def _show_operations(self):
+        OperationsDialog(self).exec()
+
+    def _manage_profiles(self):
+        """Save/switch non-secret environment settings; secrets remain in the keychain."""
+        settings = QSettings("Zscaler", "APIClient")
+        raw = settings.value("profiles/names", "[]")
+        try: names = json.loads(raw)
+        except (TypeError, ValueError): names = []
+        choices = names + [self.tr("Create new profile…")]
+        choice, ok = QInputDialog.getItem(self, self.tr("Environment profiles"), self.tr("Profile:"), choices, editable=False)
+        if not ok: return
+        if choice == self.tr("Create new profile…"):
+            choice, ok = QInputDialog.getText(self, self.tr("Environment profiles"), self.tr("New profile name:"))
+            if not ok or not choice.strip(): return
+            choice = choice.strip()
+            if choice not in names: names.append(choice)
+            settings.setValue("profiles/names", json.dumps(names))
+            settings.setValue(f"profiles/{choice}/api", self.api_type.currentText())
+            settings.setValue(f"profiles/{choice}/url", redact_url(self.url_input.text()))
+        else:
+            api = settings.value(f"profiles/{choice}/api", "ZIA")
+            url = settings.value(f"profiles/{choice}/url", "")
+            if self.api_type.findText(api) >= 0: self.api_type.setCurrentText(api)
+            self.url_input.setText(url)
+        settings.setValue("profiles/active", choice)
+        AuditTrail(settings).append("environment_profile_selected", {"profile": choice})
+        self.status_bar.showMessage(self.tr("Environment profile active: ") + choice)
     
     def _update_method_color(self):
         """Update method combo color based on selected HTTP method."""
