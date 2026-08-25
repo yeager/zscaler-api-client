@@ -105,6 +105,11 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(self.window.ai_table.item(0, 0).text(), "1")
         self.assertNotIn("hidden", " ".join(self.window.ai_table.item(0, col).text() for col in range(self.window.ai_table.columnCount())))
 
+    def test_graphql_output_includes_nested_data_and_errors(self):
+        self.window._show_graphql_output({"data": {"users": [{"id": "1"}]}, "errors": [{"message": "partial"}], "extensions": {"trace": "x"}})
+        self.assertEqual(self.window.ai_table.item(0, 0).text(), "1")
+        self.assertIn("GraphQL errors", self.window.ai_summary.text())
+
     def test_ai_assistant_suggests_catalog_backed_request(self):
         self.window.ai_question.setText("list ZPA application segments")
         self.window._run_ai_assistant()

@@ -4152,6 +4152,10 @@ class MainWindow(QMainWindow):
         url_layout.addWidget(self.curl_btn)
         
         request_layout.addLayout(url_layout)
+        self.graphql_mode = QCheckBox(self.tr("GraphQL request"))
+        self.graphql_mode.setToolTip(self.tr("Send the request body as a GraphQL query and preserve data, errors, and extensions."))
+        self.graphql_mode.toggled.connect(lambda enabled: self.method_combo.setCurrentText("● POST") if enabled else None)
+        request_layout.addWidget(self.graphql_mode)
         
         # Request tabs (Params, Headers, Body)
         self.request_tabs = QTabWidget()
@@ -4983,7 +4987,16 @@ class MainWindow(QMainWindow):
 
     def _show_ai_visualization(self, data: Any):
         """Render common API collections as a safe table for quick inspection."""
-        rows = data if isinstance(data, list) else next((value for value in data.values() if isinstance(value, list)), []) if isinstance(data, dict) else []
+        def first_record_list(value: Any):
+            if isinstance(value, list) and any(isinstance(item, dict) for item in value):
+                return value
+            if isinstance(value, dict):
+                for child in value.values():
+                    found = first_record_list(child)
+                    if found:
+                        return found
+            return []
+        rows = first_record_list(data)
         rows = [redact_sensitive(row) for row in rows if isinstance(row, dict)]
         if not rows:
             return
@@ -4998,9 +5011,25 @@ class MainWindow(QMainWindow):
         self.ai_table.resizeColumnsToContents()
         self.ai_summary.setText(self.tr("Visualized {count} records as a masked table. Export is available from the AI Assistant tab.").format(count=len(rows)))
 
+    def _show_graphql_output(self, payload: dict):
+        """Summarize all GraphQL result sections while keeping the complete raw body visible."""
+        data = payload.get("data")
+        errors = payload.get("errors", [])
+        extensions = payload.get("extensions", {})
+        self._show_ai_visualization(data)
+        details = []
+        if errors:
+            details.append(self.tr("{count} GraphQL errors").format(count=len(errors)))
+        if extensions:
+            details.append(self.tr("extensions included"))
+        if details:
+            self.ai_summary.setText(self.ai_summary.text() + " · " + ", ".join(details))
+
     def _send_request(self):
         url = self.url_input.text().strip()
         method = self.method_combo.currentText().replace("● ", "")
+        if self.graphql_mode.isChecked():
+            method = "POST"
         
         if not url:
             QMessageBox.warning(self, self.tr("Warning"), self.tr("Please enter a URL"))
@@ -5062,6 +5091,8 @@ class MainWindow(QMainWindow):
             value_item = self.headers_table.item(row, 1)
             if key_item and value_item and key_item.text():
                 headers[key_item.text()] = value_item.text()
+        if self.graphql_mode.isChecked():
+            headers.setdefault("Content-Type", "application/json")
         
         # Add session/token headers
         api_type = self._current_api_type()
@@ -5190,6 +5221,8 @@ class MainWindow(QMainWindow):
                 else:
                     self.response_body.setPlainText(json.dumps(res["data"], separators=(',', ':')))
                 self._show_ai_visualization(res["data"])
+                if self.graphql_mode.isChecked() and isinstance(res["data"], dict):
+                    self._show_graphql_output(res["data"])
                 self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms · {size_str})")
                 
                 # Check for session token in response
