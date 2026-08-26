@@ -461,6 +461,25 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual("line", dialog.dashboard_trend.style)
         dialog.close()
 
+    def test_local_monitor_refreshes_only_local_signal_views(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        old_enabled, old_seconds = settings.value("monitoring/auto_refresh", None), settings.value("monitoring/refresh_seconds", None)
+        try:
+            dialog = client.OperationsDialog(self.window)
+            dialog.local_monitor_interval.setCurrentIndex(dialog.local_monitor_interval.findData(30))
+            dialog.local_monitor_enabled.setChecked(True)
+            self.assertTrue(dialog.local_monitor_timer.isActive())
+            self.assertEqual(30_000, dialog.local_monitor_timer.interval())
+            dialog.local_monitor_enabled.setChecked(False)
+            self.assertFalse(dialog.local_monitor_timer.isActive())
+            dialog.close()
+        finally:
+            for key, value in (("monitoring/auto_refresh", old_enabled), ("monitoring/refresh_seconds", old_seconds)):
+                if value is None:
+                    settings.remove(key)
+                else:
+                    settings.setValue(key, value)
+
     def test_operations_incident_workspace_prepares_a_safe_chain(self):
         self.window.request_history = [{"timestamp": "now", "method": "GET", "url": "https://example.test", "status": 500, "response_headers": {"Retry-After": "60", "Set-Cookie": "hidden"}}]
         dialog = client.OperationsDialog(self.window)

@@ -85,6 +85,7 @@ SWEDISH_REVIEW.update({
     "A response reported no remaining API rate-limit capacity.": "Ett svar rapporterade att ingen API-rate-limit-kapacitet återstår.",
     "Recent request latency (ms)": "Senaste begärandelatens (ms)",
     "The latest request failed after successful requests to the same endpoint.": "Den senaste begäran misslyckades efter lyckade begäranden till samma slutpunkt.", "The latest endpoint response was much slower than its local baseline.": "Det senaste svaret från slutpunkten var mycket långsammare än den lokala baslinjen.",
+    "Auto-refresh local signals": "Uppdatera lokala signaler automatiskt", "Every 30 seconds": "Var 30:e sekund", "Every minute": "Varje minut", "Every 5 minutes": "Var femte minut",
     "Guided example loaded. Find the API request, review the preview, then choose whether to run it.": "Guidat exempel inläst. Hitta API-begäran, granska förhandsvisningen och välj sedan om du vill köra den.",
     "ZIA · List users": "ZIA · Lista användare",
     "ZIA · List URL categories": "ZIA · Lista URL-kategorier",

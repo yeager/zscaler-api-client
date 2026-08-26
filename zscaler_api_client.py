@@ -4337,8 +4337,12 @@ class OperationsDialog(QDialog):
         self.dashboard_events = QTableWidget(0, 3); self.dashboard_events.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Activity"), self.tr("Status")]); self.dashboard_events.horizontalHeader().setStretchLastSection(True); self.dashboard_events.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         dashboard_layout.addWidget(QLabel(self.tr("Recent activity")))
         dashboard_layout.addWidget(self.dashboard_events)
-        refresh = QPushButton(self.tr("Refresh dashboard")); refresh.clicked.connect(self.refresh_dashboard)
-        dashboard_layout.addWidget(refresh); self.tabs.addTab(dashboard, self.tr("Dashboard"))
+        dashboard_controls = QHBoxLayout()
+        refresh = QPushButton(self.tr("Refresh dashboard")); refresh.clicked.connect(self.refresh_dashboard); dashboard_controls.addWidget(refresh)
+        self.local_monitor_enabled = QCheckBox(self.tr("Auto-refresh local signals")); self.local_monitor_enabled.setChecked(self.settings.value("monitoring/auto_refresh", "false") == "true"); self.local_monitor_enabled.toggled.connect(self.configure_local_monitor); dashboard_controls.addWidget(self.local_monitor_enabled)
+        self.local_monitor_interval = QComboBox(); self.local_monitor_interval.addItem(self.tr("Every 30 seconds"), 30); self.local_monitor_interval.addItem(self.tr("Every minute"), 60); self.local_monitor_interval.addItem(self.tr("Every 5 minutes"), 300)
+        interval = int(self.settings.value("monitoring/refresh_seconds", "60")); self.local_monitor_interval.setCurrentIndex(max(0, self.local_monitor_interval.findData(interval))); self.local_monitor_interval.currentIndexChanged.connect(self.configure_local_monitor); dashboard_controls.addWidget(self.local_monitor_interval); dashboard_controls.addStretch()
+        dashboard_layout.addLayout(dashboard_controls); self.local_monitor_timer = QTimer(self); self.local_monitor_timer.timeout.connect(self.refresh_local_signals); self.tabs.addTab(dashboard, self.tr("Dashboard"))
 
         diff_page = QWidget(); diff_layout = QVBoxLayout(diff_page)
         self.before_policy = QPlainTextEdit(); self.before_policy.setPlaceholderText(self.tr("Previous policy JSON"))
@@ -4471,7 +4475,7 @@ class OperationsDialog(QDialog):
         self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
-        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report()
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report(); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
 
     def _apply_operations_mode(self):
         """Keep basic mode focused on situational awareness and investigation."""
@@ -4479,6 +4483,23 @@ class OperationsDialog(QDialog):
         advanced_tabs = (1, 2, 3, 4, 5, 6, self.change_tab_index, self.chain_tab_index)
         for index in advanced_tabs:
             self.tabs.setTabVisible(index, not basic)
+
+    def configure_local_monitor(self, enabled=None, record_audit=True):
+        """Refresh local views on a user-approved timer; it never sends API calls."""
+        enabled = self.local_monitor_enabled.isChecked() if enabled is None else bool(enabled)
+        seconds = int(self.local_monitor_interval.currentData() or 60)
+        self.settings.setValue("monitoring/auto_refresh", "true" if enabled else "false")
+        self.settings.setValue("monitoring/refresh_seconds", str(seconds))
+        if enabled:
+            self.local_monitor_timer.start(seconds * 1000)
+        else:
+            self.local_monitor_timer.stop()
+        if record_audit:
+            AuditTrail(self.settings).append("local_monitor_updated", {"enabled": enabled, "seconds": seconds})
+
+    def refresh_local_signals(self):
+        """Update visualizations from retained local data only."""
+        self.refresh_dashboard(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report()
 
     def _json(self, editor, fallback):
         try: return json.loads(editor.toPlainText() or fallback)
