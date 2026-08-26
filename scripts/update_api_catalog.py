@@ -44,6 +44,8 @@ ONEAPI_PRODUCT_BASES = {
     "zid": "https://api.zsapi.net/ziam/admin/api/v1",
     "zpa": "https://api.zsapi.net/zpa",
 }
+GRAPHQL_ENDPOINT = "https://api.zsapi.net/zins/graphql"
+GRAPHQL_QUERY = re.compile(r"\bQUERY\s+(query\b.+?)\s+RESPONSE\b", re.IGNORECASE | re.DOTALL)
 
 
 def fetch_page(page: int) -> dict:
@@ -92,6 +94,37 @@ def product_base(document: dict) -> str:
     return ONEAPI_PRODUCT_BASES.get(product, "")
 
 
+def graphql_entry_from(document: dict) -> dict | None:
+    """Extract a documented ZInsights query or schema type without inventing fields."""
+    path = str(document.get("file_path", ""))
+    if document.get("product") != "zinsights" or "/graphql-api-references/zinsights/" not in path:
+        return None
+    if "/domains/" in path and "/queries/" in path:
+        kind = "query"
+        domain = path.split("/domains/", 1)[1].split("/", 1)[0].replace("-", " ").title()
+    elif "/types/" in path:
+        kind = "type"
+        domain = "Schema"
+    else:
+        return None
+    content = str(document.get("content", ""))
+    query_match = GRAPHQL_QUERY.search(content) if kind == "query" else None
+    details = "" if content.startswith("Start automating with Zscaler") else content
+    title = str(document.get("title") or "")
+    name = path.rsplit("/", 1)[-1] if not title or title == "Zscaler Automation Hub" else title
+    return {
+        "product": "zinsights",
+        "kind": kind,
+        "domain": domain,
+        "name": name,
+        "description": document.get("description") or "",
+        "details": details,
+        "query": query_match.group(1).strip() if query_match else "",
+        "endpoint": GRAPHQL_ENDPOINT,
+        "doc_url": document.get("url") or "",
+    }
+
+
 def category_from(document: dict) -> str:
     path = document.get("file_path", "").strip("/").split("/")
     try:
@@ -126,6 +159,15 @@ def main() -> int:
     print(f"Wrote {len(endpoints)} endpoints from {len(documents)} API reference pages to {output}")
     if len(endpoints) < 1000:
         print("Refusing an unexpectedly incomplete catalog", file=sys.stderr)
+        return 1
+    graphql_entries = [entry for document in documents if (entry := graphql_entry_from(document))]
+    graphql_entries.sort(key=lambda item: (item["kind"], item["domain"], item["name"]))
+    graphql_output = output.with_name("zscaler_graphql_catalog.json")
+    graphql_output.write_text(json.dumps(graphql_entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    executable_queries = sum(bool(entry["query"]) for entry in graphql_entries if entry["kind"] == "query")
+    print(f"Wrote {len(graphql_entries)} ZInsights GraphQL entries ({executable_queries} documented query examples) to {graphql_output}")
+    if len(graphql_entries) < 100 or sum(entry["kind"] == "query" for entry in graphql_entries) < 28:
+        print("Refusing an unexpectedly incomplete GraphQL catalog", file=sys.stderr)
         return 1
     return 0
 

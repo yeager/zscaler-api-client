@@ -229,6 +229,31 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(self.window.ai_table.item(0, 0).text(), "1")
         self.assertIn("GraphQL errors", self.window.ai_summary.text())
 
+    def test_read_only_mode_distinguishes_graphql_queries_from_mutations(self):
+        self.assertTrue(client.graphql_request_is_read_only('{"query":"query Status { status { id } }"}'))
+        self.assertTrue(client.graphql_request_is_read_only('{"query":"{ status { id } }"}'))
+        self.assertFalse(client.graphql_request_is_read_only('{"query":"mutation Update { update { id } }"}'))
+        self.assertFalse(client.graphql_request_is_read_only('{"query":"query Read { status } mutation Write { update }"}'))
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("access/role", None)
+        try:
+            settings.setValue("access/role", "readonly")
+            self.window.graphql_mode.setChecked(True)
+            self.window.url_input.setText("https://api.zsapi.net/zins/graphql")
+            self.window.body_input.setPlainText('{"query":"query Status { status { id } }"}')
+            with patch.object(client, "ApiWorker") as worker:
+                self.window._send_request()
+            worker.assert_called_once()
+            self.window.body_input.setPlainText('{"query":"mutation Update { update { id } }"}')
+            with patch.object(client, "ApiWorker") as worker, patch.object(client.QMessageBox, "warning"):
+                self.window._send_request()
+            worker.assert_not_called()
+        finally:
+            if previous is None:
+                settings.remove("access/role")
+            else:
+                settings.setValue("access/role", previous)
+
     def test_graphql_schema_tree_uses_introspection_types(self):
         self.window._populate_graphql_schema_tree({"data": {"__schema": {"types": [{"name": "User", "kind": "OBJECT", "fields": [{"name": "id"}]}]}}})
         self.assertEqual(self.window.graphql_schema_tree.topLevelItem(0).text(0), "User (OBJECT)")
@@ -242,6 +267,21 @@ class MainWindowTests(unittest.TestCase):
         self.window._prepare_graphql_introspection()
         self.assertTrue(self.window.graphql_mode.isChecked())
         self.assertIn("__schema", self.window.body_input.toPlainText())
+
+    def test_documented_zinsights_schema_and_query_are_available_without_auto_run(self):
+        queries = [entry for entry in client.ZINSIGHTS_GRAPHQL_CATALOG if entry.get("kind") == "query"]
+        self.assertEqual(28, len(queries))
+        documented = next(entry for entry in queries if entry.get("query"))
+        with patch.object(client, "ApiWorker") as worker:
+            self.window._load_documented_graphql_query(documented)
+        worker.assert_not_called()
+        self.assertTrue(self.window.graphql_mode.isChecked())
+        self.assertTrue(self.window.url_input.text().endswith("/zins/graphql"))
+        self.assertEqual(documented["query"], json.loads(self.window.body_input.toPlainText())["query"])
+        self.window._browse_documented_graphql_schema()
+        self.assertEqual(2, self.window.graphql_schema_tree.topLevelItemCount())
+        self.assertIn("28", self.window.graphql_schema_tree.topLevelItem(0).text(0))
+        self.assertIn("77", self.window.graphql_schema_tree.topLevelItem(1).text(0))
 
     def test_graphql_introspection_is_scoped_to_its_endpoint(self):
         self.assertNotEqual(

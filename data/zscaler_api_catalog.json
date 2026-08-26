@@ -6445,24 +6445,6 @@
   },
   {
     "product": "zia",
-    "category": "Sandbox Policy Settings",
-    "name": "Ba Rule Resource Get Rules",
-    "method": "GET",
-    "url": "https://api.zsapi.net/zia/api/v1/sandboxRules",
-    "description": "Retrieves the list of all Sandbox policy rules configured in the ZIA Admin Portal. To learn more, see <a href='https://help.zscaler.com/zia/about-sandbox' target='_blank'>About Sandbox</a>.",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/sandbox-policy-settings/ba-rule-resource-get-rules"
-  },
-  {
-    "product": "zia",
-    "category": "Sandbox Policy Settings",
-    "name": "Ba Rule Resource Update Rule",
-    "method": "PUT",
-    "url": "https://api.zsapi.net/zia/api/v1/sandboxRules/:ruleId",
-    "description": "Updates the Sandbox policy rule configuration for the specified ID",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/sandbox-policy-settings/ba-rule-resource-update-rule"
-  },
-  {
-    "product": "zia",
     "category": "Sandbox Report",
     "name": "Get Verdict Report",
     "method": "GET",
@@ -6500,11 +6482,20 @@
   {
     "product": "zia",
     "category": "Security Policy Settings",
-    "name": "Update Blacklist Ur Ls",
-    "method": "POST",
-    "url": "https://api.zsapi.net/zia/api/v1/security/advanced/blacklistUrls",
-    "description": "<p>Adds a URL to or removes a URL from the denylist. To add a URL to the denylist, set the action parameter to <code>ADD_TO_LIST</code>. To remove a URL, set action to <code>REMOVE_FROM_LIST</code>.</p>",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/security-policy-settings/update-blacklist-ur-ls"
+    "name": "Get Config",
+    "method": "GET",
+    "url": "https://api.zsapi.net/zia/api/v1/security",
+    "description": "<p>Gets a list of URLs that are on the allowlist.</p>",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/security-policy-settings/get-config"
+  },
+  {
+    "product": "zia",
+    "category": "Security Policy Settings",
+    "name": "Manage Blacklist",
+    "method": "PUT",
+    "url": "https://api.zsapi.net/zia/api/v1/security/advanced",
+    "description": "<p>Updates the list of URLs that are on the denylist. This overwrites a previously-generated denylist. If you need to completely erase the denylist, submit an empty list.</p>",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/security-policy-settings/manage-blacklist"
   },
   {
     "product": "zia",
@@ -6514,15 +6505,6 @@
     "url": "https://api.zsapi.net/zia/api/v1/virtualZenClusters",
     "description": "Adds a new Virtual Service Edge cluster. .",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/service-edges/virtual-zen-cluster-resource-add-virtual-zen-cluster"
-  },
-  {
-    "product": "zia",
-    "category": "Service Edges",
-    "name": "Virtual Zen Cluster Resource Delete Virtual Zen Cluster",
-    "method": "DELETE",
-    "url": "https://api.zsapi.net/zia/api/v1/virtualZenClusters/:virtualZenClusterId",
-    "description": "Deletes the Virtual Service Edge cluster based on the specified ID",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/service-edges/virtual-zen-cluster-resource-delete-virtual-zen-cluster"
   },
   {
     "product": "zia",
@@ -6541,6 +6523,15 @@
     "url": "https://api.zsapi.net/zia/api/v1/virtualZenClusters",
     "description": "Retrieves a list of ZIA Virtual Service Edge clusters. .",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/service-edges/virtual-zen-cluster-resource-get-virtual-zen-clusters"
+  },
+  {
+    "product": "zia",
+    "category": "Service Edges",
+    "name": "Virtual Zen Cluster Resource Update Virtual Zen Cluster",
+    "method": "PUT",
+    "url": "https://api.zsapi.net/zia/api/v1/virtualZenClusters/:virtualZenClusterId",
+    "description": "Updates the Virtual Service Edge cluster based on the specified ID",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zia/service-edges/virtual-zen-cluster-resource-update-virtual-zen-cluster"
   },
   {
     "product": "zia",

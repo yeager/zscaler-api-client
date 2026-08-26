@@ -43,7 +43,9 @@ ZS API Client is built with security as a top priority:
   - Zscaler Cellular and Cloud/Branch Connector
   - ZWA (Workflow Automation)
 - **Reproducible updates** – `python3 scripts/update_api_catalog.py` refreshes
-  the bundled catalog directly from the official documentation index.
+  the bundled REST and ZInsights GraphQL catalogs directly from the official documentation index.
+- **ZInsights GraphQL** – Browse all 28 documented analytics queries and 77 schema
+  types, load official query examples for review, or introspect an authenticated endpoint.
 
 ### Developer Experience
 - **1,000+ Endpoints** – Browse all executable Automation Hub REST operations in an organized tree view
@@ -53,6 +55,7 @@ ZS API Client is built with security as a top priority:
 - **Copy as cURL** – Export any request for command-line use or scripting
 - **Request History** – Browse and replay previous requests
 - **Adaptive response views** – Inspect masked JSON as a table, chart, tree, heatmap, topology, or GraphQL schema; use export preview to review masking before writing a file
+- **Complete GraphQL envelopes** – Preserve and display `data`, `errors`, and `extensions`, including partial-success responses
 
 ### Productivity
 - **Batch Operations** – Import CSV files for bulk create/delete/update operations

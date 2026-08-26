@@ -74,6 +74,19 @@ class ApiCatalogTests(unittest.TestCase):
             })
             self.assertEqual(expected, endpoint["url"])
 
+    def test_extracts_zinsights_graphql_query_without_execution(self):
+        entry = CATALOG_BUILDER.graphql_entry_from({
+            "product": "zinsights",
+            "file_path": "/docs/api-reference-and-guides/graphql-api-references/zinsights/domains/iot/queries/device_stats",
+            "title": "device_stats", "description": "IOT device stats",
+            "content": "Queries IOT stats QUERY query IOT { IOT { device_stats { devices_count } } } RESPONSE { data }",
+            "url": "https://automate.zscaler.com/docs/device-stats",
+        })
+        self.assertEqual("query", entry["kind"])
+        self.assertEqual("Iot", entry["domain"])
+        self.assertEqual("https://api.zsapi.net/zins/graphql", entry["endpoint"])
+        self.assertIn("device_stats", entry["query"])
+
     def test_bundled_catalog_has_broad_product_coverage(self):
         catalog = json.loads(
             (ROOT / "data" / "zscaler_api_catalog.json").read_text(encoding="utf-8")
@@ -86,6 +99,14 @@ class ApiCatalogTests(unittest.TestCase):
         )
         self.assertTrue(all(entry["url"].startswith("https://") for entry in catalog))
         self.assertEqual(len(catalog), len({(entry["method"], entry["url"]) for entry in catalog}))
+
+    def test_bundled_graphql_catalog_covers_all_documented_queries_and_types(self):
+        catalog = json.loads((ROOT / "data" / "zscaler_graphql_catalog.json").read_text(encoding="utf-8"))
+        self.assertGreaterEqual(len(catalog), 100)
+        self.assertEqual(28, sum(entry["kind"] == "query" for entry in catalog))
+        self.assertGreaterEqual(sum(entry["kind"] == "type" for entry in catalog), 75)
+        self.assertGreaterEqual(sum(bool(entry["query"]) for entry in catalog), 20)
+        self.assertTrue(all(entry["endpoint"] == "https://api.zsapi.net/zins/graphql" for entry in catalog))
 
     def test_spdx_sbom_describes_artifact_with_hash_and_dependencies(self):
         document = SBOM_BUILDER.build_document(ROOT / "README.md")

@@ -83,6 +83,21 @@ def resolve_language(language: str | None, system_locale: str | None = None) -> 
         return "zh_CN"
     return base if base in LANGUAGE_CODES else "en"
 
+
+def graphql_request_is_read_only(body_text: str) -> bool:
+    """Conservatively recognize a GraphQL query carried in the JSON request body."""
+    try:
+        payload = json.loads(body_text)
+    except (TypeError, ValueError):
+        return False
+    query = payload.get("query", "") if isinstance(payload, dict) else ""
+    if not isinstance(query, str):
+        return False
+    query = re.sub(r"(?m)#.*$", "", query).strip()
+    if not query or re.search(r"\b(?:mutation|subscription)\b", query, re.IGNORECASE):
+        return False
+    return bool(re.match(r"^(?:query\b|\{)", query, re.IGNORECASE))
+
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
 _credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
@@ -2150,6 +2165,17 @@ def _load_automation_hub_catalog() -> List[Dict[str, Any]]:
         return []
 
 
+def _load_graphql_catalog() -> List[Dict[str, Any]]:
+    """Read the bundled, documentation-derived ZInsights GraphQL schema catalog."""
+    catalog_path = _resource_path("data/zscaler_graphql_catalog.json")
+    try:
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+        return catalog if isinstance(catalog, list) else []
+    except (OSError, json.JSONDecodeError) as error:
+        print(f"Unable to load GraphQL catalog: {error}", file=sys.stderr)
+        return []
+
+
 def _load_automation_hub_endpoints() -> Dict[str, Dict[str, Dict[str, Any]]]:
     """Load every usable REST endpoint published by Automation Hub."""
     catalog = AUTOMATION_HUB_CATALOG
@@ -2182,6 +2208,7 @@ def _load_automation_hub_endpoints() -> Dict[str, Dict[str, Dict[str, Any]]]:
 # Automation Hub is the source of truth. The small built-in dictionary above is
 # retained as a safe fallback for damaged or incomplete installations.
 AUTOMATION_HUB_CATALOG = _load_automation_hub_catalog()
+ZINSIGHTS_GRAPHQL_CATALOG = _load_graphql_catalog()
 ONEAPI_ENDPOINTS = _load_automation_hub_endpoints()
 
 # API Documentation URLs
@@ -5346,6 +5373,21 @@ class MainWindow(QMainWindow):
         load_schema_btn.clicked.connect(self._load_graphql_introspection)
         graphql_presets.addWidget(load_schema_btn)
         request_layout.addLayout(graphql_presets)
+        graphql_catalog = QHBoxLayout()
+        self.graphql_catalog_choice = QComboBox()
+        self.graphql_catalog_choice.addItem(self.tr("Documented ZInsights query…"), None)
+        for entry in ZINSIGHTS_GRAPHQL_CATALOG:
+            if entry.get("kind") == "query":
+                self.graphql_catalog_choice.addItem(f"{entry.get('domain', '')} · {entry.get('name', '')}", entry)
+        graphql_catalog.addWidget(self.graphql_catalog_choice)
+        load_documented_query = QPushButton(self.tr("Load documented query"))
+        load_documented_query.clicked.connect(self._load_documented_graphql_query)
+        graphql_catalog.addWidget(load_documented_query)
+        browse_documented_schema = QPushButton(self.tr("Browse documented schema"))
+        browse_documented_schema.clicked.connect(self._browse_documented_graphql_schema)
+        graphql_catalog.addWidget(browse_documented_schema)
+        graphql_catalog.addStretch()
+        request_layout.addLayout(graphql_catalog)
         
         # Request tabs (Params, Headers, Body)
         self.request_tabs = QTabWidget()
@@ -5445,6 +5487,7 @@ class MainWindow(QMainWindow):
         self.response_tabs.addTab(self.response_topology, self.tr("Topology"))
         self.graphql_schema_tree = QTreeWidget()
         self.graphql_schema_tree.setHeaderLabel(self.tr("GraphQL schema"))
+        self.graphql_schema_tree.itemDoubleClicked.connect(self._on_documented_graphql_item)
         self.response_tabs.addTab(self.graphql_schema_tree, self.tr("Schema"))
         response_layout.addWidget(self.response_tabs)
 
@@ -5501,6 +5544,7 @@ class MainWindow(QMainWindow):
         self.help_text = QLabel()
         self.help_text.setWordWrap(True)
         self.help_text.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.help_text.setOpenExternalLinks(True)
         help_layout.addWidget(self.help_text)
         
         # Resizable editor and inspector regions
@@ -6729,6 +6773,72 @@ class MainWindow(QMainWindow):
         self.graphql_preset_choice.clear()
         self.graphql_preset_choice.addItems(sorted(set(names)))
 
+    def _show_documented_graphql_help(self, entry):
+        details = str(entry.get("details") or entry.get("description") or "")[:3000]
+        doc_url = html.escape(str(entry.get("doc_url", "")), quote=True)
+        link = f"<p><a href='{doc_url}'>Automation Hub</a></p>" if doc_url else ""
+        self.help_text.setText(
+            f"<h3>{html.escape(str(entry.get('name', '')))}</h3>"
+            f"<p><b>{html.escape(str(entry.get('domain', '')))}</b></p>"
+            f"<p>{html.escape(details)}</p>{link}"
+        )
+
+    def _load_documented_graphql_query(self, entry=None):
+        """Prepare an exact Automation Hub example; never execute it automatically."""
+        if not isinstance(entry, dict):
+            entry = self.graphql_catalog_choice.currentData()
+        if not isinstance(entry, dict):
+            return
+        self._show_documented_graphql_help(entry)
+        query = str(entry.get("query", "")).strip()
+        if not query:
+            QMessageBox.information(
+                self, self.tr("Documented GraphQL schema"),
+                self.tr("The current Automation Hub page has no executable query example. Open its documentation or use schema introspection."),
+            )
+            return
+        for index in range(self.api_type.count()):
+            if self.api_type.itemText(index).replace("🟢 ", "").replace("🔴 ", "") == "OneAPI":
+                self.api_type.setCurrentIndex(index)
+                break
+        self.graphql_mode.setChecked(True)
+        self.method_combo.setCurrentText("● POST")
+        self.url_input.setText(self._api_base_url("OneAPI").rstrip("/") + "/zins/graphql")
+        self.body_input.setPlainText(json.dumps({"query": query, "variables": {}}, indent=2, ensure_ascii=False))
+        self.request_tabs.setCurrentIndex(2)
+        self.status_bar.showMessage(self.tr("Loaded documented ZInsights query. Review time ranges, filters, and fields before sending."))
+
+    def _browse_documented_graphql_schema(self):
+        """Render every bundled ZInsights query and type in the existing schema tree."""
+        self.graphql_schema_tree.clear()
+        self.graphql_schema_tree.setHeaderLabel(self.tr("Documented GraphQL schema"))
+        query_root = QTreeWidgetItem([f"{self.tr('Queries')} ({sum(item.get('kind') == 'query' for item in ZINSIGHTS_GRAPHQL_CATALOG)})"])
+        type_root = QTreeWidgetItem([f"{self.tr('Types')} ({sum(item.get('kind') == 'type' for item in ZINSIGHTS_GRAPHQL_CATALOG)})"])
+        self.graphql_schema_tree.addTopLevelItems([query_root, type_root])
+        domains = {}
+        for entry in ZINSIGHTS_GRAPHQL_CATALOG:
+            if entry.get("kind") == "query":
+                domain = str(entry.get("domain", ""))
+                parent = domains.get(domain)
+                if parent is None:
+                    parent = QTreeWidgetItem([domain]); query_root.addChild(parent); domains[domain] = parent
+            else:
+                parent = type_root
+            item = QTreeWidgetItem([str(entry.get("name", ""))])
+            item.setData(0, Qt.ItemDataRole.UserRole, entry)
+            item.setToolTip(0, str(entry.get("description") or entry.get("details") or "")[:800])
+            parent.addChild(item)
+        query_root.setExpanded(True); type_root.setExpanded(True)
+        self.response_tabs.setCurrentWidget(self.graphql_schema_tree)
+
+    def _on_documented_graphql_item(self, item, column):
+        entry = item.data(0, Qt.ItemDataRole.UserRole)
+        if not isinstance(entry, dict):
+            return
+        self._show_documented_graphql_help(entry)
+        if entry.get("kind") == "query":
+            self._load_documented_graphql_query(entry)
+
     def _save_graphql_query(self):
         name = self.graphql_preset_name.text().strip()
         if not name:
@@ -6851,8 +6961,9 @@ class MainWindow(QMainWindow):
         method = self.method_combo.currentText().replace("● ", "")
         if self.graphql_mode.isChecked():
             method = "POST"
+        graphql_read = self.graphql_mode.isChecked() and graphql_request_is_read_only(self.body_input.toPlainText())
         if (QSettings("Zscaler", "APIClient").value("access/role", "admin") == "readonly"
-                and method in {"POST", "PUT", "PATCH", "DELETE"}):
+                and method in {"POST", "PUT", "PATCH", "DELETE"} and not graphql_read):
             self._log_output("Read-only role blocked a write request", "warning")
             QMessageBox.warning(self, self.tr("Read only"), self.tr("Read-only mode blocks write requests. Change the local role in Operations Center to continue."))
             return
