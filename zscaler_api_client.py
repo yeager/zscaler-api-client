@@ -14,9 +14,11 @@ Supports:
 """
 
 import csv
+import base64
 import html
 import io
 import json
+import mimetypes
 import os
 import re
 import shlex
@@ -347,6 +349,14 @@ def http_header_value(headers: Dict | None, name: str) -> str:
     return next((str(value) for key, value in (headers or {}).items() if str(key).lower() == wanted), "")
 
 
+def set_http_header(headers: Dict, name: str, value: str):
+    """Set one HTTP header without leaving differently-cased duplicates."""
+    for key in list(headers):
+        if str(key).lower() == name.lower():
+            headers.pop(key)
+    headers[name] = value
+
+
 def is_authentication_request(api_type: str, url: str, method: str = "POST") -> bool:
     """Recognize only documented authentication requests before accepting returned tokens."""
     if str(method).upper() != "POST":
@@ -365,6 +375,81 @@ def is_authentication_request(api_type: str, url: str, method: str = "POST") -> 
     if api_type == "ZDX":
         return bool(re.search(r"/v[12]/oauth/token$", path))
     return any(path.endswith(candidate) for candidate in exact.get(api_type, ()))
+
+
+def is_textual_response(content_type: str, data: bytes) -> bool:
+    """Classify a response without corrupting binary downloads through UTF-8 replacement."""
+    media_type = str(content_type or "").split(";", 1)[0].strip().lower()
+    if media_type.startswith("text/") or any(marker in media_type for marker in (
+        "json", "xml", "yaml", "csv", "javascript", "graphql", "problem+",
+    )):
+        return True
+    if media_type and media_type not in {"application/octet-stream"}:
+        return False
+    if b"\x00" in data[:4096]:
+        return False
+    try:
+        data[:4096].decode("utf-8")
+        return True
+    except UnicodeDecodeError:
+        return False
+
+
+def safe_download_filename(headers: Dict | None, url: str, content_type: str = "") -> str:
+    """Derive a traversal-safe filename from Content-Disposition or the response URL."""
+    disposition = http_header_value(headers, "Content-Disposition")
+    name = ""
+    extended = re.search(r"filename\*\s*=\s*(?:UTF-8'')?([^;]+)", disposition, re.IGNORECASE)
+    regular = re.search(r'filename\s*=\s*(?:"([^"]+)"|([^;]+))', disposition, re.IGNORECASE)
+    if extended:
+        name = urllib.parse.unquote(extended.group(1).strip().strip('"'))
+    elif regular:
+        name = (regular.group(1) or regular.group(2) or "").strip()
+    if not name:
+        name = urllib.parse.unquote(Path(urllib.parse.urlsplit(str(url or "")).path).name)
+    name = Path(name.replace("\\", "/")).name
+    name = re.sub(r"[\x00-\x1f\x7f/:*?\"<>|]", "_", name).strip(" .")[:180]
+    if not name:
+        extension = mimetypes.guess_extension(str(content_type or "").split(";", 1)[0].strip()) or ".bin"
+        name = "response" + extension
+    return name
+
+
+def encode_multipart_body(spec: Dict, maximum_bytes: int) -> tuple[bytes, str]:
+    """Encode one explicitly selected file and scalar/JSON metadata as multipart form data."""
+    file_path = Path(str(spec.get("file_path") or "")).expanduser()
+    if not file_path.is_file():
+        raise ValueError("Selected upload file is unavailable")
+    file_size = file_path.stat().st_size
+    if file_size > maximum_bytes:
+        raise ValueError("Selected upload file exceeds the configured transfer limit")
+    file_field = str(spec.get("file_field") or "file").strip()
+    if not file_field or any(character in file_field for character in '\r\n"'):
+        raise ValueError("Multipart file field name is invalid")
+    fields = spec.get("fields") or {}
+    if not isinstance(fields, dict):
+        raise ValueError("Multipart fields must be a JSON object")
+    boundary = "----ZSAPIClient" + uuid.uuid4().hex
+    chunks: list[bytes] = []
+    for key, value in fields.items():
+        field_name = str(key)
+        if not field_name or any(character in field_name for character in '\r\n"'):
+            raise ValueError("Multipart field name is invalid")
+        rendered = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+        chunks.extend([
+            f"--{boundary}\r\nContent-Disposition: form-data; name=\"{field_name}\"\r\n\r\n".encode(),
+            str(rendered).encode("utf-8"), b"\r\n",
+        ])
+    filename = safe_download_filename({}, file_path.name)
+    media_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+    chunks.extend([
+        f"--{boundary}\r\nContent-Disposition: form-data; name=\"{file_field}\"; filename=\"{filename}\"\r\nContent-Type: {media_type}\r\n\r\n".encode(),
+        file_path.read_bytes(), b"\r\n", f"--{boundary}--\r\n".encode(),
+    ])
+    data = b"".join(chunks)
+    if len(data) > maximum_bytes:
+        raise ValueError("Multipart request exceeds the configured transfer limit")
+    return data, f"multipart/form-data; boundary={boundary}"
 
 
 class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
@@ -2745,25 +2830,40 @@ class ApiWorker(QThread):
     def _make_request(self, req: Dict) -> Dict:
         url = req["url"]
         method = req.get("method", "GET")
-        headers = req.get("headers", {})
+        headers = dict(req.get("headers", {}))
         body = req.get("body")
-        
+        body_mode = str(req.get("body_mode") or "json")
+
+        settings = QSettings("Zscaler", "APIClient")
+        try:
+            maximum_bytes = max(1, min(1024, int(settings.value("advanced/max_transfer_mb", "100")))) * 1024 * 1024
+        except (TypeError, ValueError):
+            maximum_bytes = 100 * 1024 * 1024
         data = None
-        if body:
+        if body is not None:
             content_type = http_header_value(headers, "Content-Type").split(";", 1)[0].strip().lower()
-            if content_type == "application/x-www-form-urlencoded" and isinstance(body, str):
-                # Form-urlencoded body (used by OAuth2 token endpoints)
+            if body_mode == "multipart":
+                if not isinstance(body, dict) or not isinstance(body.get("_multipart"), dict):
+                    raise ValueError("Multipart request descriptor is invalid")
+                data, multipart_type = encode_multipart_body(body["_multipart"], maximum_bytes)
+                set_http_header(headers, "Content-Type", multipart_type)
+            elif body_mode == "raw" or (isinstance(body, str) and content_type not in {"", "application/json"}):
+                data = body if isinstance(body, bytes) else str(body).encode("utf-8")
+                if not content_type:
+                    set_http_header(headers, "Content-Type", "text/plain; charset=utf-8")
+            elif content_type == "application/x-www-form-urlencoded" and isinstance(body, str):
                 data = body.encode("utf-8")
             else:
                 data = json.dumps(body).encode("utf-8")
                 if not content_type:
-                    headers["Content-Type"] = "application/json"
+                    set_http_header(headers, "Content-Type", "application/json")
+            if len(data) > maximum_bytes:
+                raise ValueError("Request body exceeds the configured transfer limit")
         
         request = urllib.request.Request(url, data=data, headers=headers, method=method)
         
         # Build SSL context based on settings
         import ssl
-        settings = QSettings("Zscaler", "APIClient")
         verify_ssl = settings.value("advanced/verify_ssl", "true") == "true"
         timeout = int(settings.value("advanced/timeout", "30"))
         
@@ -2784,16 +2884,26 @@ class ApiWorker(QThread):
 
         try:
             with opener.open(request, timeout=timeout) as response:
-                response_data = response.read()
+                response_data = response.read(maximum_bytes + 1)
+                if len(response_data) > maximum_bytes:
+                    raise ApiRequestError(0, "Response exceeds the configured transfer limit", dict(response.headers.items()))
                 response_size = len(response_data)
                 status_code = response.status
                 reason = response.reason
                 response_headers = dict(response.headers.items())
-                response_text = response_data.decode("utf-8", errors="replace")
-                if not response_text or not response_text.strip():
+                content_type = http_header_value(response_headers, "Content-Type")
+                if not response_data:
                     return {"_status_code": status_code, "_reason": reason,
                             "_size": response_size, "_headers": response_headers,
                             "status": "success", "message": "Empty response (operation may have succeeded)"}
+                if not is_textual_response(content_type, response_data):
+                    return {
+                        "_status_code": status_code, "_reason": reason, "_size": response_size,
+                        "_headers": response_headers, "_content_type": content_type or "application/octet-stream",
+                        "_download_filename": safe_download_filename(response_headers, url, content_type),
+                        "_binary_base64": base64.b64encode(response_data).decode("ascii"),
+                    }
+                response_text = response_data.decode("utf-8", errors="replace")
                 try:
                     parsed = json.loads(response_text)
                 except json.JSONDecodeError:
@@ -2817,8 +2927,13 @@ class ApiWorker(QThread):
         except urllib.error.HTTPError as e:
             error_body = ""
             try:
-                error_body = e.read().decode("utf-8")
-            except:
+                error_bytes = e.read(maximum_bytes + 1)
+                if len(error_bytes) > maximum_bytes:
+                    error_bytes = error_bytes[:maximum_bytes]
+                    error_body = error_bytes.decode("utf-8", errors="replace") + "\n[error body truncated at transfer limit]"
+                else:
+                    error_body = error_bytes.decode("utf-8", errors="replace")
+            except Exception:
                 pass
             raise ApiRequestError(e.code, f"HTTP {e.code}: {e.reason}\n{error_body}", dict(e.headers.items()) if e.headers else {})
 
@@ -3878,6 +3993,11 @@ class SettingsDialog(QDialog):
         self.timeout_spin.addItems(["10", "30", "60", "120", "300"])
         self.timeout_spin.setEditable(True)
         network_layout.addRow(self.tr("Request Timeout (seconds):"), self.timeout_spin)
+
+        self.max_transfer_mb = QComboBox()
+        self.max_transfer_mb.setEditable(True)
+        self.max_transfer_mb.addItems(["10", "25", "50", "100", "250", "500", "1024"])
+        network_layout.addRow(self.tr("Maximum upload/download (MB):"), self.max_transfer_mb)
         
         self.verify_ssl = QComboBox()
         self.verify_ssl.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
@@ -4090,6 +4210,7 @@ class SettingsDialog(QDialog):
         )
         if reply == QMessageBox.StandardButton.Yes:
             self.timeout_spin.setCurrentText("30")
+            self.max_transfer_mb.setCurrentText("100")
             self.verify_ssl.setCurrentIndex(0)
             self.proxy_enabled.setCurrentIndex(0)
             self.proxy_host.clear()
@@ -4170,6 +4291,7 @@ class SettingsDialog(QDialog):
         
         # Advanced
         self.timeout_spin.setCurrentText(settings.value("advanced/timeout", "30"))
+        self.max_transfer_mb.setCurrentText(settings.value("advanced/max_transfer_mb", "100"))
         self.verify_ssl.setCurrentIndex(0 if settings.value("advanced/verify_ssl", "true") == "true" else 1)
         self.proxy_enabled.setCurrentIndex(int(settings.value("advanced/proxy_mode", "0")))
         self.proxy_host.setText(settings.value("advanced/proxy_host", ""))
@@ -4398,6 +4520,11 @@ class SettingsDialog(QDialog):
         
         # Advanced
         settings.setValue("advanced/timeout", self.timeout_spin.currentText())
+        try:
+            maximum_transfer = max(1, min(1024, int(self.max_transfer_mb.currentText())))
+        except ValueError:
+            maximum_transfer = 100
+        settings.setValue("advanced/max_transfer_mb", str(maximum_transfer))
         settings.setValue("advanced/verify_ssl", "true" if self.verify_ssl.currentIndex() == 0 else "false")
         settings.setValue("advanced/proxy_mode", str(self.proxy_enabled.currentIndex()))
         settings.setValue("advanced/proxy_host", self.proxy_host.text())
@@ -5733,6 +5860,9 @@ class MainWindow(QMainWindow):
         self.easm_token = None
         self.oneapi_token = None
         self.request_history = []
+        self._binary_response: bytes | None = None
+        self._binary_response_name = "response.bin"
+        self._binary_response_type = "application/octet-stream"
         
         self._setup_ui()
         self._setup_menu()
@@ -5963,12 +6093,40 @@ class MainWindow(QMainWindow):
         # Body tab
         body_widget = QWidget()
         body_layout = QVBoxLayout(body_widget)
+        body_controls = QHBoxLayout()
+        body_controls.addWidget(QLabel(self.tr("Body type:")))
+        self.body_mode = QComboBox()
+        self.body_mode.addItem(self.tr("JSON"), "json")
+        self.body_mode.addItem(self.tr("Raw text"), "raw")
+        self.body_mode.addItem(self.tr("Form URL encoded"), "form")
+        self.body_mode.addItem(self.tr("Multipart file upload"), "multipart")
+        self.body_mode.currentIndexChanged.connect(self._on_body_mode_changed)
+        body_controls.addWidget(self.body_mode)
+        body_controls.addStretch()
+        body_layout.addLayout(body_controls)
+        self.multipart_controls = QWidget()
+        multipart_layout = QHBoxLayout(self.multipart_controls)
+        multipart_layout.setContentsMargins(0, 0, 0, 0)
+        multipart_layout.addWidget(QLabel(self.tr("File field:")))
+        self.multipart_file_field = QLineEdit("file")
+        self.multipart_file_field.setMaximumWidth(140)
+        multipart_layout.addWidget(self.multipart_file_field)
+        multipart_layout.addWidget(QLabel(self.tr("Upload file:")))
+        self.multipart_file_path = QLineEdit()
+        self.multipart_file_path.setReadOnly(True)
+        self.multipart_file_path.setPlaceholderText(self.tr("Select a local file; its path is never saved in history"))
+        multipart_layout.addWidget(self.multipart_file_path, 1)
+        browse_upload = QPushButton(self.tr("Browse…"))
+        browse_upload.clicked.connect(self._browse_upload_file)
+        multipart_layout.addWidget(browse_upload)
+        body_layout.addWidget(self.multipart_controls)
         self.body_input = QPlainTextEdit()
         self.body_input.setPlaceholderText(self.tr("Request body (JSON)..."))
         font = QFont("Menlo, Monaco, Consolas, monospace", 11)
         self.body_input.setFont(font)
         body_layout.addWidget(self.body_input)
         self.request_tabs.addTab(body_widget, self.tr("Body"))
+        self._on_body_mode_changed()
 
         graphql_variables_widget = QWidget()
         graphql_variables_layout = QVBoxLayout(graphql_variables_widget)
@@ -6383,6 +6541,8 @@ class MainWindow(QMainWindow):
         
         # Update request
         self.graphql_mode.setChecked(False)
+        self._set_body_mode("json")
+        self.multipart_file_path.clear()
         self.graphql_variables_table.setRowCount(0)
         self.method_combo.setCurrentText(f"● {details['method']}")
         
@@ -6698,6 +6858,7 @@ class MainWindow(QMainWindow):
         """Remove credentials from the editor immediately after successful authentication."""
         self.headers_table.clearContents()
         self.body_input.clear()
+        self._set_body_mode("json")
         self.url_input.clear()
 
     def _current_api_type(self) -> str:
@@ -6769,6 +6930,7 @@ class MainWindow(QMainWindow):
                 "password": password,
                 "timestamp": timestamp
             }
+            self._set_body_mode("json")
             self.body_input.setPlainText(json.dumps(body, indent=2))
             self._send_request()
             
@@ -6784,6 +6946,7 @@ class MainWindow(QMainWindow):
             self.method_combo.setCurrentText("● POST")
             self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
             self.headers_table.setItem(0, 1, QTableWidgetItem("application/json"))
+            self._set_body_mode("json")
             self.body_input.setPlainText(json.dumps({"apiKey": api_key, "secretKey": api_secret}, indent=2))
             self._send_request()
 
@@ -6843,6 +7006,7 @@ class MainWindow(QMainWindow):
                     "key_id": client_id,
                     "key_secret": client_secret
                 }, indent=2)
+                self._set_body_mode("json")
             else:
                 # Other APIs use form-urlencoded
                 self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
@@ -6851,6 +7015,7 @@ class MainWindow(QMainWindow):
                 if api_type != "ZPA":
                     form["grant_type"] = "client_credentials"
                 body = urllib.parse.urlencode(form)
+                self._set_body_mode("form")
             
             self.body_input.setPlainText(body)
             self._send_request()
@@ -6880,6 +7045,7 @@ class MainWindow(QMainWindow):
             # OneAPI uses form-urlencoded with audience parameter
             self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
             self.headers_table.setItem(0, 1, QTableWidgetItem("application/x-www-form-urlencoded"))
+            self._set_body_mode("form")
             body = urllib.parse.urlencode({
                 "client_id": client_id,
                 "client_secret": client_secret,
@@ -7005,6 +7171,19 @@ class MainWindow(QMainWindow):
         return str(result["choices"][0]["message"]["content"]).strip()
 
     def _export_full_response(self):
+        if self._binary_response is not None:
+            review = QMessageBox.question(
+                self, self.tr("Save binary response"),
+                self.tr("Binary content cannot be inspected or obfuscated as text. Save the original response only if you trust this endpoint and destination?"),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No,
+            )
+            if review != QMessageBox.StandardButton.Yes:
+                return
+            path, _ = QFileDialog.getSaveFileName(self, self.tr("Save binary response"), self._binary_response_name, self.tr("All files (*)"))
+            if path:
+                Path(path).write_bytes(self._binary_response)
+                self.status_bar.showMessage(self.tr("Original binary response saved"))
+            return
         path, _ = QFileDialog.getSaveFileName(
             self, self.tr("Export response"), "response.json",
             "JSON (*.json);;Markdown (*.md);;HTML (*.html);;PDF (*.pdf)"
@@ -7033,6 +7212,18 @@ class MainWindow(QMainWindow):
 
     def _preview_response_export(self):
         """Show exactly what will leave the application, with secrets already masked."""
+        if self._binary_response is not None:
+            preview = json.dumps({
+                "file_name": self._binary_response_name,
+                "content_type": self._binary_response_type,
+                "size_bytes": len(self._binary_response),
+                "notice": self.tr("Binary content is not included in this preview."),
+            }, indent=2)
+            dialog = QDialog(self); dialog.setWindowTitle(self.tr("Export preview")); dialog.resize(620, 360)
+            layout = QVBoxLayout(dialog); layout.addWidget(QLabel(self.tr("Original binary export requires a separate confirmation.")))
+            text = QPlainTextEdit(preview); text.setReadOnly(True); layout.addWidget(text)
+            buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); buttons.rejected.connect(dialog.reject); layout.addWidget(buttons)
+            dialog.exec(); return
         raw = self.response_body.toPlainText()
         try: body = json.loads(raw)
         except json.JSONDecodeError: body = raw
@@ -7197,25 +7388,73 @@ class MainWindow(QMainWindow):
 
     def _masked_curl_command(self) -> str:
         method, url, headers, body = self._masked_request_parts()
+        body_mode = str(self.body_mode.currentData() or "json")
         parts = ["curl", "-X", method]
         for key, value in headers.items():
+            # curl supplies the multipart boundary. Reusing a manually entered
+            # Content-Type would create an invalid request without that boundary.
+            if body_mode == "multipart" and key.lower() == "content-type":
+                continue
             parts.extend(["-H", shlex.quote(f"{key}: {value}")])
-        if body and method in {"POST", "PUT", "PATCH", "DELETE"}:
-            if not any(key.lower() == "content-type" for key in headers):
-                parts.extend(["-H", shlex.quote("Content-Type: application/json")])
-            parts.extend(["--data", shlex.quote(body)])
+        if method in {"POST", "PUT", "PATCH", "DELETE"}:
+            if body_mode == "multipart":
+                try:
+                    fields = json.loads(body) if body else {}
+                except (TypeError, ValueError):
+                    fields = {}
+                if isinstance(fields, dict):
+                    for key, value in fields.items():
+                        safe_value = "***" if is_sensitive_name(str(key)) else redact_sensitive(value)
+                        rendered = json.dumps(safe_value, ensure_ascii=False) if isinstance(safe_value, (dict, list)) else str(safe_value)
+                        parts.extend(["-F", shlex.quote(f"{key}={rendered}")])
+                file_field = re.sub(r'[\r\n"]', "", self.multipart_file_field.text().strip()) or "file"
+                parts.extend(["-F", shlex.quote(f"{file_field}=@<select-local-file>")])
+            elif body:
+                if not any(key.lower() == "content-type" for key in headers):
+                    content_type = "application/x-www-form-urlencoded" if body_mode == "form" else "application/json" if body_mode == "json" else "text/plain"
+                    parts.extend(["-H", shlex.quote(f"Content-Type: {content_type}")])
+                parts.extend(["--data" if body_mode == "form" else "--data-raw", shlex.quote(body)])
         parts.append(shlex.quote(url))
         return " \\\n  ".join(parts)
 
     def _postman_collection(self) -> dict:
         method, url, headers, body = self._masked_request_parts()
+        body_mode = str(self.body_mode.currentData() or "json")
         request: dict[str, Any] = {
             "method": method,
-            "header": [{"key": key, "value": value, "type": "text"} for key, value in headers.items()],
+            "header": [
+                {"key": key, "value": value, "type": "text"}
+                for key, value in headers.items()
+                if not (body_mode == "multipart" and key.lower() == "content-type")
+            ],
             "url": url,
         }
-        if body and method in {"POST", "PUT", "PATCH", "DELETE"}:
-            request["body"] = {"mode": "raw", "raw": body, "options": {"raw": {"language": "json"}}}
+        if method in {"POST", "PUT", "PATCH", "DELETE"}:
+            if body_mode == "multipart":
+                formdata = []
+                try:
+                    fields = json.loads(body) if body else {}
+                except (TypeError, ValueError):
+                    fields = {}
+                if isinstance(fields, dict):
+                    for key, value in fields.items():
+                        safe_value = "***" if is_sensitive_name(str(key)) else redact_sensitive(value)
+                        rendered = json.dumps(safe_value, ensure_ascii=False) if isinstance(safe_value, (dict, list)) else str(safe_value)
+                        formdata.append({"key": str(key), "value": rendered, "type": "text"})
+                file_field = re.sub(r'[\r\n"]', "", self.multipart_file_field.text().strip()) or "file"
+                formdata.append({"key": file_field, "type": "file", "src": "<select-local-file>"})
+                request["body"] = {"mode": "formdata", "formdata": formdata}
+            elif body_mode == "form" and body:
+                request["body"] = {
+                    "mode": "urlencoded",
+                    "urlencoded": [
+                        {"key": key, "value": "***" if is_sensitive_name(key) else value, "type": "text"}
+                        for key, value in urllib.parse.parse_qsl(body, keep_blank_values=True)
+                    ],
+                }
+            elif body:
+                options = {"raw": {"language": "json"}} if body_mode == "json" else {}
+                request["body"] = {"mode": "raw", "raw": body, "options": options}
         return {
             "info": {"name": "ZS API Client (sanitized)", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
             "item": [{"name": f"{method} request (sanitized)", "request": request}],
@@ -7318,9 +7557,36 @@ class MainWindow(QMainWindow):
         self.graphql_preset_choice.clear()
         self.graphql_preset_choice.addItems(sorted(set(names)))
 
+    def _set_body_mode(self, mode: str):
+        index = self.body_mode.findData(mode)
+        self.body_mode.setCurrentIndex(max(0, index))
+
+    def _on_body_mode_changed(self, index=None):
+        mode = self.body_mode.currentData() if hasattr(self, "body_mode") else "json"
+        if hasattr(self, "multipart_controls"):
+            self.multipart_controls.setVisible(mode == "multipart")
+        placeholders = {
+            "json": self.tr("Request body (JSON)..."),
+            "raw": self.tr("Raw request body..."),
+            "form": self.tr("Form fields as JSON or an encoded key=value string..."),
+            "multipart": self.tr("Optional multipart fields as a JSON object..."),
+        }
+        if hasattr(self, "body_input"):
+            self.body_input.setPlaceholderText(placeholders.get(mode, placeholders["json"]))
+
+    def _browse_upload_file(self):
+        path, _ = QFileDialog.getOpenFileName(self, self.tr("Select upload file"))
+        if path:
+            self.multipart_file_path.setText(path)
+
     def _on_graphql_mode_toggled(self, enabled):
         if enabled:
             self.method_combo.setCurrentText("● POST")
+            if hasattr(self, "body_mode"):
+                self._set_body_mode("json")
+                self.body_mode.setEnabled(False)
+        elif hasattr(self, "body_mode"):
+            self.body_mode.setEnabled(True)
         if hasattr(self, "request_tabs") and hasattr(self, "graphql_variables_tab_index"):
             self.request_tabs.setTabVisible(self.graphql_variables_tab_index, bool(enabled))
 
@@ -7706,16 +7972,51 @@ class MainWindow(QMainWindow):
         
         # Get body
         body = None
+        history_body = None
+        body_mode = "json" if self.graphql_mode.isChecked() else str(self.body_mode.currentData() or "json")
         body_text = self.body_input.toPlainText().strip()
         if self.graphql_mode.isChecked() and not body_text:
             self.request_tabs.setCurrentIndex(2)
             QMessageBox.warning(self, self.tr("GraphQL Variables"), self.tr("GraphQL body must be a JSON object containing a query string.")); return
-        if body_text and method in ["POST", "PUT", "PATCH"]:
-            # Check if content type is form-urlencoded (used by OAuth2 endpoints)
+        if method in ["POST", "PUT", "PATCH", "DELETE"] and (body_text or body_mode == "multipart"):
             content_type = http_header_value(headers, "Content-Type").split(";", 1)[0].strip().lower()
-            if content_type == "application/x-www-form-urlencoded":
-                # Pass form-urlencoded body as raw string
+            if content_type == "application/x-www-form-urlencoded" and body_mode == "json":
+                body_mode = "form"
+            if body_mode == "multipart":
+                file_path = Path(self.multipart_file_path.text().strip())
+                if not file_path.is_file():
+                    self.request_tabs.setCurrentIndex(2)
+                    QMessageBox.warning(self, self.tr("Multipart file upload"), self.tr("Select an available local file before sending."))
+                    return
+                try:
+                    fields = json.loads(body_text) if body_text else {}
+                except json.JSONDecodeError as error:
+                    QMessageBox.warning(self, self.tr("Error"), self.tr("Multipart fields must be a JSON object: {error}").format(error=error))
+                    return
+                if not isinstance(fields, dict):
+                    QMessageBox.warning(self, self.tr("Error"), self.tr("Multipart fields must be a JSON object."))
+                    return
+                file_field = self.multipart_file_field.text().strip() or "file"
+                body = {"_multipart": {"file_path": str(file_path), "file_field": file_field, "fields": fields}}
+                history_body = {"multipart": {"file_name": file_path.name, "file_field": file_field, "fields": fields}}
+                for key in list(headers):
+                    if key.lower() == "content-type":
+                        headers.pop(key)
+            elif body_mode == "raw":
                 body = body_text
+                history_body = body
+            elif body_mode == "form":
+                try:
+                    form_fields = json.loads(body_text)
+                except json.JSONDecodeError:
+                    form_fields = None
+                if isinstance(form_fields, dict):
+                    body = urllib.parse.urlencode(form_fields, doseq=True)
+                else:
+                    body = body_text
+                history_body = body
+                if not content_type:
+                    set_http_header(headers, "Content-Type", "application/x-www-form-urlencoded")
             else:
                 try:
                     body = json.loads(body_text)
@@ -7729,6 +8030,7 @@ class MainWindow(QMainWindow):
                         QMessageBox.warning(self, self.tr("GraphQL Variables"), "\n".join(variable_errors))
                         return
                     self.body_input.setPlainText(json.dumps(body, indent=2, ensure_ascii=False))
+                history_body = body
         
         # Send request
         self.status_bar.showMessage(self.tr("Sending request..."))
@@ -7742,6 +8044,7 @@ class MainWindow(QMainWindow):
             "method": method,
             "headers": headers,
             "body": body,
+            "body_mode": body_mode,
         }
         
         # Store request info for history
@@ -7749,7 +8052,8 @@ class MainWindow(QMainWindow):
             "method": method,
             "url": url,
             "headers": headers,
-            "body": body,
+            "body": history_body,
+            "body_mode": body_mode,
             "start_time": time.time(),
         }
         
@@ -7778,6 +8082,9 @@ class MainWindow(QMainWindow):
                 resp_size = response_data.pop("_size", 0) if isinstance(response_data, dict) else 0
                 response_headers = response_data.pop("_headers", {}) if isinstance(response_data, dict) else {}
                 raw_text = response_data.pop("_raw_text", None) if isinstance(response_data, dict) else None
+                binary_base64 = response_data.pop("_binary_base64", None) if isinstance(response_data, dict) else None
+                binary_name = response_data.pop("_download_filename", "response.bin") if isinstance(response_data, dict) else "response.bin"
+                binary_type = response_data.pop("_content_type", "application/octet-stream") if isinstance(response_data, dict) else "application/octet-stream"
                 payload = response_data.pop("_payload", response_data) if isinstance(response_data, dict) else response_data
                 size_str = self._format_size(resp_size)
                 safe_response_headers = {
@@ -7812,8 +8119,20 @@ class MainWindow(QMainWindow):
                 # Keep response values available only in memory for the active
                 # request flow.  The UI, visualizations and later exports must
                 # never expose credential-like fields from auth or API replies.
+                self._binary_response = base64.b64decode(binary_base64, validate=True) if binary_base64 is not None else None
+                self._binary_response_name = safe_download_filename({}, str(binary_name), str(binary_type))
+                self._binary_response_type = str(binary_type)
                 display_data = redact_sensitive(payload)
-                if raw_text is not None:
+                if self._binary_response is not None:
+                    display_data = {
+                        "file_name": self._binary_response_name,
+                        "content_type": self._binary_response_type,
+                        "size_bytes": len(self._binary_response),
+                    }
+                    self.response_body.setPlainText(self.tr("Binary response ready to save.\nFile: {name}\nType: {type}\nSize: {size}").format(
+                        name=self._binary_response_name, type=self._binary_response_type, size=size_str,
+                    ))
+                elif raw_text is not None:
                     self.response_body.setPlainText(redact_sensitive(raw_text))
                 elif self.pretty_print_enabled:
                     self.response_body.setPlainText(json.dumps(display_data, indent=indent_val))
@@ -7888,6 +8207,7 @@ class MainWindow(QMainWindow):
                 # Log success
                 self._log_output(f"Response: {duration_ms}ms", "success")
             else:
+                self._binary_response = None
                 self.response_info.setText(
                     f"<span style='color: red;'>✗ {self.tr('Error')} ({duration_ms}ms)</span>"
                 )
@@ -7911,6 +8231,7 @@ class MainWindow(QMainWindow):
                     status=status,
                     duration_ms=duration_ms,
                     response_headers=response_headers,
+                    body_mode=self._pending_request.get("body_mode", "json"),
                 )
                 self._pending_request = None
     
@@ -8027,11 +8348,19 @@ class MainWindow(QMainWindow):
         """Load a request from history."""
         self.method_combo.setCurrentText(f"● {entry.get('method', 'GET')}")
         self.url_input.setText(entry.get("url", ""))
-        
-        if entry.get("body"):
-            self.body_input.setPlainText(json.dumps(entry["body"], indent=2))
+        body_mode = str(entry.get("body_mode") or "json")
+        self._set_body_mode(body_mode)
+        self.multipart_file_path.clear()
+        body = entry.get("body")
+        if body_mode == "multipart" and isinstance(body, dict) and isinstance(body.get("multipart"), dict):
+            multipart = body["multipart"]
+            self.multipart_file_field.setText(str(multipart.get("file_field") or "file"))
+            self.body_input.setPlainText(json.dumps(multipart.get("fields") or {}, indent=2, ensure_ascii=False))
+            self.status_bar.showMessage(self.tr("Multipart request loaded. Select the local file again before sending."))
+        elif body:
+            self.body_input.setPlainText(body if isinstance(body, str) else json.dumps(body, indent=2))
             self.request_tabs.setCurrentIndex(2)
-        graphql_body = entry.get("body") if isinstance(entry.get("body"), dict) else {}
+        graphql_body = body if isinstance(body, dict) else {}
         is_graphql = isinstance(graphql_body.get("query"), str)
         self.graphql_mode.setChecked(is_graphql)
         self.graphql_variables_table.setRowCount(0)
@@ -8045,7 +8374,10 @@ class MainWindow(QMainWindow):
                 self.headers_table.setItem(row, 0, QTableWidgetItem(key))
                 self.headers_table.setItem(row, 1, QTableWidgetItem(value))
         
-        self.status_bar.showMessage(self.tr("Request loaded from history"))
+        if body_mode == "multipart":
+            self.status_bar.showMessage(self.tr("Multipart request loaded. Select the local file again before sending."))
+        else:
+            self.status_bar.showMessage(self.tr("Request loaded from history"))
     
     def _load_history(self):
         """Load request history from file."""
@@ -8086,7 +8418,8 @@ class MainWindow(QMainWindow):
             pass
     
     def _add_to_history(self, method: str, url: str, headers: Dict, body: Any,
-                        status: int = None, duration_ms: int = None, response_headers: Dict | None = None):
+                        status: int = None, duration_ms: int = None, response_headers: Dict | None = None,
+                        body_mode: str = "json"):
         """Add a request to history."""
         from datetime import datetime
         
@@ -8097,6 +8430,7 @@ class MainWindow(QMainWindow):
             "headers": redact_sensitive(headers),
             "response_headers": redact_sensitive(response_headers or {}),
             "body": redact_sensitive(body),
+            "body_mode": body_mode if body_mode in {"json", "raw", "form", "multipart"} else "json",
             "status": status,
             "duration_ms": duration_ms,
         }
@@ -8114,6 +8448,9 @@ class MainWindow(QMainWindow):
     
     def _copy_response(self):
         """Copy a redacted response body so the clipboard never receives secrets."""
+        if self._binary_response is not None:
+            QMessageBox.information(self, self.tr("Binary response"), self.tr("Binary response content is not copied to the clipboard. Use Export to save the original file."))
+            return
         raw = self.response_body.toPlainText()
         if raw:
             try:
@@ -8129,6 +8466,9 @@ class MainWindow(QMainWindow):
         """Clear request input and every response-derived view as one unit."""
         self.url_input.clear()
         self.body_input.clear()
+        self._set_body_mode("json")
+        self.multipart_file_path.clear()
+        self._binary_response = None
         self.params_table.clearContents()
         self.headers_table.clearContents()
         self.variables_table.setRowCount(0)
@@ -8183,6 +8523,7 @@ class MainWindow(QMainWindow):
             "password": password,
             "timestamp": timestamp
         }, indent=2))
+        self._set_body_mode("json")
         self.request_tabs.setCurrentIndex(2)
         
         self.status_bar.showMessage(self.tr("ZIA auth request prepared. Click Send to authenticate."))
@@ -8221,10 +8562,10 @@ class MainWindow(QMainWindow):
         self.api_type.setCurrentText("ZPA")
         self.method_combo.setCurrentText("● POST")
         self.url_input.setText(f"https://{cloud}/signin")
-        self.body_input.setPlainText(json.dumps({
-            "client_id": client_id,
-            "client_secret": client_secret
-        }, indent=2))
+        self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
+        self.headers_table.setItem(0, 1, QTableWidgetItem("application/x-www-form-urlencoded"))
+        self.body_input.setPlainText(urllib.parse.urlencode({"client_id": client_id, "client_secret": client_secret}))
+        self._set_body_mode("form")
         self.request_tabs.setCurrentIndex(2)
         
         self.status_bar.showMessage(self.tr("ZPA auth request prepared. Click Send to authenticate."))

@@ -120,6 +120,54 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(206, result["_status_code"])
         self.assertEqual({"X-Request-ID": "abc"}, result["_headers"])
 
+    def test_api_worker_preserves_binary_download_and_safe_filename(self):
+        response = MagicMock()
+        response.read.return_value = b"PK\x03\x04binary-data"
+        response.status = 200; response.reason = "OK"
+        response.headers.items.return_value = [
+            ("Content-Type", "application/zip"),
+            ("Content-Disposition", 'attachment; filename="../../audit.zip"'),
+        ]
+        with patch.object(client, "build_network_opener") as opener:
+            opener.return_value.open.return_value.__enter__.return_value = response
+            result = client.ApiWorker([])._make_request({"url": "https://example.test/download", "method": "GET"})
+        self.assertEqual("audit.zip", result["_download_filename"])
+        self.assertEqual("application/zip", result["_content_type"])
+        self.assertEqual(b"PK\x03\x04binary-data", client.base64.b64decode(result["_binary_base64"]))
+
+    def test_multipart_encoder_contains_file_and_not_local_path(self):
+        with TemporaryDirectory() as directory:
+            upload = Path(directory) / "evidence.txt"
+            upload.write_bytes(b"evidence-bytes")
+            data, content_type = client.encode_multipart_body({
+                "file_path": str(upload), "file_field": "dataset", "fields": {"name": "SOC", "options": {"safe": True}},
+            }, 1024 * 1024)
+        self.assertIn("multipart/form-data; boundary=", content_type)
+        self.assertIn(b'name="dataset"; filename="evidence.txt"', data)
+        self.assertIn(b"evidence-bytes", data)
+        self.assertIn(b'{"safe":true}', data)
+        self.assertNotIn(str(upload.parent).encode(), data)
+        self.assertTrue(client.is_textual_response("text/csv; charset=utf-8", b"name,value\nAda,1\n"))
+
+    def test_transfer_limit_blocks_oversized_uploads_and_downloads(self):
+        with TemporaryDirectory() as directory:
+            upload = Path(directory) / "large.bin"; upload.write_bytes(b"123456")
+            with self.assertRaisesRegex(ValueError, "transfer limit"):
+                client.encode_multipart_body({"file_path": str(upload), "file_field": "file", "fields": {}}, 5)
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("advanced/max_transfer_mb", None)
+        response = MagicMock(); response.read.return_value = b"x" * (1024 * 1024 + 1)
+        response.headers.items.return_value = [("Content-Type", "application/octet-stream")]
+        response.status = 200; response.reason = "OK"
+        try:
+            settings.setValue("advanced/max_transfer_mb", "1")
+            with patch.object(client, "build_network_opener") as opener:
+                opener.return_value.open.return_value.__enter__.return_value = response
+                with self.assertRaisesRegex(client.ApiRequestError, "transfer limit"):
+                    client.ApiWorker([])._make_request({"url": "https://example.test/large", "method": "GET"})
+        finally:
+            settings.remove("advanced/max_transfer_mb") if previous is None else settings.setValue("advanced/max_transfer_mb", previous)
+
     def test_list_response_keeps_status_headers_and_visible_payload(self):
         self.window._pending_request = {"method": "GET", "url": "https://example.test", "headers": {}, "body": None, "start_time": 0}
         self.window._on_request_finished({"results": [{"success": True, "data": {
@@ -407,6 +455,56 @@ class MainWindowTests(unittest.TestCase):
         worker_type.assert_not_called(); warning.assert_called_once()
         self.assertEqual(self.window.graphql_variables_tab_index, self.window.request_tabs.currentIndex())
 
+    def test_body_modes_build_raw_form_and_private_multipart_requests(self):
+        self.window.url_input.setText("https://example.test/upload")
+        self.window.method_combo.setCurrentText("● POST")
+        self.window._set_body_mode("raw")
+        self.window.body_input.setPlainText("plain-body")
+        with patch.object(client, "ApiWorker") as worker_type:
+            self.window._send_request()
+        request = worker_type.call_args.args[0][0]
+        self.assertEqual("raw", request["body_mode"]); self.assertEqual("plain-body", request["body"])
+
+        self.window.send_btn.setEnabled(True)
+        self.window._set_body_mode("form")
+        self.window.body_input.setPlainText('{"scope":["read","write"],"name":"SOC"}')
+        with patch.object(client, "ApiWorker") as worker_type:
+            self.window._send_request()
+        request = worker_type.call_args.args[0][0]
+        self.assertEqual("scope=read&scope=write&name=SOC", request["body"])
+        self.assertEqual("application/x-www-form-urlencoded", request["headers"]["Content-Type"])
+
+        self.window.send_btn.setEnabled(True)
+        with TemporaryDirectory() as directory:
+            upload = Path(directory) / "dataset.csv"; upload.write_text("name\nAda\n", encoding="utf-8")
+            self.window._set_body_mode("multipart")
+            self.window.multipart_file_path.setText(str(upload))
+            self.window.multipart_file_field.setText("dataset")
+            self.window.body_input.setPlainText('{"businessUnit":"soc"}')
+            with patch.object(client, "ApiWorker") as worker_type:
+                self.window._send_request()
+            request = worker_type.call_args.args[0][0]
+            self.assertEqual(str(upload), request["body"]["_multipart"]["file_path"])
+            pending = self.window._pending_request["body"]
+            self.assertEqual("dataset.csv", pending["multipart"]["file_name"])
+            self.assertNotIn(str(upload.parent), json.dumps(pending))
+
+    def test_binary_response_requires_confirmation_and_exports_exact_bytes(self):
+        self.window._pending_request = {"method": "GET", "url": "https://example.test/audit.zip", "headers": {}, "body": None, "start_time": 0}
+        payload = b"PK\x03\x04exact-download"
+        self.window._on_request_finished({"results": [{"success": True, "data": {
+            "_binary_base64": client.base64.b64encode(payload).decode(), "_download_filename": "audit.zip",
+            "_content_type": "application/zip", "_status_code": 200, "_reason": "OK", "_size": len(payload), "_headers": {},
+        }}]})
+        self.assertEqual(payload, self.window._binary_response)
+        self.assertIn("audit.zip", self.window.response_body.toPlainText())
+        with TemporaryDirectory() as directory:
+            target = str(Path(directory) / "saved.zip")
+            with patch.object(client.QMessageBox, "question", return_value=client.QMessageBox.StandardButton.Yes), \
+                 patch.object(client.QFileDialog, "getSaveFileName", return_value=(target, "")):
+                self.window._export_full_response()
+            self.assertEqual(payload, Path(target).read_bytes())
+
     def test_clear_ai_key_removes_keychain_value_and_field(self):
         deleted = []
         settings = client.SettingsDialog(self.window)
@@ -449,6 +547,32 @@ class MainWindowTests(unittest.TestCase):
         self.window.headers_table.setItem(0, 0, client.QTableWidgetItem("Set-Cookie"))
         self.window.headers_table.setItem(0, 1, client.QTableWidgetItem("session=do-not-export"))
         self.assertNotIn("do-not-export", self.window._masked_curl_command())
+
+    def test_request_exports_preserve_form_and_multipart_without_local_path(self):
+        self.window.url_input.setText("https://example.test/upload")
+        self.window.method_combo.setCurrentText("● POST")
+        self.window._set_body_mode("form")
+        self.window.body_input.setPlainText("scope=read&client_secret=do-not-export")
+        curl = self.window._masked_curl_command()
+        collection = self.window._postman_collection()
+        self.assertIn("--data", curl)
+        self.assertEqual("urlencoded", collection["item"][0]["request"]["body"]["mode"])
+        self.assertNotIn("do-not-export", curl)
+        self.assertNotIn("do-not-export", str(collection))
+
+        self.window._set_body_mode("multipart")
+        self.window.multipart_file_field.setText("evidence")
+        self.window.multipart_file_path.setText("/private/soc/case-42/evidence.zip")
+        self.window.body_input.setPlainText('{"case":"42","api_key":"do-not-export"}')
+        curl = self.window._masked_curl_command()
+        collection = self.window._postman_collection()
+        postman_body = collection["item"][0]["request"]["body"]
+        self.assertEqual("formdata", postman_body["mode"])
+        self.assertIn("evidence=@<select-local-file>", curl)
+        self.assertIn({"key": "evidence", "type": "file", "src": "<select-local-file>"}, postman_body["formdata"])
+        for exported in (curl, str(collection)):
+            self.assertNotIn("/private/soc", exported)
+            self.assertNotIn("do-not-export", exported)
 
     def test_svg_chart_export_uses_current_chart_data(self):
         self.window._show_ai_visualization([{"name": "A", "count": 3}])
