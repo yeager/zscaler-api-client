@@ -64,7 +64,7 @@ from evidence_signing import generate_private_key, public_key, sign_evidence, ve
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.7.1"
+__version__ = "2.8.0"
 RESPONSE_EXCHANGE_SCHEMA = "https://github.com/yeager/zscaler-api-client/schemas/response-exchange/v1"
 
 # Locale registry. App translations are loaded from translations/ at startup;

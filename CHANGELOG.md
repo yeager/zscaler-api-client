@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.0] - 2026-08-26
+
 ### Added
 - User-approved background report schedules for Windows Task Scheduler, macOS LaunchAgents, and Linux systemd user timers.
 - Headless, network-free report execution with stable schedule IDs and automatic cleanup when schedules are paused or removed.
@@ -19,6 +21,16 @@ All notable changes to this project will be documented in this file.
 - Local response-baseline comparison for configuration and inventory drift, with identity-aware list matching, volatile-field exclusions, impact visualization, scoped fingerprints, and masked JSON/CSV/Markdown evidence export.
 - Tenant-isolated environment profiles with per-profile non-secret API configuration, namespaced system-keychain credentials, active-environment context, and environment-aware request history.
 - Tenant-scoped Operations Center analytics, audit evidence, integrations, exports, and scheduled/headless reports, with an explicit Advanced-mode cross-tenant overview.
+- Digital Policy Twin with rule-order visualization, conflicts, shadowing, decision traces, blast-radius estimates, and tenant-scoped time-travel snapshots.
+- Unified SOC investigation graph using complete REST/GraphQL response trees, entity correlation, potential attack paths, evidence timelines, and JSON/GraphML/CSV/PNG export.
+- Continuous assurance with transparent local controls, NIST CSF 2.0/CISA Zero Trust navigation, deterministic CISO narratives, baselines, trends, and offline-verifiable Ed25519 evidence packages.
+- ZDX/OneAPI experience journey maps, accelerated telemetry, explicit missing stages, transparent issue thresholds, and JSON/CSV/PNG export.
+- Explainable Detection Lab with bounded declarative rules, templates, median/MAD anomaly baselines, and masked evidence export.
+- Change-safety scoring, explicit review gates, integrity-verifiable rollback packages, tenant-scoped response playbooks, and a deterministic read-first API planner.
+- Secure SIEM/SOAR handoffs in JSON Lines, CEF, and LEEF, plus non-executable Terraform review archives and read-only MCP manifests.
+- Exposure and excessive-access analysis over complete response trees, guarded deception recommendations, and tenant-isolated masked investigation notebooks.
+- Responsive PyQtGraph/NumPy telemetry rendering with downsampling and a Qt-native fallback.
+- Reviewed Swedish localization for every new workspace and synchronized complete review catalogs for all 20 supported languages.
 
 ### Security
 - Background reports reuse redacted local history, run without administrator privileges, and never receive API credentials.
@@ -38,6 +50,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Corrected ZIA `JSESSIONID`, Client Connector `jwtToken`/`auth-token`, URL-encoded ZPA credentials, and configurable ZDX v1/v2 authentication semantics against the official product guides.
+- Restored Python 3.11 compatibility for LEEF export and removed broad PyQtGraph demo/OpenGL collection that could crash headless Linux packaging.
 
 ## [2.7.1] - 2026-08-26
 
