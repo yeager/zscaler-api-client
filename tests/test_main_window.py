@@ -44,7 +44,7 @@ class MainWindowTests(unittest.TestCase):
 
     def test_workspace_has_explorer_editor_and_inspector(self):
         self.assertEqual(self.window.main_splitter.count(), 3)
-        self.assertEqual(self.window.response_tabs.count(), 6)
+        self.assertEqual(self.window.response_tabs.count(), 8)
         self.assertEqual(self.window.request_tabs.count(), 4)
 
     def test_wizard_loads_common_request_with_path_variables(self):

@@ -4644,6 +4644,12 @@ class MainWindow(QMainWindow):
         self.response_tree = QTreeWidget()
         self.response_tree.setHeaderLabel(self.tr("JSON structure"))
         self.response_tabs.addTab(self.response_tree, self.tr("Tree"))
+        self.response_heatmap = QTableWidget(0, 0)
+        self.response_heatmap.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.response_tabs.addTab(self.response_heatmap, self.tr("Heatmap"))
+        self.response_topology = QPlainTextEdit()
+        self.response_topology.setReadOnly(True)
+        self.response_tabs.addTab(self.response_topology, self.tr("Topology"))
         self.graphql_schema_tree = QTreeWidget()
         self.graphql_schema_tree.setHeaderLabel(self.tr("GraphQL schema"))
         self.response_tabs.addTab(self.graphql_schema_tree, self.tr("Schema"))
@@ -5746,6 +5752,20 @@ class MainWindow(QMainWindow):
             for column_index, column in enumerate(columns): self.response_table.setItem(row_index, column_index, QTableWidgetItem(str(row.get(column, ""))))
         self.response_table.resizeColumnsToContents()
         numeric = [key for key in columns if all(isinstance(row.get(key), (int, float)) and not isinstance(row.get(key), bool) for row in rows[:min(12, len(rows))])]
+        self.response_heatmap.setRowCount(min(50, len(rows))); self.response_heatmap.setColumnCount(len(numeric)); self.response_heatmap.setHorizontalHeaderLabels(numeric)
+        for row_index, row in enumerate(rows[:50]):
+            for column_index, key in enumerate(numeric):
+                value = float(row.get(key, 0)); maximum = max(float(item.get(key, 0)) for item in rows[:50]) or 1
+                cell = QTableWidgetItem(f"{value:g}"); intensity = int(60 + 195 * value / maximum); cell.setBackground(QColor(255 - intensity // 2, intensity, 100)); self.response_heatmap.setItem(row_index, column_index, cell)
+        self.response_heatmap.resizeColumnsToContents()
+        nodes = safe.get("nodes", []) if isinstance(safe, dict) else []
+        links = safe.get("links", safe.get("edges", [])) if isinstance(safe, dict) else []
+        if isinstance(nodes, list) and isinstance(links, list) and (nodes or links):
+            node_names = [str(item.get("name") or item.get("id") or item) if isinstance(item, dict) else str(item) for item in nodes[:100]]
+            link_names = [f"{item.get('source', '?')} → {item.get('target', '?')}" if isinstance(item, dict) else str(item) for item in links[:200]]
+            self.response_topology.setPlainText(self.tr("Nodes") + ":\n" + "\n".join(node_names) + "\n\n" + self.tr("Connections") + ":\n" + "\n".join(link_names))
+        else:
+            self.response_topology.setPlainText(self.tr("No nodes or connections were found in this response."))
         if numeric:
             key = numeric[0]; labels = [str(row.get("name") or row.get("id") or index + 1) for index, row in enumerate(rows[:12])]
             self.response_chart.set_values(list(zip(labels, [float(row[key]) for row in rows[:12]])))
