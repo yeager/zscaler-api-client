@@ -20,6 +20,7 @@ import json
 import os
 import re
 import shlex
+import shutil
 import sys
 import time
 import urllib.request
@@ -4245,6 +4246,17 @@ class OperationsDialog(QDialog):
         governance_note = QLabel(self.tr("Read-only mode blocks write requests. Webhooks and local automation are saved only; this app will ask before any execution.")); governance_note.setWordWrap(True); governance_layout.addRow(governance_note)
         tabs.addTab(governance_page, self.tr("Governance"))
 
+        integrations_page = QWidget(); integrations_layout = QVBoxLayout(integrations_page)
+        integrations_intro = QLabel(self.tr("Official integrations are optional. Credentials remain in the system keychain and no command runs automatically.")); integrations_intro.setWordWrap(True); integrations_layout.addWidget(integrations_intro)
+        self.integration_status = QTableWidget(0, 3); self.integration_status.setHorizontalHeaderLabels([self.tr("Integration"), self.tr("Status"), self.tr("Recommended use")]); self.integration_status.horizontalHeader().setStretchLastSection(True); self.integration_status.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); integrations_layout.addWidget(self.integration_status)
+        self.integration_preview = QPlainTextEdit(); self.integration_preview.setReadOnly(True); integrations_layout.addWidget(self.integration_preview)
+        integration_buttons = QHBoxLayout()
+        refresh_integrations = QPushButton(self.tr("Check local integrations")); refresh_integrations.clicked.connect(self.refresh_integrations); integration_buttons.addWidget(refresh_integrations)
+        terraform_preview = QPushButton(self.tr("Prepare Terraform import")); terraform_preview.clicked.connect(lambda: self.prepare_integration("terraform")); integration_buttons.addWidget(terraform_preview)
+        mcp_preview = QPushButton(self.tr("Prepare MCP connection")); mcp_preview.clicked.connect(lambda: self.prepare_integration("mcp")); integration_buttons.addWidget(mcp_preview)
+        sdk_preview = QPushButton(self.tr("Prepare SDK configuration")); sdk_preview.clicked.connect(lambda: self.prepare_integration("sdk")); integration_buttons.addWidget(sdk_preview)
+        integrations_layout.addLayout(integration_buttons); tabs.addTab(integrations_page, self.tr("Integrations"))
+
         audit_page = QWidget(); audit_layout = QVBoxLayout(audit_page)
         self.audit_timeline = QTableWidget(0, 3); self.audit_timeline.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Event"), self.tr("Details")]); self.audit_timeline.horizontalHeader().setStretchLastSection(True); self.audit_timeline.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); audit_layout.addWidget(self.audit_timeline)
         audit_controls = QHBoxLayout()
@@ -4253,7 +4265,7 @@ class OperationsDialog(QDialog):
         bundle = QPushButton(self.tr("Create redacted support bundle")); bundle.clicked.connect(self.create_support_bundle); audit_controls.addWidget(bundle)
         audit_layout.addLayout(audit_controls); tabs.addTab(audit_page, self.tr("Audit & automation"))
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
-        self.refresh_dashboard(); self.refresh_audit()
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations()
 
     def _json(self, editor, fallback):
         try: return json.loads(editor.toPlainText() or fallback)
@@ -4318,6 +4330,22 @@ class OperationsDialog(QDialog):
         self.settings.setValue("automation/local_plugin", self.plugin_path.text().strip())
         AuditTrail(self.settings).append("governance_updated", {"role": self.role_choice.currentData(), "threshold": threshold, "webhook_configured": bool(self.webhook_url.text().strip()), "plugin_configured": bool(self.plugin_path.text().strip())})
         QMessageBox.information(self, self.tr("Governance"), self.tr("Governance settings saved."))
+
+    def refresh_integrations(self):
+        sdk_available = bool(__import__("importlib").util.find_spec("zscaler"))
+        tools = [("Zscaler Python SDK", sdk_available, self.tr("Use OneAPI or legacy clients locally")), ("Zscaler MCP Server", bool(shutil.which("zscaler-mcp-server")), self.tr("AI-assisted, tool-scoped exploration")), ("zscaler-terraformer", bool(shutil.which("zscaler-terraformer")), self.tr("Export existing ZIA/ZPA configuration to Terraform"))]
+        self.integration_status.setRowCount(len(tools))
+        for row, (name, available, use) in enumerate(tools):
+            self.integration_status.setItem(row, 0, QTableWidgetItem(name)); self.integration_status.setItem(row, 1, QTableWidgetItem(self.tr("Available") if available else self.tr("Not installed"))); self.integration_status.setItem(row, 2, QTableWidgetItem(use))
+
+    def prepare_integration(self, kind):
+        commands = {
+            "sdk": "pip install zscaler-sdk-python\n# Configure OneAPI credentials in Settings; they are never written to this command.",
+            "mcp": "pip install zscaler-mcp-server\n# Add a locally scoped MCP server only after reviewing its tool permissions.",
+            "terraform": "zscaler-terraformer --help\n# Review the generated Terraform and policy diff before applying anything.",
+        }
+        self.integration_preview.setPlainText(commands[kind])
+        AuditTrail(self.settings).append("integration_previewed", {"integration": kind})
 
     def refresh_audit(self):
         trail = AuditTrail(self.settings)
