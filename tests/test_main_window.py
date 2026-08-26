@@ -383,6 +383,20 @@ class MainWindowTests(unittest.TestCase):
         self.assertNotIn("hidden", json.dumps(payload))
         dialog.close()
 
+    def test_api_chain_preview_is_masked_and_confined_to_active_host(self):
+        self.window.api_type.setCurrentText("ZIA")
+        self.window.zia_session = "session"
+        dialog = client.OperationsDialog(self.window)
+        dialog.api_chain_input.setPlainText('[{"method":"POST","url":"/api/v1/users?access_token=also-hidden","body":{"client_secret":"hidden"}}]')
+        plan = dialog.validate_api_chain()
+        self.assertTrue(plan["valid"])
+        self.assertIn("***", dialog.api_chain_preview.toPlainText())
+        self.assertNotIn("hidden", dialog.api_chain_preview.toPlainText())
+        self.assertNotIn("also-hidden", dialog.api_chain_preview.toPlainText())
+        dialog.api_chain_input.setPlainText('[{"method":"GET","url":"https://other.example.test/users"}]')
+        self.assertFalse(dialog.validate_api_chain()["valid"])
+        dialog.close()
+
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")
         self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")

@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, incident_evidence, change_control_plan, security_report_data, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -4350,6 +4350,17 @@ class OperationsDialog(QDialog):
         report_actions = QHBoxLayout(); report_markdown = QPushButton(self.tr("Export report as Markdown")); report_markdown.clicked.connect(lambda: self.export_report("markdown")); report_actions.addWidget(report_markdown)
         report_json = QPushButton(self.tr("Export report as JSON")); report_json.clicked.connect(lambda: self.export_report("json")); report_actions.addWidget(report_json); report_actions.addStretch(); reports_layout.addLayout(report_actions)
         self.reports_tab_index = self.tabs.addTab(reports_page, self.tr("Reports"))
+
+        chain_page = QWidget(); chain_layout = QVBoxLayout(chain_page)
+        chain_intro = QLabel(self.tr("Run a reviewed sequence against the active authenticated environment. Chains are limited to 20 steps, stay on the selected product host, and every run requires approval.")); chain_intro.setWordWrap(True); chain_layout.addWidget(chain_intro)
+        chain_layout.addWidget(QLabel(self.tr("Chain JSON")))
+        self.api_chain_input = QPlainTextEdit('[\n  {"method": "GET", "url": "/api/v1/users"}\n]')
+        self.api_chain_input.setPlaceholderText(self.tr("A JSON list of API requests. Relative paths use the active product host.")); chain_layout.addWidget(self.api_chain_input)
+        self.api_chain_preview = QPlainTextEdit(); self.api_chain_preview.setReadOnly(True); self.api_chain_preview.setMaximumHeight(130); chain_layout.addWidget(self.api_chain_preview)
+        self.api_chain_result = QPlainTextEdit(); self.api_chain_result.setReadOnly(True); chain_layout.addWidget(self.api_chain_result)
+        chain_actions = QHBoxLayout(); validate_chain = QPushButton(self.tr("Validate chain")); validate_chain.clicked.connect(self.validate_api_chain); chain_actions.addWidget(validate_chain)
+        run_chain = QPushButton(self.tr("Run approved chain")); run_chain.clicked.connect(self.run_api_chain); chain_actions.addWidget(run_chain); chain_actions.addStretch(); chain_layout.addLayout(chain_actions)
+        self.chain_tab_index = self.tabs.addTab(chain_page, self.tr("API chains"))
         self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
@@ -4358,7 +4369,7 @@ class OperationsDialog(QDialog):
     def _apply_operations_mode(self):
         """Keep basic mode focused on situational awareness and investigation."""
         basic = self.settings.value("ui/mode", "basic") == "basic"
-        advanced_tabs = (1, 2, 3, 4, 5, 6, self.change_tab_index)
+        advanced_tabs = (1, 2, 3, 4, 5, 6, self.change_tab_index, self.chain_tab_index)
         for index in advanced_tabs:
             self.tabs.setTabVisible(index, not basic)
 
@@ -4510,6 +4521,108 @@ class OperationsDialog(QDialog):
         if path:
             Path(path).write_text(content, encoding="utf-8")
             AuditTrail(self.settings).append("security_report_exported", {"kind": data["kind"], "format": format_name, "file": os.path.basename(path)})
+
+    def _active_chain_base_url(self):
+        """Return the selected product's approved API origin, never a user-provided host."""
+        api = self.window._current_api_type()
+        settings = self.settings
+        if api == "OneAPI":
+            cloud = str(settings.value("oneapi/cloud", "")).strip()
+            return f"https://api.{cloud.lower()}.zsapi.net" if cloud and cloud.upper() != "PRODUCTION" and "." not in cloud else "https://api.zsapi.net"
+        values = {
+            "ZIA": ("zia/cloud", "zsapi.zscaler.net"), "ZPA": ("zpa/cloud", "config.private.zscaler.com"),
+            "ZDX": ("zdx/cloud", "api.zdxcloud.net"), "ZCC": ("zcc/cloud", "api.zscaler.com"),
+            "ZTW": ("ztw/cloud", "connector.zscaler.net"), "ZWA": ("zwa/cloud", "workflow.zscaler.com"),
+            "EASM": ("easm/cloud", "api.zscaler.com"), "ZIdentity": ("zidentity/domain", ""),
+        }
+        key, default = values.get(api, ("", ""))
+        host = str(settings.value(key, default)).strip()
+        return f"https://{host}" if host else ""
+
+    def _chain_headers(self):
+        api = self.window._current_api_type()
+        tokens = {"ZPA": self.window.zpa_token, "ZDX": self.window.zdx_token, "ZCC": self.window.zcc_token,
+                  "ZIdentity": self.window.zidentity_token, "ZTW": self.window.ztw_token,
+                  "ZWA": self.window.zwa_token, "EASM": self.window.easm_token, "OneAPI": self.window.oneapi_token}
+        headers = {"Content-Type": "application/json"}
+        if api == "ZIA" and self.window.zia_session:
+            headers["Cookie"] = f"JSESSIONID={self.window.zia_session}"
+        elif tokens.get(api):
+            headers["Authorization"] = f"Bearer {tokens[api]}"
+        return headers
+
+    def _api_chain_plan(self):
+        try:
+            raw = json.loads(self.api_chain_input.toPlainText())
+        except ValueError as exc:
+            return {"valid": False, "errors": [self.tr("Invalid JSON: ") + str(exc)], "steps": []}
+        plan = validate_request_chain(raw)
+        base = self._active_chain_base_url()
+        if not base:
+            plan["valid"] = False; plan.setdefault("errors", []).append(self.tr("Configure a host for the active product before running a chain."))
+            return plan
+        base_parts = urllib.parse.urlsplit(base)
+        for step in plan.get("steps", []):
+            if step["url"].startswith("/"):
+                step["resolved_url"] = base.rstrip("/") + step["url"]
+            else:
+                step["resolved_url"] = step["url"]
+            destination = urllib.parse.urlsplit(step["resolved_url"])
+            if destination.scheme != "https" or destination.netloc != base_parts.netloc:
+                plan["valid"] = False; plan.setdefault("errors", []).append(self.tr("Each chain step must stay on the active product host."))
+        return plan
+
+    def validate_api_chain(self):
+        plan = self._api_chain_plan()
+        preview = {"valid": plan["valid"], "errors": plan.get("errors", []), "steps": [
+            {"method": step["method"], "url": redact_url(step.get("resolved_url", step["url"])), "body": mask(step.get("body"))}
+            for step in plan.get("steps", [])]}
+        self.api_chain_preview.setPlainText(json.dumps(preview, indent=2, ensure_ascii=False))
+        if plan["valid"]:
+            AuditTrail(self.settings).append("api_chain_validated", {"count": len(plan["steps"]), "api": self.window._current_api_type()})
+        return plan
+
+    def run_api_chain(self):
+        plan = self.validate_api_chain()
+        if not plan["valid"]:
+            QMessageBox.warning(self, self.tr("API chains"), self.tr("Fix the chain validation errors before running it.")); return
+        steps = plan["steps"]
+        writes = [step for step in steps if step["method"] in {"POST", "PUT", "PATCH", "DELETE"}]
+        if self.settings.value("access/role", "admin") == "readonly" and writes:
+            QMessageBox.warning(self, self.tr("Read only"), self.tr("Read-only mode blocks write requests. Change the local role in Operations Center to continue.")); return
+        if not self.window._get_auth_status(self.window._current_api_type()):
+            QMessageBox.warning(self, self.tr("API chains"), self.tr("Authenticate the active product before running a chain.")); return
+        message = self.tr("Run {count} API step(s) sequentially against the active environment?").format(count=len(steps))
+        if writes:
+            message += "\n\n" + self.tr("The chain contains write operations; review and approve before continuing.")
+        if QMessageBox.question(self, self.tr("Run approved chain"), message, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
+            AuditTrail(self.settings).append("api_chain_cancelled", {"count": len(steps)}); return
+        headers = self._chain_headers()
+        requests = [{"url": step["resolved_url"], "method": step["method"], "headers": dict(headers), "body": step.get("body")} for step in steps]
+        self.api_chain_result.clear()
+        self.api_chain_worker = ApiWorker(requests)
+        self.api_chain_worker.progress.connect(self._on_api_chain_progress)
+        self.api_chain_worker.finished.connect(self._on_api_chain_finished)
+        self.api_chain_worker.start()
+        AuditTrail(self.settings).append("api_chain_started", {"count": len(steps), "api": self.window._current_api_type(), "write_steps": len(writes)})
+
+    def _on_api_chain_progress(self, completed, total):
+        self.api_chain_result.setPlainText(self.tr("Running API chain step {completed} of {total}...").format(completed=completed, total=total))
+
+    def _on_api_chain_finished(self, result):
+        results = result.get("results", [])
+        successful = sum(1 for item in results if item.get("success")); failed = len(results) - successful
+        safe_results = redact_sensitive(mask(results))
+        for item in safe_results:
+            request = item.get("request", {})
+            if isinstance(request, dict) and "url" in request:
+                request["url"] = redact_url(request["url"])
+        self.api_chain_result.setPlainText(json.dumps(safe_results, indent=2, ensure_ascii=False))
+        for item in results:
+            request = item.get("request", {})
+            self.window._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=200 if item.get("success") else 0)
+        AuditTrail(self.settings).append("api_chain_finished", {"successful": successful, "failed": failed})
+        QMessageBox.information(self, self.tr("API chains"), self.tr("API chain completed: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed))
 
     def compare_policies(self):
         try:

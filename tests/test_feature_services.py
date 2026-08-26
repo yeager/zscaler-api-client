@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture, incident_evidence, change_control_plan, security_report_data
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture, incident_evidence, change_control_plan, security_report_data, validate_request_chain
 
 
 class MemorySettings:
@@ -81,6 +81,13 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertEqual("ciso", report["kind"])
         self.assertEqual(1, report["posture"]["metrics"]["failed"])
         self.assertNotIn("hidden", json.dumps(report))
+
+    def test_request_chain_validation_preserves_execution_body_but_rejects_unsafe_urls(self):
+        plan = validate_request_chain([{"method": "POST", "url": "/api/v1/users", "body": {"name": "Ada"}}])
+        self.assertTrue(plan["valid"])
+        self.assertEqual({"name": "Ada"}, plan["steps"][0]["body"])
+        self.assertFalse(validate_request_chain([{"method": "GET", "url": "http://example.test"}])["valid"])
+        self.assertFalse(validate_request_chain([])["valid"])
 
     def test_audit_trail_is_hash_linked(self):
         settings = MemorySettings(); trail = AuditTrail(settings)

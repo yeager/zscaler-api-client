@@ -308,3 +308,30 @@ def security_report_data(kind: str, history: Iterable[dict[str, Any]], audit_eve
         "audit_valid": audit_valid, "audit_events": len(audit_list),
         "recent_events": evidence["timeline"][:10],
     }
+
+
+def validate_request_chain(steps: Any, maximum: int = 20) -> dict[str, Any]:
+    """Validate an explicit API chain before the UI considers execution."""
+    if not isinstance(steps, list) or not steps:
+        return {"valid": False, "errors": ["Chain must contain at least one step"], "steps": []}
+    if len(steps) > maximum:
+        return {"valid": False, "errors": [f"Chain is limited to {maximum} steps"], "steps": []}
+    valid_steps, errors = [], []
+    for index, raw in enumerate(steps, 1):
+        if not isinstance(raw, dict):
+            errors.append(f"Step {index} must be an object")
+            continue
+        method, url = str(raw.get("method", "GET")).upper(), str(raw.get("url", "")).strip()
+        if method not in {"GET", "POST", "PUT", "PATCH", "DELETE"}:
+            errors.append(f"Step {index} has an unsupported method")
+        parsed = urllib.parse.urlsplit(url)
+        if not url or (not url.startswith("/") and parsed.scheme != "https"):
+            errors.append(f"Step {index} must use an HTTPS URL or a relative API path")
+        body = raw.get("body")
+        if body is not None and not isinstance(body, (dict, list, str)):
+            errors.append(f"Step {index} body must be JSON data or text")
+        if not errors or not any(error.startswith(f"Step {index} ") for error in errors):
+            # Keep the original body for the explicitly approved request.  Callers
+            # must use mask() when previewing, persisting or auditing this plan.
+            valid_steps.append({"method": method, "url": url, "body": body})
+    return {"valid": not errors, "errors": errors, "steps": valid_steps}
