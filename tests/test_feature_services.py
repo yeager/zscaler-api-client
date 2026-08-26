@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain
+from feature_services import AuditTrail, policy_diff, simulate_policy, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain
 
 
 class MemorySettings:
@@ -35,6 +35,17 @@ class FeatureServicesTests(unittest.TestCase):
         ], {"group": "staff"})
         self.assertEqual("allow", result["action"])
         self.assertEqual(1, result["position"])
+
+    def test_policy_overview_trace_and_best_practices_are_transparent(self):
+        rules = [{"name": "Open", "action": "allow", "conditions": {}}, {"name": "Open", "enabled": False}]
+        overview = policy_overview({"rules": rules})
+        self.assertEqual(2, overview["total"])
+        trace = simulate_policy_trace(rules, {"group": "staff"})
+        self.assertEqual(1, len(trace["trace"]))
+        messages = [item["message"] for item in compliance_findings({"rules": rules})]
+        self.assertIn("Allow rule has no conditions", messages)
+        self.assertIn("Rule name is duplicated", messages)
+        self.assertIn("Rule action is unspecified", messages)
 
     def test_bulk_validator_reports_headers_and_rows(self):
         result = validate_bulk_csv("name,email\nAda,\n", ["name", "email"])

@@ -83,10 +83,47 @@ def simulate_policy(rules: Iterable[dict[str, Any]], context: dict[str, Any]) ->
     """Evaluate simple local policy conditions without changing any tenant state."""
     for position, rule in enumerate(rules, 1):
         conditions = rule.get("conditions", {})
-        if all(str(context.get(key, "")).lower() == str(expected).lower() for key, expected in conditions.items()):
+        matched = all(str(context.get(key, "")).lower() == str(expected).lower() for key, expected in conditions.items())
+        trace_item = {"position": position, "name": rule.get("name", f"Rule {position}"),
+                      "action": rule.get("action", "allow"), "conditions": mask(conditions), "matched": matched}
+        if matched:
             return {"matched": True, "position": position, "name": rule.get("name", f"Rule {position}"),
-                    "action": rule.get("action", "allow"), "rule": mask(rule)}
-    return {"matched": False, "position": None, "name": None, "action": "no-match"}
+                    "action": rule.get("action", "allow"), "rule": mask(rule), "trace": [trace_item]}
+    return {"matched": False, "position": None, "name": None, "action": "no-match", "trace": []}
+
+
+def simulate_policy_trace(rules: Iterable[dict[str, Any]], context: dict[str, Any]) -> dict[str, Any]:
+    """Return a transparent rule-by-rule local decision path for the simulator."""
+    rule_list = list(rules)
+    trace: list[dict[str, Any]] = []
+    for position, rule in enumerate(rule_list, 1):
+        conditions = rule.get("conditions", {}) if isinstance(rule, dict) else {}
+        matched = isinstance(rule, dict) and all(str(context.get(key, "")).lower() == str(expected).lower() for key, expected in conditions.items())
+        trace.append({"position": position, "name": rule.get("name", f"Rule {position}") if isinstance(rule, dict) else f"Rule {position}",
+                      "action": rule.get("action", "allow") if isinstance(rule, dict) else "unknown",
+                      "conditions": mask(conditions), "matched": matched})
+        if matched:
+            break
+    result = simulate_policy(rule_list, context)
+    result["trace"] = trace
+    return result
+
+
+def policy_overview(policy: Any) -> dict[str, Any]:
+    """Summarise a policy locally for rule visualisation and review."""
+    rules = policy if isinstance(policy, list) else policy.get("rules", []) if isinstance(policy, dict) else []
+    rows, actions = [], {}
+    for position, rule in enumerate(rules, 1):
+        if not isinstance(rule, dict):
+            continue
+        action = str(rule.get("action", "unspecified")).lower() or "unspecified"
+        actions[action] = actions.get(action, 0) + 1
+        conditions = rule.get("conditions", {})
+        rows.append({"position": position, "name": str(rule.get("name", f"Rule {position}")), "action": action,
+                     "conditions": len(conditions) if isinstance(conditions, dict) else 0,
+                     "enabled": rule.get("enabled", True) is not False})
+    return {"rules": rows, "actions": actions, "total": len(rows),
+            "enabled": sum(1 for row in rows if row["enabled"]), "conditional": sum(1 for row in rows if row["conditions"])}
 
 
 def validate_bulk_csv(payload: str, required: Iterable[str]) -> dict[str, Any]:
@@ -209,6 +246,7 @@ def compliance_findings(policy: Any) -> list[dict[str, str]]:
     """Small transparent baseline, suitable for local review rather than enforcement."""
     findings: list[dict[str, str]] = []
     rules = policy if isinstance(policy, list) else policy.get("rules", []) if isinstance(policy, dict) else []
+    seen_names: set[str] = set()
     for index, rule in enumerate(rules, 1):
         if not isinstance(rule, dict):
             continue
@@ -218,6 +256,12 @@ def compliance_findings(policy: Any) -> list[dict[str, str]]:
             findings.append({"severity": "high", "rule": str(rule.get("name", index)), "message": "Allow rule has no conditions"})
         if rule.get("enabled") is False:
             findings.append({"severity": "info", "rule": str(rule.get("name", index)), "message": "Rule is disabled"})
+        name = str(rule.get("name", "")).strip()
+        if name and name.lower() in seen_names:
+            findings.append({"severity": "medium", "rule": name, "message": "Rule name is duplicated"})
+        seen_names.add(name.lower())
+        if not action:
+            findings.append({"severity": "medium", "rule": str(rule.get("name", index)), "message": "Rule action is unspecified"})
     return findings
 
 

@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -96,9 +96,17 @@ def redact_sensitive(value: Any) -> Any:
     if isinstance(value, list):
         return [redact_sensitive(item) for item in value]
     if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.startswith(("{", "[")):
+            try:
+                # API error bodies are frequently JSON embedded in an exception
+                # string. Parse and redact them before they reach UI or exports.
+                return json.dumps(redact_sensitive(json.loads(stripped)), ensure_ascii=False)
+            except (ValueError, TypeError):
+                pass
         masked = re.sub(
-            r"(?i)\b(authorization|cookie|password|(?:client_)?secret|(?:access|refresh)_token|api_?key)\s*=\s*([^\s,;&]+)",
-            r"\1=***",
+            r"(?i)(\b(?:authorization|proxy-?authorization|set-?cookie|cookie|password|(?:client_)?secret|(?:access|refresh)_token|x-?api-?key|api_?key)\s*[:=]\s*)(?:[\"'])?[^\s,;&}\]\"']+",
+            r"\1***",
             value,
         )
         if masked != value:
@@ -4271,6 +4279,10 @@ class OperationsDialog(QDialog):
         self.after_policy = QPlainTextEdit(); self.after_policy.setPlaceholderText(self.tr("Proposed policy JSON"))
         self.diff_result = QPlainTextEdit(); self.diff_result.setReadOnly(True)
         for widget in (self.before_policy, self.after_policy, self.diff_result): diff_layout.addWidget(widget)
+        diff_layout.addWidget(QLabel(self.tr("Policy rule overview")))
+        self.policy_chart = NumericBarChart(); self.policy_chart.setMaximumHeight(145); diff_layout.addWidget(self.policy_chart)
+        self.policy_rules = QTableWidget(0, 4); self.policy_rules.setHorizontalHeaderLabels([self.tr("Rule"), self.tr("Action"), self.tr("Conditions"), self.tr("State")]); self.policy_rules.horizontalHeader().setStretchLastSection(True); self.policy_rules.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.policy_rules.setMaximumHeight(160); diff_layout.addWidget(self.policy_rules)
+        self.best_practices = QTableWidget(0, 3); self.best_practices.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Rule"), self.tr("Best-practice finding")]); self.best_practices.horizontalHeader().setStretchLastSection(True); self.best_practices.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.best_practices.setMaximumHeight(130); diff_layout.addWidget(self.best_practices)
         diff_btn = QPushButton(self.tr("Compare policies")); diff_btn.clicked.connect(self.compare_policies)
         policy_actions = QHBoxLayout(); policy_actions.addWidget(diff_btn)
         export_json = QPushButton(self.tr("Export policy as JSON")); export_json.clicked.connect(lambda: self.export_policy("json")); policy_actions.addWidget(export_json)
@@ -4283,6 +4295,8 @@ class OperationsDialog(QDialog):
         self.context_input = QPlainTextEdit(); self.context_input.setPlaceholderText(self.tr("Request context JSON: {\"group\": \"staff\"}"))
         self.simulation_result = QPlainTextEdit(); self.simulation_result.setReadOnly(True)
         for widget in (self.rules_input, self.context_input, self.simulation_result): simulate_layout.addWidget(widget)
+        self.simulation_chart = NumericBarChart(); self.simulation_chart.setMaximumHeight(140); simulate_layout.addWidget(self.simulation_chart)
+        self.simulation_path = QTableWidget(0, 4); self.simulation_path.setHorizontalHeaderLabels([self.tr("Order"), self.tr("Rule"), self.tr("Action"), self.tr("Decision")]); self.simulation_path.horizontalHeader().setStretchLastSection(True); self.simulation_path.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.simulation_path.setMaximumHeight(160); simulate_layout.addWidget(self.simulation_path)
         simulate_btn = QPushButton(self.tr("Simulate policy (local only)")); simulate_btn.clicked.connect(self.run_simulation)
         simulate_layout.addWidget(simulate_btn); self.tabs.addTab(simulate_page, self.tr("Simulation"))
 
@@ -4680,10 +4694,31 @@ class OperationsDialog(QDialog):
 
     def compare_policies(self):
         try:
-            changes = policy_diff(self._json(self.before_policy, {}), self._json(self.after_policy, {}))
+            after = self._json(self.after_policy, {})
+            changes = policy_diff(self._json(self.before_policy, {}), after)
             counts = {kind: sum(1 for item in changes if item["change"] == kind) for kind in ("added", "removed", "changed")}
             self.diff_result.setPlainText(json.dumps({"summary": counts, "changes": changes}, indent=2))
+            self._render_policy_overview(after)
         except ValueError as exc: QMessageBox.warning(self, self.tr("Policy diff"), str(exc))
+
+    def _render_policy_overview(self, policy):
+        overview = policy_overview(policy)
+        self.policy_chart.set_values([(action.title(), float(count)) for action, count in overview["actions"].items()])
+        self.policy_rules.setRowCount(len(overview["rules"]))
+        for row, rule in enumerate(overview["rules"]):
+            values = (rule["name"], rule["action"].title(), str(rule["conditions"]), self.tr("Enabled") if rule["enabled"] else self.tr("Disabled"))
+            for column, value in enumerate(values): self.policy_rules.setItem(row, column, QTableWidgetItem(value))
+
+    def _render_best_practices(self, findings):
+        labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
+        messages = {
+            "Allow rule has no conditions": self.tr("Allow rule has no conditions"), "Rule is disabled": self.tr("Rule is disabled"),
+            "Rule name is duplicated": self.tr("Rule name is duplicated"), "Rule action is unspecified": self.tr("Rule action is unspecified"),
+        }
+        self.best_practices.setRowCount(len(findings))
+        for row, finding in enumerate(findings):
+            values = (labels.get(finding["severity"], finding["severity"]), finding["rule"], messages.get(finding["message"], finding["message"]))
+            for column, value in enumerate(values): self.best_practices.setItem(row, column, QTableWidgetItem(value))
 
     def export_policy(self, format_name):
         try: payload = policy_as_code(self._json(self.after_policy, {}), format_name)
@@ -4694,12 +4729,23 @@ class OperationsDialog(QDialog):
             AuditTrail(self.settings).append("policy_exported", {"format": format_name, "file": os.path.basename(path)})
 
     def run_compliance(self):
-        try: findings = compliance_findings(self._json(self.after_policy, {}))
+        try:
+            policy = self._json(self.after_policy, {})
+            findings = compliance_findings(policy)
         except ValueError as exc: QMessageBox.warning(self, self.tr("Compliance"), str(exc)); return
-        self.diff_result.setPlainText(json.dumps({"findings": findings, "count": len(findings)}, indent=2))
+        self._render_policy_overview(policy); self._render_best_practices(findings)
+        self.diff_result.setPlainText(json.dumps({"best_practice_findings": findings, "count": len(findings), "scope": "local policy heuristic"}, indent=2))
 
     def run_simulation(self):
-        try: self.simulation_result.setPlainText(json.dumps(simulate_policy(self._json(self.rules_input, []), self._json(self.context_input, {})), indent=2))
+        try:
+            result = simulate_policy_trace(self._json(self.rules_input, []), self._json(self.context_input, {}))
+            self.simulation_result.setPlainText(json.dumps(result, indent=2))
+            trace = result["trace"]
+            self.simulation_chart.set_values([(self.tr("Rules evaluated"), float(len(trace))), (self.tr("Matched rule"), 1.0 if result["matched"] else 0.0)])
+            self.simulation_path.setRowCount(len(trace))
+            for row, item in enumerate(trace):
+                values = (str(item["position"]), item["name"], str(item["action"]).title(), self.tr("Matched") if item["matched"] else self.tr("Not matched"))
+                for column, value in enumerate(values): self.simulation_path.setItem(row, column, QTableWidgetItem(value))
         except ValueError as exc: QMessageBox.warning(self, self.tr("Simulation"), str(exc))
 
     def validate_bulk(self):

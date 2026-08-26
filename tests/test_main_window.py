@@ -385,6 +385,14 @@ class MainWindowTests(unittest.TestCase):
         self.window._on_request_finished({"results": [{"success": False, "error": "access_token=never-display"}]})
         self.assertNotIn("never-display", self.window.response_body.toPlainText())
 
+    def test_json_error_text_is_masked_before_ui_or_chain_results(self):
+        raw_error = '{"error":{"client_secret":"never-display","message":"Denied"}}'
+        self.assertNotIn("never-display", client.redact_sensitive(raw_error))
+        self.assertNotIn("never-display", client.redact_sensitive("X-API-Key: never-display"))
+        self.window._pending_request = {"method": "GET", "url": "https://example.test", "headers": {}, "body": None, "start_time": 0}
+        self.window._on_request_finished({"results": [{"success": False, "status_code": 400, "error": raw_error}]})
+        self.assertNotIn("never-display", self.window.response_body.toPlainText())
+
     def test_zcc_authentication_uses_the_jwt_login_shape(self):
         settings = client.QSettings("Zscaler", "APIClient")
         settings.setValue("zcc/cloud", "api.zsapi.net")
@@ -456,6 +464,23 @@ class MainWindowTests(unittest.TestCase):
         dialog.after_policy.setPlainText('{"rules": [{"name": "Open", "action": "allow", "conditions": {}}]}')
         dialog.prepare_change_review()
         self.assertIn('"risk": "high"', dialog.change_review.toPlainText())
+        dialog.close()
+
+    def test_policy_workspace_visualizes_rules_best_practices_and_decision_path(self):
+        dialog = client.OperationsDialog(self.window)
+        policy = '{"rules": [{"name":"Open","action":"allow","conditions":{}}, {"name":"Staff","action":"block","conditions":{"group":"staff"}}]}'
+        dialog.before_policy.setPlainText('{"rules": []}')
+        dialog.after_policy.setPlainText(policy)
+        dialog.compare_policies()
+        self.assertEqual(2, dialog.policy_rules.rowCount())
+        self.assertEqual([("Allow", 1.0), ("Block", 1.0)], dialog.policy_chart.values)
+        dialog.run_compliance()
+        self.assertGreaterEqual(dialog.best_practices.rowCount(), 1)
+        dialog.rules_input.setPlainText('[{"name":"Guest","action":"allow","conditions":{"group":"guest"}}, {"name":"Staff","action":"block","conditions":{"group":"staff"}}]')
+        dialog.context_input.setPlainText('{"group":"staff"}')
+        dialog.run_simulation()
+        self.assertGreaterEqual(dialog.simulation_path.rowCount(), 2)
+        self.assertIn("Matched", dialog.simulation_path.item(1, 3).text())
         dialog.close()
 
     def test_reports_and_operations_mode_are_available(self):
