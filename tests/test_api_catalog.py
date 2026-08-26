@@ -39,6 +39,10 @@ class ApiCatalogTests(unittest.TestCase):
             "hidden",
             client.redact_url("https://example.test/token?access_token=hidden&page=1"),
         )
+        self.assertEqual(
+            "https://example.test/callback#***",
+            client.redact_url("https://example.test/callback#access_token=hidden"),
+        )
         self.assertNotIn("hidden", client.redact_sensitive("https://example.test/users?token=hidden&page=1"))
         self.assertIn("https://", client.redact_sensitive("https://example.test/users?token=hidden&page=1"))
     def test_extracts_method_url_and_metadata(self):

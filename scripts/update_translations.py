@@ -185,6 +185,33 @@ SWEDISH_REVIEW.update({
     "Send a request or open a response export before comparing drift.": "Skicka en begäran eller öppna en svarsexport innan du jämför drift.",
 })
 
+SWEDISH_REVIEW.update({
+    "Default": "Standard",
+    "Environment": "Miljö",
+    "Active": "Aktiv",
+    "Default API": "Standard-API",
+    "Configured host": "Konfigurerad värd",
+    "Keychain secrets": "Hemligheter i nyckelringen",
+    "{count} configured": "{count} konfigurerade",
+    "Create profile": "Skapa profil",
+    "Rename profile": "Byt namn på profil",
+    "Delete profile": "Ta bort profil",
+    "Activate profile": "Aktivera profil",
+    "Profile name:": "Profilnamn:",
+    "Each environment keeps separate tenant hosts, client identifiers, enabled products, and keychain credentials. Creating a profile copies only non-secret configuration. Activating a profile clears every in-memory API session.": "Varje miljö håller tenantvärdar, klientidentifierare, aktiverade produkter och autentiseringsuppgifter i nyckelringen åtskilda. När en profil skapas kopieras endast konfiguration som inte är hemlig. När en profil aktiveras rensas alla API-sessioner i minnet.",
+    "Enter a unique profile name without path separators (maximum 60 characters).": "Ange ett unikt profilnamn utan sökvägsavgränsare (högst 60 tecken).",
+    "The profile was created with non-secret settings only. Open Settings after activation to add its keychain credentials.": "Profilen skapades endast med inställningar som inte är hemliga. Öppna Inställningar efter aktivering för att lägga till profilens autentiseringsuppgifter i nyckelringen.",
+    "The default or active profile cannot be deleted. Activate another profile first.": "Standardprofilen eller den aktiva profilen kan inte tas bort. Aktivera först en annan profil.",
+    "Delete profile “{name}” and all of its keychain credentials? This cannot be undone.": "Ta bort profilen ”{name}” och alla dess autentiseringsuppgifter i nyckelringen? Detta kan inte ångras.",
+    "The profile could not be deleted because its keychain credentials could not be removed.": "Profilen kunde inte tas bort eftersom dess autentiseringsuppgifter inte kunde tas bort från nyckelringen.",
+    "Current environment: {name}": "Aktuell miljö: {name}",
+    "All environments": "Alla miljöer",
+    "Active environment: {name}": "Aktiv miljö: {name}",
+    "The selected environment profile is unavailable.": "Den valda miljöprofilen är inte tillgänglig.",
+    "Environment profile active: {name}. Sessions and request data were cleared.": "Miljöprofilen {name} är aktiv. Sessioner och begärandedata har rensats.",
+    "This request belongs to another environment. Activate that environment profile before loading it.": "Begäran tillhör en annan miljö. Aktivera den miljöprofilen innan begäran läses in.",
+})
+
 
 def protect(text: str) -> tuple[str, list[str]]:
     values: list[str] = []

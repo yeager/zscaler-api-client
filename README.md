@@ -61,7 +61,7 @@ ZS API Client is built with security as a top priority:
 - **Binary downloads** – Preserve CSV, ZIP, PDF, certificates, and other files byte-for-byte with safe filenames, explicit export confirmation, and configurable transfer limits
 - **Syntax Highlighting** – Beautiful JSON response formatting
 - **Copy as cURL** – Export any request for command-line use or scripting
-- **Request History** – Browse and replay previous requests
+- **Request History** – Browse redacted requests by tenant environment; cross-environment replay is blocked until the matching profile is active
 - **Adaptive response views** – Inspect masked JSON as a table, chart, tree, heatmap, topology, or GraphQL schema; use export preview to review masking before writing a file
 - **Complete GraphQL envelopes** – Preserve and display `data`, `errors`, and `extensions`, including partial-success responses
 - **Portable response exchanges** – Save a versioned, masked request/response package and reopen it locally for investigation without restoring credentials or sending a request
@@ -71,7 +71,8 @@ ZS API Client is built with security as a top priority:
 
 ### Productivity
 - **Batch Operations** – Import CSV files for bulk create/delete/update operations
-- **Operations Center** – Local policy diffs and simulations, CSV validation, environment profiles, dashboards, report schedules, and a hash-linked audit trail
+- **Operations Center** – Local policy diffs and simulations, CSV validation, isolated environment profiles, dashboards, report schedules, and a hash-linked audit trail
+- **Tenant-safe environments** – Keep product hosts, client identifiers, enabled APIs, workspace state, and system-keychain credentials separate per environment; switching clears all in-memory sessions, requests, and responses
 - **Background reports** – Optionally register user-level Windows Task Scheduler, macOS LaunchAgent, or Linux systemd jobs so redacted reports run while the GUI is closed; no administrator privileges are required
 - **Local governance controls** – Administrator, analyst, and read-only roles; the latter blocks mutating API requests before they leave the client
 - **Redacted support bundles** – Create diagnostics archives without API credentials or sensitive request values

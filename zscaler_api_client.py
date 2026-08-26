@@ -286,7 +286,168 @@ def validate_webhook_endpoint(value: str) -> tuple[str | None, str]:
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
 WEBHOOK_CREDENTIAL_KEY = "automation_webhook_endpoint"
+TENANT_SECRET_KEYS = frozenset({
+    "zia_api_key", "zia_password", "zpa_client_secret", "zdx_key_secret",
+    "zcc_client_secret", "zidentity_client_secret", "ztw_client_secret",
+    "zwa_client_secret", "easm_client_secret", "oneapi_client_secret",
+})
+TENANT_SETTING_KEYS = (
+    "zia/enabled", "zia/cloud", "zia/username",
+    "zpa/enabled", "zpa/cloud", "zpa/client_id", "zpa/customer_id",
+    "zdx/enabled", "zdx/cloud", "zdx/key_id", "zdx/api_version",
+    "zcc/enabled", "zcc/cloud", "zcc/client_id",
+    "zidentity/enabled", "zidentity/domain", "zidentity/client_id",
+    "ztw/enabled", "ztw/cloud", "ztw/client_id",
+    "zwa/enabled", "zwa/cloud", "zwa/client_id",
+    "easm/enabled", "easm/cloud", "easm/client_id",
+    "oneapi/enabled", "oneapi/vanity_domain", "oneapi/client_id", "oneapi/cloud", "oneapi/customer_id",
+    "advanced/default_api",
+)
 _credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
+
+
+def valid_environment_profile_id(value: Any) -> bool:
+    profile_id = str(value or "")
+    return profile_id == "default" or bool(re.fullmatch(r"[0-9a-f]{16,32}", profile_id))
+
+
+def _valid_profile_id(value: Any) -> str:
+    profile_id = str(value or "default")
+    return profile_id if valid_environment_profile_id(profile_id) else "default"
+
+
+def valid_environment_profile_name(value: Any) -> str:
+    """Return a safe display name, rejecting settings-path separators and controls."""
+    name = re.sub(r"\s+", " ", str(value or "").strip())
+    if not name or len(name) > 60 or "/" in name or "\\" in name or any(ord(character) < 32 for character in name):
+        return ""
+    return name
+
+
+def environment_profiles(settings: QSettings | None = None) -> list[dict[str, str]]:
+    """Load and migrate profile metadata without ever including credentials."""
+    settings = settings or QSettings("Zscaler", "APIClient")
+    try:
+        parsed = json.loads(str(settings.value("profiles/items", "[]") or "[]"))
+    except (TypeError, ValueError):
+        parsed = []
+    profiles, seen = [], set()
+    for item in parsed if isinstance(parsed, list) else []:
+        if not isinstance(item, dict):
+            continue
+        if not valid_environment_profile_id(item.get("id")):
+            continue
+        profile_id, name = str(item["id"]), valid_environment_profile_name(item.get("name"))
+        if profile_id not in seen and name:
+            profiles.append({"id": profile_id, "name": name}); seen.add(profile_id)
+    if "default" not in seen:
+        profiles.insert(0, {"id": "default", "name": "Default"}); seen.add("default")
+    # Migrate the original name-only profiles into deterministic safe IDs.
+    try:
+        legacy_names = json.loads(str(settings.value("profiles/names", "[]") or "[]"))
+    except (TypeError, ValueError):
+        legacy_names = []
+    legacy_active = str(settings.value("profiles/active", "default") or "default")
+    migrated_active = "default"
+    for raw_name in legacy_names if isinstance(legacy_names, list) else []:
+        name = valid_environment_profile_name(raw_name)
+        if not name:
+            continue
+        profile_id = uuid.uuid5(uuid.NAMESPACE_URL, "zs-api-client-profile:" + name).hex[:16]
+        if profile_id not in seen:
+            profiles.append({"id": profile_id, "name": name}); seen.add(profile_id)
+            for old_key, new_key in (("api", "workspace/api"), ("url", "workspace/url")):
+                value = settings.value(f"profiles/{name}/{old_key}", None)
+                if value is not None: settings.setValue(f"profiles/data/{profile_id}/{new_key}", value)
+        if name == legacy_active:
+            migrated_active = profile_id
+    active_id = _valid_profile_id(settings.value("profiles/active_id", migrated_active))
+    if active_id not in seen:
+        active_id = "default"
+    settings.setValue("profiles/items", json.dumps(profiles, ensure_ascii=False))
+    settings.setValue("profiles/active_id", active_id)
+    settings.setValue("profiles/active", next(item["name"] for item in profiles if item["id"] == active_id))
+    settings.remove("profiles/names")
+    return profiles
+
+
+def active_environment_profile(settings: QSettings | None = None) -> dict[str, str]:
+    settings = settings or QSettings("Zscaler", "APIClient")
+    profiles = environment_profiles(settings); active_id = _valid_profile_id(settings.value("profiles/active_id", "default"))
+    return next((item for item in profiles if item["id"] == active_id), profiles[0])
+
+
+def environment_profile_display_name(owner: Any, profile: dict[str, str]) -> str:
+    """Translate the built-in profile name without changing its stable metadata."""
+    return owner.tr("Default") if profile.get("id") == "default" else str(profile.get("name") or "")
+
+
+def _profile_data_key(profile_id: str, key: str) -> str:
+    return f"profiles/data/{_valid_profile_id(profile_id)}/{key}"
+
+
+def save_environment_profile_snapshot(settings: QSettings, profile_id: str | None = None, workspace_api: str | None = None, workspace_url: str | None = None):
+    """Persist only non-secret tenant settings for one profile."""
+    profile_id = _valid_profile_id(profile_id or active_environment_profile(settings)["id"])
+    for key in TENANT_SETTING_KEYS:
+        value = settings.value(key, None)
+        if value is None: settings.remove(_profile_data_key(profile_id, "settings/" + key))
+        else: settings.setValue(_profile_data_key(profile_id, "settings/" + key), value)
+    if workspace_api is not None: settings.setValue(_profile_data_key(profile_id, "workspace/api"), workspace_api)
+    if workspace_url is not None: settings.setValue(_profile_data_key(profile_id, "workspace/url"), redact_url(workspace_url))
+    settings.setValue(_profile_data_key(profile_id, "initialized"), "true")
+
+
+def activate_environment_profile_settings(settings: QSettings, profile_id: str) -> dict[str, str] | None:
+    """Activate one known profile and project its non-secret settings into the app."""
+    if not valid_environment_profile_id(profile_id):
+        return None
+    profile_id = str(profile_id); profiles = environment_profiles(settings)
+    profile = next((item for item in profiles if item["id"] == profile_id), None)
+    if profile is None:
+        return None
+    # Legacy name-only profiles stored only the workspace API and URL. Seed
+    # their first snapshot from the current non-secret tenant configuration.
+    if settings.value(_profile_data_key(profile_id, "initialized"), "false") != "true":
+        for key in TENANT_SETTING_KEYS:
+            value = settings.value(key, None)
+            if value is not None:
+                settings.setValue(_profile_data_key(profile_id, "settings/" + key), value)
+        settings.setValue(_profile_data_key(profile_id, "initialized"), "true")
+    for key in TENANT_SETTING_KEYS:
+        stored = settings.value(_profile_data_key(profile_id, "settings/" + key), None)
+        if stored is None: settings.remove(key)
+        else: settings.setValue(key, stored)
+    settings.setValue("profiles/active_id", profile_id); settings.setValue("profiles/active", profile["name"]); settings.sync()
+    return {"id": profile_id, "name": profile["name"],
+            "api": str(settings.value(_profile_data_key(profile_id, "workspace/api"), settings.value("advanced/default_api", "OneAPI"))),
+            "url": str(settings.value(_profile_data_key(profile_id, "workspace/url"), ""))}
+
+
+def create_environment_profile(settings: QSettings, name: str) -> dict[str, str] | None:
+    """Clone current non-secret configuration into a new profile; secrets stay empty."""
+    name = valid_environment_profile_name(name)
+    if not name:
+        return None
+    profiles = environment_profiles(settings)
+    if any(item["name"].casefold() == name.casefold() for item in profiles):
+        return None
+    current = active_environment_profile(settings); save_environment_profile_snapshot(settings, current["id"])
+    profile_id = uuid.uuid4().hex[:16]; profile = {"id": profile_id, "name": name}; profiles.append(profile)
+    source_prefix = _profile_data_key(current["id"], "")
+    target_prefix = _profile_data_key(profile_id, "")
+    settings.beginGroup(source_prefix)
+    values = {key: settings.value(key) for key in settings.allKeys()}
+    settings.endGroup()
+    for key, value in values.items(): settings.setValue(target_prefix + key, value)
+    settings.setValue("profiles/items", json.dumps(profiles, ensure_ascii=False)); return profile
+
+
+def _tenant_credential_key(key: str, profile_id: str | None = None) -> str:
+    if key not in TENANT_SECRET_KEYS:
+        return key
+    profile_id = _valid_profile_id(profile_id or active_environment_profile()["id"])
+    return key if profile_id == "default" else f"profile:{profile_id}:{key}"
 def redact_sensitive(value: Any) -> Any:
     """Return a history-safe copy of JSON or form-urlencoded request data."""
     if isinstance(value, dict):
@@ -330,7 +491,9 @@ def redact_url(url: str) -> str:
         (key, "***" if is_sensitive_name(key) else value)
         for key, value in query
     ])
-    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, parts.fragment))
+    # OAuth redirect URLs commonly place access tokens in the fragment.
+    safe_fragment = "***" if parts.fragment else ""
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, safe_fragment))
 
 
 def load_masked_response_exchange(path: str | Path, maximum_bytes: int) -> tuple[dict[str, Any] | None, str]:
@@ -536,32 +699,33 @@ def _load_all_credentials():
     """Load all credentials from a single keychain entry (one prompt)."""
     global _credential_cache, _credentials_loaded
     if _credentials_loaded:
-        return
-    _credentials_loaded = True
+        return True
+    loaded: dict[str, str] = {}
     try:
         import keyring
         blob = keyring.get_password(SERVICE_NAME, "_all_credentials")
         if blob:
-            _credential_cache.update(json.loads(blob))
+            document = json.loads(blob)
+            if not isinstance(document, dict) or not all(isinstance(key, str) and isinstance(value, str) for key, value in document.items()):
+                return False
+            loaded.update(document)
         else:
             # Migrate from individual keychain entries (one-time)
             keys = ["zia_api_key", "zia_password", "zpa_client_secret",
                     "zdx_key_secret", "zcc_client_secret", "zidentity_client_secret",
                     "ztw_client_secret", "zwa_client_secret", "easm_client_secret",
                     "oneapi_client_secret", "proxy_password"]
-            migrated = {}
             for k in keys:
-                try:
-                    v = keyring.get_password(SERVICE_NAME, k)
-                    if v:
-                        migrated[k] = v
-                except Exception:
-                    pass
-            if migrated:
-                _credential_cache.update(migrated)
-                _save_all_credentials()
+                v = keyring.get_password(SERVICE_NAME, k)
+                if v:
+                    loaded[k] = v
     except Exception:
-        pass
+        return False
+    _credential_cache.update(loaded)
+    _credentials_loaded = True
+    if loaded and not blob:
+        _save_all_credentials()
+    return True
 
 def _save_all_credentials() -> bool:
     """Save all credentials to a single keychain entry (one prompt)."""
@@ -577,9 +741,11 @@ def _save_all_credentials() -> bool:
 def secure_store_many(values: dict[str, str]) -> bool:
     """Atomically update multiple secrets, rolling back memory if keychain fails."""
     global _credential_cache
-    _load_all_credentials()
+    if not _load_all_credentials():
+        return False
     previous = dict(_credential_cache)
     for key, value in values.items():
+        key = _tenant_credential_key(key)
         if not value:
             _credential_cache.pop(key, None)
         else:
@@ -598,12 +764,52 @@ def secure_store(key: str, value: str) -> bool:
 
 def secure_get(key: str) -> str:
     """Retrieve credential from system keychain (single keychain access)."""
-    _load_all_credentials()
-    return _credential_cache.get(key, "")
+    if not _load_all_credentials():
+        return ""
+    return _credential_cache.get(_tenant_credential_key(key), "")
 
 def secure_delete(key: str) -> bool:
     """Delete credential from system keychain."""
     return secure_store(key, "")
+
+
+def delete_environment_profile(settings: QSettings, profile_id: str) -> bool:
+    """Delete an inactive non-default profile and its namespaced keychain secrets."""
+    global _credential_cache
+    if not valid_environment_profile_id(profile_id):
+        return False
+    profile_id = str(profile_id); profiles = environment_profiles(settings)
+    if profile_id == "default" or profile_id == active_environment_profile(settings)["id"] or not any(item["id"] == profile_id for item in profiles):
+        return False
+    if not _load_all_credentials():
+        return False
+    previous = dict(_credential_cache)
+    for key in TENANT_SECRET_KEYS: _credential_cache.pop(_tenant_credential_key(key, profile_id), None)
+    if _credential_cache != previous and not _save_all_credentials():
+        _credential_cache.clear(); _credential_cache.update(previous); return False
+    settings.remove(_profile_data_key(profile_id, "")); settings.setValue("profiles/items", json.dumps([item for item in profiles if item["id"] != profile_id], ensure_ascii=False))
+    return True
+
+
+def rename_environment_profile(settings: QSettings, profile_id: str, name: str) -> bool:
+    if not valid_environment_profile_id(profile_id):
+        return False
+    name = valid_environment_profile_name(name); profiles = environment_profiles(settings); profile_id = str(profile_id)
+    if not name or any(item["name"].casefold() == name.casefold() and item["id"] != profile_id for item in profiles):
+        return False
+    profile = next((item for item in profiles if item["id"] == profile_id), None)
+    if profile is None:
+        return False
+    profile["name"] = name; settings.setValue("profiles/items", json.dumps(profiles, ensure_ascii=False))
+    if active_environment_profile(settings)["id"] == profile_id: settings.setValue("profiles/active", name)
+    return True
+
+
+def environment_profile_secret_count(profile_id: str) -> int:
+    """Return only a count for UI status; credential values never leave the cache."""
+    if not _load_all_credentials():
+        return 0
+    return sum(1 for key in TENANT_SECRET_KEYS if _credential_cache.get(_tenant_credential_key(key, profile_id)))
 
 
 def secure_webhook_endpoint(settings: QSettings, migrate_legacy: bool = True) -> str:
@@ -3739,6 +3945,7 @@ class SetupWizard(QDialog):
             if client_secret and not secure_store("oneapi_client_secret", client_secret):
                 QMessageBox.warning(self, self.tr("Secure storage"), self.tr("The system keychain could not save the secret. Check the keychain service and try again."))
                 return
+        save_environment_profile_snapshot(settings)
         settings.setValue("welcome/show_on_startup", "false")
         settings.setValue("ui/mode", self.mode_choice.currentData())
         if self.parent():
@@ -4923,6 +5130,7 @@ class SettingsDialog(QDialog):
         settings.setValue("ai/endpoint", self.ai_endpoint.text().strip())
         settings.setValue("ai/model", self.ai_model.text().strip())
         settings.setValue("ai/allow_external", "true" if self.ai_allow_external.isChecked() else "false")
+        save_environment_profile_snapshot(settings)
         super().accept()
 
 
@@ -5153,11 +5361,12 @@ class HistoryDialog(QDialog):
     
     request_selected = Signal(dict)
     
-    def __init__(self, history: List[Dict], parent=None):
+    def __init__(self, history: List[Dict], parent=None, active_profile: dict[str, str] | None = None):
         super().__init__(parent)
         self.setWindowTitle(self.tr("Request History"))
         self.setMinimumSize(800, 500)
         self.history = history
+        self.active_profile = active_profile or {"id": "default", "name": "Default"}
         
         layout = QVBoxLayout(self)
         
@@ -5168,6 +5377,12 @@ class HistoryDialog(QDialog):
         self.search_input.setPlaceholderText(self.tr("Filter by URL or method..."))
         self.search_input.textChanged.connect(self._filter_history)
         search_layout.addWidget(self.search_input)
+
+        self.environment_filter = QComboBox()
+        self.environment_filter.addItem(self.tr("Current environment: {name}").format(name=environment_profile_display_name(self, self.active_profile)), "current")
+        self.environment_filter.addItem(self.tr("All environments"), "all")
+        self.environment_filter.currentIndexChanged.connect(lambda _index: self._populate_table(self.search_input.text()))
+        search_layout.addWidget(self.environment_filter)
         
         clear_btn = QPushButton(self.tr("Clear History"))
         clear_btn.clicked.connect(self._clear_history)
@@ -5176,9 +5391,9 @@ class HistoryDialog(QDialog):
         
         # History table
         self.history_table = QTableWidget()
-        self.history_table.setColumnCount(5)
+        self.history_table.setColumnCount(6)
         self.history_table.setHorizontalHeaderLabels([
-            self.tr("Time"), self.tr("Method"), self.tr("URL"), 
+            self.tr("Time"), self.tr("Environment"), self.tr("Method"), self.tr("URL"),
             self.tr("Status"), self.tr("Duration")
         ])
         self.history_table.horizontalHeader().setStretchLastSection(True)
@@ -5207,16 +5422,22 @@ class HistoryDialog(QDialog):
         filter_lower = filter_text.lower()
         
         for entry in reversed(self.history):  # Most recent first
+            entry_profile_id = str(entry.get("environment_id") or "default")
+            if self.environment_filter.currentData() == "current" and entry_profile_id != self.active_profile["id"]:
+                continue
             if filter_lower and filter_lower not in entry.get("url", "").lower() \
-               and filter_lower not in entry.get("method", "").lower():
+               and filter_lower not in entry.get("method", "").lower() \
+               and filter_lower not in str(entry.get("environment") or "Default").lower():
                 continue
             
             row = self.history_table.rowCount()
             self.history_table.insertRow(row)
             
             self.history_table.setItem(row, 0, QTableWidgetItem(entry.get("timestamp", "")))
-            self.history_table.setItem(row, 1, QTableWidgetItem(entry.get("method", "")))
-            self.history_table.setItem(row, 2, QTableWidgetItem(entry.get("url", "")))
+            environment_name = self.tr("Default") if entry_profile_id == "default" else str(entry.get("environment") or "")
+            self.history_table.setItem(row, 1, QTableWidgetItem(environment_name))
+            self.history_table.setItem(row, 2, QTableWidgetItem(entry.get("method", "")))
+            self.history_table.setItem(row, 3, QTableWidgetItem(entry.get("url", "")))
             
             status = entry.get("status", "")
             status_item = QTableWidgetItem(str(status) if status else "-")
@@ -5224,10 +5445,10 @@ class HistoryDialog(QDialog):
                 status_item.setForeground(QColor("#22863a"))
             elif status and status >= 400:
                 status_item.setForeground(QColor("#d73a49"))
-            self.history_table.setItem(row, 3, status_item)
+            self.history_table.setItem(row, 4, status_item)
             
             duration = entry.get("duration_ms", "")
-            self.history_table.setItem(row, 4, QTableWidgetItem(f"{duration}ms" if duration else "-"))
+            self.history_table.setItem(row, 5, QTableWidgetItem(f"{duration}ms" if duration else "-"))
             
             # Store full entry data
             self.history_table.item(row, 0).setData(Qt.ItemDataRole.UserRole, entry)
@@ -5260,6 +5481,86 @@ class HistoryDialog(QDialog):
                 if entry:
                     self.request_selected.emit(entry)
                     self.accept()
+
+
+class EnvironmentProfilesDialog(QDialog):
+    """Manage isolated tenant profiles without displaying or copying secrets."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.settings = QSettings("Zscaler", "APIClient")
+        self.activated_profile_id = ""
+        self.setWindowTitle(self.tr("Environment profiles")); self.resize(820, 480)
+        layout = QVBoxLayout(self)
+        intro = QLabel(self.tr("Each environment keeps separate tenant hosts, client identifiers, enabled products, and keychain credentials. Creating a profile copies only non-secret configuration. Activating a profile clears every in-memory API session.")); intro.setWordWrap(True); layout.addWidget(intro)
+        self.table = QTableWidget(0, 5); self.table.setHorizontalHeaderLabels([self.tr("Active"), self.tr("Name"), self.tr("Default API"), self.tr("Configured host"), self.tr("Keychain secrets")])
+        self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows); self.table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection); self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.table.horizontalHeader().setStretchLastSection(True); self.table.doubleClicked.connect(lambda _index: self.activate_selected()); layout.addWidget(self.table)
+        actions = QHBoxLayout()
+        create = QPushButton(self.tr("Create profile")); create.clicked.connect(self.create_profile); actions.addWidget(create)
+        rename = QPushButton(self.tr("Rename profile")); rename.clicked.connect(self.rename_profile); actions.addWidget(rename)
+        remove = QPushButton(self.tr("Delete profile")); remove.clicked.connect(self.delete_profile); actions.addWidget(remove)
+        actions.addStretch(); activate = QPushButton(self.tr("Activate profile")); activate.clicked.connect(self.activate_selected); actions.addWidget(activate)
+        close = QPushButton(self.tr("Close")); close.clicked.connect(self.reject); actions.addWidget(close); layout.addLayout(actions)
+        self.refresh()
+
+    def _profile_host(self, profile_id: str, api: str) -> str:
+        workspace = str(self.settings.value(_profile_data_key(profile_id, "workspace/url"), ""))
+        if workspace:
+            return urllib.parse.urlsplit(workspace).netloc or workspace
+        key = {"OneAPI": "oneapi/vanity_domain", "ZIA": "zia/cloud", "ZPA": "zpa/cloud", "ZDX": "zdx/cloud", "ZCC": "zcc/cloud", "ZIdentity": "zidentity/domain", "ZTW": "ztw/cloud", "ZWA": "zwa/cloud", "EASM": "easm/cloud"}.get(api, "")
+        return str(self.settings.value(_profile_data_key(profile_id, "settings/" + key), "")) if key else ""
+
+    def refresh(self, select_id: str = ""):
+        profiles = environment_profiles(self.settings); active_id = active_environment_profile(self.settings)["id"]
+        self.table.setRowCount(len(profiles)); selected_row = 0
+        for row, profile in enumerate(profiles):
+            profile_id = profile["id"]
+            api = str(self.settings.value(_profile_data_key(profile_id, "settings/advanced/default_api"), "OneAPI"))
+            values = ("●" if profile_id == active_id else "", environment_profile_display_name(self, profile), api, self._profile_host(profile_id, api), self.tr("{count} configured").format(count=environment_profile_secret_count(profile_id)))
+            for column, value in enumerate(values): self.table.setItem(row, column, QTableWidgetItem(value))
+            self.table.item(row, 0).setData(Qt.ItemDataRole.UserRole, profile_id)
+            if profile_id == (select_id or active_id): selected_row = row
+        if profiles: self.table.selectRow(selected_row)
+        self.table.resizeColumnsToContents()
+
+    def _selected(self) -> tuple[str, str]:
+        row = self.table.currentRow()
+        if row < 0 or not self.table.item(row, 0): return "", ""
+        return str(self.table.item(row, 0).data(Qt.ItemDataRole.UserRole) or ""), self.table.item(row, 1).text()
+
+    def create_profile(self):
+        name, ok = QInputDialog.getText(self, self.tr("Create profile"), self.tr("Profile name:"))
+        if not ok: return
+        profile = create_environment_profile(self.settings, name)
+        if profile is None:
+            QMessageBox.warning(self, self.tr("Environment profiles"), self.tr("Enter a unique profile name without path separators (maximum 60 characters).")); return
+        AuditTrail(self.settings).append("environment_profile_created", {"profile_id": profile["id"], "name": profile["name"], "secrets_copied": False})
+        self.refresh(profile["id"])
+        QMessageBox.information(self, self.tr("Environment profiles"), self.tr("The profile was created with non-secret settings only. Open Settings after activation to add its keychain credentials."))
+
+    def rename_profile(self):
+        profile_id, old_name = self._selected()
+        if not profile_id: return
+        name, ok = QInputDialog.getText(self, self.tr("Rename profile"), self.tr("Profile name:"), text=old_name)
+        if not ok: return
+        if not rename_environment_profile(self.settings, profile_id, name):
+            QMessageBox.warning(self, self.tr("Environment profiles"), self.tr("Enter a unique profile name without path separators (maximum 60 characters).")); return
+        AuditTrail(self.settings).append("environment_profile_renamed", {"profile_id": profile_id})
+        self.refresh(profile_id)
+
+    def delete_profile(self):
+        profile_id, name = self._selected(); active_id = active_environment_profile(self.settings)["id"]
+        if not profile_id: return
+        if profile_id == "default" or profile_id == active_id:
+            QMessageBox.information(self, self.tr("Delete profile"), self.tr("The default or active profile cannot be deleted. Activate another profile first.")); return
+        if QMessageBox.question(self, self.tr("Delete profile"), self.tr("Delete profile “{name}” and all of its keychain credentials? This cannot be undone.").format(name=name), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes: return
+        if not delete_environment_profile(self.settings, profile_id):
+            QMessageBox.warning(self, self.tr("Secure storage"), self.tr("The profile could not be deleted because its keychain credentials could not be removed.")); return
+        AuditTrail(self.settings).append("environment_profile_deleted", {"profile_id": profile_id}); self.refresh()
+
+    def activate_selected(self):
+        profile_id, _name = self._selected()
+        if not profile_id: return
+        self.activated_profile_id = profile_id; self.accept()
 
 
 class ResponseComparisonDialog(QDialog):
@@ -6397,6 +6698,10 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
+        profile_settings = QSettings("Zscaler", "APIClient")
+        profile = active_environment_profile(profile_settings)
+        if profile_settings.value(_profile_data_key(profile["id"], "initialized"), "false") != "true":
+            save_environment_profile_snapshot(profile_settings, profile["id"])
         self.setWindowTitle(f"ZS API Client v{__version__}")
         self.setMinimumSize(1200, 800)
         
@@ -6420,6 +6725,7 @@ class MainWindow(QMainWindow):
         self._setup_menu()
         self._load_settings()
         self._load_history()
+        self._refresh_environment_context()
         # App-only schedules are checked here. OS-backed schedules invoke the
         # same report engine in headless mode and are skipped by this timer.
         self.report_schedule_timer = QTimer(self)
@@ -7068,6 +7374,7 @@ class MainWindow(QMainWindow):
         settings.setValue("geometry", self.saveGeometry())
         settings.setValue("main_splitter_sizes", self.main_splitter.sizes())
         settings.setValue("editor_splitter_sizes", self.editor_splitter.sizes())
+        save_environment_profile_snapshot(settings, workspace_api=self._current_api_type(), workspace_url=self.url_input.text())
     
     def closeEvent(self, event):
         self._clear_sessions(record_audit=False)
@@ -7409,30 +7716,47 @@ class MainWindow(QMainWindow):
         OperationsDialog(self, initial_tab=initial_tab).exec()
 
     def _manage_profiles(self):
-        """Save/switch non-secret environment settings; secrets remain in the keychain."""
+        """Open the isolated environment manager and apply an explicit selection."""
         settings = QSettings("Zscaler", "APIClient")
-        raw = settings.value("profiles/names", "[]")
-        try: names = json.loads(raw)
-        except (TypeError, ValueError): names = []
-        choices = names + [self.tr("Create new profile…")]
-        choice, ok = QInputDialog.getItem(self, self.tr("Environment profiles"), self.tr("Profile:"), choices, editable=False)
-        if not ok: return
-        if choice == self.tr("Create new profile…"):
-            choice, ok = QInputDialog.getText(self, self.tr("Environment profiles"), self.tr("New profile name:"))
-            if not ok or not choice.strip(): return
-            choice = choice.strip()
-            if choice not in names: names.append(choice)
-            settings.setValue("profiles/names", json.dumps(names))
-            settings.setValue(f"profiles/{choice}/api", self.api_type.currentText())
-            settings.setValue(f"profiles/{choice}/url", redact_url(self.url_input.text()))
+        save_environment_profile_snapshot(settings, workspace_api=self._current_api_type(), workspace_url=self.url_input.text())
+        dialog = EnvironmentProfilesDialog(self)
+        accepted = dialog.exec()
+        if accepted and dialog.activated_profile_id:
+            self._activate_environment_profile(dialog.activated_profile_id)
         else:
-            api = settings.value(f"profiles/{choice}/api", "ZIA")
-            url = settings.value(f"profiles/{choice}/url", "")
-            if self.api_type.findText(api) >= 0: self.api_type.setCurrentText(api)
-            self.url_input.setText(url)
-        settings.setValue("profiles/active", choice)
-        AuditTrail(settings).append("environment_profile_selected", {"profile": choice})
-        self.status_bar.showMessage(self.tr("Environment profile active: ") + choice)
+            self._refresh_environment_context()
+
+    def _refresh_environment_context(self):
+        """Keep the active tenant visibly anchored in the command bar."""
+        profile = active_environment_profile(QSettings("Zscaler", "APIClient"))
+        self.workspace_context.setText(self.tr("Active environment: {name}").format(name=environment_profile_display_name(self, profile)))
+
+    def _activate_environment_profile(self, profile_id: str) -> bool:
+        """Switch tenant context after clearing every request and authentication artifact."""
+        settings = QSettings("Zscaler", "APIClient")
+        previous = active_environment_profile(settings)
+        if profile_id == previous["id"]:
+            self._refresh_environment_context()
+            return True
+        save_environment_profile_snapshot(settings, previous["id"], self._current_api_type(), self.url_input.text())
+        target = activate_environment_profile_settings(settings, profile_id)
+        if target is None:
+            QMessageBox.warning(self, self.tr("Environment profiles"), self.tr("The selected environment profile is unavailable."))
+            return False
+        self._clear_sessions(record_audit=False)
+        self._clear_request()
+        self._update_api_list()
+        if self.api_type.findText(target["api"]) >= 0:
+            self.api_type.setCurrentText(target["api"])
+        self._update_endpoint_tree(self._current_api_type())
+        self.url_input.setText(target["url"])
+        self._populate_path_variables(target["url"])
+        self._refresh_environment_context()
+        AuditTrail(settings).append("environment_profile_activated", {
+            "previous_profile_id": previous["id"], "profile_id": target["id"], "sessions_cleared": True,
+        })
+        self.status_bar.showMessage(self.tr("Environment profile active: {name}. Sessions and request data were cleared.").format(name=environment_profile_display_name(self, target)))
+        return True
     
     def _update_method_color(self):
         """Update method combo color based on selected HTTP method."""
@@ -9351,13 +9675,20 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, self.tr("Batch"), self.tr("Batch complete: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed))
     
     def _show_history(self):
-        dialog = HistoryDialog(self.request_history, self)
+        dialog = HistoryDialog(self.request_history, self, active_environment_profile(QSettings("Zscaler", "APIClient")))
         dialog.request_selected.connect(self._load_from_history)
         dialog.exec()
         self._save_history()
     
     def _load_from_history(self, entry: Dict):
         """Load a request from history."""
+        active = active_environment_profile(QSettings("Zscaler", "APIClient"))
+        if str(entry.get("environment_id") or "default") != active["id"]:
+            QMessageBox.warning(
+                self, self.tr("Request History"),
+                self.tr("This request belongs to another environment. Activate that environment profile before loading it."),
+            )
+            return
         self.method_combo.setCurrentText(f"● {entry.get('method', 'GET')}")
         self.url_input.setText(entry.get("url", ""))
         body_mode = str(entry.get("body_mode") or "json")
@@ -9446,6 +9777,9 @@ class MainWindow(QMainWindow):
             "status": status,
             "duration_ms": duration_ms,
         }
+        profile = active_environment_profile(QSettings("Zscaler", "APIClient"))
+        entry["environment_id"] = profile["id"]
+        entry["environment"] = profile["name"]
         self.request_history.append(entry)
         self._save_history()
     
