@@ -73,6 +73,7 @@ ZS API Client is built with security as a top priority:
 - **Batch Operations** – Import CSV files for bulk create/delete/update operations
 - **Operations Center** – Local policy diffs and simulations, CSV validation, isolated environment profiles, dashboards, report schedules, and a hash-linked audit trail
 - **Tenant-safe environments** – Keep product hosts, client identifiers, enabled APIs, workspace state, and system-keychain credentials separate per environment; switching clears all in-memory sessions, requests, and responses
+- **Tenant-scoped operations** – Dashboards, posture, anomalies, incidents, audit views, integrations, support bundles, and reports default to the active environment; Advanced mode provides an explicit cross-tenant overview
 - **Background reports** – Optionally register user-level Windows Task Scheduler, macOS LaunchAgent, or Linux systemd jobs so redacted reports run while the GUI is closed; no administrator privileges are required
 - **Local governance controls** – Administrator, analyst, and read-only roles; the latter blocks mutating API requests before they leave the client
 - **Redacted support bundles** – Create diagnostics archives without API credentials or sensitive request values

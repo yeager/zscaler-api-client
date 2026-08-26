@@ -210,6 +210,12 @@ SWEDISH_REVIEW.update({
     "The selected environment profile is unavailable.": "Den valda miljöprofilen är inte tillgänglig.",
     "Environment profile active: {name}. Sessions and request data were cleared.": "Miljöprofilen {name} är aktiv. Sessioner och begärandedata har rensats.",
     "This request belongs to another environment. Activate that environment profile before loading it.": "Begäran tillhör en annan miljö. Aktivera den miljöprofilen innan begäran läses in.",
+    "Data scope:": "Dataomfång:",
+    "Data scope: {name}": "Dataomfång: {name}",
+    "All environments (cross-tenant overview)": "Alla miljöer (översikt över flera tenanter)",
+    "Analytics are tenant-isolated by default. Cross-tenant scope is explicit and available in Advanced mode.": "Analysdata är som standard isolerade per tenant. Omfång över flera tenanter väljs uttryckligen och är tillgängligt i avancerat läge.",
+    "Showing local evidence for: {name}": "Visar lokalt underlag för: {name}",
+    "Cross-tenant overview is active. Exports and integrations will include all local environments.": "Översikt över flera tenanter är aktiv. Exporter och integrationer kommer att omfatta alla lokala miljöer.",
 })
 
 

@@ -45,6 +45,7 @@ class ApiCatalogTests(unittest.TestCase):
         )
         self.assertNotIn("hidden", client.redact_sensitive("https://example.test/users?token=hidden&page=1"))
         self.assertIn("https://", client.redact_sensitive("https://example.test/users?token=hidden&page=1"))
+        self.assertEqual("Authorization: ***", client.redact_sensitive("Authorization: Bearer hidden-value"))
     def test_extracts_method_url_and_metadata(self):
         document = {
             "content": "List users GET https://api.zsapi.net/zia/api/v1/users Request",

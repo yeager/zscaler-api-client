@@ -53,7 +53,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
@@ -467,7 +467,7 @@ def redact_sensitive(value: Any) -> Any:
             except (ValueError, TypeError):
                 pass
         masked = re.sub(
-            r"(?i)(\b(?:authorization|proxy-?authorization|set-?cookie|cookie|password|(?:client_)?secret|(?:access|refresh)_token|token|jwt-?token|auth-?token|session-?id|j-?session-?id|x-?api-?key|api_?key)\s*[:=]\s*)(?:[\"'])?[^\s,;&}\]\"']+",
+            r"(?i)(\b(?:authorization|proxy-?authorization|set-?cookie|cookie|password|(?:client_)?secret|(?:access|refresh)_token|token|jwt-?token|auth-?token|session-?id|j-?session-?id|x-?api-?key|api_?key)\s*[:=]\s*)(?:[\"'])?[^\r\n,;&}\]]+",
             r"\1***",
             value,
         )
@@ -479,7 +479,7 @@ def redact_sensitive(value: Any) -> Any:
             return urllib.parse.urlencode([
                 (key, "***" if is_sensitive_name(key) else item)
                 for key, item in pairs
-            ])
+            ], safe="*")
     return value
 
 
@@ -490,7 +490,7 @@ def redact_url(url: str) -> str:
     safe_query = urllib.parse.urlencode([
         (key, "***" if is_sensitive_name(key) else value)
         for key, value in query
-    ])
+    ], safe="*")
     # OAuth redirect URLs commonly place access tokens in the fragment.
     safe_fragment = "***" if parts.fragment else ""
     return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, safe_fragment))
@@ -859,6 +859,12 @@ def stored_report_schedules(settings: QSettings) -> list[dict[str, Any]]:
     for item in valid:
         if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", str(item.get("id", ""))):
             item["id"] = uuid.uuid4().hex; changed = True
+        scope_id = str(item.get("environment_id") or "default")
+        if scope_id != "*" and not valid_environment_profile_id(scope_id):
+            scope_id = "default"
+        scope_name = str(item.get("environment") or ("All environments" if scope_id == "*" else "Default"))[:60]
+        if item.get("environment_id") != scope_id or item.get("environment") != scope_name:
+            item["environment_id"], item["environment"] = scope_id, scope_name; changed = True
     if changed:
         settings.setValue("automation/schedules", json.dumps(valid))
     return valid
@@ -920,21 +926,23 @@ def run_report_schedules(
         except (TypeError, ValueError):
             cadence = 86400
         schedule["next_run"] = now + cadence; schedule["last_run"] = now; changed = True
+        scope = environment_scope_metadata(str(schedule.get("environment_id") or "default"), str(schedule.get("environment") or "Default"))
+        schedule_trail = AuditTrail(settings, environment_id=scope["environment_id"], environment_name=scope["environment"])
         raw_output_dir = str(schedule.get("output_dir", "")).strip(); output_dir = Path(raw_output_dir).expanduser()
         if not raw_output_dir or not output_dir.is_absolute() or not output_dir.is_dir():
-            trail.append("scheduled_report_failed", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "reason": "output_directory_unavailable"})
+            schedule_trail.append("scheduled_report_failed", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "reason": "output_directory_unavailable"})
             continue
         try:
             kind = str(schedule.get("kind", "ciso"))
             if kind not in {"ciso", "soc", "operations"}:
                 kind = "ciso"
-            data = security_report_data(kind, history, trail.events(), trail.verify())
+            data = security_report_data(kind, environment_scope(history, scope["environment_id"]), environment_scope(trail.events(), scope["environment_id"]), trail.verify(), scope)
             content = json.dumps(redact_sensitive(data), indent=2, ensure_ascii=False) + "\n"
             destination = write_new_report(output_dir, scheduled_report_filename(schedule.get("name", "security-report"), now), content)
             generated.append(str(destination))
-            trail.append("scheduled_report_generated", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "kind": kind, "file": destination.name, "background": bool(selected_id)})
+            schedule_trail.append("scheduled_report_generated", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "kind": kind, "file": destination.name, "background": bool(selected_id)})
         except (OSError, TypeError, ValueError) as error:
-            trail.append("scheduled_report_failed", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "reason": type(error).__name__})
+            schedule_trail.append("scheduled_report_failed", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "reason": type(error).__name__})
     if changed:
         settings.setValue("automation/schedules", json.dumps(schedules))
     return generated
@@ -5690,6 +5698,20 @@ class OperationsDialog(QDialog):
         self.setWindowTitle(self.tr("Operations Center"))
         self.resize(900, 620)
         layout = QVBoxLayout(self)
+        self.active_profile = active_environment_profile(self.settings)
+        scope_bar = QHBoxLayout()
+        scope_bar.addWidget(QLabel(self.tr("Data scope:")))
+        self.data_scope = QComboBox()
+        self.data_scope.addItem(
+            self.tr("Active environment: {name}").format(name=environment_profile_display_name(self, self.active_profile)),
+            self.active_profile["id"],
+        )
+        if self.settings.value("ui/mode", "basic") != "basic":
+            self.data_scope.addItem(self.tr("All environments (cross-tenant overview)"), "*")
+        scope_bar.addWidget(self.data_scope)
+        self.scope_note = QLabel(self.tr("Analytics are tenant-isolated by default. Cross-tenant scope is explicit and available in Advanced mode."))
+        self.scope_note.setObjectName("mutedLabel"); self.scope_note.setWordWrap(True); scope_bar.addWidget(self.scope_note, 1)
+        layout.addLayout(scope_bar)
         self.tabs = QTabWidget()
         layout.addWidget(self.tabs)
 
@@ -5713,7 +5735,7 @@ class OperationsDialog(QDialog):
         self.dashboard_trend = NumericBarChart(); self.dashboard_trend.set_style("line")
         dashboard_layout.addWidget(QLabel(self.tr("Recent request latency (ms)")))
         dashboard_layout.addWidget(self.dashboard_trend)
-        self.dashboard_events = QTableWidget(0, 3); self.dashboard_events.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Activity"), self.tr("Status")]); self.dashboard_events.horizontalHeader().setStretchLastSection(True); self.dashboard_events.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.dashboard_events = QTableWidget(0, 4); self.dashboard_events.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Environment"), self.tr("Activity"), self.tr("Status")]); self.dashboard_events.horizontalHeader().setStretchLastSection(True); self.dashboard_events.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         dashboard_layout.addWidget(QLabel(self.tr("Recent activity")))
         dashboard_layout.addWidget(self.dashboard_events)
         dashboard_controls = QHBoxLayout()
@@ -5791,7 +5813,7 @@ class OperationsDialog(QDialog):
         self.tabs.addTab(integrations_page, self.tr("Integrations"))
 
         audit_page = QWidget(); audit_layout = QVBoxLayout(audit_page)
-        self.audit_timeline = QTableWidget(0, 3); self.audit_timeline.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Event"), self.tr("Details")]); self.audit_timeline.horizontalHeader().setStretchLastSection(True); self.audit_timeline.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); audit_layout.addWidget(self.audit_timeline)
+        self.audit_timeline = QTableWidget(0, 4); self.audit_timeline.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Environment"), self.tr("Event"), self.tr("Details")]); self.audit_timeline.horizontalHeader().setStretchLastSection(True); self.audit_timeline.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); audit_layout.addWidget(self.audit_timeline)
         audit_controls = QHBoxLayout()
         audit_refresh = QPushButton(self.tr("Refresh audit trail")); audit_refresh.clicked.connect(self.refresh_audit); audit_controls.addWidget(audit_refresh)
         schedule = QPushButton(self.tr("Schedule report")); schedule.clicked.connect(self.configure_schedule); audit_controls.addWidget(schedule)
@@ -5850,8 +5872,8 @@ class OperationsDialog(QDialog):
         report_actions = QHBoxLayout(); report_markdown = QPushButton(self.tr("Export report as Markdown")); report_markdown.clicked.connect(lambda: self.export_report("markdown")); report_actions.addWidget(report_markdown)
         report_json = QPushButton(self.tr("Export report as JSON")); report_json.clicked.connect(lambda: self.export_report("json")); report_actions.addWidget(report_json); report_actions.addStretch(); reports_layout.addLayout(report_actions)
         reports_layout.addWidget(QLabel(self.tr("Scheduled reports")))
-        self.report_schedules = QTableWidget(0, 6)
-        self.report_schedules.setHorizontalHeaderLabels([self.tr("Name"), self.tr("Type"), self.tr("Cadence"), self.tr("Next run"), self.tr("Mode"), self.tr("Status")])
+        self.report_schedules = QTableWidget(0, 7)
+        self.report_schedules.setHorizontalHeaderLabels([self.tr("Name"), self.tr("Environment"), self.tr("Type"), self.tr("Cadence"), self.tr("Next run"), self.tr("Mode"), self.tr("Status")])
         self.report_schedules.horizontalHeader().setStretchLastSection(True)
         self.report_schedules.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.report_schedules.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
@@ -5882,6 +5904,7 @@ class OperationsDialog(QDialog):
         self.cancel_chain_btn = QPushButton(self.tr("Cancel chain")); self.cancel_chain_btn.setEnabled(False); self.cancel_chain_btn.clicked.connect(self.cancel_api_chain); chain_actions.addWidget(self.cancel_chain_btn)
         export_chain = QPushButton(self.tr("Export masked chain results")); export_chain.clicked.connect(self.export_api_chain); chain_actions.addWidget(export_chain); chain_actions.addStretch(); chain_layout.addLayout(chain_actions)
         self.chain_tab_index = self.tabs.addTab(chain_page, self.tr("API chains"))
+        self.data_scope.currentIndexChanged.connect(self._scope_changed)
         self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
@@ -5911,6 +5934,33 @@ class OperationsDialog(QDialog):
         """Update visualizations from retained local data only."""
         self.refresh_dashboard(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report()
 
+    def _scope_id(self) -> str:
+        return str(self.data_scope.currentData() or self.active_profile["id"])
+
+    def _scope_metadata(self) -> dict[str, str]:
+        if self._scope_id() == "*":
+            return environment_scope_metadata("*", self.tr("All environments"))
+        return environment_scope_metadata(self.active_profile["id"], environment_profile_display_name(self, self.active_profile))
+
+    def _scope_audit(self, scope: dict[str, str] | None = None) -> AuditTrail:
+        metadata = scope or self._scope_metadata()
+        return AuditTrail(self.settings, environment_id=metadata["environment_id"], environment_name=metadata["environment"])
+
+    def _scoped_history(self) -> list[dict[str, Any]]:
+        return environment_scope(getattr(self.window, "request_history", []), self._scope_id())
+
+    def _scoped_events(self) -> list[dict[str, Any]]:
+        return environment_scope(AuditTrail(self.settings).events(), self._scope_id())
+
+    def _scope_changed(self, _index=0):
+        scope = self._scope_metadata()
+        self.scope_note.setText(
+            self.tr("Showing local evidence for: {name}").format(name=scope["environment"])
+            if scope["environment_id"] != "*" else
+            self.tr("Cross-tenant overview is active. Exports and integrations will include all local environments.")
+        )
+        self.refresh_local_signals(); self.refresh_audit(); self.refresh_webhook_history(); self.refresh_schedules()
+
     def _json(self, editor, fallback):
         try: return json.loads(editor.toPlainText() or fallback)
         except ValueError as exc: raise ValueError(self.tr("Invalid JSON: ") + str(exc))
@@ -5924,8 +5974,8 @@ class OperationsDialog(QDialog):
         return item
 
     def refresh_dashboard(self):
-        history = getattr(self.window, "request_history", [])
-        events = AuditTrail(self.settings).events()
+        history = self._scoped_history()
+        events = self._scoped_events()
         successful = sum(1 for item in history if str(item.get("status", "")).startswith("2"))
         total = len(history)
         self.dashboard_cards["requests"].setText(str(total))
@@ -5934,7 +5984,7 @@ class OperationsDialog(QDialog):
         self.dashboard_cards["audit"].setText("✓" if valid else "!")
         self.dashboard_cards["audit"].setStyleSheet("color: #22c55e;" if valid else "color: #f97316;")
         self.dashboard_cards["audit"].setToolTip(self.tr("Audit chain is valid") if valid else self.tr("Audit chain needs review"))
-        self.dashboard_cards["environment"].setText(str(self.settings.value("profiles/active", "default")))
+        self.dashboard_cards["environment"].setText(self._scope_metadata()["environment"])
         alerts = self._alert_data()["alerts"]
         self.dashboard_cards["alerts"].setText(str(len(alerts)))
         self.dashboard_cards["alerts"].setStyleSheet("color: #ef4444;" if alerts else "color: #22c55e;")
@@ -5946,11 +5996,12 @@ class OperationsDialog(QDialog):
         for row, event in enumerate(recent):
             timestamp = time.strftime("%H:%M:%S", time.localtime(event.get("timestamp", 0)))
             self.dashboard_events.setItem(row, 0, QTableWidgetItem(timestamp))
-            self.dashboard_events.setItem(row, 1, QTableWidgetItem(event.get("action", "")))
-            self.dashboard_events.setItem(row, 2, QTableWidgetItem("✓" if valid else "!"))
+            self.dashboard_events.setItem(row, 1, QTableWidgetItem(str(event.get("environment") or "Default")))
+            self.dashboard_events.setItem(row, 2, QTableWidgetItem(event.get("action", "")))
+            self.dashboard_events.setItem(row, 3, QTableWidgetItem("✓" if valid else "!"))
 
     def refresh_posture(self):
-        posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
+        posture = security_posture(self._scoped_history(), AuditTrail(self.settings).verify())
         self.posture_score.setText(self.tr("Posture score: {score}/100").format(score=posture["score"]))
         self.posture_gauge.set_score(posture["score"])
         severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
@@ -5977,7 +6028,9 @@ class OperationsDialog(QDialog):
             threshold = max(1, int(self.settings.value("monitoring/error_threshold", "10")))
         except (TypeError, ValueError):
             threshold = 10
-        return operational_alerts(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify(), threshold)
+        data = operational_alerts(self._scoped_history(), AuditTrail(self.settings).verify(), threshold)
+        data["scope"] = self._scope_metadata()
+        return data
 
     def refresh_alerts(self):
         data = self._alert_data(); alerts = data["alerts"]
@@ -6004,14 +6057,14 @@ class OperationsDialog(QDialog):
 
     def copy_alert_summary(self):
         QApplication.clipboard().setText(json.dumps(mask(self._alert_data()), indent=2, ensure_ascii=False))
-        AuditTrail(self.settings).append("local_alert_summary_copied", {})
+        self._scope_audit().append("local_alert_summary_copied", {})
         self.alert_summary.setToolTip(self.tr("Copied to clipboard"))
 
     def _alert_export_content(self, format_name):
         data = mask(self._alert_data())
         if format_name == "json":
             return json.dumps(data, indent=2, ensure_ascii=False)
-        lines = ["# " + self.tr("Local alert summary"), "", self.tr("Error threshold: {threshold}").format(threshold=data["threshold"]), self.tr("Local requests: {count}").format(count=data["requests"]), self.tr("Failed requests: {count}").format(count=data["failed"]), ""]
+        lines = ["# " + self.tr("Local alert summary"), "", self.tr("Data scope: {name}").format(name=data["scope"]["environment"]), self.tr("Error threshold: {threshold}").format(threshold=data["threshold"]), self.tr("Local requests: {count}").format(count=data["requests"]), self.tr("Failed requests: {count}").format(count=data["failed"]), ""]
         if not data["alerts"]:
             lines.append(self.tr("No local alerts."))
         for alert in data["alerts"]:
@@ -6024,10 +6077,12 @@ class OperationsDialog(QDialog):
         if not path:
             return
         Path(path).write_text(self._alert_export_content(format_name), encoding="utf-8")
-        AuditTrail(self.settings).append("local_alerts_exported", {"format": format_name, "file": os.path.basename(path)})
+        self._scope_audit().append("local_alerts_exported", {"format": format_name, "file": os.path.basename(path)})
 
     def _incident_evidence(self):
-        return incident_evidence(getattr(self.window, "request_history", []), AuditTrail(self.settings).events())
+        evidence = incident_evidence(self._scoped_history(), self._scoped_events())
+        evidence["scope"] = self._scope_metadata()
+        return evidence
 
     def refresh_incident(self):
         evidence = self._incident_evidence()
@@ -6048,14 +6103,14 @@ class OperationsDialog(QDialog):
         }
         kind = self.incident_type.currentData()
         self.incident_chain.setPlainText(chains[kind])
-        AuditTrail(self.settings).append("incident_chain_prepared", {"kind": kind})
+        self._scope_audit().append("incident_chain_prepared", {"kind": kind})
 
     def export_incident_evidence(self):
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Export incident evidence"), "incident-evidence.json", "JSON (*.json)")
         if not path:
             return
         Path(path).write_text(json.dumps(self._incident_evidence(), indent=2, ensure_ascii=False), encoding="utf-8")
-        AuditTrail(self.settings).append("incident_evidence_exported", {"file": os.path.basename(path)})
+        self._scope_audit().append("incident_evidence_exported", {"file": os.path.basename(path)})
 
     def _change_plan(self):
         return change_control_plan(self._json(self.before_policy, {}), self._json(self.after_policy, {}))
@@ -6099,7 +6154,7 @@ class OperationsDialog(QDialog):
             AuditTrail(self.settings).append("change_review_exported", {"kind": kind, "file": os.path.basename(path), "risk": plan["risk"]})
 
     def _report_data(self):
-        return security_report_data(self.report_type.currentData(), getattr(self.window, "request_history", []), AuditTrail(self.settings).events(), AuditTrail(self.settings).verify())
+        return security_report_data(self.report_type.currentData(), self._scoped_history(), self._scoped_events(), AuditTrail(self.settings).verify(), self._scope_metadata())
 
     def generate_report(self):
         data = self._report_data()
@@ -6107,7 +6162,7 @@ class OperationsDialog(QDialog):
         severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
         self.report_chart.set_style("pie"); self.report_chart.set_values([(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()])
         title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}[data["kind"]]
-        lines = [f"# {title}", "", self.tr("Posture score: {score}/100").format(score=posture["score"]), self.tr("Local requests: {count}").format(count=posture["metrics"]["requests"]), self.tr("Failed requests: {count}").format(count=posture["metrics"]["failed"]), self.tr("Audit integrity: {status}").format(status=self.tr("Valid") if data["audit_valid"] else self.tr("Needs review")), "", self.tr("Incident signals"), f"- {self.tr('High')}: {incidents['high']}", f"- {self.tr('Medium')}: {incidents['medium']}"]
+        lines = [f"# {title}", "", self.tr("Data scope: {name}").format(name=data["scope"]["environment"]), self.tr("Posture score: {score}/100").format(score=posture["score"]), self.tr("Local requests: {count}").format(count=posture["metrics"]["requests"]), self.tr("Failed requests: {count}").format(count=posture["metrics"]["failed"]), self.tr("Audit integrity: {status}").format(status=self.tr("Valid") if data["audit_valid"] else self.tr("Needs review")), "", self.tr("Incident signals"), f"- {self.tr('High')}: {incidents['high']}", f"- {self.tr('Medium')}: {incidents['medium']}"]
         if data["kind"] == "ciso":
             lines += ["", self.tr("Executive actions"), "- " + self.tr("Review high-risk findings and approval records."), "- " + self.tr("Use the Security Posture and Change Control workspaces for evidence.")]
         elif data["kind"] == "soc":
@@ -6126,7 +6181,7 @@ class OperationsDialog(QDialog):
             content = self.report_preview.toPlainText() + "\n"
         if path:
             Path(path).write_text(content, encoding="utf-8")
-            AuditTrail(self.settings).append("security_report_exported", {"kind": data["kind"], "format": format_name, "file": os.path.basename(path)})
+            self._scope_audit().append("security_report_exported", {"kind": data["kind"], "format": format_name, "file": os.path.basename(path)})
 
     def _active_chain_base_url(self):
         """Return the selected product's approved API origin, never a user-provided host."""
@@ -6373,7 +6428,7 @@ class OperationsDialog(QDialog):
 
     def refresh_webhook_history(self):
         """Render only redacted webhook audit metadata; endpoint paths never appear."""
-        events = [event for event in reversed(AuditTrail(self.settings).events()) if str(event.get("action", "")).startswith("webhook_")][:100]
+        events = [event for event in reversed(self._scoped_events()) if str(event.get("action", "")).startswith("webhook_")][:100]
         labels = {"test": self.tr("Connectivity test"), "alerts": self.tr("Alert snapshot")}
         states = {"started": self.tr("Started"), "completed": self.tr("Succeeded"), "failed": self.tr("Failed")}
         colors = {"started": "#38bdf8", "completed": "#22c55e", "failed": "#ef4444"}
@@ -6407,22 +6462,22 @@ class OperationsDialog(QDialog):
         self.integration_preview.setToolTip(self.tr("Copied to clipboard"))
 
     def _webhook_payload(self):
-        posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
-        return {"source": "ZS API Client", "event": "connectivity_test", "timestamp": int(time.time()), "posture": {"score": posture["score"], "metrics": posture["metrics"]}}
+        posture = security_posture(self._scoped_history(), AuditTrail(self.settings).verify())
+        return {"source": "ZS API Client", "event": "connectivity_test", "timestamp": int(time.time()), "scope": self._scope_metadata(), "posture": {"score": posture["score"], "metrics": posture["metrics"]}}
 
     def _webhook_alert_payload(self):
-        posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
+        posture = security_posture(self._scoped_history(), AuditTrail(self.settings).verify())
         return redact_sensitive({
-            "source": "ZS API Client", "event": "local_alert_snapshot", "timestamp": int(time.time()),
+            "source": "ZS API Client", "event": "local_alert_snapshot", "timestamp": int(time.time()), "scope": self._scope_metadata(),
             "posture": {"score": posture["score"], "metrics": posture["metrics"]},
             "alerts": self._alert_data(),
         })
 
     def _local_automation_payload(self):
         """Build the only data passed to local automation; credentials and raw responses are excluded."""
-        posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
+        posture = security_posture(self._scoped_history(), AuditTrail(self.settings).verify())
         return redact_sensitive({
-            "source": "ZS API Client", "event": "local_security_snapshot", "timestamp": int(time.time()),
+            "source": "ZS API Client", "event": "local_security_snapshot", "timestamp": int(time.time()), "scope": self._scope_metadata(),
             "posture": {"score": posture["score"], "metrics": posture["metrics"], "findings": posture["findings"]},
             "alerts": self._alert_data(),
         })
@@ -6438,9 +6493,10 @@ class OperationsDialog(QDialog):
             QMessageBox.information(self, self.tr("Local automation"), self.tr("Local automation is already running.")); return
         payload = json.dumps(self._local_automation_payload(), ensure_ascii=False, indent=2) + "\n"
         self.integration_preview.setPlainText(payload)
+        scope = self._scope_metadata()
         if QMessageBox.question(
             self, self.tr("Local automation"),
-            self.tr("Run the reviewed Python file with masked local posture and alert data? The process receives no API credentials."),
+            self.tr("Run the reviewed Python file with masked local posture and alert data? The process receives no API credentials.") + "\n\n" + self.tr("Data scope: {name}").format(name=scope["environment"]),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel,
         ) != QMessageBox.StandardButton.Yes:
             return
@@ -6457,16 +6513,17 @@ class OperationsDialog(QDialog):
         process.started.connect(lambda: (process.write(payload.encode("utf-8")), process.closeWriteChannel()))
         process.finished.connect(self._on_local_automation_finished)
         process.errorOccurred.connect(self._on_local_automation_error)
+        self._local_automation_audit_scope = scope
+        self._scope_audit(scope).append("local_automation_started", {"script": script.name, "input_bytes": len(payload.encode("utf-8"))})
         process.start()
         QTimer.singleShot(15_000, self._timeout_local_automation)
-        AuditTrail(self.settings).append("local_automation_started", {"script": script.name, "input_bytes": len(payload.encode("utf-8"))})
 
     def _timeout_local_automation(self):
         process = getattr(self, "local_automation_process", None)
         if process is not None and process.state() != QProcess.ProcessState.NotRunning:
             self._local_automation_timed_out = True
             process.kill()
-            AuditTrail(self.settings).append("local_automation_timed_out", {})
+            self._scope_audit(getattr(self, "_local_automation_audit_scope", None)).append("local_automation_timed_out", {})
             QMessageBox.warning(self, self.tr("Local automation"), self.tr("Local automation exceeded the 15-second limit and was stopped."))
 
     def _on_local_automation_finished(self, exit_code, exit_status):
@@ -6475,12 +6532,12 @@ class OperationsDialog(QDialog):
         stderr = bytes(process.readAllStandardError()).decode("utf-8", "replace")[:65_536]
         result = redact_sensitive({"exit_code": int(exit_code), "stdout": stdout, "stderr": stderr})
         self.integration_preview.setPlainText(json.dumps(result, indent=2, ensure_ascii=False))
-        AuditTrail(self.settings).append("local_automation_finished", {"exit_code": int(exit_code), "stdout_bytes": len(stdout.encode("utf-8")), "stderr_bytes": len(stderr.encode("utf-8"))})
+        self._scope_audit(getattr(self, "_local_automation_audit_scope", None)).append("local_automation_finished", {"exit_code": int(exit_code), "stdout_bytes": len(stdout.encode("utf-8")), "stderr_bytes": len(stderr.encode("utf-8"))})
         if not getattr(self, "_local_automation_timed_out", False):
             QMessageBox.information(self, self.tr("Local automation"), self.tr("Local automation completed with exit code {code}.").format(code=exit_code))
 
     def _on_local_automation_error(self, process_error):
-        AuditTrail(self.settings).append("local_automation_failed", {"process_error": str(process_error)})
+        self._scope_audit(getattr(self, "_local_automation_audit_scope", None)).append("local_automation_failed", {"process_error": str(process_error)})
         if process_error == QProcess.ProcessError.FailedToStart:
             QMessageBox.warning(self, self.tr("Local automation"), self.tr("Local automation failed to start."))
 
@@ -6499,7 +6556,8 @@ class OperationsDialog(QDialog):
             QMessageBox.information(self, self.tr("Webhook delivery"), self.tr("A webhook delivery is already running.")); return
         safe_payload = redact_sensitive(payload)
         self.integration_preview.setPlainText(json.dumps(safe_payload, indent=2, ensure_ascii=False))
-        if QMessageBox.question(self, self.tr("Webhook delivery"), confirmation, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
+        scope = self._scope_metadata()
+        if QMessageBox.question(self, self.tr("Webhook delivery"), confirmation + "\n\n" + self.tr("Data scope: {name}").format(name=scope["environment"]), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
             return
         parsed = urllib.parse.urlsplit(endpoint)
         def send():
@@ -6507,37 +6565,38 @@ class OperationsDialog(QDialog):
             with build_network_opener(self.settings, allow_redirects=False).open(request, timeout=10) as response:
                 return str(getattr(response, "status", 200))
         self._webhook_delivery_kind = kind
+        self._webhook_delivery_scope = scope
         self.webhook_worker = LlmWorker(send)
         self.webhook_worker.completed.connect(self._on_webhook_completed)
         self.webhook_worker.failed.connect(self._on_webhook_failed)
+        self._scope_audit(scope).append(f"webhook_{kind}_started", {"endpoint_host": parsed.hostname or "", "payload_bytes": len(json.dumps(safe_payload).encode("utf-8"))})
         self.webhook_worker.start()
-        AuditTrail(self.settings).append(f"webhook_{kind}_started", {"endpoint_host": parsed.hostname or "", "payload_bytes": len(json.dumps(safe_payload).encode("utf-8"))})
         self.refresh_webhook_history(); self.refresh_audit()
 
     def _on_webhook_completed(self, status):
         kind = getattr(self, "_webhook_delivery_kind", "unknown")
-        AuditTrail(self.settings).append(f"webhook_{kind}_completed", {"status": status})
+        self._scope_audit(getattr(self, "_webhook_delivery_scope", None)).append(f"webhook_{kind}_completed", {"status": status})
         self.refresh_webhook_history(); self.refresh_audit()
         QMessageBox.information(self, self.tr("Webhook delivery"), self.tr("Masked webhook delivery succeeded (HTTP {status}).").format(status=status))
 
     def _on_webhook_failed(self, error):
         kind = getattr(self, "_webhook_delivery_kind", "unknown")
         safe_error = redact_sensitive(error)
-        AuditTrail(self.settings).append(f"webhook_{kind}_failed", {"error": safe_error})
+        self._scope_audit(getattr(self, "_webhook_delivery_scope", None)).append(f"webhook_{kind}_failed", {"error": safe_error})
         self.refresh_webhook_history(); self.refresh_audit()
         QMessageBox.warning(self, self.tr("Webhook delivery"), self.tr("Masked webhook delivery failed: {error}").format(error=safe_error))
 
     def refresh_audit(self):
-        trail = AuditTrail(self.settings)
-        events = list(reversed(trail.events()))
+        events = list(reversed(self._scoped_events()))
         self.audit_timeline.setRowCount(len(events))
         for row, event in enumerate(events):
             self.audit_timeline.setItem(row, 0, QTableWidgetItem(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(event.get("timestamp", 0)))))
-            self.audit_timeline.setItem(row, 1, QTableWidgetItem(event.get("action", "")))
-            self.audit_timeline.setItem(row, 2, QTableWidgetItem(json.dumps(event.get("details", {}), ensure_ascii=False)))
+            self.audit_timeline.setItem(row, 1, QTableWidgetItem(str(event.get("environment") or "Default")))
+            self.audit_timeline.setItem(row, 2, QTableWidgetItem(event.get("action", "")))
+            self.audit_timeline.setItem(row, 3, QTableWidgetItem(json.dumps(event.get("details", {}), ensure_ascii=False)))
 
     def refresh_schedules(self):
-        schedules = self.window._report_schedules()
+        schedules = environment_scope(self.window._report_schedules(), self._scope_id())
         type_labels = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}
         cadence_labels = {3600: self.tr("Hourly"), 86400: self.tr("Daily"), 604800: self.tr("Weekly")}
         self.report_schedules.setRowCount(len(schedules))
@@ -6551,7 +6610,7 @@ class OperationsDialog(QDialog):
             except (TypeError, ValueError):
                 next_run = 0
             values = (
-                str(schedule.get("name", "")), type_labels.get(str(schedule.get("kind", "ciso")), type_labels["ciso"]),
+                str(schedule.get("name", "")), str(schedule.get("environment") or "Default"), type_labels.get(str(schedule.get("kind", "ciso")), type_labels["ciso"]),
                 cadence_labels.get(cadence, f"{cadence // 3600} h"),
                 time.strftime("%Y-%m-%d %H:%M", time.localtime(next_run)) if next_run else "—",
                 self.tr("Background") if schedule.get("background", False) else self.tr("App only"),
@@ -6559,14 +6618,21 @@ class OperationsDialog(QDialog):
             )
             for column, value in enumerate(values):
                 self.report_schedules.setItem(row, column, QTableWidgetItem(value))
+            self.report_schedules.item(row, 0).setData(Qt.ItemDataRole.UserRole, str(schedule.get("id", "")))
 
     def _selected_schedule_row(self):
         row = self.report_schedules.currentRow()
         schedules = self.window._report_schedules()
-        if row < 0 or row >= len(schedules):
+        selected_id = str(self.report_schedules.item(row, 0).data(Qt.ItemDataRole.UserRole) or "") if row >= 0 and self.report_schedules.item(row, 0) else ""
+        index = next((index for index, schedule in enumerate(schedules) if str(schedule.get("id", "")) == selected_id), -1)
+        if index < 0:
             QMessageBox.information(self, self.tr("Scheduled report"), self.tr("Select a scheduled report first."))
             return -1, schedules
-        return row, schedules
+        return index, schedules
+
+    def _schedule_audit(self, schedule: dict[str, Any]) -> AuditTrail:
+        scope = environment_scope_metadata(str(schedule.get("environment_id") or "default"), str(schedule.get("environment") or "Default"))
+        return AuditTrail(self.settings, environment_id=scope["environment_id"], environment_name=scope["environment"])
 
     def run_selected_schedule(self):
         row, schedules = self._selected_schedule_row()
@@ -6593,7 +6659,7 @@ class OperationsDialog(QDialog):
                 try:
                     schedule["scheduler_backend"] = register_background_schedule(schedule, application_invocation())
                 except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
-                    AuditTrail(self.settings).append("scheduled_report_scheduler_failed", {"id": str(schedule.get("id", "")), "operation": "enable", "reason": type(error).__name__})
+                    self._schedule_audit(schedule).append("scheduled_report_scheduler_failed", {"id": str(schedule.get("id", "")), "operation": "enable", "reason": type(error).__name__})
                     QMessageBox.warning(self, self.tr("Scheduled report"), self.tr("The operating-system schedule could not be updated. No state was changed.")); return
             else:
                 # Persist the pause first: even a stale OS job will see the
@@ -6604,10 +6670,10 @@ class OperationsDialog(QDialog):
                     unregister_background_schedule(str(schedule.get("id", "")))
                 except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
                     scheduler_error = type(error).__name__
-                    AuditTrail(self.settings).append("scheduled_report_scheduler_failed", {"id": str(schedule.get("id", "")), "operation": "pause", "reason": scheduler_error})
+                    self._schedule_audit(schedule).append("scheduled_report_scheduler_failed", {"id": str(schedule.get("id", "")), "operation": "pause", "reason": scheduler_error})
         schedule["enabled"] = enable
         self.settings.setValue("automation/schedules", json.dumps(schedules))
-        AuditTrail(self.settings).append("scheduled_report_toggled", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "enabled": schedule["enabled"], "background": bool(schedule.get("background", False))})
+        self._schedule_audit(schedule).append("scheduled_report_toggled", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "enabled": schedule["enabled"], "background": bool(schedule.get("background", False))})
         self.refresh_schedules(); self.refresh_audit()
         if scheduler_error:
             QMessageBox.warning(self, self.tr("Scheduled report"), self.tr("The report is paused and cannot generate output, but the operating-system job cleanup needs manual review."))
@@ -6626,7 +6692,7 @@ class OperationsDialog(QDialog):
             except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
                 scheduler_error = type(error).__name__
         self.settings.setValue("automation/schedules", json.dumps(schedules))
-        AuditTrail(self.settings).append("scheduled_report_removed", {"id": str(removed.get("id", "")), "name": str(removed.get("name", "")), "scheduler_error": scheduler_error})
+        self._schedule_audit(removed).append("scheduled_report_removed", {"id": str(removed.get("id", "")), "name": str(removed.get("name", "")), "scheduler_error": scheduler_error})
         self.refresh_schedules(); self.refresh_audit()
         if scheduler_error:
             QMessageBox.warning(self, self.tr("Scheduled report"), self.tr("The report was removed, but the operating-system job could not be removed. It can no longer generate a report because its schedule ID is no longer active."))
@@ -6648,20 +6714,22 @@ class OperationsDialog(QDialog):
             self, self.tr("Scheduled report"), self.tr("Run this report even when ZS API Client is closed? This creates a user-level operating-system schedule and requires no administrator privileges."),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No,
         ) == QMessageBox.StandardButton.Yes
+        scope = self._scope_metadata()
         schedule = {
             "id": uuid.uuid4().hex, "name": name.strip(), "kind": self.report_type.currentData(), "cadence_seconds": cadence_seconds,
             "output_dir": output_dir, "enabled": True, "background": background, "created": now, "next_run": now + cadence_seconds,
+            **scope,
         }
         if background:
             try:
                 schedule["scheduler_backend"] = register_background_schedule(schedule, application_invocation())
             except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
-                AuditTrail(self.settings).append("scheduled_report_scheduler_failed", {"id": schedule["id"], "operation": "create", "reason": type(error).__name__})
+                self._schedule_audit(schedule).append("scheduled_report_scheduler_failed", {"id": schedule["id"], "operation": "create", "reason": type(error).__name__})
                 QMessageBox.warning(self, self.tr("Scheduled report"), self.tr("The operating-system schedule could not be created. The report was not scheduled.")); return
         schedules = self.window._report_schedules()
         schedules.append(schedule)
         self.settings.setValue("automation/schedules", json.dumps(schedules))
-        AuditTrail(self.settings).append("scheduled_report_created", {
+        self._schedule_audit(schedule).append("scheduled_report_created", {
             "id": schedule["id"], "name": name.strip(), "kind": self.report_type.currentData(), "cadence_seconds": cadence_seconds, "background": background, "scheduler_backend": schedule.get("scheduler_backend", "application"),
         })
         self.refresh_dashboard(); self.refresh_audit(); self.refresh_schedules()
@@ -6671,8 +6739,8 @@ class OperationsDialog(QDialog):
     def create_support_bundle(self):
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Save support bundle"), "zs-api-client-support.zip", "ZIP (*.zip)")
         if path:
-            support_bundle(path, {"version": __version__, "settings": {"language": self.settings.value("language", "system"), "mode": self.settings.value("ui/mode", "basic")}}, AuditTrail(self.settings).events())
-            AuditTrail(self.settings).append("support_bundle_created", {"file": os.path.basename(path)})
+            support_bundle(path, {"version": __version__, "scope": self._scope_metadata(), "settings": {"language": self.settings.value("language", "system"), "mode": self.settings.value("ui/mode", "basic")}}, self._scoped_events())
+            self._scope_audit().append("support_bundle_created", {"file": os.path.basename(path)})
             QMessageBox.information(self, self.tr("Support bundle"), self.tr("A redacted support bundle was created."))
 
 

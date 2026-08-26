@@ -1228,6 +1228,60 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual("line", dialog.dashboard_trend.style)
         dialog.close()
 
+    def test_operations_scope_is_tenant_safe_by_default_and_explicit_in_advanced_mode(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        saved = {key: settings.value(key, None) for key in ("ui/mode", "profiles/active_id", "profiles/active", "audit/events", "audit/anchor")}
+        try:
+            settings.setValue("ui/mode", "advanced"); settings.setValue("profiles/active_id", "default"); settings.setValue("profiles/active", "Default"); settings.remove("audit/events")
+            client.AuditTrail(settings).append("default_event", {})
+            client.AuditTrail(settings, environment_id="0123456789abcdef", environment_name="Tenant B").append("tenant_b_event", {})
+            self.window.request_history = [
+                {"environment_id": "default", "environment": "Default", "status": 200, "duration_ms": 10},
+                {"environment_id": "0123456789abcdef", "environment": "Tenant B", "status": 500, "duration_ms": 20},
+            ]
+            dialog = client.OperationsDialog(self.window)
+            self.assertEqual(1, int(dialog.dashboard_cards["requests"].text()))
+            self.assertEqual(1, dialog.audit_timeline.rowCount())
+            self.assertGreaterEqual(dialog.data_scope.findData("*"), 0)
+            dialog.data_scope.setCurrentIndex(dialog.data_scope.findData("*"))
+            self.assertEqual(2, int(dialog.dashboard_cards["requests"].text()))
+            self.assertEqual(2, dialog.audit_timeline.rowCount())
+            self.assertEqual("*", dialog._webhook_payload()["scope"]["environment_id"])
+            self.assertEqual("*", dialog._report_data()["scope"]["environment_id"])
+            dialog.close()
+        finally:
+            for key, value in saved.items():
+                if value is None: settings.remove(key)
+                else: settings.setValue(key, value)
+
+    def test_scheduled_report_retains_its_tenant_scope_in_headless_mode(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous_schedules, previous_audit = settings.value("automation/schedules", None), settings.value("audit/events", None)
+        try:
+            with TemporaryDirectory() as output_dir:
+                now = 1_800_000_000; tenant_id = "0123456789abcdef"
+                settings.remove("audit/events")
+                settings.setValue("automation/schedules", json.dumps([{
+                    "id": "tenant_report", "name": "Tenant B", "kind": "operations", "cadence_seconds": 3600,
+                    "output_dir": output_dir, "enabled": True, "next_run": now - 1,
+                    "environment_id": tenant_id, "environment": "Tenant B",
+                }]))
+                history = [
+                    {"environment_id": "default", "status": 500},
+                    {"environment_id": tenant_id, "status": 200},
+                ]
+                generated = client.run_report_schedules(settings, history, now=now, selected_id="tenant_report")
+                report = json.loads(Path(generated[0]).read_text(encoding="utf-8"))
+                self.assertEqual(tenant_id, report["scope"]["environment_id"])
+                self.assertEqual(1, report["posture"]["metrics"]["requests"])
+                self.assertEqual(0, report["posture"]["metrics"]["failed"])
+                event = client.AuditTrail(settings).events()[-1]
+                self.assertEqual(tenant_id, event["environment_id"])
+        finally:
+            for key, value in (("automation/schedules", previous_schedules), ("audit/events", previous_audit)):
+                if value is None: settings.remove(key)
+                else: settings.setValue(key, value)
+
     def test_local_monitor_refreshes_only_local_signal_views(self):
         settings = client.QSettings("Zscaler", "APIClient")
         old_enabled, old_seconds = settings.value("monitoring/auto_refresh", None), settings.value("monitoring/refresh_seconds", None)
@@ -1300,6 +1354,7 @@ class MainWindowTests(unittest.TestCase):
             self.assertTrue(self.window.change_shortcut.isHidden())
             dialog = client.OperationsDialog(self.window)
             self.assertFalse(dialog.tabs.isTabVisible(1))
+            self.assertEqual(-1, dialog.data_scope.findData("*"))
             self.assertIn("# CISO", dialog.report_preview.toPlainText())
             dialog.close()
         finally:

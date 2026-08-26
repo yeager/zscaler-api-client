@@ -40,8 +40,24 @@ def safe_url(value: Any) -> str:
     """Mask sensitive URL query values before including an endpoint in evidence."""
     parts = urllib.parse.urlsplit(str(value or ""))
     query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
-    safe_query = urllib.parse.urlencode([(key, "***" if is_sensitive_name(key) else item) for key, item in query])
-    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, parts.fragment))
+    safe_query = urllib.parse.urlencode([(key, "***" if is_sensitive_name(key) else item) for key, item in query], safe="*")
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, "***" if parts.fragment else ""))
+
+
+def environment_scope(records: Iterable[dict[str, Any]], environment_id: str | None) -> list[dict[str, Any]]:
+    """Return records for one tenant; legacy unlabelled records belong to default."""
+    items = [item for item in records if isinstance(item, dict)]
+    if environment_id in {None, "", "*"}:
+        return items
+    wanted = str(environment_id)
+    return [item for item in items if str(item.get("environment_id") or "default") == wanted]
+
+
+def environment_scope_metadata(environment_id: str | None, environment_name: str = "") -> dict[str, str]:
+    """Create stable, non-secret scope metadata for exports and integrations."""
+    if environment_id in {None, "", "*"}:
+        return {"environment_id": "*", "environment": environment_name or "All environments"}
+    return {"environment_id": str(environment_id), "environment": environment_name or ("Default" if environment_id == "default" else "")}
 
 
 def mask(value: Any) -> Any:
@@ -50,6 +66,19 @@ def mask(value: Any) -> Any:
         return {k: "***" if is_sensitive_name(k) else mask(v) for k, v in value.items()}
     if isinstance(value, list):
         return [mask(item) for item in value]
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.startswith(("{", "[")):
+            try:
+                return json.dumps(mask(json.loads(stripped)), ensure_ascii=False)
+            except (TypeError, ValueError):
+                pass
+        if re.match(r"^https?://", value.strip(), re.IGNORECASE):
+            value = safe_url(value)
+        return re.sub(
+            r"(?i)(\b(?:authorization|proxy-?authorization|set-?cookie|cookie|password|(?:client_)?secret|(?:access|refresh)_token|token|jwt-?token|auth-?token|session-?id|j-?session-?id|x-?api-?key|api_?key)\s*[:=]\s*)(?:[\"'])?[^\r\n,;&}\]]+",
+            r"\1***", value,
+        )
     return value
 
 
@@ -301,28 +330,50 @@ class AuditEvent:
 
 class AuditTrail:
     """Append-only, hash-linked user audit trail stored in QSettings-compatible storage."""
-    def __init__(self, settings: Any, key: str = "audit/events"):
+    def __init__(self, settings: Any, key: str = "audit/events", environment_id: str | None = None, environment_name: str | None = None):
         self.settings, self.key = settings, key
+        self.anchor_key = (key.rsplit("/", 1)[0] + "/anchor") if "/" in key else key + "_anchor"
+        self.environment_id = str(environment_id if environment_id is not None else settings.value("profiles/active_id", "default") or "default")
+        self.environment_name = str(environment_name if environment_name is not None else settings.value("profiles/active", "Default") or "Default")
 
-    def events(self) -> list[dict[str, Any]]:
+    def _read_events(self) -> tuple[list[dict[str, Any]], bool]:
         raw = self.settings.value(self.key, "[]")
         try:
-            return json.loads(raw) if isinstance(raw, str) else list(raw)
+            parsed = json.loads(raw) if isinstance(raw, str) else list(raw)
         except (TypeError, ValueError):
-            return []
+            return [], False
+        if not isinstance(parsed, list) or any(not isinstance(event, dict) for event in parsed):
+            return [], False
+        return parsed, True
+
+    def events(self) -> list[dict[str, Any]]:
+        return self._read_events()[0]
 
     def append(self, action: str, details: dict[str, Any] | None = None) -> dict[str, Any]:
-        events = self.events()
+        events, valid = self._read_events()
+        if not valid:
+            return {"timestamp": int(time.time()), "action": action, "details": mask(details or {}), "digest": "", "persisted": False}
+        if not events:
+            self.settings.setValue(self.anchor_key, "")
         previous = events[-1].get("digest", "") if events else ""
         event = asdict(AuditEvent(int(time.time()), action, mask(details or {}), previous))
+        event.update(environment_scope_metadata(self.environment_id, self.environment_name))
         event["digest"] = hashlib.sha256(canonical({k: v for k, v in event.items() if k != "digest"}).encode()).hexdigest()
         events.append(event)
-        self.settings.setValue(self.key, canonical(events[-1000:]))
+        if len(events) > 1000:
+            retained = events[-1000:]
+            self.settings.setValue(self.anchor_key, str(retained[0].get("previous_hash", "")))
+        else:
+            retained = events
+        self.settings.setValue(self.key, canonical(retained))
         return event
 
     def verify(self) -> bool:
-        previous = ""
-        for event in self.events():
+        events, valid = self._read_events()
+        if not valid:
+            return False
+        previous = str(self.settings.value(self.anchor_key, "") or "")
+        for event in events:
             expected = hashlib.sha256(canonical({k: v for k, v in event.items() if k != "digest"}).encode()).hexdigest()
             if event.get("previous_hash") != previous or event.get("digest") != expected:
                 return False
@@ -557,7 +608,7 @@ def change_control_plan(before: Any, after: Any) -> dict[str, Any]:
     }
 
 
-def security_report_data(kind: str, history: Iterable[dict[str, Any]], audit_events: Iterable[dict[str, Any]], audit_valid: bool) -> dict[str, Any]:
+def security_report_data(kind: str, history: Iterable[dict[str, Any]], audit_events: Iterable[dict[str, Any]], audit_valid: bool, scope: dict[str, str] | None = None) -> dict[str, Any]:
     """Create local, redacted facts for CISO, SOC, or operations reports."""
     if kind not in {"ciso", "soc", "operations"}:
         raise ValueError("Unknown report type")
@@ -567,7 +618,7 @@ def security_report_data(kind: str, history: Iterable[dict[str, Any]], audit_eve
     return {
         "kind": kind, "posture": posture, "incident_summary": evidence["summary"],
         "audit_valid": audit_valid, "audit_events": len(audit_list),
-        "recent_events": evidence["timeline"][:10],
+        "recent_events": evidence["timeline"][:10], "scope": mask(scope or environment_scope_metadata("default", "Default")),
     }
 
 
