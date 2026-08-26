@@ -22,10 +22,14 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertNotIn('"other"', serialized)
 
     def test_mask_handles_sensitive_http_header_variants(self):
-        safe = mask({"Set-Cookie": "session=hidden", "X-API-Key": "hidden", "Proxy-Authorization": "hidden", "name": "Ada"})
+        safe = mask({"Set-Cookie": "session=hidden", "X-API-Key": "hidden", "Proxy-Authorization": "hidden",
+                     "auth-token": "hidden", "jwtToken": "hidden", "JSESSIONID": "hidden", "name": "Ada"})
         self.assertEqual("***", safe["Set-Cookie"])
         self.assertEqual("***", safe["X-API-Key"])
         self.assertEqual("***", safe["Proxy-Authorization"])
+        self.assertEqual("***", safe["auth-token"])
+        self.assertEqual("***", safe["jwtToken"])
+        self.assertEqual("***", safe["JSESSIONID"])
         self.assertEqual("Ada", safe["name"])
 
     def test_simulator_uses_first_matching_rule(self):

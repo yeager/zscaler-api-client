@@ -25,6 +25,7 @@ ZS API Client is built with security as a top priority:
 
 ### API Security
 - **Per-Session Tokens** – Each API type maintains its own authentication token
+- **Product-correct legacy authentication** – Supports ZIA `JSESSIONID`, ZPA bearer tokens, ZDX v1/v2 bearer tokens, and Client Connector `auth-token` JWT sessions
 - **Automatic Session Cleanup** – Sessions terminated when app closes
 - **No Telemetry** – Zero tracking, analytics, or external connections except Zscaler APIs
 - **OAuth 2.0 Support** – Modern authentication for all newer APIs

@@ -30,7 +30,8 @@ def is_sensitive_name(value: Any) -> bool:
     """Recognise credential-like JSON keys, query parameters, and HTTP headers."""
     normalized = "".join(character for character in str(value).lower() if character.isalnum())
     return normalized in {"authorization", "proxyauthorization", "cookie", "setcookie", "password", "secret",
-                          "token", "apikey", "clientsecret", "keysecret", "accesstoken", "refreshtoken"} or normalized.startswith(("xapikey", "xauthtoken"))
+                          "token", "jwttoken", "authtoken", "authcookie", "sessionid", "jsessionid", "apikey",
+                          "clientsecret", "keysecret", "accesstoken", "refreshtoken"} or normalized.startswith(("xapikey", "xauthtoken"))
 
 
 def safe_url(value: Any) -> str:

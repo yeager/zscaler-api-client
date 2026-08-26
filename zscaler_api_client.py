@@ -326,6 +326,47 @@ def redact_url(url: str) -> str:
     return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, parts.fragment))
 
 
+def response_cookie(headers: Dict | None, name: str) -> str:
+    """Extract one response cookie without retaining attributes or other cookies."""
+    wanted = str(name or "").lower()
+    for key, value in (headers or {}).items():
+        if str(key).lower() != "set-cookie":
+            continue
+        for cookie in re.split(r",(?=\s*[^;,=\s]+=)", str(value)):
+            first = cookie.split(";", 1)[0].strip()
+            if "=" in first:
+                cookie_name, cookie_value = first.split("=", 1)
+                if cookie_name.strip().lower() == wanted:
+                    return cookie_value.strip()
+    return ""
+
+
+def http_header_value(headers: Dict | None, name: str) -> str:
+    """Read an HTTP header case-insensitively."""
+    wanted = str(name or "").lower()
+    return next((str(value) for key, value in (headers or {}).items() if str(key).lower() == wanted), "")
+
+
+def is_authentication_request(api_type: str, url: str, method: str = "POST") -> bool:
+    """Recognize only documented authentication requests before accepting returned tokens."""
+    if str(method).upper() != "POST":
+        return False
+    path = urllib.parse.urlsplit(str(url or "")).path.rstrip("/").lower()
+    exact = {
+        "ZIA": ("/api/v1/authenticatedsession",),
+        "ZPA": ("/signin",),
+        "ZCC": ("/papi/auth/v1/login",),
+        "OneAPI": ("/oauth2/v1/token",),
+        "ZIdentity": ("/oauth2/v1/token",),
+        "ZTW": ("/oauth/token",),
+        "ZWA": ("/oauth/token",),
+        "EASM": ("/oauth/token",),
+    }
+    if api_type == "ZDX":
+        return bool(re.search(r"/v[12]/oauth/token$", path))
+    return any(path.endswith(candidate) for candidate in exact.get(api_type, ()))
+
+
 class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
     """Prevent approved webhook payloads from being redirected to another origin."""
     def redirect_request(self, req, fp, code, msg, headers, newurl):
@@ -2709,13 +2750,13 @@ class ApiWorker(QThread):
         
         data = None
         if body:
-            content_type = headers.get("Content-Type", "")
+            content_type = http_header_value(headers, "Content-Type").split(";", 1)[0].strip().lower()
             if content_type == "application/x-www-form-urlencoded" and isinstance(body, str):
                 # Form-urlencoded body (used by OAuth2 token endpoints)
                 data = body.encode("utf-8")
             else:
                 data = json.dumps(body).encode("utf-8")
-                if "Content-Type" not in headers:
+                if not content_type:
                     headers["Content-Type"] = "application/json"
         
         request = urllib.request.Request(url, data=data, headers=headers, method=method)
@@ -3632,6 +3673,13 @@ class SettingsDialog(QDialog):
         self.zdx_key_secret.setPlaceholderText("Key Secret")
         zdx_row2.addWidget(self.zdx_key_secret, 1)
         zdx_layout.addLayout(zdx_row2)
+        zdx_version_row = QHBoxLayout()
+        zdx_version_row.addWidget(QLabel(self.tr("API version:")))
+        self.zdx_api_version = QComboBox()
+        self.zdx_api_version.addItem("v2", "v2")
+        self.zdx_api_version.addItem("v1", "v1")
+        zdx_version_row.addWidget(self.zdx_api_version, 1)
+        zdx_layout.addLayout(zdx_version_row)
         
         left_column.addWidget(zdx_group)
         
@@ -3645,7 +3693,7 @@ class SettingsDialog(QDialog):
         self.zcc_enabled = QCheckBox(self.tr("Enabled"))
         zcc_row1.addWidget(self.zcc_enabled)
         self.zcc_cloud = QLineEdit()
-        self.zcc_cloud.setPlaceholderText("Cloud (api.zsapi.net)")
+        self.zcc_cloud.setPlaceholderText("Cloud host (e.g. mobile.zscalertwo.net)")
         zcc_row1.addWidget(self.zcc_cloud, 1)
         zcc_layout.addLayout(zcc_row1)
         
@@ -4056,6 +4104,7 @@ class SettingsDialog(QDialog):
             self.word_wrap.setCurrentIndex(0)
             self.font_size.setCurrentText("11")
             self.theme.setCurrentIndex(2)
+            self.zdx_api_version.setCurrentIndex(max(0, self.zdx_api_version.findData("v2")))
     
     def _load_settings(self):
         settings = QSettings("Zscaler", "APIClient")
@@ -4084,6 +4133,7 @@ class SettingsDialog(QDialog):
         self.zdx_cloud.setText(settings.value("zdx/cloud", ""))
         self.zdx_key_id.setText(settings.value("zdx/key_id", ""))
         self.zdx_key_secret.setText(secure_get("zdx_key_secret"))
+        self.zdx_api_version.setCurrentIndex(max(0, self.zdx_api_version.findData(settings.value("zdx/api_version", "v2"))))
         
         # ZCC
         self.zcc_cloud.setText(settings.value("zcc/cloud", ""))
@@ -4190,6 +4240,12 @@ class SettingsDialog(QDialog):
             zpa_cloud = zpa_cloud.split("://", 1)[1].rstrip("/")
             self.zpa_cloud.setText(zpa_cloud)
             warnings.append(self.tr("ZPA Cloud: Removed URL prefix (only hostname needed)"))
+
+        for product, field in (("ZDX", self.zdx_cloud), ("ZCC", self.zcc_cloud)):
+            host = field.text().strip()
+            if host.startswith(("https://", "http://")):
+                field.setText(host.split("://", 1)[1].rstrip("/"))
+                warnings.append(self.tr("{product} Cloud: Removed URL prefix (only hostname needed)").format(product=product))
         
         # --- ZPA Customer ID ---
         zpa_cid = self.zpa_customer_id.text().strip()
@@ -4237,6 +4293,8 @@ class SettingsDialog(QDialog):
         # --- Enabled but missing credentials ---
         if self.zia_enabled.isChecked() and not self.zia_cloud.text().strip():
             warnings.append(self.tr("ZIA is enabled but Cloud is empty"))
+        if self.zcc_enabled.isChecked() and not self.zcc_cloud.text().strip():
+            warnings.append(self.tr("ZCC is enabled but Cloud host is empty"))
         if self.oneapi_enabled.isChecked() and not vanity:
             warnings.append(self.tr("OneAPI is enabled but Vanity Domain is empty"))
         if self.oneapi_enabled.isChecked() and not self.oneapi_client_id.text().strip():
@@ -4309,6 +4367,7 @@ class SettingsDialog(QDialog):
         # ZDX
         settings.setValue("zdx/cloud", self.zdx_cloud.text())
         settings.setValue("zdx/key_id", self.zdx_key_id.text())
+        settings.setValue("zdx/api_version", self.zdx_api_version.currentData())
         
         # ZCC
         settings.setValue("zcc/cloud", self.zcc_cloud.text())
@@ -5151,7 +5210,7 @@ class OperationsDialog(QDialog):
             return f"https://api.{cloud.lower()}.zsapi.net" if cloud and cloud.upper() != "PRODUCTION" and "." not in cloud else "https://api.zsapi.net"
         values = {
             "ZIA": ("zia/cloud", "zsapi.zscaler.net"), "ZPA": ("zpa/cloud", "config.private.zscaler.com"),
-            "ZDX": ("zdx/cloud", "api.zdxcloud.net"), "ZCC": ("zcc/cloud", "api.zscaler.com"),
+            "ZDX": ("zdx/cloud", "api.zdxcloud.net"), "ZCC": ("zcc/cloud", ""),
             "ZTW": ("ztw/cloud", "connector.zscaler.net"), "ZWA": ("zwa/cloud", "workflow.zscaler.com"),
             "EASM": ("easm/cloud", "api.zscaler.com"), "ZIdentity": ("zidentity/domain", ""),
         }
@@ -6354,8 +6413,12 @@ class MainWindow(QMainWindow):
         elif api_type == "ZDX":
             cloud = settings.value("zdx/cloud", "api.zdxcloud.net")
             base_url = f"https://{cloud}"
+            version = str(settings.value("zdx/api_version", "v2"))
+            version = version if version in {"v1", "v2"} else "v2"
+            if path.startswith(("/v1/", "/v2/")):
+                path = f"/{version}/" + path.split("/", 2)[2]
         elif api_type == "ZCC":
-            cloud = settings.value("zcc/cloud", "api.zscaler.com")
+            cloud = settings.value("zcc/cloud", "")
             base_url = f"https://{cloud}"
         elif api_type == "ZIdentity":
             domain = settings.value("zidentity/domain", "")
@@ -6631,6 +6694,12 @@ class MainWindow(QMainWindow):
         }
         return bool(token_map.get(api_type))
 
+    def _clear_auth_request_material(self):
+        """Remove credentials from the editor immediately after successful authentication."""
+        self.headers_table.clearContents()
+        self.body_input.clear()
+        self.url_input.clear()
+
     def _current_api_type(self) -> str:
         """Get current API type without indicator emoji."""
         return self.api_type.currentText().replace("🟢 ", "").replace("🔴 ", "")
@@ -6646,7 +6715,7 @@ class MainWindow(QMainWindow):
             return "https://api.zsapi.net"
         product_hosts = {
             "ZIA": ("zia/cloud", "zsapi.zscaler.net"), "ZPA": ("zpa/cloud", "config.private.zscaler.com"),
-            "ZDX": ("zdx/cloud", "api.zdxcloud.net"), "ZCC": ("zcc/cloud", "api.zscaler.com"),
+            "ZDX": ("zdx/cloud", "api.zdxcloud.net"), "ZCC": ("zcc/cloud", ""),
             "ZIdentity": ("zidentity/domain", ""), "ZTW": ("ztw/cloud", "connector.zscaler.net"),
             "ZWA": ("zwa/cloud", "workflow.zscaler.com"), "EASM": ("easm/cloud", "api.zscaler.com"),
         }
@@ -6704,14 +6773,14 @@ class MainWindow(QMainWindow):
             self._send_request()
             
         elif api_type == "ZCC":
-            cloud = settings.value("zcc/cloud", "api.zsapi.net")
+            cloud = str(settings.value("zcc/cloud", "")).strip()
             api_key = settings.value("zcc/client_id", "")
             api_secret = secure_get("zcc_client_secret")
             if not all([cloud, api_key, api_secret]):
                 self._log_output("ZCC credentials not configured. Go to Settings.", "error")
                 QMessageBox.warning(self, self.tr("Error"), self.tr("ZCC credentials not configured. Please go to Settings."))
                 return
-            self.url_input.setText(f"https://{cloud}/zcc/papi/auth/v1/login")
+            self.url_input.setText(f"https://{cloud}/papi/auth/v1/login")
             self.method_combo.setCurrentText("● POST")
             self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
             self.headers_table.setItem(0, 1, QTableWidgetItem("application/json"))
@@ -6752,8 +6821,10 @@ class MainWindow(QMainWindow):
                 else:
                     url = f"https://{cloud}/oauth2/v1/token"
             elif api_type == "ZDX":
-                # ZDX uses /v1/oauth/token with JSON body
-                url = f"https://{cloud}/v1/oauth/token"
+                # ZDX tenants can be provisioned for API v1 or v2.
+                version = str(settings.value("zdx/api_version", "v2"))
+                version = version if version in {"v1", "v2"} else "v2"
+                url = f"https://{cloud}/{version}/oauth/token"
             elif api_type in ("ZTW", "ZWA", "EASM"):
                 # These APIs use /oauth/token
                 url = f"https://{cloud}/oauth/token"
@@ -6768,17 +6839,18 @@ class MainWindow(QMainWindow):
                 # ZDX uses JSON body with key_id/key_secret
                 self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
                 self.headers_table.setItem(0, 1, QTableWidgetItem("application/json"))
-                import time
                 body = json.dumps({
                     "key_id": client_id,
-                    "key_secret": client_secret,
-                    "timestamp": int(time.time() * 1000)
+                    "key_secret": client_secret
                 }, indent=2)
             else:
                 # Other APIs use form-urlencoded
                 self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
                 self.headers_table.setItem(0, 1, QTableWidgetItem("application/x-www-form-urlencoded"))
-                body = f"client_id={client_id}&client_secret={client_secret}&grant_type=client_credentials"
+                form = {"client_id": client_id, "client_secret": client_secret}
+                if api_type != "ZPA":
+                    form["grant_type"] = "client_credentials"
+                body = urllib.parse.urlencode(form)
             
             self.body_input.setPlainText(body)
             self._send_request()
@@ -6808,7 +6880,12 @@ class MainWindow(QMainWindow):
             # OneAPI uses form-urlencoded with audience parameter
             self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
             self.headers_table.setItem(0, 1, QTableWidgetItem("application/x-www-form-urlencoded"))
-            body = f"client_id={client_id}&client_secret={client_secret}&grant_type=client_credentials&audience=https://api.zscaler.com"
+            body = urllib.parse.urlencode({
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "grant_type": "client_credentials",
+                "audience": "https://api.zscaler.com",
+            })
             
             self.body_input.setPlainText(body)
             self._send_request()
@@ -7604,7 +7681,7 @@ class MainWindow(QMainWindow):
         elif api_type == "ZDX" and self.zdx_token:
             headers["Authorization"] = f"Bearer {self.zdx_token}"
         elif api_type == "ZCC" and self.zcc_token:
-            headers["Authorization"] = f"Bearer {self.zcc_token}"
+            headers["auth-token"] = self.zcc_token
         elif api_type == "ZIdentity" and self.zidentity_token:
             headers["Authorization"] = f"Bearer {self.zidentity_token}"
         elif api_type == "ZTW" and self.ztw_token:
@@ -7635,7 +7712,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, self.tr("GraphQL Variables"), self.tr("GraphQL body must be a JSON object containing a query string.")); return
         if body_text and method in ["POST", "PUT", "PATCH"]:
             # Check if content type is form-urlencoded (used by OAuth2 endpoints)
-            content_type = headers.get("Content-Type", "")
+            content_type = http_header_value(headers, "Content-Type").split(";", 1)[0].strip().lower()
             if content_type == "application/x-www-form-urlencoded":
                 # Pass form-urlencoded body as raw string
                 body = body_text
@@ -7754,14 +7831,18 @@ class MainWindow(QMainWindow):
                 
                 # Check for session token in response
                 api_type = self._current_api_type()
-                if isinstance(payload, dict):
-                    if "authCookie" in payload:
-                        self.zia_session = payload["authCookie"]
+                pending = getattr(self, "_pending_request", None) or {}
+                auth_response = is_authentication_request(api_type, pending.get("url", ""), pending.get("method", ""))
+                if isinstance(payload, dict) and auth_response:
+                    zia_cookie = response_cookie(response_headers, "JSESSIONID") if api_type == "ZIA" else ""
+                    if zia_cookie or "authCookie" in payload:
+                        self.zia_session = zia_cookie or payload["authCookie"]
                         self.status_bar.showMessage(self.tr("ZIA authenticated successfully"))
                         self._log_output("ZIA session established", "success")
                         self._update_auth_indicators()
-                    elif "access_token" in payload or "token" in payload:
-                        token = payload.get("access_token") or payload.get("token")
+                        self._clear_auth_request_material()
+                    elif "access_token" in payload or "token" in payload or "jwtToken" in payload:
+                        token = payload.get("access_token") or payload.get("token") or payload.get("jwtToken")
                         # Set token for the correct API type
                         if api_type == "ZPA":
                             self.zpa_token = token
@@ -7802,11 +7883,7 @@ class MainWindow(QMainWindow):
                             self._log_output("Token acquired", "success")
                         self._update_auth_indicators()
                         # Clear auth-specific headers/body so they don't leak into API requests
-                        for row in range(self.headers_table.rowCount()):
-                            self.headers_table.setItem(row, 0, None)
-                            self.headers_table.setItem(row, 1, None)
-                        self.body_input.clear()
-                        self.url_input.clear()
+                        self._clear_auth_request_material()
                 
                 # Log success
                 self._log_output(f"Response: {duration_ms}ms", "success")

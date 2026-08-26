@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 
 ### Security
 - Background reports reuse redacted local history, run without administrator privileges, and never receive API credentials.
+- ZIA session cookies and Client Connector JWTs are masked, kept in memory, and removed from the request editor immediately after authentication.
+
+### Fixed
+- Corrected ZIA `JSESSIONID`, Client Connector `jwtToken`/`auth-token`, URL-encoded ZPA credentials, and configurable ZDX v1/v2 authentication semantics against the official product guides.
 
 ## [2.7.1] - 2026-08-26
 

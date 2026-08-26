@@ -546,18 +546,109 @@ class MainWindowTests(unittest.TestCase):
 
     def test_zcc_authentication_uses_the_jwt_login_shape(self):
         settings = client.QSettings("Zscaler", "APIClient")
-        settings.setValue("zcc/cloud", "api.zsapi.net")
-        settings.setValue("zcc/client_id", "key-id")
+        keys = ("zcc/cloud", "zcc/client_id")
+        previous = {key: settings.value(key, None) for key in keys}
+        try:
+            settings.setValue("zcc/cloud", "mobile.zscalertwo.net")
+            settings.setValue("zcc/client_id", "key-id")
+            if self.window.api_type.findText("ZCC") < 0:
+                self.window.api_type.addItem("ZCC")
+            self.window.api_type.setCurrentText("ZCC")
+            with patch.object(client, "secure_get", return_value="secret-key"), \
+                 patch.object(self.window, "_send_request") as send:
+                self.window._authenticate_api()
+            self.assertEqual("https://mobile.zscalertwo.net/papi/auth/v1/login", self.window.url_input.text())
+            self.assertEqual("application/json", self.window.headers_table.item(0, 1).text())
+            self.assertEqual({"apiKey": "key-id", "secretKey": "secret-key"}, json.loads(self.window.body_input.toPlainText()))
+            send.assert_called_once()
+        finally:
+            for key, value in previous.items():
+                settings.remove(key) if value is None else settings.setValue(key, value)
+
+    def test_zcc_jwt_is_masked_and_used_as_auth_token_header(self):
         if self.window.api_type.findText("ZCC") < 0:
             self.window.api_type.addItem("ZCC")
         self.window.api_type.setCurrentText("ZCC")
-        with patch.object(client, "secure_get", return_value="secret-key"), \
-             patch.object(self.window, "_send_request") as send:
-            self.window._authenticate_api()
-        self.assertEqual("https://api.zsapi.net/zcc/papi/auth/v1/login", self.window.url_input.text())
-        self.assertEqual("application/json", self.window.headers_table.item(0, 1).text())
-        self.assertEqual({"apiKey": "key-id", "secretKey": "secret-key"}, json.loads(self.window.body_input.toPlainText()))
-        send.assert_called_once()
+        self.window._pending_request = {"method": "POST", "url": "https://mobile.example.test/papi/auth/v1/login", "headers": {}, "body": {}, "start_time": 0}
+        self.window._on_request_finished({"results": [{"success": True, "data": {
+            "jwtToken": "never-display", "_status_code": 200, "_reason": "OK", "_size": 1, "_headers": {},
+        }}]})
+        self.assertEqual("never-display", self.window.zcc_token)
+        self.assertNotIn("never-display", self.window.response_body.toPlainText())
+        self.window.url_input.setText("https://mobile.example.test/papi/public/v1/getCompanyInfo")
+        self.window.method_combo.setCurrentText("● GET")
+        with patch.object(client, "ApiWorker") as worker_type:
+            self.window._send_request()
+        request = worker_type.call_args.args[0][0]
+        self.assertEqual("never-display", request["headers"]["auth-token"])
+        self.assertNotIn("Authorization", request["headers"])
+        self.assertEqual("***", client.redact_sensitive(request["headers"])["auth-token"])
+
+    def test_zia_session_comes_from_cookie_and_auth_editor_is_cleared(self):
+        if self.window.api_type.findText("ZIA") < 0:
+            self.window.api_type.addItem("ZIA")
+        self.window.api_type.setCurrentText("ZIA")
+        self.window.url_input.setText("https://zia.example.test/api/v1/authenticatedSession")
+        self.window.body_input.setPlainText('{"password":"never-display"}')
+        self.window._pending_request = {"method": "POST", "url": self.window.url_input.text(), "headers": {}, "body": {}, "start_time": 0}
+        self.window._on_request_finished({"results": [{"success": True, "data": {
+            "authType": "ADMIN_LOGIN", "_status_code": 200, "_reason": "OK", "_size": 1,
+            "_headers": {"Set-Cookie": "JSESSIONID=session-value; Path=/; Secure; HttpOnly"},
+        }}]})
+        self.assertEqual("session-value", self.window.zia_session)
+        self.assertFalse(self.window.body_input.toPlainText())
+        self.assertFalse(self.window.url_input.text())
+        self.assertNotIn("session-value", self.window.response_headers.toPlainText())
+
+    def test_non_authentication_token_response_does_not_replace_session(self):
+        if self.window.api_type.findText("ZPA") < 0:
+            self.window.api_type.addItem("ZPA")
+        self.window.api_type.setCurrentText("ZPA")
+        self.window.zpa_token = "existing-session"
+        self.window.url_input.setText("https://zpa.example.test/mgmtconfig/v1/enrollment-token")
+        self.window._pending_request = {"method": "POST", "url": self.window.url_input.text(), "headers": {}, "body": {}, "start_time": 0}
+        self.window._on_request_finished({"results": [{"success": True, "data": {
+            "token": "resource-token", "_status_code": 201, "_reason": "Created", "_size": 1, "_headers": {},
+        }}]})
+        self.assertEqual("existing-session", self.window.zpa_token)
+        self.assertTrue(self.window.url_input.text())
+        self.assertNotIn("resource-token", self.window.response_body.toPlainText())
+
+    def test_zpa_form_credentials_are_url_encoded_without_extra_grant_fields(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = {key: settings.value(key, None) for key in ("zpa/cloud", "zpa/client_id")}
+        try:
+            settings.setValue("zpa/cloud", "zpa.example.test")
+            settings.setValue("zpa/client_id", "client+id")
+            if self.window.api_type.findText("ZPA") < 0:
+                self.window.api_type.addItem("ZPA")
+            self.window.api_type.setCurrentText("ZPA")
+            with patch.object(client, "secure_get", return_value="secret%#&+"), patch.object(self.window, "_send_request"):
+                self.window._authenticate_api()
+            parsed = client.urllib.parse.parse_qs(self.window.body_input.toPlainText(), keep_blank_values=True)
+            self.assertEqual({"client_id": ["client+id"], "client_secret": ["secret%#&+"]}, parsed)
+        finally:
+            for key, value in previous.items():
+                settings.remove(key) if value is None else settings.setValue(key, value)
+
+    def test_zdx_authentication_honors_configured_api_version(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        keys = ("zdx/cloud", "zdx/key_id", "zdx/api_version")
+        previous = {key: settings.value(key, None) for key in keys}
+        try:
+            settings.setValue("zdx/cloud", "api.zdxcloud.net")
+            settings.setValue("zdx/key_id", "key-id")
+            settings.setValue("zdx/api_version", "v2")
+            if self.window.api_type.findText("ZDX") < 0:
+                self.window.api_type.addItem("ZDX")
+            self.window.api_type.setCurrentText("ZDX")
+            with patch.object(client, "secure_get", return_value="key-secret"), patch.object(self.window, "_send_request"):
+                self.window._authenticate_api()
+            self.assertEqual("https://api.zdxcloud.net/v2/oauth/token", self.window.url_input.text())
+            self.assertEqual({"key_id": "key-id", "key_secret": "key-secret"}, json.loads(self.window.body_input.toPlainText()))
+        finally:
+            for key, value in previous.items():
+                settings.remove(key) if value is None else settings.setValue(key, value)
 
     def test_startup_preferences_select_default_api_and_can_auto_authenticate(self):
         settings = client.QSettings("Zscaler", "APIClient")
