@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.7.1] - 2026-08-26
+
+### Added
+- Operations Center dashboard cards, audit timeline, policy-diff summaries, and masked export preview.
+- Adaptive response views for tables, charts, trees, heatmaps, topology, and GraphQL schema output.
+
+### Changed
+- Compact command bar and improved response-tree field/value layout.
+- Synced the new visualization strings across all Qt catalogs with reviewed Swedish translations.
+
 ## [2.7.0] - 2026-08-25
 
 ### Added

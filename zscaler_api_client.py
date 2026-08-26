@@ -47,7 +47,7 @@ from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharF
 from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.7.0"
+__version__ = "2.7.1"
 
 # Locale registry. App translations are loaded from translations/ at startup;
 # English is the explicit source-language fallback when a catalog is absent.
