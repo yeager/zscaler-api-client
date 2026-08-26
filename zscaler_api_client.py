@@ -4620,6 +4620,9 @@ class MainWindow(QMainWindow):
         self.export_response_btn = QPushButton(self.tr("Export response"))
         self.export_response_btn.clicked.connect(self._export_full_response)
         response_info_bar.addWidget(self.export_response_btn)
+        preview_export_btn = QPushButton(self.tr("Preview export"))
+        preview_export_btn.clicked.connect(self._preview_response_export)
+        response_info_bar.addWidget(preview_export_btn)
         response_layout.addLayout(response_info_bar)
 
         # Response body and headers
@@ -5525,6 +5528,19 @@ class MainWindow(QMainWindow):
         else:
             Path(path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
         self.status_bar.showMessage(self.tr("Masked response exported"))
+
+    def _preview_response_export(self):
+        """Show exactly what will leave the application, with secrets already masked."""
+        raw = self.response_body.toPlainText()
+        try: body = json.loads(raw)
+        except json.JSONDecodeError: body = raw
+        headers = dict(line.split(": ", 1) for line in self.response_headers.toPlainText().splitlines() if ": " in line)
+        preview = json.dumps(redact_sensitive({"body": body, "headers": headers}), indent=2)
+        dialog = QDialog(self); dialog.setWindowTitle(self.tr("Export preview")); dialog.resize(760, 520)
+        layout = QVBoxLayout(dialog); note = QLabel(self.tr("Sensitive fields are masked in every export.")); layout.addWidget(note)
+        text = QPlainTextEdit(preview); text.setReadOnly(True); layout.addWidget(text)
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); buttons.rejected.connect(dialog.reject); layout.addWidget(buttons)
+        dialog.exec()
 
     def _export_ai_result(self):
         path, _ = QFileDialog.getSaveFileName(
