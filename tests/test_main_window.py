@@ -454,6 +454,13 @@ class MainWindowTests(unittest.TestCase):
         self.assertGreater(dialog.posture_findings.rowCount(), 0)
         dialog.close()
 
+    def test_dashboard_renders_local_latency_trend(self):
+        self.window.request_history = [{"timestamp": "2026-01-01 10:00:00", "status": 200, "duration_ms": 44}]
+        dialog = client.OperationsDialog(self.window)
+        self.assertEqual([("10:00:00", 44.0)], dialog.dashboard_trend.values)
+        self.assertEqual("line", dialog.dashboard_trend.style)
+        dialog.close()
+
     def test_operations_incident_workspace_prepares_a_safe_chain(self):
         self.window.request_history = [{"timestamp": "now", "method": "GET", "url": "https://example.test", "status": 500, "response_headers": {"Retry-After": "60", "Set-Cookie": "hidden"}}]
         dialog = client.OperationsDialog(self.window)

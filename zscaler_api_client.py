@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
-from feature_services import AuditTrail, policy_diff, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -4331,6 +4331,9 @@ class OperationsDialog(QDialog):
         self.dashboard_chart = NumericBarChart(); self.dashboard_chart.set_style("pie")
         dashboard_layout.addWidget(QLabel(self.tr("Recent request outcomes")))
         dashboard_layout.addWidget(self.dashboard_chart)
+        self.dashboard_trend = NumericBarChart(); self.dashboard_trend.set_style("line")
+        dashboard_layout.addWidget(QLabel(self.tr("Recent request latency (ms)")))
+        dashboard_layout.addWidget(self.dashboard_trend)
         self.dashboard_events = QTableWidget(0, 3); self.dashboard_events.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Activity"), self.tr("Status")]); self.dashboard_events.horizontalHeader().setStretchLastSection(True); self.dashboard_events.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         dashboard_layout.addWidget(QLabel(self.tr("Recent activity")))
         dashboard_layout.addWidget(self.dashboard_events)
@@ -4506,6 +4509,7 @@ class OperationsDialog(QDialog):
         self.dashboard_cards["alerts"].setStyleSheet("color: #ef4444;" if alerts else "color: #22c55e;")
         outcome = {self.tr("Success"): successful, self.tr("Other"): max(0, total - successful)}
         self.dashboard_chart.set_values([(label, float(value)) for label, value in outcome.items()])
+        self.dashboard_trend.set_values(request_latency_trend(history))
         recent = list(reversed(events[-12:]))
         self.dashboard_events.setRowCount(len(recent))
         for row, event in enumerate(recent):

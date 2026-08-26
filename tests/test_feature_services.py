@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain
+from feature_services import AuditTrail, policy_diff, simulate_policy, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain
 
 
 class MemorySettings:
@@ -118,6 +118,10 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertNotIn("hidden", json.dumps(alerts))
         proactive = operational_alerts([{"status": 200, "url": "https://example.test", "response_headers": {"X-RateLimit-Remaining": "0"}}], True)
         self.assertTrue(any(alert["code"] == "rate_limit_exhausted" for alert in proactive["alerts"]))
+
+    def test_request_latency_trend_uses_recent_local_samples(self):
+        trend = request_latency_trend([{"timestamp": "2026-01-01 10:00:00", "duration_ms": 45}, {"timestamp": "2026-01-01 10:00:02", "duration_ms": "120"}], limit=1)
+        self.assertEqual([("10:00:02", 120.0)], trend)
 
     def test_audit_trail_is_hash_linked(self):
         settings = MemorySettings(); trail = AuditTrail(settings)

@@ -83,6 +83,7 @@ SWEDISH_REVIEW.update({
     "Policy rule overview": "Översikt över policyregler", "Rule": "Regel", "Action": "Åtgärd", "Conditions": "Villkor", "State": "Status", "Enabled": "Aktiverad", "Disabled": "Inaktiverad", "Best-practice finding": "Best-practice-fynd", "Order": "Ordning", "Decision": "Beslut", "Allow rule has no conditions": "Tillåt-regeln saknar villkor", "Rule is disabled": "Regeln är inaktiverad", "Rule name is duplicated": "Regelnamnet är duplicerat", "Rule action is unspecified": "Regelåtgärden är inte angiven", "Rules evaluated": "Utvärderade regler", "Matched rule": "Matchad regel", "Matched": "Matchad", "Not matched": "Ingen matchning",
     "Open alerts": "Öppna larm",
     "A response reported no remaining API rate-limit capacity.": "Ett svar rapporterade att ingen API-rate-limit-kapacitet återstår.",
+    "Recent request latency (ms)": "Senaste begärandelatens (ms)",
     "Guided example loaded. Find the API request, review the preview, then choose whether to run it.": "Guidat exempel inläst. Hitta API-begäran, granska förhandsvisningen och välj sedan om du vill köra den.",
     "ZIA · List users": "ZIA · Lista användare",
     "ZIA · List URL categories": "ZIA · Lista URL-kategorier",

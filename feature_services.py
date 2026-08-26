@@ -347,6 +347,21 @@ def operational_alerts(history: Iterable[dict[str, Any]], audit_valid: bool, err
     return {"alerts": alerts, "threshold": threshold, "requests": len(events), "failed": len(failures)}
 
 
+def request_latency_trend(history: Iterable[dict[str, Any]], limit: int = 12) -> list[tuple[str, float]]:
+    """Return a compact local latency series for dashboard visualization."""
+    events = list(history)[-max(1, limit):]
+    trend: list[tuple[str, float]] = []
+    for index, event in enumerate(events, 1):
+        timestamp = str(event.get("timestamp", ""))
+        label = timestamp[-8:] if len(timestamp) >= 8 else str(index)
+        try:
+            duration = max(0.0, float(event.get("duration_ms") or 0))
+        except (TypeError, ValueError):
+            duration = 0.0
+        trend.append((label, duration))
+    return trend
+
+
 def incident_evidence(history: Iterable[dict[str, Any]], audit_events: Iterable[dict[str, Any]]) -> dict[str, Any]:
     """Build a portable, redacted local incident timeline for human review."""
     timeline: list[dict[str, Any]] = []
