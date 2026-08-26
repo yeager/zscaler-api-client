@@ -411,14 +411,19 @@ QFrame#commandBar QPushButton:hover {
     background: rgba(255, 255, 255, 52);
 }
 QFrame#metricCard {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 10px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #25354d, stop:1 #172235);
+    border: 1px solid #3b506c;
+    border-radius: 12px;
     min-width: 148px;
-    min-height: 70px;
+    min-height: 76px;
+}
+QFrame#metricCard:hover {
+    border: 1px solid #38bdf8;
+    background: #293c57;
 }
 QTableWidget {
     gridline-color: #334155;
+    alternate-background-color: rgba(71, 85, 105, 80);
 }
 QLabel#sectionTitle {
     font-size: 18px;
@@ -2440,7 +2445,7 @@ class LlmWorker(QThread):
 
 
 class NumericBarChart(QWidget):
-    """Small dependency-free bar chart for numeric API result fields."""
+    """Compact, dependency-free chart with accessible labels and contrasts."""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.values: list[tuple[str, float]] = []
@@ -2458,42 +2463,74 @@ class NumericBarChart(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.fillRect(self.rect(), QColor("#252526"))
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        canvas = self.rect().adjusted(1, 1, -1, -1)
+        painter.setPen(QPen(QColor("#334155"), 1))
+        painter.setBrush(QColor("#172235"))
+        painter.drawRoundedRect(canvas, 9, 9)
         if not self.values:
             return
         maximum = max(value for _, value in self.values) or 1
-        chart = self.rect().adjusted(45, 12, -12, -30)
+        palette = ("#38bdf8", "#34d399", "#fbbf24", "#a78bfa", "#fb7185", "#fb923c", "#22d3ee")
+        chart = self.rect().adjusted(42, 16, -16, -31)
         if self.style == "pie":
             total = sum(value for _, value in self.values) or 1
+            pie_size = min(chart.height(), chart.width() // 2)
+            pie = chart.adjusted(0, 0, -(chart.width() - pie_size), -(chart.height() - pie_size))
             start = 0
-            colors = ("#0078d4", "#2e7d32", "#e65100", "#6a1b9a", "#c62828")
             for index, (label, value) in enumerate(self.values):
                 span = int(5760 * value / total)
-                painter.setBrush(QColor(colors[index % len(colors)]))
-                painter.drawPie(chart, start, span)
+                painter.setPen(QPen(QColor("#172235"), 2))
+                painter.setBrush(QColor(palette[index % len(palette)]))
+                painter.drawPie(pie, start, span)
                 start += span
+            legend_x = pie.right() + 18
+            legend_y = pie.top() + 10
+            painter.setPen(QColor("#e2e8f0"))
+            for index, (label, value) in enumerate(self.values[:6]):
+                y = legend_y + index * 22
+                painter.setPen(Qt.PenStyle.NoPen)
+                painter.setBrush(QColor(palette[index % len(palette)]))
+                painter.drawRoundedRect(legend_x, y, 10, 10, 3, 3)
+                painter.setPen(QColor("#e2e8f0"))
+                painter.drawText(legend_x + 16, y + 10, f"{label[:18]}  {value:g}")
             return
         if self.style == "line":
             points = []
+            painter.setPen(QPen(QColor("#314158"), 1, Qt.PenStyle.DashLine))
+            for step in range(1, 4):
+                y = chart.top() + chart.height() * step // 4
+                painter.drawLine(chart.left(), y, chart.right(), y)
             for index, (_, value) in enumerate(self.values):
                 x = chart.left() + (chart.width() * index // max(1, len(self.values) - 1))
                 y = chart.bottom() - int(chart.height() * value / maximum)
                 points.append((x, y))
-            painter.setPen(QColor("#0078d4"))
+            painter.setPen(QPen(QColor("#38bdf8"), 2))
             for first, second in zip(points, points[1:]):
                 painter.drawLine(first[0], first[1], second[0], second[1])
             for x, y in points:
-                painter.setBrush(QColor("#0078d4"))
+                painter.setPen(QPen(QColor("#e0f2fe"), 1))
+                painter.setBrush(QColor("#38bdf8"))
                 painter.drawEllipse(x - 3, y - 3, 6, 6)
+            painter.setPen(QColor("#94a3b8"))
+            painter.drawText(8, 18, f"{maximum:g} ms")
             return
         width = max(8, chart.width() // len(self.values) - 8)
+        painter.setPen(QPen(QColor("#314158"), 1, Qt.PenStyle.DashLine))
+        for step in range(1, 4):
+            y = chart.top() + chart.height() * step // 4
+            painter.drawLine(chart.left(), y, chart.right(), y)
         for index, (label, value) in enumerate(self.values):
             height = int(chart.height() * (value / maximum))
             x = chart.left() + index * (chart.width() // len(self.values)) + 4
             y = chart.bottom() - height
-            painter.fillRect(x, y, width, height, QColor("#0078d4"))
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(QColor(palette[index % len(palette)]))
+            painter.drawRoundedRect(x, y, width, height, 4, 4)
+            painter.setPen(QColor("#cbd5e1"))
             painter.drawText(x, chart.bottom() + 18, width, 12, Qt.AlignmentFlag.AlignHCenter, label[:9])
-        painter.drawText(4, 18, f"max {maximum:g}")
+        painter.setPen(QColor("#94a3b8"))
+        painter.drawText(8, 18, f"{maximum:g}")
 
 
 class WelcomeDialog(QDialog):
@@ -4331,7 +4368,9 @@ class OperationsDialog(QDialog):
             value = QLabel("—"); value.setObjectName("sectionTitle")
             value_font = value.font(); value_font.setPointSize(18); value_font.setBold(True); value.setFont(value_font)
             card_layout.addWidget(value); self.dashboard_cards[key] = value
-            cards.addWidget(card, index // 4, index % 4)
+            cards.addWidget(card, index // 3, index % 3)
+        for column in range(3):
+            cards.setColumnStretch(column, 1)
         dashboard_layout.addLayout(cards)
         self.dashboard_chart = NumericBarChart(); self.dashboard_chart.set_style("pie")
         dashboard_layout.addWidget(QLabel(self.tr("Recent request outcomes")))
