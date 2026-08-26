@@ -229,6 +229,29 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(self.window.ai_table.item(0, 0).text(), "1")
         self.assertIn("GraphQL errors", self.window.ai_summary.text())
 
+    def test_all_graphql_list_branches_are_selectable_visual_datasets(self):
+        payload = {
+            "data": {
+                "WEB_TRAFFIC": {"entries": [{"name": "Web", "total": 7}]},
+                "ZERO_TRUST_FIREWALL": {"entries": [{"action": "ALLOW", "total": 3}]},
+            },
+            "errors": [{"message": "partial"}],
+            "extensions": {"warnings": ["sampled"]},
+        }
+        datasets = dict(client.collect_record_datasets(payload))
+        self.assertIn("$.data.WEB_TRAFFIC.entries", datasets)
+        self.assertIn("$.data.ZERO_TRUST_FIREWALL.entries", datasets)
+        self.assertIn("$.errors", datasets)
+        self.assertIn("$.extensions.warnings", datasets)
+        self.window._render_response_visualization(payload)
+        labels = [self.window.response_dataset_choice.itemText(index) for index in range(self.window.response_dataset_choice.count())]
+        firewall_index = next(index for index, label in enumerate(labels) if "ZERO_TRUST_FIREWALL" in label)
+        self.window.response_dataset_choice.setCurrentIndex(firewall_index)
+        headers = [self.window.response_table.horizontalHeaderItem(column).text() for column in range(self.window.response_table.columnCount())]
+        self.assertEqual(["action", "total"], headers)
+        self.assertEqual("ALLOW", self.window.response_table.item(0, 0).text())
+        self.assertEqual([("1", 3.0)], self.window.response_chart.values)
+
     def test_read_only_mode_distinguishes_graphql_queries_from_mutations(self):
         self.assertTrue(client.graphql_request_is_read_only('{"query":"query Status { status { id } }"}'))
         self.assertTrue(client.graphql_request_is_read_only('{"query":"{ status { id } }"}'))

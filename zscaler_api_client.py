@@ -98,6 +98,28 @@ def graphql_request_is_read_only(body_text: str) -> bool:
         return False
     return bool(re.match(r"^(?:query\b|\{)", query, re.IGNORECASE))
 
+
+def collect_record_datasets(value: Any, maximum_rows: int = 1000) -> list[tuple[str, list[dict[str, Any]]]]:
+    """Collect every tabular JSON branch, merging repeated nested list paths."""
+    collected: dict[str, list[dict[str, Any]]] = {}
+
+    def visit(item: Any, path: str):
+        if isinstance(item, list):
+            records = [child for child in item if isinstance(child, dict)]
+            scalars = [child for child in item if not isinstance(child, (dict, list))]
+            if records:
+                collected.setdefault(path, []).extend(records[:maximum_rows])
+            elif scalars:
+                collected.setdefault(path, []).extend({"value": child} for child in scalars[:maximum_rows])
+            for child in item[:maximum_rows]:
+                visit(child, path + "[]")
+        elif isinstance(item, dict):
+            for key, child in item.items():
+                visit(child, f"{path}.{key}")
+
+    visit(value, "$")
+    return [(path, rows[:maximum_rows]) for path, rows in collected.items()]
+
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
 _credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
@@ -5441,6 +5463,12 @@ class MainWindow(QMainWindow):
         response_info_bar = QHBoxLayout()
         self.response_info = QLabel()
         response_info_bar.addWidget(self.response_info)
+        response_info_bar.addWidget(QLabel(self.tr("Dataset:")))
+        self.response_dataset_choice = QComboBox()
+        self.response_dataset_choice.setMinimumWidth(220)
+        self.response_dataset_choice.currentIndexChanged.connect(self._render_selected_response_dataset)
+        response_info_bar.addWidget(self.response_dataset_choice)
+        self._response_datasets = []
         response_info_bar.addStretch()
         self.pretty_print_enabled = True
         self.pretty_print_btn = QPushButton(self.tr("Pretty"))
@@ -6701,27 +6729,16 @@ class MainWindow(QMainWindow):
             elif isinstance(value, list):
                 for index, child in enumerate(value[:100]): add(item, f"[{index}]", child)
         root = QTreeWidgetItem([self.tr("Response"), ""]); self.response_tree.addTopLevelItem(root); add(root, "data", safe); root.setExpanded(True)
-        rows = []
-        def find(value):
-            if isinstance(value, list) and any(isinstance(item, dict) for item in value): return value
-            if isinstance(value, dict):
-                for child in value.values():
-                    found = find(child)
-                    if found: return found
-            return []
-        rows = [item for item in find(safe) if isinstance(item, dict)]
-        columns = list(dict.fromkeys(key for row in rows[:100] for key in row))[:16]
-        self.response_table.setRowCount(min(100, len(rows))); self.response_table.setColumnCount(len(columns)); self.response_table.setHorizontalHeaderLabels(columns)
-        for row_index, row in enumerate(rows[:100]):
-            for column_index, column in enumerate(columns): self.response_table.setItem(row_index, column_index, QTableWidgetItem(str(row.get(column, ""))))
-        self.response_table.resizeColumnsToContents()
-        numeric = [key for key in columns if all(isinstance(row.get(key), (int, float)) and not isinstance(row.get(key), bool) for row in rows[:min(12, len(rows))])]
-        self.response_heatmap.setRowCount(min(50, len(rows))); self.response_heatmap.setColumnCount(len(numeric)); self.response_heatmap.setHorizontalHeaderLabels(numeric)
-        for row_index, row in enumerate(rows[:50]):
-            for column_index, key in enumerate(numeric):
-                value = float(row.get(key, 0)); maximum = max(float(item.get(key, 0)) for item in rows[:50]) or 1
-                cell = QTableWidgetItem(f"{value:g}"); intensity = int(60 + 195 * value / maximum); cell.setBackground(QColor(255 - intensity // 2, intensity, 100)); self.response_heatmap.setItem(row_index, column_index, cell)
-        self.response_heatmap.resizeColumnsToContents()
+        self._response_datasets = collect_record_datasets(safe)
+        self.response_dataset_choice.blockSignals(True)
+        self.response_dataset_choice.clear()
+        for index, (path, rows) in enumerate(self._response_datasets):
+            self.response_dataset_choice.addItem(f"{path} ({len(rows)})", index)
+        if not self._response_datasets:
+            self.response_dataset_choice.addItem(self.tr("No tabular datasets"), -1)
+        self.response_dataset_choice.setEnabled(bool(self._response_datasets))
+        self.response_dataset_choice.blockSignals(False)
+        self._render_selected_response_dataset(0)
         nodes = safe.get("nodes", []) if isinstance(safe, dict) else []
         links = safe.get("links", safe.get("edges", [])) if isinstance(safe, dict) else []
         if isinstance(nodes, list) and isinstance(links, list) and (nodes or links):
@@ -6730,10 +6747,34 @@ class MainWindow(QMainWindow):
             self.response_topology.setPlainText(self.tr("Nodes") + ":\n" + "\n".join(node_names) + "\n\n" + self.tr("Connections") + ":\n" + "\n".join(link_names))
         else:
             self.response_topology.setPlainText(self.tr("No nodes or connections were found in this response."))
+
+    def _render_selected_response_dataset(self, index=None):
+        """Render the selected JSON/GraphQL list branch as table, heatmap, and chart."""
+        dataset_index = self.response_dataset_choice.currentData()
+        if not isinstance(dataset_index, int) or dataset_index < 0 or dataset_index >= len(self._response_datasets):
+            rows = []
+        else:
+            rows = self._response_datasets[dataset_index][1]
+        columns = list(dict.fromkeys(key for row in rows[:100] for key in row))[:16]
+        self.response_table.clearContents(); self.response_table.setRowCount(min(100, len(rows))); self.response_table.setColumnCount(len(columns)); self.response_table.setHorizontalHeaderLabels(columns)
+        for row_index, row in enumerate(rows[:100]):
+            for column_index, column in enumerate(columns):
+                value = row.get(column, "")
+                self.response_table.setItem(row_index, column_index, QTableWidgetItem(json.dumps(value, ensure_ascii=False) if isinstance(value, (dict, list)) else str(value)))
+        self.response_table.resizeColumnsToContents()
+        sample = rows[:min(12, len(rows))]
+        numeric = [key for key in columns if sample and all(isinstance(row.get(key), (int, float)) and not isinstance(row.get(key), bool) for row in sample)]
+        self.response_heatmap.clearContents(); self.response_heatmap.setRowCount(min(50, len(rows))); self.response_heatmap.setColumnCount(len(numeric)); self.response_heatmap.setHorizontalHeaderLabels(numeric)
+        for row_index, row in enumerate(rows[:50]):
+            for column_index, key in enumerate(numeric):
+                value = float(row.get(key, 0)); maximum = max(float(item.get(key, 0)) for item in rows[:50]) or 1
+                cell = QTableWidgetItem(f"{value:g}"); intensity = int(60 + 195 * value / maximum); cell.setBackground(QColor(255 - intensity // 2, intensity, 100)); self.response_heatmap.setItem(row_index, column_index, cell)
+        self.response_heatmap.resizeColumnsToContents()
         if numeric:
-            key = numeric[0]; labels = [str(row.get("name") or row.get("id") or index + 1) for index, row in enumerate(rows[:12])]
+            key = numeric[0]; labels = [str(row.get("name") or row.get("id") or row_index + 1) for row_index, row in enumerate(rows[:12])]
             self.response_chart.set_values(list(zip(labels, [float(row[key]) for row in rows[:12]])))
-        else: self.response_chart.set_values([])
+        else:
+            self.response_chart.set_values([])
 
     def _show_ai_visualization(self, data: Any):
         """Render common API collections as a safe table for quick inspection."""
