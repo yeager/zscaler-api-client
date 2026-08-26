@@ -47,6 +47,11 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(self.window.response_tabs.count(), 8)
         self.assertEqual(self.window.request_tabs.count(), 4)
 
+    def test_operations_shortcuts_can_open_the_relevant_workspace(self):
+        dialog = client.OperationsDialog(self.window, initial_tab=1)
+        self.assertEqual(dialog.tabs.tabText(dialog.tabs.currentIndex()), "Policy diff")
+        dialog.close()
+
     def test_wizard_loads_common_request_with_path_variables(self):
         self.window._load_wizard_request(
             "GET",

@@ -4175,15 +4175,15 @@ class HistoryDialog(QDialog):
 
 class OperationsDialog(QDialog):
     """Advanced local operations: no action is sent to Zscaler without Send."""
-    def __init__(self, window):
+    def __init__(self, window, initial_tab=0):
         super().__init__(window)
         self.window = window
         self.settings = QSettings("Zscaler", "APIClient")
         self.setWindowTitle(self.tr("Operations Center"))
         self.resize(900, 620)
         layout = QVBoxLayout(self)
-        tabs = QTabWidget()
-        layout.addWidget(tabs)
+        self.tabs = QTabWidget()
+        layout.addWidget(self.tabs)
 
         dashboard = QWidget(); dashboard_layout = QVBoxLayout(dashboard)
         cards = QGridLayout()
@@ -4204,7 +4204,7 @@ class OperationsDialog(QDialog):
         dashboard_layout.addWidget(QLabel(self.tr("Recent activity")))
         dashboard_layout.addWidget(self.dashboard_events)
         refresh = QPushButton(self.tr("Refresh dashboard")); refresh.clicked.connect(self.refresh_dashboard)
-        dashboard_layout.addWidget(refresh); tabs.addTab(dashboard, self.tr("Dashboard"))
+        dashboard_layout.addWidget(refresh); self.tabs.addTab(dashboard, self.tr("Dashboard"))
 
         diff_page = QWidget(); diff_layout = QVBoxLayout(diff_page)
         self.before_policy = QPlainTextEdit(); self.before_policy.setPlaceholderText(self.tr("Previous policy JSON"))
@@ -4216,7 +4216,7 @@ class OperationsDialog(QDialog):
         export_json = QPushButton(self.tr("Export policy as JSON")); export_json.clicked.connect(lambda: self.export_policy("json")); policy_actions.addWidget(export_json)
         export_yaml = QPushButton(self.tr("Export policy as YAML")); export_yaml.clicked.connect(lambda: self.export_policy("yaml")); policy_actions.addWidget(export_yaml)
         compliance = QPushButton(self.tr("Run compliance checks")); compliance.clicked.connect(self.run_compliance); policy_actions.addWidget(compliance)
-        diff_layout.addLayout(policy_actions); tabs.addTab(diff_page, self.tr("Policy diff"))
+        diff_layout.addLayout(policy_actions); self.tabs.addTab(diff_page, self.tr("Policy diff"))
 
         simulate_page = QWidget(); simulate_layout = QVBoxLayout(simulate_page)
         self.rules_input = QPlainTextEdit(); self.rules_input.setPlaceholderText(self.tr("Rules JSON: [{\"name\": \"Allow staff\", \"conditions\": {\"group\": \"staff\"}, \"action\": \"allow\"}]"))
@@ -4224,7 +4224,7 @@ class OperationsDialog(QDialog):
         self.simulation_result = QPlainTextEdit(); self.simulation_result.setReadOnly(True)
         for widget in (self.rules_input, self.context_input, self.simulation_result): simulate_layout.addWidget(widget)
         simulate_btn = QPushButton(self.tr("Simulate policy (local only)")); simulate_btn.clicked.connect(self.run_simulation)
-        simulate_layout.addWidget(simulate_btn); tabs.addTab(simulate_page, self.tr("Simulation"))
+        simulate_layout.addWidget(simulate_btn); self.tabs.addTab(simulate_page, self.tr("Simulation"))
 
         bulk_page = QWidget(); bulk_layout = QVBoxLayout(bulk_page)
         self.bulk_csv = QPlainTextEdit(); self.bulk_csv.setPlaceholderText(self.tr("CSV data, e.g. name,email\nAda,ada@example.com"))
@@ -4233,7 +4233,7 @@ class OperationsDialog(QDialog):
         bulk_layout.addWidget(QLabel(self.tr("Required columns (comma separated)"))); bulk_layout.addWidget(self.bulk_required)
         bulk_layout.addWidget(self.bulk_csv); bulk_layout.addWidget(self.bulk_result)
         bulk_btn = QPushButton(self.tr("Validate bulk import")); bulk_btn.clicked.connect(self.validate_bulk)
-        bulk_layout.addWidget(bulk_btn); tabs.addTab(bulk_page, self.tr("Bulk operations"))
+        bulk_layout.addWidget(bulk_btn); self.tabs.addTab(bulk_page, self.tr("Bulk operations"))
 
         governance_page = QWidget(); governance_layout = QFormLayout(governance_page)
         self.role_choice = QComboBox(); self.role_choice.addItem(self.tr("Administrator"), "admin"); self.role_choice.addItem(self.tr("Analyst"), "analyst"); self.role_choice.addItem(self.tr("Read only"), "readonly")
@@ -4244,7 +4244,7 @@ class OperationsDialog(QDialog):
         governance_layout.addRow(self.tr("Local role:"), self.role_choice); governance_layout.addRow(self.tr("Alert threshold (errors):"), self.alert_threshold); governance_layout.addRow(self.tr("Webhook endpoint (disabled until approved):"), self.webhook_url); governance_layout.addRow(self.tr("Local automation:"), self.plugin_path)
         governance_save = QPushButton(self.tr("Save governance settings")); governance_save.clicked.connect(self.save_governance); governance_layout.addRow(governance_save)
         governance_note = QLabel(self.tr("Read-only mode blocks write requests. Webhooks and local automation are saved only; this app will ask before any execution.")); governance_note.setWordWrap(True); governance_layout.addRow(governance_note)
-        tabs.addTab(governance_page, self.tr("Governance"))
+        self.tabs.addTab(governance_page, self.tr("Governance"))
 
         integrations_page = QWidget(); integrations_layout = QVBoxLayout(integrations_page)
         integrations_intro = QLabel(self.tr("Official integrations are optional. Credentials remain in the system keychain and no command runs automatically.")); integrations_intro.setWordWrap(True); integrations_layout.addWidget(integrations_intro)
@@ -4256,7 +4256,7 @@ class OperationsDialog(QDialog):
         mcp_preview = QPushButton(self.tr("Prepare MCP connection")); mcp_preview.clicked.connect(lambda: self.prepare_integration("mcp")); integration_buttons.addWidget(mcp_preview)
         sdk_preview = QPushButton(self.tr("Prepare SDK configuration")); sdk_preview.clicked.connect(lambda: self.prepare_integration("sdk")); integration_buttons.addWidget(sdk_preview)
         copy_preview = QPushButton(self.tr("Copy reviewed command")); copy_preview.clicked.connect(self.copy_integration_preview); integration_buttons.addWidget(copy_preview)
-        integrations_layout.addLayout(integration_buttons); tabs.addTab(integrations_page, self.tr("Integrations"))
+        integrations_layout.addLayout(integration_buttons); self.tabs.addTab(integrations_page, self.tr("Integrations"))
 
         audit_page = QWidget(); audit_layout = QVBoxLayout(audit_page)
         self.audit_timeline = QTableWidget(0, 3); self.audit_timeline.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Event"), self.tr("Details")]); self.audit_timeline.horizontalHeader().setStretchLastSection(True); self.audit_timeline.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); audit_layout.addWidget(self.audit_timeline)
@@ -4264,8 +4264,9 @@ class OperationsDialog(QDialog):
         audit_refresh = QPushButton(self.tr("Refresh audit trail")); audit_refresh.clicked.connect(self.refresh_audit); audit_controls.addWidget(audit_refresh)
         schedule = QPushButton(self.tr("Schedule report")); schedule.clicked.connect(self.configure_schedule); audit_controls.addWidget(schedule)
         bundle = QPushButton(self.tr("Create redacted support bundle")); bundle.clicked.connect(self.create_support_bundle); audit_controls.addWidget(bundle)
-        audit_layout.addLayout(audit_controls); tabs.addTab(audit_page, self.tr("Audit & automation"))
+        audit_layout.addLayout(audit_controls); self.tabs.addTab(audit_page, self.tr("Audit & automation"))
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
+        self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
         self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations()
 
     def _json(self, editor, fallback):
@@ -4456,11 +4457,11 @@ class MainWindow(QMainWindow):
         command_layout.addWidget(environment_shortcut)
         insight_shortcut = QPushButton(self.tr("2 · Analyze"))
         insight_shortcut.setToolTip(self.tr("Open dashboards, audits, policy diffs, and response analysis"))
-        insight_shortcut.clicked.connect(self._show_operations)
+        insight_shortcut.clicked.connect(lambda: self._show_operations(0))
         command_layout.addWidget(insight_shortcut)
         change_shortcut = QPushButton(self.tr("3 · Change"))
         change_shortcut.setToolTip(self.tr("Open policy diff and policy-as-code export"))
-        change_shortcut.clicked.connect(self._show_operations)
+        change_shortcut.clicked.connect(lambda: self._show_operations(1))
         command_layout.addWidget(change_shortcut)
         operations_shortcut = QPushButton(self.tr("Operations Center"))
         operations_shortcut.clicked.connect(self._show_operations)
@@ -5161,8 +5162,9 @@ class MainWindow(QMainWindow):
         scrollbar.setValue(scrollbar.maximum())
         AuditTrail(QSettings("Zscaler", "APIClient")).append("console", {"level": level, "message": message})
 
-    def _show_operations(self):
-        OperationsDialog(self).exec()
+    def _show_operations(self, initial_tab=0):
+        """Open the relevant Operations Center workspace for the chosen task."""
+        OperationsDialog(self, initial_tab=initial_tab).exec()
 
     def _manage_profiles(self):
         """Save/switch non-secret environment settings; secrets remain in the keychain."""
