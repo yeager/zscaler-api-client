@@ -279,6 +279,27 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual({"apiKey": "key-id", "secretKey": "secret-key"}, json.loads(self.window.body_input.toPlainText()))
         send.assert_called_once()
 
+    def test_startup_preferences_select_default_api_and_can_auto_authenticate(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        keys = ("zpa/enabled", "advanced/default_api", "advanced/auto_auth")
+        previous = {key: settings.value(key, None) for key in keys}
+        try:
+            settings.setValue("zpa/enabled", "true")
+            settings.setValue("advanced/default_api", "ZPA")
+            settings.setValue("advanced/auto_auth", "true")
+            self.window._update_api_list()
+            self.window._update_endpoint_tree(self.window.api_type.currentText())
+            self.assertEqual("ZPA", self.window._current_api_type())
+            with patch.object(self.window, "_authenticate_api") as authenticate:
+                self.window._apply_startup_authentication()
+            authenticate.assert_called_once()
+        finally:
+            for key, value in previous.items():
+                if value is None:
+                    settings.remove(key)
+                else:
+                    settings.setValue(key, value)
+
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")
         self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")

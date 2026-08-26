@@ -3409,7 +3409,7 @@ class SettingsDialog(QDialog):
         self.default_api = QComboBox()
         self.default_api.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.default_api.setMinimumContentsLength(10)
-        self.default_api.addItems(["ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"])
+        self.default_api.addItems(["OneAPI", "ZIA", "ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"])
         behavior_layout.addRow(self.tr("Default API:"), self.default_api)
         
         self.auto_update_check = QComboBox()
@@ -4973,6 +4973,10 @@ class MainWindow(QMainWindow):
         editor_sizes = settings.value("editor_splitter_sizes")
         if editor_sizes:
             self.editor_splitter.setSizes([int(size) for size in editor_sizes])
+        # The product selector is created before window settings are restored.
+        # Refresh it here so the persisted default is actually honored.
+        self._update_api_list()
+        self._update_endpoint_tree(self.api_type.currentText())
     
     def _save_settings(self):
         settings = QSettings("Zscaler", "APIClient")
@@ -5177,16 +5181,27 @@ class MainWindow(QMainWindow):
         if not enabled_apis:
             enabled_apis = all_apis
         
-        current = self.api_type.currentText()
+        current = self.api_type.currentText().replace("🟢 ", "").replace("🔴 ", "")
+        preferred = str(settings.value("advanced/default_api", "ZIA"))
         self.api_type.blockSignals(True)
         self.api_type.clear()
         self.api_type.addItems(enabled_apis)
         
-        # Restore selection if still available
-        if current in enabled_apis:
+        # The explicit startup default has priority; keep the prior selection
+        # only when that default is disabled for the current profile.
+        if preferred in enabled_apis:
+            self.api_type.setCurrentText(preferred)
+        elif current in enabled_apis:
             self.api_type.setCurrentText(current)
         
         self.api_type.blockSignals(False)
+
+    def _apply_startup_authentication(self):
+        """Honor explicit auto-auth preference after first-run dialogs are complete."""
+        settings = QSettings("Zscaler", "APIClient")
+        api = self._current_api_type()
+        if settings.value("advanced/auto_auth", "false") == "true" and not self._get_auth_status(api):
+            self._authenticate_api()
     
     def _log_output(self, message: str, level: str = "info"):
         """Log a message to the output panel."""
@@ -6323,6 +6338,7 @@ class MainWindow(QMainWindow):
         if dialog.exec():
             self._apply_settings()
             self._update_api_list()  # Refresh API dropdown based on enabled APIs
+            self._update_endpoint_tree(self.api_type.currentText())
     
     def _apply_settings(self):
         """Apply settings that can be changed without restart."""
@@ -6912,6 +6928,10 @@ def main():
     show_welcome = settings.value("welcome/show_on_startup", "true") == "true"
     if show_welcome:
         QTimer.singleShot(100, lambda: SetupWizard(window).exec())
+
+    # This is deliberately delayed until after the first-run wizard, so a
+    # configured automatic authentication never competes with setup input.
+    QTimer.singleShot(700 if show_welcome else 150, window._apply_startup_authentication)
     
     # Show changelog if app was updated (after welcome dialog)
     QTimer.singleShot(500 if show_welcome else 100, window._show_changelog_if_updated)
