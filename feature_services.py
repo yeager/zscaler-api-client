@@ -1431,7 +1431,9 @@ def security_event_export(records: Iterable[dict[str, Any]], format_name: str = 
             extension = f"requestMethod={escaped(item['method'], '=')} request={escaped(item['url'], '=')} outcome={escaped(item['status'], '=')} rt={escaped(item['timestamp'], '=')} cn1={item['duration_ms']} cn1Label=duration_ms cs1={escaped(item['environment_id'], '=')} cs1Label=environment_id"
             lines.append(f"CEF:0|ZS API Client|Local evidence|1|api_request|API request|{item['severity']}|{extension}")
         else:
-            lines.append("LEEF:2.0|ZS API Client|Local evidence|1|api_request|\t" + "\t".join(f"{key}={escaped(item[key], '=\t')}" for key in ("timestamp", "method", "url", "status", "duration_ms", "environment_id")))
+            leef_escape_chars = "=\t"
+            attributes = [str(key) + "=" + escaped(item[key], leef_escape_chars) for key in ("timestamp", "method", "url", "status", "duration_ms", "environment_id")]
+            lines.append("LEEF:2.0|ZS API Client|Local evidence|1|api_request|\t" + "\t".join(attributes))
     return "\n".join(lines) + ("\n" if lines else "")
 
 
