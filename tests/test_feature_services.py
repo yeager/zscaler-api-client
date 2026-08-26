@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture, incident_evidence
 
 
 class MemorySettings:
@@ -60,6 +60,15 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertLess(posture["score"], 100)
         self.assertEqual(1, posture["severity_counts"]["critical"])
         self.assertTrue(any(item["code"] == "repeated_failures" for item in posture["findings"]))
+
+    def test_incident_evidence_is_timeline_sorted_and_redacted(self):
+        evidence = incident_evidence(
+            [{"timestamp": "2026-01-02", "method": "GET", "url": "https://example.test/users?access_token=hidden", "status": 500, "headers": {"Authorization": "hidden"}}],
+            [{"timestamp": 1, "action": "policy_exported", "details": {"client_secret": "hidden"}}],
+        )
+        serialized = json.dumps(evidence)
+        self.assertNotIn("hidden", serialized)
+        self.assertEqual("high", evidence["timeline"][0]["severity"])
 
     def test_audit_trail_is_hash_linked(self):
         settings = MemorySettings(); trail = AuditTrail(settings)

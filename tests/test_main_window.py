@@ -342,6 +342,14 @@ class MainWindowTests(unittest.TestCase):
         self.assertGreater(dialog.posture_findings.rowCount(), 0)
         dialog.close()
 
+    def test_operations_incident_workspace_prepares_a_safe_chain(self):
+        self.window.request_history = [{"timestamp": "now", "method": "GET", "url": "https://example.test", "status": 500}]
+        dialog = client.OperationsDialog(self.window)
+        dialog.prepare_incident_chain()
+        self.assertIn("Review failed requests", dialog.incident_chain.toPlainText())
+        self.assertGreaterEqual(dialog.incident_timeline.rowCount(), 1)
+        dialog.close()
+
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")
         self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")

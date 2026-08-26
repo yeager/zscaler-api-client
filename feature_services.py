@@ -26,6 +26,14 @@ SENSITIVE_NAMES = {
 }
 
 
+def safe_url(value: Any) -> str:
+    """Mask sensitive URL query values before including an endpoint in evidence."""
+    parts = urllib.parse.urlsplit(str(value or ""))
+    query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
+    safe_query = urllib.parse.urlencode([(key, "***" if key.lower() in SENSITIVE_NAMES else item) for key, item in query])
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, parts.fragment))
+
+
 def mask(value: Any) -> Any:
     """Return a deep copy suitable for local history, exports and support files."""
     if isinstance(value, dict):
@@ -240,4 +248,31 @@ def security_posture(history: Iterable[dict[str, Any]], audit_valid: bool) -> di
         "findings": findings,
         "severity_counts": severity_counts,
         "metrics": {"requests": len(events), "failed": len(failed), "writes": len(writes), "slow": len(slow)},
+    }
+
+
+def incident_evidence(history: Iterable[dict[str, Any]], audit_events: Iterable[dict[str, Any]]) -> dict[str, Any]:
+    """Build a portable, redacted local incident timeline for human review."""
+    timeline: list[dict[str, Any]] = []
+    for item in history:
+        status = str(item.get("status", ""))
+        severity = "high" if status == "0" or status.startswith("5") else "medium" if status.startswith("4") else "info"
+        timeline.append({
+            "time": item.get("timestamp", ""), "source": "request", "severity": severity,
+            "summary": f"{item.get('method', 'GET')} {safe_url(item.get('url', ''))} · {status or 'unknown'}",
+            "evidence": mask({key: item.get(key) for key in ("status", "duration_ms", "headers", "body")}),
+        })
+    for item in audit_events:
+        timeline.append({
+            "time": item.get("timestamp", ""), "source": "audit", "severity": "info",
+            "summary": str(item.get("action", "audit event")), "evidence": mask(item.get("details", {})),
+        })
+    timeline.sort(key=lambda item: str(item["time"]), reverse=True)
+    return {
+        "timeline": timeline[:200],
+        "summary": {
+            "events": len(timeline),
+            "high": sum(1 for item in timeline if item["severity"] == "high"),
+            "medium": sum(1 for item in timeline if item["severity"] == "medium"),
+        },
     }

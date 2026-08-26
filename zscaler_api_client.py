@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, incident_evidence, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -4317,9 +4317,20 @@ class OperationsDialog(QDialog):
         self.posture_findings = QTableWidget(0, 3); self.posture_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Finding"), self.tr("Details")]); self.posture_findings.horizontalHeader().setStretchLastSection(True); self.posture_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); posture_layout.addWidget(self.posture_findings)
         posture_refresh = QPushButton(self.tr("Refresh security posture")); posture_refresh.clicked.connect(self.refresh_posture); posture_layout.addWidget(posture_refresh)
         self.posture_tab_index = self.tabs.addTab(posture_page, self.tr("Security posture"))
+
+        incident_page = QWidget(); incident_layout = QVBoxLayout(incident_page)
+        incident_intro = QLabel(self.tr("Build a redacted local investigation timeline. Prepared chains never send API requests automatically.")); incident_intro.setWordWrap(True); incident_layout.addWidget(incident_intro)
+        chain_controls = QHBoxLayout(); chain_controls.addWidget(QLabel(self.tr("Investigation:")))
+        self.incident_type = QComboBox(); self.incident_type.addItem(self.tr("API failure investigation"), "failures"); self.incident_type.addItem(self.tr("Change activity review"), "changes"); self.incident_type.addItem(self.tr("Slow response investigation"), "performance"); chain_controls.addWidget(self.incident_type)
+        chain_prepare = QPushButton(self.tr("Prepare investigation chain")); chain_prepare.clicked.connect(self.prepare_incident_chain); chain_controls.addWidget(chain_prepare); chain_controls.addStretch(); incident_layout.addLayout(chain_controls)
+        self.incident_chain = QPlainTextEdit(); self.incident_chain.setReadOnly(True); self.incident_chain.setMaximumHeight(120); incident_layout.addWidget(self.incident_chain)
+        self.incident_timeline = QTableWidget(0, 4); self.incident_timeline.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Source"), self.tr("Severity"), self.tr("Evidence")]); self.incident_timeline.horizontalHeader().setStretchLastSection(True); self.incident_timeline.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); incident_layout.addWidget(self.incident_timeline)
+        incident_actions = QHBoxLayout(); incident_refresh = QPushButton(self.tr("Refresh investigation")); incident_refresh.clicked.connect(self.refresh_incident); incident_actions.addWidget(incident_refresh)
+        incident_export = QPushButton(self.tr("Export incident evidence")); incident_export.clicked.connect(self.export_incident_evidence); incident_actions.addWidget(incident_export); incident_actions.addStretch(); incident_layout.addLayout(incident_actions)
+        self.incident_tab_index = self.tabs.addTab(incident_page, self.tr("Incident investigation"))
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
-        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture()
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_incident()
 
     def _json(self, editor, fallback):
         try: return json.loads(editor.toPlainText() or fallback)
@@ -4367,6 +4378,37 @@ class OperationsDialog(QDialog):
             self.posture_findings.setItem(row, 0, QTableWidgetItem(severity_labels[finding["severity"]]))
             self.posture_findings.setItem(row, 1, QTableWidgetItem(title))
             self.posture_findings.setItem(row, 2, QTableWidgetItem(detail.format(count=finding["count"])))
+
+    def _incident_evidence(self):
+        return incident_evidence(getattr(self.window, "request_history", []), AuditTrail(self.settings).events())
+
+    def refresh_incident(self):
+        evidence = self._incident_evidence()
+        timeline = evidence["timeline"]
+        self.incident_timeline.setRowCount(len(timeline))
+        severity_labels = {"high": self.tr("High"), "medium": self.tr("Medium"), "info": self.tr("Info")}
+        for row, item in enumerate(timeline):
+            self.incident_timeline.setItem(row, 0, QTableWidgetItem(str(item["time"])))
+            self.incident_timeline.setItem(row, 1, QTableWidgetItem(self.tr("Request") if item["source"] == "request" else self.tr("Audit")))
+            self.incident_timeline.setItem(row, 2, QTableWidgetItem(severity_labels[item["severity"]]))
+            self.incident_timeline.setItem(row, 3, QTableWidgetItem(item["summary"]))
+
+    def prepare_incident_chain(self):
+        chains = {
+            "failures": self.tr("1. Review failed requests in the local timeline.\n2. Select the matching product and endpoint in API Explorer.\n3. Run the read-only status or list operation.\n4. Compare the masked response with the audit trail.\n5. Export evidence or open a change review; no remediation is sent automatically."),
+            "changes": self.tr("1. Review recent write requests and audit events.\n2. Export or load the current policy object.\n3. Use Policy diff and local simulation.\n4. Run compliance checks.\n5. Prepare a reviewed Terraform or Git change; no apply is sent automatically."),
+            "performance": self.tr("1. Identify slow requests in the local timeline.\n2. Review response status, duration, and rate-limit headers.\n3. Query the relevant ZDX or product status endpoint.\n4. Compare against recent requests.\n5. Export the masked incident evidence for escalation."),
+        }
+        kind = self.incident_type.currentData()
+        self.incident_chain.setPlainText(chains[kind])
+        AuditTrail(self.settings).append("incident_chain_prepared", {"kind": kind})
+
+    def export_incident_evidence(self):
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export incident evidence"), "incident-evidence.json", "JSON (*.json)")
+        if not path:
+            return
+        Path(path).write_text(json.dumps(self._incident_evidence(), indent=2, ensure_ascii=False), encoding="utf-8")
+        AuditTrail(self.settings).append("incident_evidence_exported", {"file": os.path.basename(path)})
 
     def compare_policies(self):
         try:
