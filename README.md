@@ -52,6 +52,7 @@ ZS API Client is built with security as a top priority:
 - **Syntax Highlighting** – Beautiful JSON response formatting
 - **Copy as cURL** – Export any request for command-line use or scripting
 - **Request History** – Browse and replay previous requests
+- **Adaptive response views** – Inspect masked JSON as a table, chart, tree, heatmap, topology, or GraphQL schema; use export preview to review masking before writing a file
 
 ### Productivity
 - **Batch Operations** – Import CSV files for bulk create/delete/update operations
