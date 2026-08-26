@@ -51,6 +51,7 @@ SWEDISH_REVIEW.update({
     "Batch execution started: {count} request(s)": "Batchkörning startad: {count} begäran/begäranden",
     "Sending batch request {completed} of {total}...": "Skickar batchbegäran {completed} av {total}...",
     "Batch complete: {successful} succeeded, {failed} failed.": "Batch klar: {successful} lyckades, {failed} misslyckades.",
+    "Masked response copied to clipboard": "Maskerat svar kopierat till urklipp",
     "Guided example loaded. Find the API request, review the preview, then choose whether to run it.": "Guidat exempel inläst. Hitta API-begäran, granska förhandsvisningen och välj sedan om du vill köra den.",
     "ZIA · List users": "ZIA · Lista användare",
     "ZIA · List URL categories": "ZIA · Lista URL-kategorier",

@@ -246,6 +246,23 @@ class MainWindowTests(unittest.TestCase):
             self.window._check_for_updates()
         self.assertEqual(1, urlopen.call_count)
 
+    def test_logout_clears_every_in_memory_api_session(self):
+        for attribute in ("zia_session", "zpa_token", "zdx_token", "zcc_token", "zidentity_token",
+                          "ztw_token", "zwa_token", "easm_token", "oneapi_token"):
+            setattr(self.window, attribute, "session-value")
+        self.window._clear_sessions(record_audit=False)
+        self.assertTrue(all(getattr(self.window, attribute) is None for attribute in (
+            "zia_session", "zpa_token", "zdx_token", "zcc_token", "zidentity_token",
+            "ztw_token", "zwa_token", "easm_token", "oneapi_token",
+        )))
+
+    def test_copy_response_masks_sensitive_values(self):
+        self.window.response_body.setPlainText('{"client_secret":"do-not-copy", "name":"Ada"}')
+        self.window._copy_response()
+        copied = client.QApplication.clipboard().text()
+        self.assertNotIn("do-not-copy", copied)
+        self.assertIn("***", copied)
+
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")
         self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")

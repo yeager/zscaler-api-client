@@ -4981,6 +4981,7 @@ class MainWindow(QMainWindow):
         settings.setValue("editor_splitter_sizes", self.editor_splitter.sizes())
     
     def closeEvent(self, event):
+        self._clear_sessions(record_audit=False)
         self._save_settings()
         event.accept()
     
@@ -6487,11 +6488,15 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(self.tr("Masked cURL command copied to clipboard"))
     
     def _copy_response(self):
-        """Copy response body to clipboard."""
-        text = self.response_body.toPlainText()
-        if text:
+        """Copy a redacted response body so the clipboard never receives secrets."""
+        raw = self.response_body.toPlainText()
+        if raw:
+            try:
+                text = json.dumps(redact_sensitive(json.loads(raw)), indent=2)
+            except json.JSONDecodeError:
+                text = str(redact_sensitive(raw))
             QApplication.clipboard().setText(text)
-            self.status_bar.showMessage(self.tr("Response copied to clipboard"))
+            self.status_bar.showMessage(self.tr("Masked response copied to clipboard"))
         else:
             QMessageBox.warning(self, self.tr("Warning"), self.tr("No response to copy"))
     
@@ -6586,9 +6591,19 @@ class MainWindow(QMainWindow):
     
     def _logout_all(self):
         """Clear all authentication sessions."""
-        self.zia_session = None
-        self.zpa_token = None
+        self._clear_sessions()
         self.status_bar.showMessage(self.tr("All sessions cleared"))
+
+    def _clear_sessions(self, record_audit=True):
+        """Remove every in-memory API session without touching keychain credentials."""
+        for attribute in (
+            "zia_session", "zpa_token", "zdx_token", "zcc_token", "zidentity_token",
+            "ztw_token", "zwa_token", "easm_token", "oneapi_token",
+        ):
+            setattr(self, attribute, None)
+        self._update_auth_indicators()
+        if record_audit:
+            AuditTrail(QSettings("Zscaler", "APIClient")).append("sessions_cleared", {})
     
     def _change_language(self):
         action = self.sender()
