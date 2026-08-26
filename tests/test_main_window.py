@@ -119,6 +119,15 @@ class MainWindowTests(unittest.TestCase):
         self.assertIn("Partial pagination result", self.window.response_info.text())
         self.assertIn("stopped before completion", self.window.status_bar.currentMessage())
 
+    def test_successful_retry_count_is_visible_and_preserved_as_exchange_metadata(self):
+        self.window._pending_request = {"method": "GET", "url": "https://example.test/users", "headers": {}, "body": None, "body_mode": "json", "start_time": client.time.time()}
+        self.window._on_request_finished({"results": [{"success": True, "request": {}, "data": {
+            "items": [{"id": 1}], "_retry_count": 2, "_status_code": 200, "_reason": "OK", "_size": 10, "_headers": {},
+        }}]})
+        self.assertIn("Safe read retries: 2", self.window.response_info.text())
+        self.assertEqual(2, self.window._last_response_exchange["response"]["retry_count"])
+        self.assertNotIn("_retry_count", self.window.response_body.toPlainText())
+
     def test_cancel_request_is_cooperative_and_empty_cancel_clears_pending_state(self):
         worker = MagicMock(); worker.isRunning.return_value = True; self.window.worker = worker
         self.window.cancel_request_btn.setEnabled(True); self.window._cancel_request()
@@ -184,6 +193,74 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(429, results[0]["results"][0]["status_code"])
         self.assertEqual({"Retry-After": "60"}, client.api_result_headers({"success": False, "response_headers": {"Retry-After": "60"}}))
         self.assertEqual(201, client.api_result_status({"success": True, "data": {"_status_code": 201}}))
+
+    def test_retry_after_supports_seconds_http_dates_and_caps(self):
+        self.assertEqual(12, client.retry_after_seconds({"Retry-After": "12"}, 1, 60))
+        self.assertEqual(5, client.retry_after_seconds({"Retry-After": "Thu, 01 Jan 1970 00:01:40 GMT"}, 1, 60, now=95))
+        self.assertEqual(10, client.retry_after_seconds({"Retry-After": "999"}, 1, 10))
+        self.assertEqual(2, client.retry_after_seconds({}, 2, 60))
+        self.assertTrue(client.is_transient_url_error(client.urllib.error.URLError(client.socket.timeout())))
+        self.assertFalse(client.is_transient_url_error(client.urllib.error.URLError(ValueError("bad proxy configuration"))))
+
+    def test_transient_safe_read_retries_with_bounded_wait(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        keys = ("advanced/retry_reads", "advanced/max_read_retries", "advanced/retry_max_wait")
+        previous = {key: settings.value(key, None) for key in keys}
+        try:
+            settings.setValue("advanced/retry_reads", "true")
+            settings.setValue("advanced/max_read_retries", "2")
+            settings.setValue("advanced/retry_max_wait", "3")
+            worker = client.ApiWorker([]); retries = []
+            worker.retrying.connect(lambda attempt, maximum, seconds: retries.append((attempt, maximum, seconds)))
+            failure = client.ApiRequestError(429, "rate limited", {"Retry-After": "30"})
+            with patch.object(worker, "_make_request_once", side_effect=[failure, {"_status_code": 200}]) as send, \
+                 patch.object(worker, "_wait_for_retry", return_value=True) as wait:
+                result = worker._make_request({"url": "https://example.test", "method": "GET"})
+            self.assertEqual(200, result["_status_code"])
+            self.assertEqual(1, result["_retry_count"])
+            self.assertEqual(2, send.call_count)
+            wait.assert_called_once_with(3)
+            self.assertEqual([(1, 2, 3)], retries)
+        finally:
+            for key, value in previous.items():
+                settings.remove(key) if value is None else settings.setValue(key, value)
+
+    def test_write_requests_are_never_retried(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("advanced/max_read_retries", None)
+        try:
+            settings.setValue("advanced/max_read_retries", "5")
+            worker = client.ApiWorker([])
+            failure = client.ApiRequestError(503, "unavailable", {"Retry-After": "0"})
+            with patch.object(worker, "_make_request_once", side_effect=failure) as send, self.assertRaises(client.ApiRequestError):
+                worker._make_request({"url": "https://example.test", "method": "POST", "body": {"change": True}})
+            self.assertEqual(1, send.call_count)
+        finally:
+            settings.remove("advanced/max_read_retries") if previous is None else settings.setValue("advanced/max_read_retries", previous)
+
+    def test_permanent_read_configuration_errors_are_not_retried(self):
+        worker = client.ApiWorker([])
+        failure = client.urllib.error.URLError(ValueError("invalid configuration"))
+        with patch.object(worker, "_make_request_once", side_effect=failure) as send, self.assertRaises(client.urllib.error.URLError):
+            worker._make_request({"url": "https://example.test", "method": "GET"})
+        self.assertEqual(1, send.call_count)
+
+    def test_cancelling_retry_wait_finishes_without_failed_result(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        keys = ("advanced/retry_reads", "advanced/max_read_retries")
+        previous = {key: settings.value(key, None) for key in keys}
+        try:
+            settings.setValue("advanced/retry_reads", "true"); settings.setValue("advanced/max_read_retries", "2")
+            worker = client.ApiWorker([{"url": "https://example.test", "method": "GET"}]); completed = []
+            worker.finished.connect(completed.append)
+            with patch.object(worker, "_make_request_once", side_effect=client.ApiRequestError(503, "unavailable")), \
+                 patch.object(worker, "_wait_for_retry", return_value=False):
+                worker.run()
+            self.assertTrue(completed[0]["cancelled"])
+            self.assertEqual([], completed[0]["results"])
+        finally:
+            for key, value in previous.items():
+                settings.remove(key) if value is None else settings.setValue(key, value)
 
     def test_api_worker_can_stop_a_chain_after_first_failure(self):
         worker = client.ApiWorker([{"url": "https://first.test"}, {"url": "https://second.test"}], stop_on_failure=True)
@@ -404,6 +481,24 @@ class MainWindowTests(unittest.TestCase):
         self.assertGreaterEqual(dialog.language_choice.findData("system"), 0)
         self.assertGreaterEqual(dialog.language_choice.findData("sv"), 0)
         dialog.close()
+
+    def test_advanced_settings_load_safe_read_retry_policy(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        keys = ("advanced/retry_reads", "advanced/max_read_retries", "advanced/retry_max_wait")
+        previous = {key: settings.value(key, None) for key in keys}
+        try:
+            settings.setValue("advanced/retry_reads", "false")
+            settings.setValue("advanced/max_read_retries", "3")
+            settings.setValue("advanced/retry_max_wait", "120")
+            dialog = client.SettingsDialog(self.window)
+            self.assertEqual(1, dialog.retry_reads.currentIndex())
+            self.assertEqual("3", dialog.max_read_retries.currentText())
+            self.assertEqual("120", dialog.retry_max_wait.currentText())
+            self.assertIn("never retried", dialog.retry_reads.toolTip())
+            dialog.close()
+        finally:
+            for key, value in previous.items():
+                settings.remove(key) if value is None else settings.setValue(key, value)
 
     def test_basic_and_advanced_modes_change_visible_controls(self):
         settings = client.SettingsDialog(self.window)

@@ -151,6 +151,13 @@ SWEDISH_REVIEW.update({
     "The response exchange file is incomplete.": "Svarsfilen är ofullständig.",
     "Imported": "Importerad",
     "Response export opened locally; no API request was sent.": "Svarsexporten öppnades lokalt; ingen API-begäran skickades.",
+    "Retry only GET, HEAD, and OPTIONS after transient network errors or HTTP 408, 429, 502, 503, and 504. Write requests are never retried automatically.": "Återförsök endast GET, HEAD och OPTIONS efter tillfälliga nätverksfel eller HTTP 408, 429, 502, 503 och 504. Skrivbegäranden återförsöks aldrig automatiskt.",
+    "Retry safe reads:": "Återförsök säkra läsningar:",
+    "Maximum read retries:": "Högsta antal läsåterförsök:",
+    "Maximum seconds to honor from Retry-After; shorter exponential backoff is used when the server omits it.": "Högsta antal sekunder att respektera från Retry-After; kortare exponentiell väntan används när servern utelämnar det.",
+    "Maximum retry wait (seconds):": "Längsta väntan för återförsök (sekunder):",
+    "Safe read retry {attempt} of {maximum} in {seconds} second(s)…": "Säker läsåterförsökning {attempt} av {maximum} om {seconds} sekund(er)…",
+    "Safe read retries: {count}": "Säkra läsåterförsök: {count}",
 })
 
 

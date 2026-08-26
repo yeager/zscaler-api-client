@@ -24,7 +24,10 @@ tenant or the bundled catalog-only mode.
    than issuing a request.
 4. Open Settings, test local AI mode, and confirm **Clear AI key** clears its
    field.
-5. Close and reopen the app without a crash.
+5. In Advanced network settings, confirm safe-read retries, maximum retry
+   count, and maximum wait can be changed. Confirm no retry option enables
+   automatic write retries.
+6. Close and reopen the app without a crash.
 
 ## macOS
 

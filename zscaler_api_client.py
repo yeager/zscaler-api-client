@@ -15,6 +15,7 @@ Supports:
 
 import csv
 import base64
+import errno
 import html
 import io
 import json
@@ -23,6 +24,7 @@ import os
 import re
 import shlex
 import shutil
+import socket
 import subprocess
 import sys
 import textwrap
@@ -33,6 +35,7 @@ import urllib.parse
 import urllib.error
 import zipfile
 from dataclasses import dataclass, field
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Optional, Dict, List, Any
 from xml.sax.saxutils import escape as xml_escape
@@ -2792,6 +2795,48 @@ class ApiRequestError(Exception):
         self.response_headers = response_headers or {}
 
 
+class ApiRequestCancelled(Exception):
+    """Internal control flow for a user-cancelled retry wait."""
+
+
+IDEMPOTENT_READ_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
+TRANSIENT_READ_STATUS_CODES = frozenset({408, 429, 502, 503, 504})
+
+
+def retry_after_seconds(headers: Dict | None, retry_number: int, maximum_wait: int, now: float | None = None) -> int:
+    """Return a bounded Retry-After delay, falling back to exponential backoff."""
+    maximum = max(0, min(300, int(maximum_wait)))
+    fallback = min(maximum, 2 ** max(0, int(retry_number) - 1))
+    raw = http_header_value(headers, "Retry-After").strip()
+    if not raw:
+        return fallback
+    try:
+        delay = int(raw)
+    except ValueError:
+        try:
+            delay = int(max(0, parsedate_to_datetime(raw).timestamp() - (time.time() if now is None else now)))
+        except (TypeError, ValueError, OverflowError):
+            return fallback
+    return max(0, min(maximum, delay))
+
+
+def is_transient_url_error(error: urllib.error.URLError) -> bool:
+    """Distinguish retryable connectivity failures from certificate/configuration errors."""
+    reason = getattr(error, "reason", None)
+    if reason.__class__.__name__ in {"SSLCertVerificationError", "CertificateError"}:
+        return False
+    if isinstance(reason, socket.gaierror):
+        return reason.errno == getattr(socket, "EAI_AGAIN", -3)
+    if isinstance(reason, (TimeoutError, ConnectionError, socket.timeout)):
+        return True
+    if isinstance(reason, OSError):
+        return reason.errno in {
+            errno.ECONNABORTED, errno.ECONNREFUSED, errno.ECONNRESET,
+            errno.EHOSTUNREACH, errno.ENETDOWN, errno.ENETUNREACH, errno.ETIMEDOUT,
+        }
+    return False
+
+
 def api_result_status(result: Dict) -> int:
     """Return the real HTTP status retained by a worker result when available."""
     if not result.get("success"):
@@ -2849,6 +2894,7 @@ class ApiWorker(QThread):
     """Worker thread for API requests."""
     finished = Signal(dict)
     progress = Signal(int, int)
+    retrying = Signal(int, int, int)
     
     def __init__(self, requests: List[Dict], stop_on_failure: bool = False):
         super().__init__()
@@ -2867,6 +2913,8 @@ class ApiWorker(QThread):
             try:
                 result = self._make_request(req)
                 results.append({"success": True, "data": result, "request": req})
+            except ApiRequestCancelled:
+                cancelled = True; stopped_early = i < total; break
             except ApiRequestError as error:
                 results.append({"success": False, "error": str(error), "status_code": error.status_code, "response_headers": error.response_headers, "request": req})
             except Exception as error:
@@ -2880,7 +2928,52 @@ class ApiWorker(QThread):
         
         self.finished.emit({"results": results, "stopped_early": stopped_early, "cancelled": cancelled})
     
+    def _retry_policy(self, req: Dict) -> tuple[int, int]:
+        """Read the bounded retry policy; mutating requests always return zero retries."""
+        if str(req.get("method", "GET")).upper() not in IDEMPOTENT_READ_METHODS:
+            return 0, 0
+        settings = QSettings("Zscaler", "APIClient")
+        if settings.value("advanced/retry_reads", "true") != "true":
+            return 0, 0
+        try:
+            retries = max(0, min(5, int(settings.value("advanced/max_read_retries", "2"))))
+            maximum_wait = max(0, min(300, int(settings.value("advanced/retry_max_wait", "60"))))
+        except (TypeError, ValueError):
+            retries, maximum_wait = 2, 60
+        return retries, maximum_wait
+
+    def _wait_for_retry(self, seconds: int) -> bool:
+        """Wait cooperatively so Cancel remains effective during server backoff."""
+        deadline = time.monotonic() + max(0, seconds)
+        while time.monotonic() < deadline:
+            if self.isInterruptionRequested():
+                return False
+            time.sleep(min(0.1, max(0, deadline - time.monotonic())))
+        return not self.isInterruptionRequested()
+
     def _make_request(self, req: Dict) -> Dict:
+        """Retry transient failures only for safe read methods."""
+        retries, maximum_wait = self._retry_policy(req)
+        for retry_number in range(retries + 1):
+            try:
+                result = self._make_request_once(req)
+                if retry_number and isinstance(result, dict):
+                    result["_retry_count"] = retry_number
+                return result
+            except ApiRequestError as error:
+                if retry_number >= retries or error.status_code not in TRANSIENT_READ_STATUS_CODES:
+                    raise
+                delay = retry_after_seconds(error.response_headers, retry_number + 1, maximum_wait)
+            except urllib.error.URLError as error:
+                if retry_number >= retries or not is_transient_url_error(error):
+                    raise
+                delay = retry_after_seconds({}, retry_number + 1, maximum_wait)
+            self.retrying.emit(retry_number + 1, retries, delay)
+            if not self._wait_for_retry(delay):
+                raise ApiRequestCancelled()
+        raise RuntimeError("Unreachable retry state")
+
+    def _make_request_once(self, req: Dict) -> Dict:
         url = req["url"]
         method = req.get("method", "GET")
         headers = dict(req.get("headers", {}))
@@ -3019,6 +3112,7 @@ class PaginatedApiWorker(ApiWorker):
             maximum_bytes = 100 * 1024 * 1024
         pages, records, collection_name = [], [], "items"
         total_bytes = 0
+        total_retries = 0
         cursor = ""
         position = int(self.pagination.get("start", 1 if mode == "page" else 0))
         seen_cursors = set()
@@ -3043,6 +3137,9 @@ class PaginatedApiWorker(ApiWorker):
             request["url"] = page_url
             try:
                 data = self._make_request(request)
+            except ApiRequestCancelled:
+                cancelled = True
+                break
             except ApiRequestError as error:
                 if not pages:
                     self.finished.emit({"results": [{"success": False, "error": str(error), "status_code": error.status_code, "response_headers": error.response_headers, "request": original}], "stopped_early": False})
@@ -3056,6 +3153,7 @@ class PaginatedApiWorker(ApiWorker):
                 partial_error = str(error)
                 break
             last_data = data if isinstance(data, dict) else {}
+            total_retries += int(last_data.pop("_retry_count", 0) or 0)
             total_bytes += int(last_data.get("_size") or 0)
             if total_bytes > maximum_bytes:
                 partial_error = "Combined paginated response exceeds the configured transfer limit"
@@ -3104,6 +3202,7 @@ class PaginatedApiWorker(ApiWorker):
             collection_name: records, "_page_responses": pages, "_pagination": pagination_summary,
             "_status_code": int(last_data.get("_status_code") or 200), "_reason": last_data.get("_reason", "OK"),
             "_size": total_bytes, "_headers": last_data.get("_headers", {}),
+            "_retry_count": total_retries,
         }
         self.finished.emit({"results": [{"success": True, "data": merged, "request": original}], "stopped_early": cancelled, "cancelled": cancelled})
 
@@ -3133,6 +3232,8 @@ class ApiChainWorker(ApiWorker):
                 data = self._make_request(request)
                 context[step["id"]] = PaginatedApiWorker._business_payload(data)
                 results.append({"success": True, "data": data, "request": request, "duration_ms": int((time.time() - started) * 1000)})
+            except ApiRequestCancelled:
+                cancelled = True; stopped_early = index < total; break
             except ApiRequestError as error:
                 results.append({"success": False, "error": str(error), "status_code": error.status_code, "response_headers": error.response_headers, "request": {"id": step["id"], "url": step.get("resolved_url", step["url"]), "method": step["method"]}, "duration_ms": int((time.time() - started) * 1000)})
             except Exception as error:
@@ -4205,6 +4306,20 @@ class SettingsDialog(QDialog):
         self.max_transfer_mb.setEditable(True)
         self.max_transfer_mb.addItems(["10", "25", "50", "100", "250", "500", "1024"])
         network_layout.addRow(self.tr("Maximum upload/download (MB):"), self.max_transfer_mb)
+
+        self.retry_reads = QComboBox()
+        self.retry_reads.addItems([self.tr("Enabled"), self.tr("Disabled")])
+        self.retry_reads.setToolTip(self.tr("Retry only GET, HEAD, and OPTIONS after transient network errors or HTTP 408, 429, 502, 503, and 504. Write requests are never retried automatically."))
+        network_layout.addRow(self.tr("Retry safe reads:"), self.retry_reads)
+
+        self.max_read_retries = QComboBox()
+        self.max_read_retries.addItems(["0", "1", "2", "3", "5"])
+        network_layout.addRow(self.tr("Maximum read retries:"), self.max_read_retries)
+
+        self.retry_max_wait = QComboBox()
+        self.retry_max_wait.addItems(["5", "15", "30", "60", "120", "300"])
+        self.retry_max_wait.setToolTip(self.tr("Maximum seconds to honor from Retry-After; shorter exponential backoff is used when the server omits it."))
+        network_layout.addRow(self.tr("Maximum retry wait (seconds):"), self.retry_max_wait)
         
         self.verify_ssl = QComboBox()
         self.verify_ssl.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
@@ -4418,6 +4533,9 @@ class SettingsDialog(QDialog):
         if reply == QMessageBox.StandardButton.Yes:
             self.timeout_spin.setCurrentText("30")
             self.max_transfer_mb.setCurrentText("100")
+            self.retry_reads.setCurrentIndex(0)
+            self.max_read_retries.setCurrentText("2")
+            self.retry_max_wait.setCurrentText("60")
             self.verify_ssl.setCurrentIndex(0)
             self.proxy_enabled.setCurrentIndex(0)
             self.proxy_host.clear()
@@ -4499,6 +4617,9 @@ class SettingsDialog(QDialog):
         # Advanced
         self.timeout_spin.setCurrentText(settings.value("advanced/timeout", "30"))
         self.max_transfer_mb.setCurrentText(settings.value("advanced/max_transfer_mb", "100"))
+        self.retry_reads.setCurrentIndex(0 if settings.value("advanced/retry_reads", "true") == "true" else 1)
+        self.max_read_retries.setCurrentText(settings.value("advanced/max_read_retries", "2"))
+        self.retry_max_wait.setCurrentText(settings.value("advanced/retry_max_wait", "60"))
         self.verify_ssl.setCurrentIndex(0 if settings.value("advanced/verify_ssl", "true") == "true" else 1)
         self.proxy_enabled.setCurrentIndex(int(settings.value("advanced/proxy_mode", "0")))
         self.proxy_host.setText(settings.value("advanced/proxy_host", ""))
@@ -4726,12 +4847,19 @@ class SettingsDialog(QDialog):
         settings.setValue("oneapi/customer_id", self.oneapi_customer_id.text())
         
         # Advanced
-        settings.setValue("advanced/timeout", self.timeout_spin.currentText())
+        try:
+            timeout = max(1, min(600, int(self.timeout_spin.currentText())))
+        except ValueError:
+            timeout = 30
+        settings.setValue("advanced/timeout", str(timeout))
         try:
             maximum_transfer = max(1, min(1024, int(self.max_transfer_mb.currentText())))
         except ValueError:
             maximum_transfer = 100
         settings.setValue("advanced/max_transfer_mb", str(maximum_transfer))
+        settings.setValue("advanced/retry_reads", "true" if self.retry_reads.currentIndex() == 0 else "false")
+        settings.setValue("advanced/max_read_retries", str(max(0, min(5, int(self.max_read_retries.currentText())))))
+        settings.setValue("advanced/retry_max_wait", str(max(0, min(300, int(self.retry_max_wait.currentText())))))
         settings.setValue("advanced/verify_ssl", "true" if self.verify_ssl.currentIndex() == 0 else "false")
         settings.setValue("advanced/proxy_mode", str(self.proxy_enabled.currentIndex()))
         settings.setValue("advanced/proxy_host", self.proxy_host.text())
@@ -5620,6 +5748,7 @@ class OperationsDialog(QDialog):
         self.api_chain_table.setRowCount(0); self.api_chain_chart.set_values([]); self._last_chain_results = []
         self.api_chain_worker = ApiChainWorker(steps, headers, stop_on_failure=self.api_chain_stop_on_error.isChecked())
         self.api_chain_worker.progress.connect(self._on_api_chain_progress)
+        self.api_chain_worker.retrying.connect(self._on_api_chain_retrying)
         self.api_chain_worker.finished.connect(self._on_api_chain_finished)
         self.api_chain_worker.start()
         self.cancel_chain_btn.setEnabled(True)
@@ -5627,6 +5756,9 @@ class OperationsDialog(QDialog):
 
     def _on_api_chain_progress(self, completed, total):
         self.api_chain_result.setPlainText(self.tr("Running API chain step {completed} of {total}...").format(completed=completed, total=total))
+
+    def _on_api_chain_retrying(self, attempt, maximum, seconds):
+        self.api_chain_result.setPlainText(self.tr("Safe read retry {attempt} of {maximum} in {seconds} second(s)…").format(attempt=attempt, maximum=maximum, seconds=seconds))
 
     def cancel_api_chain(self):
         worker = getattr(self, "api_chain_worker", None)
@@ -8703,6 +8835,7 @@ class MainWindow(QMainWindow):
             self.worker.progress.connect(self._on_pagination_progress)
         else:
             self.worker = ApiWorker([request])
+        self.worker.retrying.connect(self._on_request_retrying)
         self.worker.finished.connect(self._on_request_finished)
         self.worker.start()
 
@@ -8710,6 +8843,11 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(
             self.tr("Fetching page {page} of at most {maximum}…").format(page=completed, maximum=maximum)
         )
+
+    def _on_request_retrying(self, attempt: int, maximum: int, seconds: int):
+        message = self.tr("Safe read retry {attempt} of {maximum} in {seconds} second(s)…").format(attempt=attempt, maximum=maximum, seconds=seconds)
+        self.status_bar.showMessage(message)
+        self._log_output(message, "warning")
 
     def _cancel_request(self):
         worker = getattr(self, "worker", None)
@@ -8747,6 +8885,7 @@ class MainWindow(QMainWindow):
                 status_code = response_data.pop("_status_code", 200) if isinstance(response_data, dict) else 200
                 reason = response_data.pop("_reason", "OK") if isinstance(response_data, dict) else "OK"
                 resp_size = response_data.pop("_size", 0) if isinstance(response_data, dict) else 0
+                retry_count = int(response_data.pop("_retry_count", 0) or 0) if isinstance(response_data, dict) else 0
                 response_headers = response_data.pop("_headers", {}) if isinstance(response_data, dict) else {}
                 raw_text = response_data.pop("_raw_text", None) if isinstance(response_data, dict) else None
                 binary_base64 = response_data.pop("_binary_base64", None) if isinstance(response_data, dict) else None
@@ -8776,6 +8915,7 @@ class MainWindow(QMainWindow):
                     f"<span style='color: {badge_color}; font-weight: bold;'>"
                     f"{status_code} {reason}</span>"
                     f" · {duration_ms}ms · {size_str}"
+                    + (" · " + self.tr("Safe read retries: {count}").format(count=retry_count) if retry_count else "")
                 )
                 
                 # Get indent setting
@@ -8820,7 +8960,7 @@ class MainWindow(QMainWindow):
                     "request": safe_request,
                     "response": {
                         "status": status_code, "reason": reason, "duration_ms": duration_ms,
-                        "size_bytes": resp_size, "headers": safe_response_headers, "body": display_data,
+                        "size_bytes": resp_size, "retry_count": retry_count, "headers": safe_response_headers, "body": display_data,
                     },
                 })
                 self._show_ai_visualization(display_data)

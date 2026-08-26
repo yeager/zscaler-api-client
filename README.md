@@ -53,6 +53,7 @@ ZS API Client is built with security as a top priority:
 - **Inline Documentation** – Direct links to official Zscaler API docs for each endpoint
 - **API Guide contracts** – Inspect documented query, path, and header fields with types, required flags, defaults, body templates, and response codes directly in the request editor
 - **Complete collection reads** – Explicitly follow documented numbered, offset, or cursor pagination with hard page/transfer limits, retained page envelopes, and partial-result warnings
+- **Rate-limit-aware reads** – Safely retry only idempotent GET, HEAD, and OPTIONS requests with cancellable, bounded `Retry-After`/exponential backoff; write requests are never retried automatically
 - **Documentation-grounded AI** – Natural-language matches attach the same request contract and suggest only parameters published for that operation
 - **Request Builder** – Full control over URL, params, headers, and JSON body
 - **Dataflow chains** – Build reviewed, same-host workflows where later requests safely reference earlier JSON values; inspect a status chart/table and export masked evidence
