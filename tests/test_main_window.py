@@ -690,11 +690,36 @@ class MainWindowTests(unittest.TestCase):
         self.assertIsNone(client.validate_webhook_endpoint("https://hooks.example.test/events?token=hidden")[0])
         dialog.close()
 
-    def test_webhook_alert_delivery_is_approved_and_does_not_follow_redirects(self):
-        settings = client.QSettings("Zscaler", "APIClient")
-        previous = settings.value("automation/webhook_url", None)
+    def test_legacy_webhook_endpoint_migrates_out_of_plaintext_settings(self):
+        settings = MagicMock()
+        settings.value.return_value = "https://hooks.example.test/private-path"
+        with patch.object(client, "secure_get", return_value=""), patch.object(client, "secure_store") as store:
+            endpoint = client.secure_webhook_endpoint(settings)
+        self.assertEqual("https://hooks.example.test/private-path", endpoint)
+        store.assert_called_once_with(client.WEBHOOK_CREDENTIAL_KEY, endpoint)
+        settings.remove.assert_called_once_with("automation/webhook_url")
+
+        rejected = MagicMock(); rejected.value.return_value = "https://user:secret@hooks.example.test/"
+        with patch.object(client, "secure_get", return_value=""), patch.object(client, "secure_store") as rejected_store:
+            self.assertEqual("", client.secure_webhook_endpoint(rejected))
+        rejected_store.assert_not_called()
+        rejected.remove.assert_called_once_with("automation/webhook_url")
+
+    def test_keychain_batch_update_rolls_back_after_storage_failure(self):
+        previous_cache, previous_loaded = dict(client._credential_cache), client._credentials_loaded
         try:
-            settings.setValue("automation/webhook_url", "https://hooks.example.test/alerts")
+            client._credential_cache.clear(); client._credential_cache.update({"existing": "preserved"}); client._credentials_loaded = True
+            with patch.object(client, "_save_all_credentials", return_value=False):
+                self.assertFalse(client.secure_store_many({"existing": "changed", "new": "secret"}))
+            self.assertEqual({"existing": "preserved"}, client._credential_cache)
+            with patch.object(client, "_save_all_credentials", return_value=True):
+                self.assertTrue(client.secure_store_many({"existing": "changed", "new": "secret"}))
+            self.assertEqual({"existing": "changed", "new": "secret"}, client._credential_cache)
+        finally:
+            client._credential_cache.clear(); client._credential_cache.update(previous_cache); client._credentials_loaded = previous_loaded
+
+    def test_webhook_alert_delivery_is_approved_and_does_not_follow_redirects(self):
+        with patch.object(client, "secure_webhook_endpoint", return_value="https://hooks.example.test/alerts"):
             dialog = client.OperationsDialog(self.window)
             with patch.object(client.QMessageBox, "question", return_value=client.QMessageBox.StandardButton.Yes), \
                  patch.object(client, "LlmWorker") as worker_type:
@@ -710,12 +735,8 @@ class MainWindowTests(unittest.TestCase):
             self.assertEqual("local_alert_snapshot", sent["event"])
             self.assertNotIn("hidden", json.dumps(sent))
             worker_type.return_value.start.assert_called_once()
+            self.assertGreaterEqual(dialog.webhook_history.rowCount(), 1)
             dialog.close()
-        finally:
-            if previous is None:
-                settings.remove("automation/webhook_url")
-            else:
-                settings.setValue("automation/webhook_url", previous)
 
     def test_local_automation_is_explicit_isolated_and_masked(self):
         settings = client.QSettings("Zscaler", "APIClient")

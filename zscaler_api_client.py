@@ -164,6 +164,7 @@ def validate_webhook_endpoint(value: str) -> tuple[str | None, str]:
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
+WEBHOOK_CREDENTIAL_KEY = "automation_webhook_endpoint"
 _credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
 def redact_sensitive(value: Any) -> Any:
     """Return a history-safe copy of JSON or form-urlencoded request data."""
@@ -276,25 +277,38 @@ def _load_all_credentials():
     except Exception:
         pass
 
-def _save_all_credentials():
+def _save_all_credentials() -> bool:
     """Save all credentials to a single keychain entry (one prompt)."""
     try:
         import keyring
         blob = json.dumps({k: v for k, v in _credential_cache.items() if v})
         keyring.set_password(SERVICE_NAME, "_all_credentials", blob)
+        return True
     except Exception:
-        pass
+        return False
+
+
+def secure_store_many(values: dict[str, str]) -> bool:
+    """Atomically update multiple secrets, rolling back memory if keychain fails."""
+    global _credential_cache
+    _load_all_credentials()
+    previous = dict(_credential_cache)
+    for key, value in values.items():
+        if not value:
+            _credential_cache.pop(key, None)
+        else:
+            _credential_cache[key] = value
+    if _credential_cache == previous:
+        return True
+    if _save_all_credentials():
+        return True
+    _credential_cache.clear()
+    _credential_cache.update(previous)
+    return False
 
 def secure_store(key: str, value: str) -> bool:
     """Store credential securely in system keychain."""
-    global _credential_cache
-    _load_all_credentials()
-    if not value:
-        _credential_cache.pop(key, None)
-    else:
-        _credential_cache[key] = value
-    _save_all_credentials()
-    return True
+    return secure_store_many({key: value})
 
 def secure_get(key: str) -> str:
     """Retrieve credential from system keychain (single keychain access)."""
@@ -303,8 +317,24 @@ def secure_get(key: str) -> str:
 
 def secure_delete(key: str) -> bool:
     """Delete credential from system keychain."""
-    secure_store(key, "")
-    return not bool(secure_get(key))
+    return secure_store(key, "")
+
+
+def secure_webhook_endpoint(settings: QSettings, migrate_legacy: bool = True) -> str:
+    """Read the webhook endpoint from keychain and remove legacy plaintext storage."""
+    endpoint = str(secure_get(WEBHOOK_CREDENTIAL_KEY) or "").strip()
+    legacy = str(settings.value("automation/webhook_url", "") or "").strip()
+    if endpoint:
+        if legacy:
+            settings.remove("automation/webhook_url")
+        return endpoint
+    if migrate_legacy and legacy:
+        if validate_webhook_endpoint(legacy)[0] is not None:
+            settings.remove("automation/webhook_url")
+            return legacy if secure_store(WEBHOOK_CREDENTIAL_KEY, legacy) else ""
+        # Never keep a rejected endpoint (which may contain credentials) in plaintext.
+        settings.remove("automation/webhook_url")
+    return ""
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -2976,8 +3006,9 @@ class SetupWizard(QDialog):
             settings.setValue("oneapi/client_id", client_id)
             settings.setValue("oneapi/cloud", self.cloud_input.text().strip())
             settings.setValue("oneapi/customer_id", self.customer_id_input.text().strip())
-            if client_secret:
-                secure_store("oneapi_client_secret", client_secret)
+            if client_secret and not secure_store("oneapi_client_secret", client_secret):
+                QMessageBox.warning(self, self.tr("Secure storage"), self.tr("The system keychain could not save the secret. Check the keychain service and try again."))
+                return
         settings.setValue("welcome/show_on_startup", "false")
         settings.setValue("ui/mode", self.mode_choice.currentData())
         if self.parent():
@@ -4019,6 +4050,19 @@ class SettingsDialog(QDialog):
         if not self._validate_and_sanitize():
             return
         settings = QSettings("Zscaler", "APIClient")
+        secrets = {
+            "zia_api_key": self.zia_api_key.text(), "zia_password": self.zia_password.text(),
+            "zpa_client_secret": self.zpa_client_secret.text(), "zdx_key_secret": self.zdx_key_secret.text(),
+            "zcc_client_secret": self.zcc_client_secret.text(), "zidentity_client_secret": self.zidentity_client_secret.text(),
+            "ztw_client_secret": self.ztw_client_secret.text(), "zwa_client_secret": self.zwa_client_secret.text(),
+            "easm_client_secret": self.easm_client_secret.text(), "oneapi_client_secret": self.oneapi_client_secret.text(),
+            "proxy_password": self.proxy_password.text(),
+        }
+        if self.ai_api_key.text():
+            secrets["ai_api_key"] = self.ai_api_key.text()
+        if not secure_store_many(secrets):
+            QMessageBox.warning(self, self.tr("Secure storage"), self.tr("The system keychain could not save one or more secrets. No secret changes were applied."))
+            return
         
         # API Enabled states
         settings.setValue("zia/enabled", "true" if self.zia_enabled.isChecked() else "false")
@@ -4032,49 +4076,39 @@ class SettingsDialog(QDialog):
         
         # Credentials (non-sensitive to QSettings, sensitive to Keychain)
         settings.setValue("zia/cloud", self.zia_cloud.text())
-        secure_store("zia_api_key", self.zia_api_key.text())
         settings.setValue("zia/username", self.zia_username.text())
-        secure_store("zia_password", self.zia_password.text())
         settings.setValue("zpa/cloud", self.zpa_cloud.text())
         settings.setValue("zpa/client_id", self.zpa_client_id.text())
-        secure_store("zpa_client_secret", self.zpa_client_secret.text())
         settings.setValue("zpa/customer_id", self.zpa_customer_id.text())
         
         # ZDX
         settings.setValue("zdx/cloud", self.zdx_cloud.text())
         settings.setValue("zdx/key_id", self.zdx_key_id.text())
-        secure_store("zdx_key_secret", self.zdx_key_secret.text())
         
         # ZCC
         settings.setValue("zcc/cloud", self.zcc_cloud.text())
         settings.setValue("zcc/client_id", self.zcc_client_id.text())
-        secure_store("zcc_client_secret", self.zcc_client_secret.text())
         
         # ZIdentity
         settings.setValue("zidentity/domain", self.zidentity_domain.text())
         settings.setValue("zidentity/client_id", self.zidentity_client_id.text())
-        secure_store("zidentity_client_secret", self.zidentity_client_secret.text())
         
         # ZTW
         settings.setValue("ztw/cloud", self.ztw_cloud.text())
         settings.setValue("ztw/client_id", self.ztw_client_id.text())
-        secure_store("ztw_client_secret", self.ztw_client_secret.text())
         
         # ZWA
         settings.setValue("zwa/cloud", self.zwa_cloud.text())
         settings.setValue("zwa/client_id", self.zwa_client_id.text())
-        secure_store("zwa_client_secret", self.zwa_client_secret.text())
         
         # EASM
         settings.setValue("easm/cloud", self.easm_cloud.text())
         settings.setValue("easm/client_id", self.easm_client_id.text())
-        secure_store("easm_client_secret", self.easm_client_secret.text())
         
         # OneAPI
         settings.setValue("oneapi/enabled", "true" if self.oneapi_enabled.isChecked() else "false")
         settings.setValue("oneapi/vanity_domain", self.oneapi_vanity_domain.text())
         settings.setValue("oneapi/client_id", self.oneapi_client_id.text())
-        secure_store("oneapi_client_secret", self.oneapi_client_secret.text())
         settings.setValue("oneapi/cloud", self.oneapi_cloud.text())
         settings.setValue("oneapi/customer_id", self.oneapi_customer_id.text())
         
@@ -4085,7 +4119,6 @@ class SettingsDialog(QDialog):
         settings.setValue("advanced/proxy_host", self.proxy_host.text())
         settings.setValue("advanced/proxy_port", self.proxy_port.text())
         settings.setValue("advanced/proxy_username", self.proxy_username.text())
-        secure_store("proxy_password", self.proxy_password.text())
         settings.setValue("advanced/auto_auth", "true" if self.auto_auth.currentIndex() == 1 else "false")
         settings.setValue("advanced/save_history", "true" if self.save_history.currentIndex() == 1 else "false")
         settings.setValue("advanced/history_limit", self.history_limit.currentText())
@@ -4103,9 +4136,6 @@ class SettingsDialog(QDialog):
         settings.setValue("ai/endpoint", self.ai_endpoint.text().strip())
         settings.setValue("ai/model", self.ai_model.text().strip())
         settings.setValue("ai/allow_external", "true" if self.ai_allow_external.isChecked() else "false")
-        if self.ai_api_key.text():
-            secure_store("ai_api_key", self.ai_api_key.text())
-        
         super().accept()
 
 
@@ -4526,9 +4556,11 @@ class OperationsDialog(QDialog):
         self.role_choice = QComboBox(); self.role_choice.addItem(self.tr("Administrator"), "admin"); self.role_choice.addItem(self.tr("Analyst"), "analyst"); self.role_choice.addItem(self.tr("Read only"), "readonly")
         self.role_choice.setCurrentIndex(max(0, self.role_choice.findData(self.settings.value("access/role", "admin"))))
         self.alert_threshold = QLineEdit(str(self.settings.value("monitoring/error_threshold", "10")))
-        self.webhook_url = QLineEdit(str(self.settings.value("automation/webhook_url", ""))); self.webhook_url.setPlaceholderText("https://hooks.example.invalid/...")
+        self.webhook_url = QLineEdit(secure_webhook_endpoint(self.settings)); self.webhook_url.setPlaceholderText("https://hooks.example.invalid/..."); self.webhook_url.setEchoMode(QLineEdit.EchoMode.Password)
+        self.webhook_visible = QCheckBox(self.tr("Show webhook endpoint")); self.webhook_visible.toggled.connect(lambda visible: self.webhook_url.setEchoMode(QLineEdit.EchoMode.Normal if visible else QLineEdit.EchoMode.Password))
+        webhook_editor = QWidget(); webhook_editor_layout = QHBoxLayout(webhook_editor); webhook_editor_layout.setContentsMargins(0, 0, 0, 0); webhook_editor_layout.addWidget(self.webhook_url, 1); webhook_editor_layout.addWidget(self.webhook_visible)
         self.plugin_path = QLineEdit(str(self.settings.value("automation/local_plugin", ""))); self.plugin_path.setPlaceholderText(self.tr("Absolute path to a reviewed local Python automation"))
-        governance_layout.addRow(self.tr("Local role:"), self.role_choice); governance_layout.addRow(self.tr("Alert threshold (errors):"), self.alert_threshold); governance_layout.addRow(self.tr("Webhook endpoint (disabled until approved):"), self.webhook_url); governance_layout.addRow(self.tr("Local automation:"), self.plugin_path)
+        governance_layout.addRow(self.tr("Local role:"), self.role_choice); governance_layout.addRow(self.tr("Alert threshold (errors):"), self.alert_threshold); governance_layout.addRow(self.tr("Webhook endpoint (stored in system keychain):"), webhook_editor); governance_layout.addRow(self.tr("Local automation:"), self.plugin_path)
         governance_save = QPushButton(self.tr("Save governance settings")); governance_save.clicked.connect(self.save_governance); governance_layout.addRow(governance_save)
         governance_note = QLabel(self.tr("Read-only mode blocks write requests and local automation. Every webhook or local automation execution requires explicit approval.")); governance_note.setWordWrap(True); governance_layout.addRow(governance_note)
         self.tabs.addTab(governance_page, self.tr("Governance"))
@@ -4547,7 +4579,10 @@ class OperationsDialog(QDialog):
         copy_preview = QPushButton(self.tr("Copy reviewed command")); copy_preview.clicked.connect(self.copy_integration_preview); integration_buttons.addWidget(copy_preview, 1, 2)
         webhook_alerts = QPushButton(self.tr("Send current masked alerts")); webhook_alerts.clicked.connect(self.send_webhook_alerts); integration_buttons.addWidget(webhook_alerts, 1, 3)
         for column in range(4): integration_buttons.setColumnStretch(column, 1)
-        integrations_layout.addLayout(integration_buttons); self.tabs.addTab(integrations_page, self.tr("Integrations"))
+        integrations_layout.addLayout(integration_buttons)
+        integrations_layout.addWidget(QLabel(self.tr("Webhook delivery history")))
+        self.webhook_history = QTableWidget(0, 4); self.webhook_history.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Delivery"), self.tr("Status"), self.tr("Details")]); self.webhook_history.horizontalHeader().setStretchLastSection(True); self.webhook_history.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.webhook_history.setMaximumHeight(180); integrations_layout.addWidget(self.webhook_history)
+        self.tabs.addTab(integrations_page, self.tr("Integrations"))
 
         audit_page = QWidget(); audit_layout = QVBoxLayout(audit_page)
         self.audit_timeline = QTableWidget(0, 3); self.audit_timeline.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Event"), self.tr("Details")]); self.audit_timeline.horizontalHeader().setStretchLastSection(True); self.audit_timeline.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); audit_layout.addWidget(self.audit_timeline)
@@ -4639,7 +4674,7 @@ class OperationsDialog(QDialog):
         self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
-        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report(); self.refresh_schedules(); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_webhook_history(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report(); self.refresh_schedules(); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
 
     def _apply_operations_mode(self):
         """Keep basic mode focused on situational awareness and investigation."""
@@ -5060,7 +5095,9 @@ class OperationsDialog(QDialog):
             QMessageBox.warning(self, self.tr("Governance"), self.tr("Webhook endpoints must use HTTPS (or local HTTP) and must not contain credentials in the URL.")); return
         self.settings.setValue("access/role", self.role_choice.currentData())
         self.settings.setValue("monitoring/error_threshold", str(threshold))
-        self.settings.setValue("automation/webhook_url", webhook_endpoint)
+        if not secure_store(WEBHOOK_CREDENTIAL_KEY, webhook_endpoint):
+            QMessageBox.warning(self, self.tr("Secure storage"), self.tr("The system keychain could not save the webhook endpoint. Check the keychain service and try again.")); return
+        self.settings.remove("automation/webhook_url")
         self.settings.setValue("automation/local_plugin", automation_path)
         AuditTrail(self.settings).append("governance_updated", {"role": self.role_choice.currentData(), "threshold": threshold, "webhook_configured": bool(webhook_endpoint), "plugin_configured": bool(automation_path)})
         QMessageBox.information(self, self.tr("Governance"), self.tr("Governance settings saved."))
@@ -5071,6 +5108,24 @@ class OperationsDialog(QDialog):
         self.integration_status.setRowCount(len(tools))
         for row, (name, available, use) in enumerate(tools):
             self.integration_status.setItem(row, 0, QTableWidgetItem(name)); self.integration_status.setItem(row, 1, QTableWidgetItem(self.tr("Available") if available else self.tr("Not installed"))); self.integration_status.setItem(row, 2, QTableWidgetItem(use))
+
+    def refresh_webhook_history(self):
+        """Render only redacted webhook audit metadata; endpoint paths never appear."""
+        events = [event for event in reversed(AuditTrail(self.settings).events()) if str(event.get("action", "")).startswith("webhook_")][:100]
+        labels = {"test": self.tr("Connectivity test"), "alerts": self.tr("Alert snapshot")}
+        states = {"started": self.tr("Started"), "completed": self.tr("Succeeded"), "failed": self.tr("Failed")}
+        colors = {"started": "#38bdf8", "completed": "#22c55e", "failed": "#ef4444"}
+        self.webhook_history.setRowCount(len(events))
+        for row, event in enumerate(events):
+            parts = str(event.get("action", "")).split("_")
+            kind = parts[1] if len(parts) > 2 else "unknown"; state = parts[-1] if parts else "unknown"
+            details = redact_sensitive(event.get("details", {}))
+            values = (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(event.get("timestamp", 0))), labels.get(kind, kind), states.get(state, state), json.dumps(details, ensure_ascii=False))
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(str(value))
+                if column == 2:
+                    item.setForeground(QColor(colors.get(state, "#94a3b8"))); font = item.font(); font.setBold(True); item.setFont(font)
+                self.webhook_history.setItem(row, column, item)
 
     def prepare_integration(self, kind):
         commands = {
@@ -5174,7 +5229,7 @@ class OperationsDialog(QDialog):
         self._send_webhook_delivery(self._webhook_alert_payload(), "alerts", self.tr("Send the current masked local alert snapshot to the configured webhook endpoint?"))
 
     def _send_webhook_delivery(self, payload, kind, confirmation):
-        endpoint, error = validate_webhook_endpoint(str(self.settings.value("automation/webhook_url", "")))
+        endpoint, error = validate_webhook_endpoint(secure_webhook_endpoint(self.settings))
         if endpoint is None:
             message = self.tr("Configure a webhook endpoint in Governance first.") if error == "missing" else self.tr("Webhook endpoints must use HTTPS (or local HTTP) and must not contain credentials in the URL.")
             QMessageBox.warning(self, self.tr("Webhook delivery"), message); return
@@ -5195,16 +5250,19 @@ class OperationsDialog(QDialog):
         self.webhook_worker.failed.connect(self._on_webhook_failed)
         self.webhook_worker.start()
         AuditTrail(self.settings).append(f"webhook_{kind}_started", {"endpoint_host": parsed.hostname or "", "payload_bytes": len(json.dumps(safe_payload).encode("utf-8"))})
+        self.refresh_webhook_history(); self.refresh_audit()
 
     def _on_webhook_completed(self, status):
         kind = getattr(self, "_webhook_delivery_kind", "unknown")
         AuditTrail(self.settings).append(f"webhook_{kind}_completed", {"status": status})
+        self.refresh_webhook_history(); self.refresh_audit()
         QMessageBox.information(self, self.tr("Webhook delivery"), self.tr("Masked webhook delivery succeeded (HTTP {status}).").format(status=status))
 
     def _on_webhook_failed(self, error):
         kind = getattr(self, "_webhook_delivery_kind", "unknown")
         safe_error = redact_sensitive(error)
         AuditTrail(self.settings).append(f"webhook_{kind}_failed", {"error": safe_error})
+        self.refresh_webhook_history(); self.refresh_audit()
         QMessageBox.warning(self, self.tr("Webhook delivery"), self.tr("Masked webhook delivery failed: {error}").format(error=safe_error))
 
     def refresh_audit(self):
