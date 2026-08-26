@@ -2355,11 +2355,15 @@ class ApiWorker(QThread):
                         "_headers": response_headers,
                         "_raw_text": response_text,
                     }
-                if isinstance(parsed, dict):
-                    parsed["_status_code"] = status_code
-                    parsed["_reason"] = reason
-                    parsed["_size"] = response_size
-                    parsed["_headers"] = response_headers
+                if not isinstance(parsed, dict):
+                    # Retain metadata without changing the payload displayed in
+                    # the response view; list APIs are a common Zscaler shape.
+                    return {"_payload": parsed, "_status_code": status_code, "_reason": reason,
+                            "_size": response_size, "_headers": response_headers}
+                parsed["_status_code"] = status_code
+                parsed["_reason"] = reason
+                parsed["_size"] = response_size
+                parsed["_headers"] = response_headers
                 return parsed
         except urllib.error.HTTPError as e:
             error_body = ""
@@ -6590,11 +6594,13 @@ class MainWindow(QMainWindow):
             
             if res["success"]:
                 # Extract metadata from response
-                status_code = res["data"].pop("_status_code", 200) if isinstance(res["data"], dict) else 200
-                reason = res["data"].pop("_reason", "OK") if isinstance(res["data"], dict) else "OK"
-                resp_size = res["data"].pop("_size", 0) if isinstance(res["data"], dict) else 0
-                response_headers = res["data"].pop("_headers", {}) if isinstance(res["data"], dict) else {}
-                raw_text = res["data"].pop("_raw_text", None) if isinstance(res["data"], dict) else None
+                response_data = res["data"]
+                status_code = response_data.pop("_status_code", 200) if isinstance(response_data, dict) else 200
+                reason = response_data.pop("_reason", "OK") if isinstance(response_data, dict) else "OK"
+                resp_size = response_data.pop("_size", 0) if isinstance(response_data, dict) else 0
+                response_headers = response_data.pop("_headers", {}) if isinstance(response_data, dict) else {}
+                raw_text = response_data.pop("_raw_text", None) if isinstance(response_data, dict) else None
+                payload = response_data.pop("_payload", response_data) if isinstance(response_data, dict) else response_data
                 size_str = self._format_size(resp_size)
                 safe_response_headers = {
                     key: "***" if is_sensitive_name(key) else redact_sensitive(value)
@@ -6628,7 +6634,7 @@ class MainWindow(QMainWindow):
                 # Keep response values available only in memory for the active
                 # request flow.  The UI, visualizations and later exports must
                 # never expose credential-like fields from auth or API replies.
-                display_data = redact_sensitive(res["data"])
+                display_data = redact_sensitive(payload)
                 if raw_text is not None:
                     self.response_body.setPlainText(redact_sensitive(raw_text))
                 elif self.pretty_print_enabled:
@@ -6637,7 +6643,7 @@ class MainWindow(QMainWindow):
                     self.response_body.setPlainText(json.dumps(display_data, separators=(',', ':')))
                 self._show_ai_visualization(display_data)
                 self._render_response_visualization(display_data)
-                if self.graphql_mode.isChecked() and isinstance(res["data"], dict):
+                if self.graphql_mode.isChecked() and isinstance(payload, dict):
                     self._show_graphql_output(display_data)
                     if getattr(self, "_graphql_introspection_pending", False):
                         self._save_graphql_introspection(self.url_input.text().strip(), display_data)
@@ -6647,14 +6653,14 @@ class MainWindow(QMainWindow):
                 
                 # Check for session token in response
                 api_type = self._current_api_type()
-                if isinstance(res["data"], dict):
-                    if "authCookie" in res["data"]:
-                        self.zia_session = res["data"]["authCookie"]
+                if isinstance(payload, dict):
+                    if "authCookie" in payload:
+                        self.zia_session = payload["authCookie"]
                         self.status_bar.showMessage(self.tr("ZIA authenticated successfully"))
                         self._log_output("ZIA session established", "success")
                         self._update_auth_indicators()
-                    elif "access_token" in res["data"] or "token" in res["data"]:
-                        token = res["data"].get("access_token") or res["data"].get("token")
+                    elif "access_token" in payload or "token" in payload:
+                        token = payload.get("access_token") or payload.get("token")
                         # Set token for the correct API type
                         if api_type == "ZPA":
                             self.zpa_token = token

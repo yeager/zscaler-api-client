@@ -100,6 +100,26 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(429, results[0]["results"][0]["status_code"])
         self.assertEqual(201, client.api_result_status({"success": True, "data": {"_status_code": 201}}))
 
+    def test_api_worker_preserves_metadata_for_list_response(self):
+        response = MagicMock(); response.read.return_value = b'[{"name":"Ada"}]'; response.status = 206; response.reason = "Partial Content"; response.headers.items.return_value = [("X-Request-ID", "abc")]
+        with patch.object(client, "build_network_opener") as opener:
+            opener.return_value.open.return_value.__enter__.return_value = response
+            result = client.ApiWorker([])._make_request({"url": "https://example.test", "method": "GET"})
+        self.assertEqual([{"name": "Ada"}], result["_payload"])
+        self.assertEqual(206, result["_status_code"])
+        self.assertEqual({"X-Request-ID": "abc"}, result["_headers"])
+
+    def test_list_response_keeps_status_headers_and_visible_payload(self):
+        self.window._pending_request = {"method": "GET", "url": "https://example.test", "headers": {}, "body": None, "start_time": 0}
+        self.window._on_request_finished({"results": [{"success": True, "data": {
+            "_payload": [{"name": "Ada"}], "_status_code": 206, "_reason": "Partial Content",
+            "_size": 16, "_headers": {"X-Request-ID": "abc"},
+        }}]})
+        self.assertIn("206 Partial Content", self.window.response_info.text())
+        self.assertIn("Ada", self.window.response_body.toPlainText())
+        self.assertIn("X-Request-ID: abc", self.window.response_headers.toPlainText())
+        self.assertEqual(206, self.window.request_history[-1]["status"])
+
     def test_failed_request_history_retains_http_status(self):
         self.window._pending_request = {"method": "GET", "url": "https://example.test", "headers": {}, "body": None, "start_time": 0}
         self.window._on_request_finished({"results": [{"success": False, "status_code": 429, "error": "HTTP 429: throttled"}]})
