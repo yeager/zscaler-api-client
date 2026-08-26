@@ -424,6 +424,14 @@ SWEDISH_REVIEW.update({
     "Created a non-executable Terraform review handoff. Run terraformer and terraform plan only after independent review; this client never applies it.": "Skapade ett icke körbart Terraform-underlag för granskning. Kör terraformer och terraform plan först efter oberoende granskning; klienten tillämpar det aldrig.",
 })
 
+SWEDISH_REVIEW.update({
+    "Inspect the complete current REST or GraphQL response for explicit internet exposure, vulnerability severity and broad or write-capable access. Findings are local hypotheses and deception suggestions are never deployed automatically.": "Granska hela det aktuella REST- eller GraphQL-svaret efter uttrycklig internetexponering, sårbarhetsgrad och bred eller skrivbar åtkomst. Fynden är lokala hypoteser och deception-förslag driftsätts aldrig automatiskt.",
+    "Exposure signals": "Exponeringssignaler", "High-risk assets": "Högrisktillgångar", "Access findings": "Åtkomstfynd", "Broad privileges": "Breda behörigheter", "Asset": "Tillgång", "Risk score": "Riskpoäng", "Observed factors": "Observerade faktorer", "Subject": "Subjekt", "Permission field": "Behörighetsfält", "Defensive deception opportunities": "Defensiva deception-möjligheter",
+    "Analyze current exposure and access": "Analysera aktuell exponering och åtkomst", "Export masked exposure evidence": "Exportera maskerat exponeringsunderlag", "Investigation notebook": "Utredningsanteckningar", "Note title": "Anteckningsrubrik", "Comma-separated tags": "Kommaseparerade taggar", "Masked investigation observations, decisions and follow-up": "Maskerade utredningsobservationer, beslut och uppföljning", "Save local note": "Spara lokal anteckning", "Export masked notebook": "Exportera maskerade anteckningar", "Title": "Rubrik", "Tags": "Taggar", "Preview": "Förhandsvisning", "Exposure & access": "Exponering och åtkomst",
+    "Explicit broad or write-capable access observed; validate least privilege and assignment context.": "Uttrycklig bred eller skrivbar åtkomst observerades; validera minsta behörighet och tilldelningskontext.", "Consider a monitored decoy resource near exposed paths": "Överväg en övervakad skenresurs nära exponerade sökvägar", "Consider a non-production canary permission for privileged-path monitoring": "Överväg en icke-produktionsbaserad kanariebehörighet för övervakning av privilegierade sökvägar", "Maintain an exposure and least-privilege baseline": "Underhåll en baslinje för exponering och minsta behörighet", "Suggestion only; design and approve it in authoritative security and governance tooling.": "Endast ett förslag; utforma och godkänn det i auktoritativa säkerhets- och styrningsverktyg.",
+    "Select one environment before saving an investigation note.": "Välj en miljö innan en utredningsanteckning sparas.", "Notebook title and body are required": "Anteckningsrubrik och innehåll krävs",
+})
+
 
 def protect(text: str) -> tuple[str, list[str]]:
     values: list[str] = []

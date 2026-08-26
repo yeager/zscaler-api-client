@@ -1440,6 +1440,22 @@ class MainWindowTests(unittest.TestCase):
         finally:
             settings.remove("ui/mode") if previous_mode is None else settings.setValue("ui/mode", previous_mode)
 
+    def test_exposure_access_and_notebook_use_full_response_with_mode_controls(self):
+        settings = client.QSettings("Zscaler", "APIClient"); saved = {key: settings.value(key, None) for key in ("ui/mode", "investigation/notebook")}; previous_exchange = getattr(self.window, "_last_response_exchange", None)
+        try:
+            settings.setValue("ui/mode", "basic"); settings.remove("investigation/notebook")
+            self.window._last_response_exchange = {"response": {"body": {"data": {"applications": [{"name": "Payroll", "internetFacing": True, "severity": "high", "owners": [{"email": "owner@example.test", "roles": ["SuperAdmin"]}]}]}}}}
+            dialog = client.OperationsDialog(self.window); self.assertTrue(dialog.tabs.isTabVisible(dialog.exposure_tab_index)); self.assertTrue(dialog.notebook_group.isHidden()); self.assertGreater(int(dialog.exposure_cards["exposed_assets"].text()), 0); self.assertEqual("1", dialog.exposure_cards["high_permissions"].text()); dialog.close()
+            settings.setValue("ui/mode", "advanced"); dialog = client.OperationsDialog(self.window); self.assertFalse(dialog.notebook_group.isHidden()); dialog.note_title.setText("Incident"); dialog.note_body.setPlainText("Authorization: Bearer hidden"); dialog.note_tags.setText("soc, priority"); dialog.save_investigation_note(); self.assertEqual(1, dialog.note_table.rowCount())
+            with TemporaryDirectory() as output_dir:
+                destination = str(Path(output_dir) / "notebook.json")
+                with patch.object(client.QFileDialog, "getSaveFileName", return_value=(destination, "JSON (*.json)")): dialog.export_investigation_notebook()
+                self.assertNotIn("hidden", Path(destination).read_text(encoding="utf-8"))
+            dialog.close()
+        finally:
+            self.window._last_response_exchange = previous_exchange
+            for key, value in saved.items(): settings.remove(key) if value is None else settings.setValue(key, value)
+
     def test_operations_change_control_prepares_a_local_review(self):
         dialog = client.OperationsDialog(self.window)
         dialog.before_policy.setPlainText('{"rules": []}')

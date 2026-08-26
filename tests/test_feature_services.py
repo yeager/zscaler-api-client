@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, exposure_access_analysis, investigation_note
 
 
 class MemorySettings:
@@ -87,6 +87,17 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertFalse(manifest["writes_enabled"]); self.assertFalse(manifest["network_execution_enabled"])
         handoff = terraform_review_handoff({"client_secret": "hidden", "rules": []})
         self.assertEqual({"README.txt", "manifest.json", "source-policy.json"}, set(handoff)); self.assertNotIn("hidden", json.dumps(handoff)); self.assertFalse(json.loads(handoff["manifest.json"])["apply_enabled"])
+
+    def test_exposure_and_access_analysis_uses_full_nested_response(self):
+        response = {"data": {"applications": [{"name": "Payroll", "internetFacing": True, "severity": "high", "owners": [{"email": "owner@example.test", "roles": ["SuperAdmin", "Read"]}]}]}}
+        result = exposure_access_analysis(response)
+        self.assertGreaterEqual(result["summary"]["exposed_assets"], 1); self.assertEqual(1, result["summary"]["high_permissions"])
+        self.assertTrue(result["deception_recommendations"]); self.assertIn("human approval", result["disclaimer"])
+
+    def test_investigation_note_is_bounded_masked_and_tenant_scoped(self):
+        note = investigation_note("Incident", "Authorization: Bearer hidden", ["soc", "priority"], {"environment_id": "tenant-a", "environment": "Tenant A"})
+        self.assertNotIn("hidden", json.dumps(note)); self.assertEqual("tenant-a", note["scope"]["environment_id"]); self.assertEqual(24, len(note["note_id"]))
+        with self.assertRaises(ValueError): investigation_note("", "", [])
 
     def test_policy_diff_masks_sensitive_values(self):
         changes = policy_diff({"client_secret": "secret"}, {"client_secret": "other"})

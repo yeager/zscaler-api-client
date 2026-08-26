@@ -59,7 +59,7 @@ try:
     import pyqtgraph as pg
 except (ImportError, OSError):  # Keep source checkouts usable with the minimal Qt stack.
     pg = None
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, PLAYBOOK_TEMPLATES, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, exposure_access_analysis, investigation_note, PLAYBOOK_TEMPLATES, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from evidence_signing import generate_private_key, public_key, sign_evidence, verify_evidence
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
@@ -6316,6 +6316,21 @@ class OperationsDialog(QDialog):
         export_journey = QPushButton(self.tr("Export masked journey")); export_journey.clicked.connect(self.export_experience_journey); journey_actions.addWidget(export_journey); journey_actions.addStretch(); journey_layout.addLayout(journey_actions)
         self.journey_tab_index = self.tabs.addTab(journey_page, self.tr("Experience journey"))
 
+        exposure_page = QWidget(); exposure_layout = QVBoxLayout(exposure_page)
+        exposure_intro = QLabel(self.tr("Inspect the complete current REST or GraphQL response for explicit internet exposure, vulnerability severity and broad or write-capable access. Findings are local hypotheses and deception suggestions are never deployed automatically.")); exposure_intro.setWordWrap(True); exposure_layout.addWidget(exposure_intro)
+        exposure_cards = QGridLayout(); self.exposure_cards = {}
+        for column, (key, label) in enumerate((("exposed_assets", self.tr("Exposure signals")), ("high_risk_assets", self.tr("High-risk assets")), ("permission_findings", self.tr("Access findings")), ("high_permissions", self.tr("Broad privileges")))):
+            card = QFrame(); card.setObjectName("metricCard"); card_layout = QVBoxLayout(card); heading = QLabel(label); heading.setObjectName("mutedLabel"); card_layout.addWidget(heading); value = QLabel("—"); value.setObjectName("sectionTitle"); card_layout.addWidget(value); self.exposure_cards[key] = value; exposure_cards.addWidget(card, 0, column)
+        exposure_layout.addLayout(exposure_cards)
+        exposure_split = QSplitter(Qt.Orientation.Horizontal)
+        self.exposure_assets = QTableWidget(0, 4); self.exposure_assets.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Asset"), self.tr("Risk score"), self.tr("Observed factors")]); self.exposure_assets.horizontalHeader().setStretchLastSection(True); self.exposure_assets.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); exposure_split.addWidget(self.exposure_assets)
+        self.permission_findings = QTableWidget(0, 4); self.permission_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Subject"), self.tr("Permission field"), self.tr("Explanation")]); self.permission_findings.horizontalHeader().setStretchLastSection(True); self.permission_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); exposure_split.addWidget(self.permission_findings); exposure_layout.addWidget(exposure_split)
+        exposure_layout.addWidget(QLabel(self.tr("Defensive deception opportunities"))); self.deception_recommendations = QPlainTextEdit(); self.deception_recommendations.setReadOnly(True); self.deception_recommendations.setMaximumHeight(115); exposure_layout.addWidget(self.deception_recommendations)
+        exposure_actions = QHBoxLayout(); analyze_exposure = QPushButton(self.tr("Analyze current exposure and access")); analyze_exposure.clicked.connect(self.refresh_exposure_analysis); exposure_actions.addWidget(analyze_exposure); export_exposure = QPushButton(self.tr("Export masked exposure evidence")); export_exposure.clicked.connect(self.export_exposure_analysis); exposure_actions.addWidget(export_exposure); exposure_actions.addStretch(); exposure_layout.addLayout(exposure_actions)
+        self.notebook_group = QGroupBox(self.tr("Investigation notebook")); notebook_layout = QVBoxLayout(self.notebook_group); notebook_form = QHBoxLayout(); self.note_title = QLineEdit(); self.note_title.setPlaceholderText(self.tr("Note title")); notebook_form.addWidget(self.note_title); self.note_tags = QLineEdit(); self.note_tags.setPlaceholderText(self.tr("Comma-separated tags")); notebook_form.addWidget(self.note_tags); notebook_layout.addLayout(notebook_form); self.note_body = QPlainTextEdit(); self.note_body.setPlaceholderText(self.tr("Masked investigation observations, decisions and follow-up")); self.note_body.setMaximumHeight(100); notebook_layout.addWidget(self.note_body)
+        note_actions = QHBoxLayout(); save_note = QPushButton(self.tr("Save local note")); save_note.clicked.connect(self.save_investigation_note); note_actions.addWidget(save_note); export_notes = QPushButton(self.tr("Export masked notebook")); export_notes.clicked.connect(self.export_investigation_notebook); note_actions.addWidget(export_notes); note_actions.addStretch(); notebook_layout.addLayout(note_actions); self.note_table = QTableWidget(0, 4); self.note_table.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Title"), self.tr("Tags"), self.tr("Preview")]); self.note_table.horizontalHeader().setStretchLastSection(True); self.note_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.note_table.setMaximumHeight(145); notebook_layout.addWidget(self.note_table); exposure_layout.addWidget(self.notebook_group)
+        self.exposure_tab_index = self.tabs.addTab(exposure_page, self.tr("Exposure & access")); self._last_exposure_analysis = {}; self.refresh_exposure_analysis(record_audit=False); self.refresh_investigation_notes()
+
         detection_page = QWidget(); detection_layout = QVBoxLayout(detection_page)
         detection_intro = QLabel(self.tr("Build and test explainable detections against retained local request history. Rules use a bounded declarative grammar—no Python, eval, tenant writes, network calls, or automatic remediation.")); detection_intro.setWordWrap(True); detection_layout.addWidget(detection_intro)
         detection_controls = QHBoxLayout(); detection_controls.addWidget(QLabel(self.tr("Template:"))); self.detection_template = QComboBox()
@@ -6482,6 +6497,7 @@ class OperationsDialog(QDialog):
         self.investigation_views.setTabVisible(self.soc_signals_tab_index, not basic)
         self.assurance_save_baseline.setVisible(not basic); self.assurance_sign.setVisible(not basic); self.assurance_verify.setVisible(not basic)
         self.api_planner_group.setVisible(not basic)
+        self.notebook_group.setVisible(not basic)
 
     def configure_local_monitor(self, enabled=None, record_audit=True):
         """Refresh local views on a user-approved timer; it never sends API calls."""
@@ -6498,7 +6514,7 @@ class OperationsDialog(QDialog):
 
     def refresh_local_signals(self):
         """Update visualizations from retained local data only."""
-        self.refresh_dashboard(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.refresh_experience_journey(record_audit=False); self.refresh_adaptive_anomalies(record_audit=False); self.refresh_assurance(record_audit=False); self.generate_report()
+        self.refresh_dashboard(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.refresh_experience_journey(record_audit=False); self.refresh_exposure_analysis(record_audit=False); self.refresh_investigation_notes(); self.refresh_adaptive_anomalies(record_audit=False); self.refresh_assurance(record_audit=False); self.generate_report()
 
     def _scope_id(self) -> str:
         return str(self.data_scope.currentData() or self.active_profile["id"])
@@ -6838,6 +6854,54 @@ class OperationsDialog(QDialog):
         else:
             Path(path).write_text(json.dumps(safe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"); format_name = "json"
         self._scope_audit().append("experience_journey_exported", {"format": format_name, "file": os.path.basename(path), "samples": safe["summary"]["samples"]})
+
+    def refresh_exposure_analysis(self, _checked=False, record_audit=True):
+        raw = exposure_access_analysis(self._current_response_body()); self._last_exposure_analysis = raw; data = privacy_safe(raw, self.settings, "display"); summary = data["summary"]
+        for key, widget in self.exposure_cards.items(): widget.setText(str(summary[key]))
+        self.exposure_cards["high_risk_assets"].setStyleSheet("color: #fb7185;" if summary["high_risk_assets"] else "color: #34d399;"); self.exposure_cards["high_permissions"].setStyleSheet("color: #fb7185;" if summary["high_permissions"] else "color: #34d399;")
+        self.exposure_assets.setRowCount(len(data["assets"]))
+        for row, item in enumerate(data["assets"]):
+            values = (self.tr(item["severity"].title()), item["label"], item["risk_score"], ", ".join(item["factors"]))
+            for column, value in enumerate(values): self.exposure_assets.setItem(row, column, self._severity_item(str(value), item["severity"]) if column == 0 else QTableWidgetItem(str(value)))
+        self.exposure_assets.resizeColumnsToContents(); self.permission_findings.setRowCount(len(data["permission_findings"]))
+        permission_explanation = self.tr("Explicit broad or write-capable access observed; validate least privilege and assignment context.")
+        for row, item in enumerate(data["permission_findings"]):
+            values = (self.tr(item["severity"].title()), item["subject"], item["field"], permission_explanation)
+            for column, value in enumerate(values): self.permission_findings.setItem(row, column, self._severity_item(str(value), item["severity"]) if column == 0 else QTableWidgetItem(str(value)))
+        self.permission_findings.resizeColumnsToContents()
+        deception_titles = {"canary_resource": self.tr("Consider a monitored decoy resource near exposed paths"), "honey_permission": self.tr("Consider a non-production canary permission for privileged-path monitoring"), "baseline": self.tr("Maintain an exposure and least-privilege baseline")}
+        self.deception_recommendations.setPlainText("\n".join(f"• {deception_titles.get(item['type'], item['title'])}\n  {self.tr('Suggestion only; design and approve it in authoritative security and governance tooling.')}" for item in data["deception_recommendations"]))
+        if record_audit: self._scope_audit().append("exposure_access_analyzed", summary)
+
+    def export_exposure_analysis(self):
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export masked exposure evidence"), "exposure-access-evidence.json", "JSON (*.json)")
+        if not path: return
+        safe = privacy_safe({**self._last_exposure_analysis, "scope": self._scope_metadata()}, self.settings, "export"); Path(path).write_text(json.dumps(safe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"); self._scope_audit().append("exposure_access_exported", {"file": os.path.basename(path), **safe["summary"]})
+
+    def _investigation_notes(self):
+        try: notes = json.loads(str(self.settings.value("investigation/notebook", "[]") or "[]"))
+        except (TypeError, ValueError): notes = []
+        return [item for item in notes if isinstance(item, dict) and item.get("schema") == "zs-api-client/investigation-note/v1" and item.get("note_id")]
+
+    def refresh_investigation_notes(self):
+        notes = [item for item in self._investigation_notes() if self._scope_id() == "*" or str(item.get("scope", {}).get("environment_id", "default")) == self._scope_id()]
+        display = privacy_safe(list(reversed(notes)), self.settings, "display"); self.note_table.setRowCount(len(display))
+        for row, note in enumerate(display):
+            values = (time.strftime("%Y-%m-%d %H:%M", time.localtime(int(note.get("created_at", 0)))), note["title"], ", ".join(note.get("tags", [])), str(note["body"])[:160])
+            for column, value in enumerate(values): self.note_table.setItem(row, column, QTableWidgetItem(str(value)))
+        self.note_table.resizeColumnsToContents()
+
+    def save_investigation_note(self):
+        if self._scope_id() == "*": QMessageBox.warning(self, self.tr("Investigation notebook"), self.tr("Select one environment before saving an investigation note.")); return
+        try: note = investigation_note(self.note_title.text(), self.note_body.toPlainText(), [item.strip() for item in self.note_tags.text().split(",")], self._scope_metadata())
+        except ValueError as exc: QMessageBox.warning(self, self.tr("Investigation notebook"), self.tr(str(exc))); return
+        notes = self._investigation_notes(); notes.append(note); self.settings.setValue("investigation/notebook", json.dumps(notes[-100:], ensure_ascii=False)); self.note_title.clear(); self.note_tags.clear(); self.note_body.clear(); self.refresh_investigation_notes(); self._scope_audit().append("investigation_note_saved", {"note_id": note["note_id"], "tags": note["tags"]})
+
+    def export_investigation_notebook(self):
+        notes = [item for item in self._investigation_notes() if self._scope_id() == "*" or str(item.get("scope", {}).get("environment_id", "default")) == self._scope_id()]
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export masked notebook"), "investigation-notebook.json", "JSON (*.json)")
+        if not path: return
+        safe = privacy_safe({"schema": "zs-api-client/investigation-notebook/v1", "scope": self._scope_metadata(), "notes": notes}, self.settings, "export"); Path(path).write_text(json.dumps(safe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"); self._scope_audit().append("investigation_notebook_exported", {"file": os.path.basename(path), "notes": len(notes)})
 
     def load_detection_template(self, _index=0):
         key = self.detection_template.currentData()

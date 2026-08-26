@@ -1454,6 +1454,72 @@ def terraform_review_handoff(policy: Any, scope: dict[str, Any] | None = None) -
     return {"README.txt": readme, "manifest.json": json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", "source-policy.json": json.dumps(safe_policy, indent=2, ensure_ascii=False) + "\n"}
 
 
+def exposure_access_analysis(response: Any, maximum_records: int = 5000) -> dict[str, Any]:
+    """Find explicit exposure and excessive-access signals in complete API trees."""
+    assets: list[dict[str, Any]] = []; permissions: list[dict[str, Any]] = []; visited = 0; truncated = False
+    high_words = {"admin", "administrator", "superadmin", "superuser", "owner", "root", "wildcard", "fullaccess", "all"}
+    write_words = {"write", "create", "update", "delete", "manage", "modify", "execute"}
+    public_fields = {"public", "internetfacing", "external", "externallyaccessible", "publiclyaccessible", "exposed"}
+    permission_fields = {"permission", "permissions", "privilege", "privileges", "role", "roles", "scope", "scopes", "access"}
+
+    def scalar_text(value: Any) -> str:
+        if isinstance(value, list): return " ".join(str(item) for item in value if not isinstance(item, (dict, list)))
+        return str(value) if not isinstance(value, dict) else ""
+
+    def walk(value: Any, path: tuple[str, ...] = ()) -> None:
+        nonlocal visited, truncated
+        if visited >= max(100, min(20000, int(maximum_records))) or len(path) > 12:
+            truncated = True; return
+        visited += 1
+        if isinstance(value, list):
+            for item in value[:2000]: walk(item, path)
+            if len(value) > 2000: truncated = True
+            return
+        if not isinstance(value, dict): return
+        record = mask(value); normalized = {_field_token(key): item for key, item in record.items()}
+        label = next((normalized[key] for key in ("displayname", "name", "email", "hostname", "fqdn", "url", "id") if key in normalized and not isinstance(normalized[key], (dict, list))), "/".join(path[-3:]) or "response")
+        factors = []; score = 0
+        for key, item in normalized.items():
+            truthy = item is True or str(item).casefold() in {"true", "yes", "public", "external", "internet"}
+            if key in public_fields and truthy: factors.append(f"{key}=true"); score += 35
+            if key in {"severity", "risk", "risklevel"} and str(item).casefold() in {"critical", "high"}: factors.append(f"{key}={item}"); score += 30
+            if key in {"cve", "vulnerability", "vulnerabilities", "threat", "malware"} and item not in (None, "", [], {}): factors.append(f"{key} observed"); score += 25
+        permission_values = []
+        for key, item in normalized.items():
+            if key in permission_fields or key.endswith(("permissions", "privileges", "roles", "scopes")):
+                text = scalar_text(item); tokens = {_field_token(token) for token in re.split(r"[^A-Za-z0-9*]+", text) if token}
+                if text: permission_values.append({"field": key, "value": text[:300]})
+                level = "high" if "*" in text or tokens & high_words else "medium" if tokens & write_words else "normal"
+                if level != "normal": permissions.append({"subject": str(label)[:160], "path": "/".join(path[-5:]), "severity": level, "field": key, "value": text[:300], "explanation": "Explicit broad or write-capable access observed; validate least privilege and assignment context."})
+                if level == "high": score += 25; factors.append("broad privilege")
+                elif level == "medium": score += 10; factors.append("write-capable privilege")
+        if factors:
+            kind = next((part for part in reversed(path) if part), "resource")
+            assets.append({"label": str(label)[:160], "type": str(kind)[:80], "path": "/".join(path[-5:]), "risk_score": min(100, score), "severity": "critical" if score >= 80 else "high" if score >= 55 else "medium", "factors": sorted(set(factors)), "permission_values": permission_values})
+        for key, item in record.items():
+            if isinstance(item, (dict, list)): walk(item, path + (str(key),))
+
+    walk(response, ("response",))
+    assets.sort(key=lambda item: (-item["risk_score"], item["label"].casefold())); permissions.sort(key=lambda item: ({"high": 0, "medium": 1}.get(item["severity"], 2), item["subject"].casefold()))
+    recommendations = []
+    if assets: recommendations.append({"type": "canary_resource", "title": "Consider a monitored decoy resource near exposed paths", "guardrail": "Design and approve in authoritative deception tooling; do not clone production identities or secrets."})
+    if any(item["severity"] == "high" for item in permissions): recommendations.append({"type": "honey_permission", "title": "Consider a non-production canary permission for privileged-path monitoring", "guardrail": "Use a dedicated non-human identity and alert-only controls after legal, privacy and change review."})
+    if not recommendations: recommendations.append({"type": "baseline", "title": "Maintain an exposure and least-privilege baseline", "guardrail": "Collect authoritative evidence before deploying any deception control."})
+    return {"assets": assets[:250], "permission_findings": permissions[:500], "deception_recommendations": recommendations,
+            "summary": {"exposed_assets": len(assets), "high_risk_assets": sum(1 for item in assets if item["severity"] in {"critical", "high"}), "permission_findings": len(permissions), "high_permissions": sum(1 for item in permissions if item["severity"] == "high")},
+            "truncated": truncated, "disclaimer": "Local schema-tolerant signal extraction only. Exposure, privilege and deception decisions require authoritative product context and human approval."}
+
+
+def investigation_note(title: str, body: str, tags: Iterable[str], scope: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Create a bounded masked notebook entry safe for local persistence."""
+    safe_title = str(mask(title)).strip()[:160]; safe_body = str(mask(body)).strip()[:20000]
+    safe_tags = [str(mask(tag)).strip()[:40] for tag in list(tags)[:20] if str(tag).strip()]
+    if not safe_title or not safe_body: raise ValueError("Notebook title and body are required")
+    entry = {"schema": "zs-api-client/investigation-note/v1", "created_at": int(time.time()), "title": safe_title, "body": safe_body, "tags": safe_tags, "scope": mask(scope or environment_scope_metadata("default", "Default"))}
+    entry["note_id"] = hashlib.sha256(canonical(entry).encode("utf-8")).hexdigest()[:24]
+    return entry
+
+
 def validate_request_chain(steps: Any, maximum: int = 20) -> dict[str, Any]:
     """Validate an explicit API chain before the UI considers execution."""
     if not isinstance(steps, list) or not steps:
