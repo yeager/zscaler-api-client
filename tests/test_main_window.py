@@ -682,7 +682,40 @@ class MainWindowTests(unittest.TestCase):
         payload = dialog._webhook_payload()
         self.assertEqual("connectivity_test", payload["event"])
         self.assertNotIn("hidden", json.dumps(payload))
+        alert_payload = dialog._webhook_alert_payload()
+        self.assertEqual("local_alert_snapshot", alert_payload["event"])
+        self.assertNotIn("hidden", json.dumps(alert_payload))
+        self.assertEqual("https://hooks.example.test/events", client.validate_webhook_endpoint("https://hooks.example.test/events")[0])
+        self.assertEqual("http://localhost:8080/events", client.validate_webhook_endpoint("http://localhost:8080/events")[0])
+        self.assertIsNone(client.validate_webhook_endpoint("https://hooks.example.test/events?token=hidden")[0])
         dialog.close()
+
+    def test_webhook_alert_delivery_is_approved_and_does_not_follow_redirects(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("automation/webhook_url", None)
+        try:
+            settings.setValue("automation/webhook_url", "https://hooks.example.test/alerts")
+            dialog = client.OperationsDialog(self.window)
+            with patch.object(client.QMessageBox, "question", return_value=client.QMessageBox.StandardButton.Yes), \
+                 patch.object(client, "LlmWorker") as worker_type:
+                dialog.send_webhook_alerts()
+            send = worker_type.call_args.args[0]
+            opener = MagicMock(); response = MagicMock(); response.status = 202
+            opener.open.return_value.__enter__.return_value = response
+            with patch.object(client, "build_network_opener", return_value=opener) as build_opener:
+                self.assertEqual("202", send())
+            self.assertFalse(build_opener.call_args.kwargs["allow_redirects"])
+            request = opener.open.call_args.args[0]
+            sent = json.loads(request.data.decode("utf-8"))
+            self.assertEqual("local_alert_snapshot", sent["event"])
+            self.assertNotIn("hidden", json.dumps(sent))
+            worker_type.return_value.start.assert_called_once()
+            dialog.close()
+        finally:
+            if previous is None:
+                settings.remove("automation/webhook_url")
+            else:
+                settings.setValue("automation/webhook_url", previous)
 
     def test_local_automation_is_explicit_isolated_and_masked(self):
         settings = client.QSettings("Zscaler", "APIClient")

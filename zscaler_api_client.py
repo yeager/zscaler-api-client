@@ -142,6 +142,26 @@ def validate_local_automation_path(value: str) -> tuple[Path | None, str]:
         return None, "too_large"
     return resolved, ""
 
+
+def validate_webhook_endpoint(value: str) -> tuple[str | None, str]:
+    """Validate a user-approved webhook without allowing plaintext URL secrets."""
+    endpoint = str(value or "").strip()
+    if not endpoint:
+        return None, "missing"
+    try:
+        parsed = urllib.parse.urlsplit(endpoint)
+        _ = parsed.port
+    except ValueError:
+        return None, "invalid"
+    local = parsed.hostname in {"localhost", "127.0.0.1", "::1"}
+    if not parsed.hostname or (parsed.scheme != "https" and not (local and parsed.scheme == "http")):
+        return None, "scheme"
+    if parsed.username is not None or parsed.password is not None or parsed.fragment:
+        return None, "credentials"
+    if any(is_sensitive_name(key) for key, _ in urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)):
+        return None, "credentials"
+    return endpoint, ""
+
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
 _credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
@@ -191,10 +211,18 @@ def redact_url(url: str) -> str:
     return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, parts.fragment))
 
 
-def build_network_opener(settings: QSettings | None = None, ssl_context=None):
+class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Prevent approved webhook payloads from being redirected to another origin."""
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def build_network_opener(settings: QSettings | None = None, ssl_context=None, allow_redirects=True):
     """Create the shared network transport for API, AI, and update traffic."""
     settings = settings or QSettings("Zscaler", "APIClient")
     handlers = [urllib.request.HTTPSHandler(context=ssl_context)] if ssl_context else []
+    if not allow_redirects:
+        handlers.append(NoRedirectHandler())
     proxy_mode = str(settings.value("advanced/proxy_mode", "0"))
     if proxy_mode == "0":
         handlers.append(urllib.request.ProxyHandler({}))
@@ -4517,6 +4545,7 @@ class OperationsDialog(QDialog):
         webhook_test = QPushButton(self.tr("Send masked webhook test")); webhook_test.clicked.connect(self.send_webhook_test); integration_buttons.addWidget(webhook_test, 1, 0)
         local_automation = QPushButton(self.tr("Run reviewed local automation")); local_automation.clicked.connect(self.run_local_automation); integration_buttons.addWidget(local_automation, 1, 1)
         copy_preview = QPushButton(self.tr("Copy reviewed command")); copy_preview.clicked.connect(self.copy_integration_preview); integration_buttons.addWidget(copy_preview, 1, 2)
+        webhook_alerts = QPushButton(self.tr("Send current masked alerts")); webhook_alerts.clicked.connect(self.send_webhook_alerts); integration_buttons.addWidget(webhook_alerts, 1, 3)
         for column in range(4): integration_buttons.setColumnStretch(column, 1)
         integrations_layout.addLayout(integration_buttons); self.tabs.addTab(integrations_page, self.tr("Integrations"))
 
@@ -5026,11 +5055,14 @@ class OperationsDialog(QDialog):
         automation_path = self.plugin_path.text().strip()
         if automation_path and validate_local_automation_path(automation_path)[0] is None:
             QMessageBox.warning(self, self.tr("Governance"), self.tr("Local automation must be an existing absolute path to a non-symlinked .py file no larger than 1 MiB.")); return
+        webhook_endpoint = self.webhook_url.text().strip()
+        if webhook_endpoint and validate_webhook_endpoint(webhook_endpoint)[0] is None:
+            QMessageBox.warning(self, self.tr("Governance"), self.tr("Webhook endpoints must use HTTPS (or local HTTP) and must not contain credentials in the URL.")); return
         self.settings.setValue("access/role", self.role_choice.currentData())
         self.settings.setValue("monitoring/error_threshold", str(threshold))
-        self.settings.setValue("automation/webhook_url", self.webhook_url.text().strip())
+        self.settings.setValue("automation/webhook_url", webhook_endpoint)
         self.settings.setValue("automation/local_plugin", automation_path)
-        AuditTrail(self.settings).append("governance_updated", {"role": self.role_choice.currentData(), "threshold": threshold, "webhook_configured": bool(self.webhook_url.text().strip()), "plugin_configured": bool(automation_path)})
+        AuditTrail(self.settings).append("governance_updated", {"role": self.role_choice.currentData(), "threshold": threshold, "webhook_configured": bool(webhook_endpoint), "plugin_configured": bool(automation_path)})
         QMessageBox.information(self, self.tr("Governance"), self.tr("Governance settings saved."))
 
     def refresh_integrations(self):
@@ -5060,6 +5092,14 @@ class OperationsDialog(QDialog):
     def _webhook_payload(self):
         posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
         return {"source": "ZS API Client", "event": "connectivity_test", "timestamp": int(time.time()), "posture": {"score": posture["score"], "metrics": posture["metrics"]}}
+
+    def _webhook_alert_payload(self):
+        posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
+        return redact_sensitive({
+            "source": "ZS API Client", "event": "local_alert_snapshot", "timestamp": int(time.time()),
+            "posture": {"score": posture["score"], "metrics": posture["metrics"]},
+            "alerts": self._alert_data(),
+        })
 
     def _local_automation_payload(self):
         """Build the only data passed to local automation; credentials and raw responses are excluded."""
@@ -5128,33 +5168,44 @@ class OperationsDialog(QDialog):
             QMessageBox.warning(self, self.tr("Local automation"), self.tr("Local automation failed to start."))
 
     def send_webhook_test(self):
-        endpoint = str(self.settings.value("automation/webhook_url", "")).strip()
-        parsed = urllib.parse.urlsplit(endpoint)
-        local = parsed.hostname in {"localhost", "127.0.0.1", "::1"}
-        if not endpoint:
-            QMessageBox.warning(self, self.tr("Webhook test"), self.tr("Configure a webhook endpoint in Governance first.")); return
-        if parsed.scheme != "https" and not local:
-            QMessageBox.warning(self, self.tr("Webhook test"), self.tr("Webhook endpoints must use HTTPS unless they are local.")); return
-        if QMessageBox.question(self, self.tr("Webhook test"), self.tr("Send a masked connectivity test to the configured webhook endpoint?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
+        self._send_webhook_delivery(self._webhook_payload(), "test", self.tr("Send a masked connectivity test to the configured webhook endpoint?"))
+
+    def send_webhook_alerts(self):
+        self._send_webhook_delivery(self._webhook_alert_payload(), "alerts", self.tr("Send the current masked local alert snapshot to the configured webhook endpoint?"))
+
+    def _send_webhook_delivery(self, payload, kind, confirmation):
+        endpoint, error = validate_webhook_endpoint(str(self.settings.value("automation/webhook_url", "")))
+        if endpoint is None:
+            message = self.tr("Configure a webhook endpoint in Governance first.") if error == "missing" else self.tr("Webhook endpoints must use HTTPS (or local HTTP) and must not contain credentials in the URL.")
+            QMessageBox.warning(self, self.tr("Webhook delivery"), message); return
+        if hasattr(self, "webhook_worker") and self.webhook_worker.isRunning():
+            QMessageBox.information(self, self.tr("Webhook delivery"), self.tr("A webhook delivery is already running.")); return
+        safe_payload = redact_sensitive(payload)
+        self.integration_preview.setPlainText(json.dumps(safe_payload, indent=2, ensure_ascii=False))
+        if QMessageBox.question(self, self.tr("Webhook delivery"), confirmation, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
             return
-        payload = self._webhook_payload()
+        parsed = urllib.parse.urlsplit(endpoint)
         def send():
-            request = urllib.request.Request(endpoint, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
-            with build_network_opener(self.settings).open(request, timeout=10) as response:
+            request = urllib.request.Request(endpoint, data=json.dumps(safe_payload).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
+            with build_network_opener(self.settings, allow_redirects=False).open(request, timeout=10) as response:
                 return str(getattr(response, "status", 200))
+        self._webhook_delivery_kind = kind
         self.webhook_worker = LlmWorker(send)
-        self.webhook_worker.completed.connect(self._on_webhook_test_completed)
-        self.webhook_worker.failed.connect(self._on_webhook_test_failed)
+        self.webhook_worker.completed.connect(self._on_webhook_completed)
+        self.webhook_worker.failed.connect(self._on_webhook_failed)
         self.webhook_worker.start()
-        AuditTrail(self.settings).append("webhook_test_started", {"endpoint_host": parsed.hostname or ""})
+        AuditTrail(self.settings).append(f"webhook_{kind}_started", {"endpoint_host": parsed.hostname or "", "payload_bytes": len(json.dumps(safe_payload).encode("utf-8"))})
 
-    def _on_webhook_test_completed(self, status):
-        AuditTrail(self.settings).append("webhook_test_completed", {"status": status})
-        QMessageBox.information(self, self.tr("Webhook test"), self.tr("Masked webhook test succeeded (HTTP {status}).").format(status=status))
+    def _on_webhook_completed(self, status):
+        kind = getattr(self, "_webhook_delivery_kind", "unknown")
+        AuditTrail(self.settings).append(f"webhook_{kind}_completed", {"status": status})
+        QMessageBox.information(self, self.tr("Webhook delivery"), self.tr("Masked webhook delivery succeeded (HTTP {status}).").format(status=status))
 
-    def _on_webhook_test_failed(self, error):
-        AuditTrail(self.settings).append("webhook_test_failed", {"error": redact_sensitive(error)})
-        QMessageBox.warning(self, self.tr("Webhook test"), self.tr("Masked webhook test failed: {error}").format(error=redact_sensitive(error)))
+    def _on_webhook_failed(self, error):
+        kind = getattr(self, "_webhook_delivery_kind", "unknown")
+        safe_error = redact_sensitive(error)
+        AuditTrail(self.settings).append(f"webhook_{kind}_failed", {"error": safe_error})
+        QMessageBox.warning(self, self.tr("Webhook delivery"), self.tr("Masked webhook delivery failed: {error}").format(error=safe_error))
 
     def refresh_audit(self):
         trail = AuditTrail(self.settings)
