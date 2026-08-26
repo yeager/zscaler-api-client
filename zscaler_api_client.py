@@ -4625,6 +4625,14 @@ class MainWindow(QMainWindow):
         self.response_tabs = QTabWidget()
         self.response_tabs.addTab(self.response_body, self.tr("Body"))
         self.response_tabs.addTab(self.response_headers, self.tr("Headers"))
+        self.response_table = QTableWidget(0, 0)
+        self.response_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.response_tabs.addTab(self.response_table, self.tr("Table"))
+        self.response_chart = NumericBarChart()
+        self.response_tabs.addTab(self.response_chart, self.tr("Chart"))
+        self.response_tree = QTreeWidget()
+        self.response_tree.setHeaderLabel(self.tr("JSON structure"))
+        self.response_tabs.addTab(self.response_tree, self.tr("Tree"))
         self.graphql_schema_tree = QTreeWidget()
         self.graphql_schema_tree.setHeaderLabel(self.tr("GraphQL schema"))
         self.response_tabs.addTab(self.graphql_schema_tree, self.tr("Schema"))
@@ -5687,6 +5695,38 @@ class MainWindow(QMainWindow):
             "item": [{"name": f"{method} request (sanitized)", "request": request}],
         }
 
+    def _render_response_visualization(self, data: Any):
+        """Visualize masked REST/GraphQL JSON without hiding the raw response."""
+        safe = redact_sensitive(data)
+        self.response_tree.clear()
+        def add(parent, name, value):
+            item = QTreeWidgetItem([str(name), "" if isinstance(value, (dict, list)) else str(value)])
+            parent.addChild(item)
+            if isinstance(value, dict):
+                for key, child in value.items(): add(item, key, child)
+            elif isinstance(value, list):
+                for index, child in enumerate(value[:100]): add(item, f"[{index}]", child)
+        root = QTreeWidgetItem([self.tr("Response"), ""]); self.response_tree.addTopLevelItem(root); add(root, "data", safe); root.setExpanded(True)
+        rows = []
+        def find(value):
+            if isinstance(value, list) and any(isinstance(item, dict) for item in value): return value
+            if isinstance(value, dict):
+                for child in value.values():
+                    found = find(child)
+                    if found: return found
+            return []
+        rows = [item for item in find(safe) if isinstance(item, dict)]
+        columns = list(dict.fromkeys(key for row in rows[:100] for key in row))[:16]
+        self.response_table.setRowCount(min(100, len(rows))); self.response_table.setColumnCount(len(columns)); self.response_table.setHorizontalHeaderLabels(columns)
+        for row_index, row in enumerate(rows[:100]):
+            for column_index, column in enumerate(columns): self.response_table.setItem(row_index, column_index, QTableWidgetItem(str(row.get(column, ""))))
+        self.response_table.resizeColumnsToContents()
+        numeric = [key for key in columns if all(isinstance(row.get(key), (int, float)) and not isinstance(row.get(key), bool) for row in rows[:min(12, len(rows))])]
+        if numeric:
+            key = numeric[0]; labels = [str(row.get("name") or row.get("id") or index + 1) for index, row in enumerate(rows[:12])]
+            self.response_chart.set_values(list(zip(labels, [float(row[key]) for row in rows[:12]])))
+        else: self.response_chart.set_values([])
+
     def _show_ai_visualization(self, data: Any):
         """Render common API collections as a safe table for quick inspection."""
         def first_record_list(value: Any):
@@ -6043,6 +6083,7 @@ class MainWindow(QMainWindow):
                 else:
                     self.response_body.setPlainText(json.dumps(res["data"], separators=(',', ':')))
                 self._show_ai_visualization(res["data"])
+                self._render_response_visualization(res["data"])
                 if self.graphql_mode.isChecked() and isinstance(res["data"], dict):
                     self._show_graphql_output(res["data"])
                     if getattr(self, "_graphql_introspection_pending", False):
