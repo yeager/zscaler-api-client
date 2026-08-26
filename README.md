@@ -90,7 +90,7 @@ ZS API Client is built with security as a top priority:
 - **Self-contained visual reports** – Export an offline HTML leadership/SOC report with embedded artwork, responsive metric cards, severity styling, findings, evidence, and configured identifier obfuscation
 - **Local governance controls** – Administrator, analyst, and read-only roles; the latter blocks mutating API requests before they leave the client
 - **Redacted support bundles** – Create diagnostics archives without API credentials or sensitive request values
-- **Multi-language UI** – 20 language profiles, including Swedish, European languages, Arabic, Persian, Japanese, Korean, and Simplified Chinese
+- **Localization-ready UI** – Automatic system-language detection and a manual language selector covering 20 language profiles; English is the source language and Swedish is the currently shipped translation
 - **Light/Dark Themes** – Full theme support with system auto-detection
 - **Keyboard Shortcuts** – Efficient workflow with customizable shortcuts
 - **What's New Dialog** – See changes after each update
@@ -108,7 +108,7 @@ ZS API Client is built with security as a top priority:
 Get the latest release for your platform:
 - **macOS:** `ZS-API-Client-macos-x64.zip`
 - **Windows:** `ZS-API-Client-windows-x64.zip`
-- **Linux:** `ZS-API-Client-x.x.x-linux-x64.tar.gz`
+- **Linux:** `ZS-API-Client-linux-x64.tar.gz`
 
 👉 [Download Latest Release](https://github.com/yeager/zscaler-api-client/releases/latest)
 
@@ -120,7 +120,7 @@ cd zscaler-api-client
 
 # Install dependencies and compile application translations
 pip install -r requirements.txt
-python scripts/compile_translations.py
+python3 scripts/compile_translations.py
 
 # Run
 python zscaler_api_client.py
@@ -230,11 +230,31 @@ External threat discovery.
 | `Ctrl+Shift+R` | Copy Response |
 | `Ctrl+Q` | Quit |
 
-## 🌍 Languages
+## 🌍 Localization
 
-Change language via the **Language** menu:
+On first launch, **System default** follows the operating-system locale. A specific
+language can be selected later in **Settings → Language**; restart the application
+after changing it.
 
-🇬🇧 English • 🇸🇪 Svenska • 🇩🇪 Deutsch • 🇫🇷 Français • 🇪🇸 Español • 🇯🇵 日本語 • 🇨🇳 中文 • 🇮🇷 فارسی
+Release **v2.8.0** has the following localization status:
+
+| Status | Languages |
+|--------|-----------|
+| Complete source language | English |
+| Shipped translation (87.5% genuine coverage) | Swedish (`sv`) |
+| Translation catalogs in progress | Arabic, Czech, Danish, Dutch, Finnish, French, German, Hungarian, Italian, Japanese, Korean, Norwegian Bokmål, Persian, Polish, Portuguese (Brazil), Simplified Chinese, Spanish, Turkish |
+
+The application exposes all 20 language profiles, but untranslated text safely
+falls back to English. A catalog is compiled into a `.qm` file only when more than
+20% of its messages contain genuine translations. Generated `.qm` files are build
+artifacts and are intentionally not committed; CI creates them from the reviewable
+Qt `.ts` sources in [`translations/`](translations/).
+
+To inspect current coverage or build eligible catalogs locally:
+
+```bash
+python3 scripts/compile_translations.py
+```
 
 ## 📚 Documentation
 
