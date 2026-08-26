@@ -4298,6 +4298,7 @@ class OperationsDialog(QDialog):
         terraform_preview = QPushButton(self.tr("Prepare Terraform import")); terraform_preview.clicked.connect(lambda: self.prepare_integration("terraform")); integration_buttons.addWidget(terraform_preview)
         mcp_preview = QPushButton(self.tr("Prepare MCP connection")); mcp_preview.clicked.connect(lambda: self.prepare_integration("mcp")); integration_buttons.addWidget(mcp_preview)
         sdk_preview = QPushButton(self.tr("Prepare SDK configuration")); sdk_preview.clicked.connect(lambda: self.prepare_integration("sdk")); integration_buttons.addWidget(sdk_preview)
+        webhook_test = QPushButton(self.tr("Send masked webhook test")); webhook_test.clicked.connect(self.send_webhook_test); integration_buttons.addWidget(webhook_test)
         copy_preview = QPushButton(self.tr("Copy reviewed command")); copy_preview.clicked.connect(self.copy_integration_preview); integration_buttons.addWidget(copy_preview)
         integrations_layout.addLayout(integration_buttons); self.tabs.addTab(integrations_page, self.tr("Integrations"))
 
@@ -4572,6 +4573,39 @@ class OperationsDialog(QDialog):
         QApplication.clipboard().setText(preview)
         AuditTrail(self.settings).append("integration_command_copied", {})
         self.integration_preview.setToolTip(self.tr("Copied to clipboard"))
+
+    def _webhook_payload(self):
+        posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
+        return {"source": "ZS API Client", "event": "connectivity_test", "timestamp": int(time.time()), "posture": {"score": posture["score"], "metrics": posture["metrics"]}}
+
+    def send_webhook_test(self):
+        endpoint = str(self.settings.value("automation/webhook_url", "")).strip()
+        parsed = urllib.parse.urlsplit(endpoint)
+        local = parsed.hostname in {"localhost", "127.0.0.1", "::1"}
+        if not endpoint:
+            QMessageBox.warning(self, self.tr("Webhook test"), self.tr("Configure a webhook endpoint in Governance first.")); return
+        if parsed.scheme != "https" and not local:
+            QMessageBox.warning(self, self.tr("Webhook test"), self.tr("Webhook endpoints must use HTTPS unless they are local.")); return
+        if QMessageBox.question(self, self.tr("Webhook test"), self.tr("Send a masked connectivity test to the configured webhook endpoint?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
+            return
+        payload = self._webhook_payload()
+        def send():
+            request = urllib.request.Request(endpoint, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
+            with build_network_opener(self.settings).open(request, timeout=10) as response:
+                return str(getattr(response, "status", 200))
+        self.webhook_worker = LlmWorker(send)
+        self.webhook_worker.completed.connect(self._on_webhook_test_completed)
+        self.webhook_worker.failed.connect(self._on_webhook_test_failed)
+        self.webhook_worker.start()
+        AuditTrail(self.settings).append("webhook_test_started", {"endpoint_host": parsed.hostname or ""})
+
+    def _on_webhook_test_completed(self, status):
+        AuditTrail(self.settings).append("webhook_test_completed", {"status": status})
+        QMessageBox.information(self, self.tr("Webhook test"), self.tr("Masked webhook test succeeded (HTTP {status}).").format(status=status))
+
+    def _on_webhook_test_failed(self, error):
+        AuditTrail(self.settings).append("webhook_test_failed", {"error": redact_sensitive(error)})
+        QMessageBox.warning(self, self.tr("Webhook test"), self.tr("Masked webhook test failed: {error}").format(error=redact_sensitive(error)))
 
     def refresh_audit(self):
         trail = AuditTrail(self.settings)

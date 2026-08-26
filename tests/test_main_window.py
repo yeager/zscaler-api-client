@@ -375,6 +375,14 @@ class MainWindowTests(unittest.TestCase):
             else:
                 settings.setValue("ui/mode", previous)
 
+    def test_webhook_test_payload_is_local_and_masked(self):
+        self.window.request_history = [{"method": "GET", "status": 500, "headers": {"Authorization": "hidden"}}]
+        dialog = client.OperationsDialog(self.window)
+        payload = dialog._webhook_payload()
+        self.assertEqual("connectivity_test", payload["event"])
+        self.assertNotIn("hidden", json.dumps(payload))
+        dialog.close()
+
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")
         self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")
