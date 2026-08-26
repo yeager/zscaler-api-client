@@ -51,12 +51,13 @@ def _obfuscated_ip(value: str, salt: str) -> str:
 
 def obfuscate_identifiers(value: Any, salt: str, categories: dict[str, bool] | None = None, field: str = "") -> Any:
     """Create stable local pseudonyms without retaining a source-to-value map."""
-    enabled = {"users": True, "addresses": True, "hosts": True, "tenants": True, "ids": True}
+    enabled = {"users": True, "addresses": True, "hosts": True, "tenants": True, "ids": True, "labels": True}
     enabled.update(categories or {})
     normalized = "".join(character for character in str(field).casefold() if character.isalnum())
     tenant_field = any(part in normalized for part in ("tenant", "customer", "organization", "environment"))
     user_field = normalized in {"user", "username", "email", "mail", "login", "upn", "userprincipalname", "displayname", "owner", "createdby", "modifiedby", "actor", "principal", "subject"} or normalized.endswith(("userid", "username", "useremail"))
     host_field = normalized in {"url", "uri", "host", "hostname", "domain", "fqdn", "endpoint", "cloud", "origin", "devicename", "computername", "machinename", "servername", "dnsname"} or normalized.endswith(("host", "hostname", "domain", "fqdn"))
+    label_field = normalized in {"name", "label", "displaylabel", "policyname", "rulename", "applicationname", "appname", "groupname", "segmentname", "locationname", "department"}
     if isinstance(value, dict):
         return {key: obfuscate_identifiers(item, salt, enabled, str(key)) for key, item in value.items()}
     if isinstance(value, list):
@@ -66,6 +67,8 @@ def obfuscate_identifiers(value: Any, salt: str, categories: dict[str, bool] | N
             return _identifier_token("tenant", value, salt) if enabled["tenants"] else value
         if user_field and value is not None:
             return _identifier_token("user", value, salt) if enabled["users"] else value
+        if label_field and value is not None:
+            return _identifier_token("label", value, salt) if enabled["labels"] else value
         if enabled["ids"] and normalized.endswith(("id", "uuid", "guid", "identifier")) and value is not None:
             return _identifier_token("id", value, salt)
         return value
@@ -81,6 +84,8 @@ def obfuscate_identifiers(value: Any, salt: str, categories: dict[str, bool] | N
         return _identifier_token("tenant", text, salt) if enabled["tenants"] else text
     if user_field:
         return _identifier_token("user", text, salt) if enabled["users"] else text
+    if label_field:
+        return _identifier_token("label", text, salt) if enabled["labels"] else text
     if enabled["ids"] and (normalized.endswith(("id", "uuid", "guid", "identifier")) or normalized in {"keyid", "resourcekey"}):
         return _identifier_token("id", text, salt)
     if host_field and enabled["hosts"]:
@@ -359,6 +364,96 @@ def policy_overview(policy: Any) -> dict[str, Any]:
             "enabled": sum(1 for row in rows if row["enabled"]), "conditional": sum(1 for row in rows if row["conditions"])}
 
 
+def policy_twin(policy: Any, baseline: Any | None = None) -> dict[str, Any]:
+    """Build a transparent local policy graph with overlap and blast-radius analysis."""
+    safe_policy = mask(policy)
+    rules = safe_policy if isinstance(safe_policy, list) else safe_policy.get("rules", []) if isinstance(safe_policy, dict) else []
+    rules = [rule for rule in rules if isinstance(rule, dict)]
+
+    def conditions(rule: dict[str, Any]) -> dict[str, Any]:
+        value = rule.get("conditions", {})
+        return value if isinstance(value, dict) else {}
+
+    def allowed(value: Any) -> set[str]:
+        values = value if isinstance(value, list) else [value]
+        return {canonical(item).casefold() for item in values}
+
+    def overlaps(left: dict[str, Any], right: dict[str, Any]) -> bool:
+        return all(allowed(left[key]) & allowed(right[key]) for key in set(left) & set(right))
+
+    def covers(earlier: dict[str, Any], later: dict[str, Any]) -> bool:
+        """True when every context matching later must also match earlier."""
+        return all(key in later and allowed(later[key]) <= allowed(value) for key, value in earlier.items())
+
+    nodes, edges, findings = [], [], []
+    for index, rule in enumerate(rules):
+        position = index + 1
+        name = str(rule.get("name") or f"Rule {position}")
+        action = str(rule.get("action") or "unspecified").casefold()
+        enabled = rule.get("enabled", True) is not False
+        nodes.append({"id": f"rule-{position}", "position": position, "name": name, "action": action,
+                      "conditions": len(conditions(rule)), "enabled": enabled, "risk": "normal"})
+        if index:
+            edges.append({"source": f"rule-{index}", "target": f"rule-{position}", "relation": "next"})
+        if enabled and not conditions(rule) and action in {"allow", "permit"}:
+            findings.append({"severity": "high", "kind": "unconditional_allow", "earlier": name, "later": "*",
+                             "detail": "An unconditional allow rule can expose every later matching scope."})
+
+    enabled_rules = [(index, rule) for index, rule in enumerate(rules) if rule.get("enabled", True) is not False]
+    for right_offset, (right_index, right) in enumerate(enabled_rules):
+        right_conditions, right_action = conditions(right), str(right.get("action") or "unspecified").casefold()
+        right_name = str(right.get("name") or f"Rule {right_index + 1}")
+        for left_index, left in enabled_rules[:right_offset]:
+            left_conditions, left_action = conditions(left), str(left.get("action") or "unspecified").casefold()
+            if not overlaps(left_conditions, right_conditions):
+                continue
+            left_name = str(left.get("name") or f"Rule {left_index + 1}")
+            fully_shadowed = covers(left_conditions, right_conditions)
+            if fully_shadowed:
+                different_action = left_action != right_action
+                kind = "shadowed_conflict" if different_action else "redundant_shadow"
+                severity = "high" if different_action else "medium"
+                detail = "The later rule can never decide because an earlier rule covers all of its matches."
+            elif left_action != right_action:
+                kind, severity = "overlap_conflict", "medium"
+                detail = "The rules can match the same context but have different actions; order decides the outcome."
+            else:
+                continue
+            findings.append({"severity": severity, "kind": kind, "earlier": left_name, "later": right_name, "detail": detail})
+            edges.append({"source": f"rule-{left_index + 1}", "target": f"rule-{right_index + 1}", "relation": kind})
+            nodes[right_index]["risk"] = severity
+
+    names: dict[str, list[int]] = {}
+    for index, node in enumerate(nodes):
+        names.setdefault(node["name"].casefold(), []).append(index)
+    for indexes in names.values():
+        if len(indexes) > 1:
+            duplicated = nodes[indexes[0]]["name"]
+            findings.append({"severity": "medium", "kind": "duplicate_name", "earlier": duplicated, "later": duplicated,
+                             "detail": "Duplicate rule names make reviews, evidence, and rollback ambiguous."})
+            for index in indexes:
+                if nodes[index]["risk"] == "normal": nodes[index]["risk"] = "medium"
+
+    baseline_rules = baseline if isinstance(baseline, list) else baseline.get("rules", []) if isinstance(baseline, dict) else []
+    baseline_rules = [mask(rule) for rule in baseline_rules if isinstance(rule, dict)]
+    old_by_name = {str(rule.get("name") or f"Rule {index + 1}").casefold(): canonical(rule) for index, rule in enumerate(baseline_rules)}
+    new_by_name = {node["name"].casefold(): canonical(rules[index]) for index, node in enumerate(nodes)}
+    changed_names = [] if baseline is None else sorted({*old_by_name, *new_by_name} - {name for name in old_by_name.keys() & new_by_name if old_by_name[name] == new_by_name[name]})
+    affected_dimensions = sorted({str(key) for rule in rules for key in conditions(rule)})
+    high = sum(1 for item in findings if item["severity"] == "high")
+    medium = sum(1 for item in findings if item["severity"] == "medium")
+    score = min(100, high * 25 + medium * 10 + min(30, len(changed_names) * 5))
+    return {
+        "nodes": nodes, "edges": edges, "findings": findings,
+        "summary": {"rules": len(nodes), "enabled": sum(1 for node in nodes if node["enabled"]),
+                    "conflicts": sum(1 for item in findings if "conflict" in item["kind"]),
+                    "shadowed": sum(1 for item in findings if "shadow" in item["kind"]),
+                    "changed_rules": len(changed_names), "blast_radius": score},
+        "blast_radius": {"score": score, "changed_rules": changed_names, "affected_dimensions": affected_dimensions,
+                         "explanation": "Local heuristic based on rule conflicts, shadowing, unconditional allows, and baseline changes."},
+    }
+
+
 def validate_bulk_csv(payload: str, required: Iterable[str]) -> dict[str, Any]:
     reader = csv.DictReader(io.StringIO(payload))
     headers = reader.fieldnames or []
@@ -605,7 +700,7 @@ def operational_alerts(history: Iterable[dict[str, Any]], audit_valid: bool, err
     return {"alerts": alerts, "threshold": threshold, "requests": len(events), "failed": len(failures)}
 
 
-def request_latency_trend(history: Iterable[dict[str, Any]], limit: int = 12) -> list[tuple[str, float]]:
+def request_latency_trend(history: Iterable[dict[str, Any]], limit: int = 240) -> list[tuple[str, float]]:
     """Return a compact local latency series for dashboard visualization."""
     events = list(history)[-max(1, limit):]
     trend: list[tuple[str, float]] = []

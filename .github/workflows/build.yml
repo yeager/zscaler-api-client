@@ -26,12 +26,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libegl1 libxcb-cursor0 libxkbcommon0
-          pip install PySide6 pyinstaller keyring
+          pip install -r requirements.txt
       
       - name: Build
         run: |
           python scripts/compile_translations.py
-          pyinstaller --noconfirm --name "ZS API Client" --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" --add-data "CHANGELOG.md:." --hidden-import keyring.backends.SecretService zscaler_api_client.py
+          pyinstaller --noconfirm --name "ZS API Client" --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" --add-data "CHANGELOG.md:." --collect-submodules pyqtgraph --hidden-import keyring.backends.SecretService zscaler_api_client.py
           cd dist
           tar czf ZS-API-Client-linux-x64.tar.gz "ZS API Client"
           cd ..
@@ -62,12 +62,12 @@ jobs:
           python-version: '3.11'
       
       - name: Install dependencies
-        run: pip install PySide6 pyinstaller keyring
+        run: pip install -r requirements.txt
       
       - name: Build
         run: |
           python scripts/compile_translations.py
-          pyinstaller --noconfirm --name "ZS API Client" --add-data "translations;translations" --add-data "data;data" --add-data "assets;assets" --add-data "CHANGELOG.md;." --hidden-import keyring.backends.Windows zscaler_api_client.py
+          pyinstaller --noconfirm --name "ZS API Client" --add-data "translations;translations" --add-data "data;data" --add-data "assets;assets" --add-data "CHANGELOG.md;." --collect-submodules pyqtgraph --hidden-import keyring.backends.Windows zscaler_api_client.py
       
       - name: Create ZIP
         run: Compress-Archive -Path "dist\ZS API Client" -DestinationPath dist\ZS-API-Client-windows-x64.zip
@@ -100,12 +100,12 @@ jobs:
           python-version: '3.11'
       
       - name: Install dependencies
-        run: pip install PySide6 pyinstaller keyring
+        run: pip install -r requirements.txt
       
       - name: Build
         run: |
           python scripts/compile_translations.py
-          pyinstaller --noconfirm --windowed --name "ZS API Client" --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" --add-data "CHANGELOG.md:." --hidden-import keyring.backends.macOS zscaler_api_client.py
+          pyinstaller --noconfirm --windowed --name "ZS API Client" --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" --add-data "CHANGELOG.md:." --collect-submodules pyqtgraph --hidden-import keyring.backends.macOS zscaler_api_client.py
           cd dist
           zip -ry ZS-API-Client-macos-x64.zip "ZS API Client.app"
           cd ..

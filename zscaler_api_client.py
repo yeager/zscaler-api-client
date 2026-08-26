@@ -53,7 +53,12 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
+
+try:
+    import pyqtgraph as pg
+except (ImportError, OSError):  # Keep source checkouts usable with the minimal Qt stack.
+    pg = None
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
@@ -510,6 +515,7 @@ PRIVACY_CATEGORY_KEYS = {
     "hosts": "privacy/obfuscate_hosts",
     "tenants": "privacy/obfuscate_tenants",
     "ids": "privacy/obfuscate_ids",
+    "labels": "privacy/obfuscate_labels",
 }
 _privacy_session_salt = ""
 
@@ -3714,6 +3720,96 @@ class NumericBarChart(QWidget):
         painter.drawText(8, 18, f"{maximum:g}")
 
 
+class HighPerformanceLineChart(QWidget):
+    """Accelerated telemetry plot with the native chart as a safe fallback."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.values: list[tuple[str, float]] = []
+        self.style = "line"
+        self.setMinimumHeight(150)
+        layout = QVBoxLayout(self); layout.setContentsMargins(0, 0, 0, 0)
+        self._fallback = None
+        self._plot = None
+        if pg is None:
+            self._fallback = NumericBarChart(); self._fallback.set_style("line"); layout.addWidget(self._fallback)
+            return
+        self._plot = pg.PlotWidget(background="#172235")
+        self._plot.setMenuEnabled(False)
+        self._plot.setMouseEnabled(x=True, y=False)
+        self._plot.showGrid(x=True, y=True, alpha=0.18)
+        self._plot.setLabel("left", self.tr("Latency"), units="ms")
+        self._plot.getAxis("left").setTextPen(pg.mkPen("#cbd5e1"))
+        self._plot.getAxis("bottom").setTextPen(pg.mkPen("#94a3b8"))
+        self._curve = self._plot.plot(pen=pg.mkPen("#38bdf8", width=2), connect="finite")
+        self._curve.setDownsampling(auto=True, method="peak")
+        self._curve.setClipToView(True)
+        layout.addWidget(self._plot)
+
+    def set_values(self, values: list[tuple[str, float]]):
+        self.values = list(values)[-5000:]
+        self.setVisible(bool(self.values))
+        if self._fallback is not None:
+            self._fallback.set_values(self.values)
+            return
+        x_values = list(range(len(self.values)))
+        y_values = [value for _, value in self.values]
+        self._curve.setData(x_values, y_values)
+        if self.values:
+            stride = max(1, len(self.values) // 6)
+            ticks = [(index, self.values[index][0]) for index in range(0, len(self.values), stride)]
+            if ticks[-1][0] != len(self.values) - 1:
+                ticks.append((len(self.values) - 1, self.values[-1][0]))
+            self._plot.getAxis("bottom").setTicks([ticks])
+            self._plot.enableAutoRange(axis="y", enable=True)
+
+
+class PolicyTwinGraph(QWidget):
+    """Compact local visualization of rule order and policy conflicts."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.nodes: list[dict[str, Any]] = []
+        self.edges: list[dict[str, Any]] = []
+        self.setMinimumHeight(250)
+
+    def set_graph(self, nodes, edges):
+        self.nodes = list(nodes)[:12]
+        known = {node.get("id") for node in self.nodes}
+        self.edges = [edge for edge in edges if edge.get("source") in known and edge.get("target") in known]
+        self.setVisible(bool(self.nodes)); self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self); painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        canvas = self.rect().adjusted(1, 1, -1, -1)
+        painter.setPen(QPen(QColor("#294564"), 1)); painter.setBrush(QColor("#0c192a")); painter.drawRoundedRect(canvas, 14, 14)
+        if not self.nodes: return
+        columns = min(4, len(self.nodes), max(1, canvas.width() // 150)); rows = (len(self.nodes) + columns - 1) // columns
+        gap, margin = 14, 18
+        width = max(80, (canvas.width() - margin * 2 - gap * (columns - 1)) // columns)
+        height = max(68, (canvas.height() - margin * 2 - gap * (rows - 1)) // rows)
+        rectangles = {}
+        for index, node in enumerate(self.nodes):
+            row, column = divmod(index, columns)
+            if row % 2: column = columns - 1 - column
+            x = canvas.left() + margin + column * (width + gap); y = canvas.top() + margin + row * (height + gap)
+            rectangles[node["id"]] = (x, y, width, height)
+        for edge in self.edges:
+            if edge.get("relation") == "next": continue
+            first, second = rectangles[edge["source"]], rectangles[edge["target"]]
+            severity = "high" if edge["relation"] == "shadowed_conflict" else "medium"
+            painter.setPen(QPen(QColor("#fb7185" if severity == "high" else "#fbbf24"), 2, Qt.PenStyle.DashLine))
+            painter.drawLine(first[0] + first[2] // 2, first[1] + first[3] // 2, second[0] + second[2] // 2, second[1] + second[3] // 2)
+        action_colors = {"allow": "#166534", "permit": "#166534", "block": "#991b1b", "deny": "#991b1b", "isolate": "#6b21a8"}
+        border_colors = {"high": "#fb7185", "medium": "#fbbf24", "normal": "#38bdf8"}
+        for node in self.nodes:
+            x, y, width, height = rectangles[node["id"]]
+            painter.setPen(QPen(QColor(border_colors.get(node.get("risk"), "#38bdf8")), 2))
+            painter.setBrush(QColor(action_colors.get(node.get("action"), "#17365d")))
+            painter.drawRoundedRect(x, y, width, height, 10, 10)
+            painter.setPen(QColor("#dbeafe")); painter.drawText(x + 10, y + 8, width - 20, 18, Qt.AlignmentFlag.AlignLeft, f"{node['position']}. {str(node['name'])[:22]}")
+            painter.setPen(QColor("#bae6fd")); painter.drawText(x + 10, y + 31, width - 20, 16, Qt.AlignmentFlag.AlignLeft, str(node.get("action", "")).upper())
+            painter.setPen(QColor("#cbd5e1")); painter.drawText(x + 10, y + 50, width - 20, 16, Qt.AlignmentFlag.AlignLeft, self.tr("{count} condition(s)").format(count=node.get("conditions", 0)))
+
+
 class WelcomeDialog(QDialog):
     """Welcome dialog for new users with getting started guidance."""
     
@@ -4825,9 +4921,10 @@ class SettingsDialog(QDialog):
         self.privacy_hosts = QCheckBox(self.tr("Hostnames, domains, and URL hosts"))
         self.privacy_tenants = QCheckBox(self.tr("Tenant, customer, organization, and environment names"))
         self.privacy_ids = QCheckBox(self.tr("Object IDs, UUIDs, GUIDs, and client identifiers"))
+        self.privacy_labels = QCheckBox(self.tr("Policy, application, group, location, and resource names"))
         self.privacy_category_controls = {
             "users": self.privacy_users, "addresses": self.privacy_addresses, "hosts": self.privacy_hosts,
-            "tenants": self.privacy_tenants, "ids": self.privacy_ids,
+            "tenants": self.privacy_tenants, "ids": self.privacy_ids, "labels": self.privacy_labels,
         }
         for control in self.privacy_category_controls.values():
             control.toggled.connect(self._update_privacy_preview); privacy_form.addRow(control)
@@ -4932,6 +5029,7 @@ class SettingsDialog(QDialog):
         sample = {
             "environment": "Production Europe", "email": "ada@example.com", "sourceIp": "10.20.30.40",
             "url": "https://tenant.example.com/api/v1/users/42", "resourceId": "8d81b2e7-1f00-4f00-a100-000000000042",
+            "policyName": "Finance internet access",
             "client_secret": "always-hidden",
         }
         safe = redact_sensitive(sample)
@@ -5915,7 +6013,7 @@ class OperationsDialog(QDialog):
         self.dashboard_chart = NumericBarChart(); self.dashboard_chart.set_style("pie")
         dashboard_layout.addWidget(QLabel(self.tr("Recent request outcomes")))
         dashboard_layout.addWidget(self.dashboard_chart)
-        self.dashboard_trend = NumericBarChart(); self.dashboard_trend.set_style("line")
+        self.dashboard_trend = HighPerformanceLineChart()
         dashboard_layout.addWidget(QLabel(self.tr("Recent request latency (ms)")))
         dashboard_layout.addWidget(self.dashboard_trend)
         self.dashboard_events = QTableWidget(0, 4); self.dashboard_events.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Environment"), self.tr("Activity"), self.tr("Status")]); self.dashboard_events.horizontalHeader().setStretchLastSection(True); self.dashboard_events.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
@@ -6092,11 +6190,37 @@ class OperationsDialog(QDialog):
         self.cancel_chain_btn = QPushButton(self.tr("Cancel chain")); self.cancel_chain_btn.setEnabled(False); self.cancel_chain_btn.clicked.connect(self.cancel_api_chain); chain_actions.addWidget(self.cancel_chain_btn)
         export_chain = QPushButton(self.tr("Export masked chain results")); export_chain.clicked.connect(self.export_api_chain); chain_actions.addWidget(export_chain); chain_actions.addStretch(); chain_layout.addLayout(chain_actions)
         self.chain_tab_index = self.tabs.addTab(chain_page, self.tr("API chains"))
+
+        twin_page = QWidget(); twin_layout = QVBoxLayout(twin_page)
+        twin_intro = QLabel(self.tr("Build a local digital twin of policy order. It explains decisions, highlights overlap and shadowing, estimates change blast radius, and never applies a policy.")); twin_intro.setWordWrap(True); twin_layout.addWidget(twin_intro)
+        self.twin_policy_input = QPlainTextEdit('[\n  {"name":"Allow staff","conditions":{"group":"staff"},"action":"allow"},\n  {"name":"Block fallback","conditions":{},"action":"block"}\n]')
+        self.twin_policy_input.setPlaceholderText(self.tr("Policy rules JSON or an object containing a rules list")); self.twin_policy_input.setMaximumHeight(135); twin_layout.addWidget(self.twin_policy_input)
+        twin_controls = QHBoxLayout(); analyze_twin = QPushButton(self.tr("Analyze policy twin")); analyze_twin.clicked.connect(self.analyze_policy_twin); twin_controls.addWidget(analyze_twin)
+        export_twin = QPushButton(self.tr("Export twin evidence")); export_twin.clicked.connect(self.export_policy_twin); twin_controls.addWidget(export_twin)
+        self.twin_load_proposed = QPushButton(self.tr("Load proposed policy")); self.twin_load_proposed.clicked.connect(self.load_proposed_into_twin); twin_controls.addWidget(self.twin_load_proposed)
+        twin_controls.addWidget(QLabel(self.tr("Test context:"))); self.twin_context = QLineEdit('{"group":"staff"}'); self.twin_context.setPlaceholderText(self.tr("Request context JSON")); twin_controls.addWidget(self.twin_context, 1)
+        explain_twin = QPushButton(self.tr("Explain decision")); explain_twin.clicked.connect(self.explain_twin_decision); twin_controls.addWidget(explain_twin); twin_layout.addLayout(twin_controls)
+        twin_cards = QGridLayout(); self.twin_cards = {}
+        for column, (key, label) in enumerate((("rules", self.tr("Rules")), ("conflicts", self.tr("Conflicts")), ("shadowed", self.tr("Shadowed")), ("blast_radius", self.tr("Blast radius")))):
+            card = QFrame(); card.setObjectName("metricCard"); card_layout = QVBoxLayout(card); muted = QLabel(label); muted.setObjectName("mutedLabel"); card_layout.addWidget(muted)
+            value = QLabel("—"); value.setObjectName("sectionTitle"); value_font = value.font(); value_font.setPointSize(20); value_font.setBold(True); value.setFont(value_font); card_layout.addWidget(value); self.twin_cards[key] = value; twin_cards.addWidget(card, 0, column)
+        twin_layout.addLayout(twin_cards)
+        self.twin_graph = PolicyTwinGraph(); self.twin_graph.setAccessibleName(self.tr("Policy order and conflict graph")); twin_layout.addWidget(self.twin_graph)
+        self.twin_explanation = QLabel(); self.twin_explanation.setWordWrap(True); self.twin_explanation.setObjectName("sectionTitle"); twin_layout.addWidget(self.twin_explanation)
+        self.twin_findings = QTableWidget(0, 5); self.twin_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Finding"), self.tr("Earlier rule"), self.tr("Later rule"), self.tr("Explanation")]); self.twin_findings.horizontalHeader().setStretchLastSection(True); self.twin_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.twin_findings.setMaximumHeight(170); twin_layout.addWidget(self.twin_findings)
+        self.twin_snapshot_group = QGroupBox(self.tr("Policy time travel")); snapshot_layout = QHBoxLayout(self.twin_snapshot_group)
+        self.twin_snapshot_choice = QComboBox(); snapshot_layout.addWidget(self.twin_snapshot_choice, 1)
+        save_snapshot = QPushButton(self.tr("Save snapshot")); save_snapshot.clicked.connect(self.save_policy_snapshot); snapshot_layout.addWidget(save_snapshot)
+        use_snapshot = QPushButton(self.tr("Use as baseline")); use_snapshot.clicked.connect(self.analyze_policy_twin); snapshot_layout.addWidget(use_snapshot)
+        load_snapshot = QPushButton(self.tr("Load snapshot")); load_snapshot.clicked.connect(self.load_policy_snapshot); snapshot_layout.addWidget(load_snapshot)
+        delete_snapshot = QPushButton(self.tr("Delete snapshot")); delete_snapshot.clicked.connect(self.delete_policy_snapshot); snapshot_layout.addWidget(delete_snapshot)
+        twin_layout.addWidget(self.twin_snapshot_group)
+        self.twin_tab_index = self.tabs.addTab(twin_page, self.tr("Policy twin"))
         self.data_scope.currentIndexChanged.connect(self._scope_changed)
         self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
-        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_webhook_history(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report(); self.refresh_schedules(); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_webhook_history(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report(); self.refresh_schedules(); self.refresh_policy_snapshots(); self.analyze_policy_twin(record_audit=False); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
 
     def _apply_operations_mode(self):
         """Keep basic mode focused on situational awareness and investigation."""
@@ -6104,6 +6228,8 @@ class OperationsDialog(QDialog):
         advanced_tabs = (1, 2, 3, 4, 5, 6, self.change_tab_index, self.chain_tab_index)
         for index in advanced_tabs:
             self.tabs.setTabVisible(index, not basic)
+        self.twin_snapshot_group.setVisible(not basic)
+        self.twin_load_proposed.setVisible(not basic)
 
     def configure_local_monitor(self, enabled=None, record_audit=True):
         """Refresh local views on a user-approved timer; it never sends API calls."""
@@ -6147,7 +6273,7 @@ class OperationsDialog(QDialog):
             if scope["environment_id"] != "*" else
             self.tr("Cross-tenant overview is active. Exports and integrations will include all local environments.")
         )
-        self.refresh_local_signals(); self.refresh_audit(); self.refresh_webhook_history(); self.refresh_schedules()
+        self.refresh_local_signals(); self.refresh_audit(); self.refresh_webhook_history(); self.refresh_schedules(); self.refresh_policy_snapshots(); self.analyze_policy_twin(record_audit=False)
 
     def _json(self, editor, fallback):
         try: return json.loads(editor.toPlainText() or fallback)
@@ -6568,6 +6694,124 @@ body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}
         else:
             Path(path).write_text(json.dumps(safe_results, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         AuditTrail(self.settings).append("api_chain_exported", {"format": "csv" if Path(path).suffix.lower() == ".csv" else "json", "steps": len(safe_results), "file": os.path.basename(path)})
+
+    def _policy_snapshots(self):
+        try:
+            values = json.loads(str(self.settings.value("policy/snapshots", "[]") or "[]"))
+        except (TypeError, ValueError):
+            values = []
+        return [item for item in values if isinstance(item, dict) and isinstance(item.get("policy"), (dict, list)) and item.get("id")]
+
+    def refresh_policy_snapshots(self):
+        selected = self.twin_snapshot_choice.currentData() if self.twin_snapshot_choice.count() else None
+        self.twin_snapshot_choice.clear(); self.twin_snapshot_choice.addItem(self.tr("No baseline (analyze current policy only)"), "")
+        for item in self._policy_snapshots():
+            if self._scope_id() not in {"*", str(item.get("environment_id") or "default")}:
+                continue
+            timestamp = time.strftime("%Y-%m-%d %H:%M", time.localtime(int(item.get("timestamp", 0))))
+            self.twin_snapshot_choice.addItem(f"{item.get('name', self.tr('Snapshot'))} · {timestamp}", item["id"])
+        index = self.twin_snapshot_choice.findData(selected); self.twin_snapshot_choice.setCurrentIndex(index if index >= 0 else 0)
+
+    def _selected_policy_snapshot(self):
+        snapshot_id = str(self.twin_snapshot_choice.currentData() or "")
+        return next((item for item in self._policy_snapshots() if str(item.get("id")) == snapshot_id), None)
+
+    def analyze_policy_twin(self, _checked=False, record_audit=True):
+        try:
+            policy = self._json(self.twin_policy_input, [])
+        except ValueError as exc:
+            QMessageBox.warning(self, self.tr("Policy twin"), str(exc)); return
+        snapshot = self._selected_policy_snapshot(); baseline = snapshot.get("policy") if snapshot else None
+        raw_twin = policy_twin(policy, baseline)
+        self._last_policy_twin = raw_twin
+        twin = privacy_safe(raw_twin, self.settings, "display"); summary = twin["summary"]
+        self.twin_cards["rules"].setText(str(summary["rules"])); self.twin_cards["conflicts"].setText(str(summary["conflicts"])); self.twin_cards["shadowed"].setText(str(summary["shadowed"])); self.twin_cards["blast_radius"].setText(f"{summary['blast_radius']}/100")
+        self.twin_cards["conflicts"].setStyleSheet("color: #fb7185;" if summary["conflicts"] else "color: #34d399;")
+        self.twin_cards["blast_radius"].setStyleSheet("color: #fb7185;" if summary["blast_radius"] >= 60 else "color: #fbbf24;" if summary["blast_radius"] >= 30 else "color: #34d399;")
+        self.twin_graph.set_graph(twin["nodes"], twin["edges"])
+        findings = twin["findings"]; self.twin_findings.setRowCount(len(findings))
+        finding_names = {"unconditional_allow": self.tr("Unconditional allow"), "shadowed_conflict": self.tr("Shadowed conflict"), "redundant_shadow": self.tr("Redundant shadow"), "overlap_conflict": self.tr("Overlapping actions"), "duplicate_name": self.tr("Duplicate rule name")}
+        detail_names = {
+            "An unconditional allow rule can expose every later matching scope.": self.tr("An unconditional allow rule can expose every later matching scope."),
+            "The later rule can never decide because an earlier rule covers all of its matches.": self.tr("The later rule can never decide because an earlier rule covers all of its matches."),
+            "The rules can match the same context but have different actions; order decides the outcome.": self.tr("The rules can match the same context but have different actions; order decides the outcome."),
+            "Duplicate rule names make reviews, evidence, and rollback ambiguous.": self.tr("Duplicate rule names make reviews, evidence, and rollback ambiguous."),
+        }
+        severity_names = {"high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
+        for row, finding in enumerate(findings):
+            values = (severity_names.get(finding["severity"], finding["severity"]), finding_names.get(finding["kind"], finding["kind"]), finding["earlier"], finding["later"], detail_names.get(finding["detail"], finding["detail"]))
+            for column, value in enumerate(values):
+                item = self._severity_item(str(value), finding["severity"]) if column == 0 else QTableWidgetItem(str(value)); self.twin_findings.setItem(row, column, item)
+        self.twin_findings.resizeColumnsToContents()
+        changed = summary["changed_rules"]
+        self.twin_explanation.setText(self.tr("Policy twin: {rules} rule(s), {findings} finding(s), blast radius {score}/100, {changed} changed rule(s) versus baseline.").format(rules=summary["rules"], findings=len(findings), score=summary["blast_radius"], changed=changed))
+        if record_audit:
+            self._scope_audit().append("policy_twin_analyzed", {"rules": summary["rules"], "findings": len(findings), "blast_radius": summary["blast_radius"], "baseline": bool(snapshot)})
+
+    def explain_twin_decision(self):
+        try:
+            policy = self._json(self.twin_policy_input, []); context = json.loads(self.twin_context.text().strip() or "{}")
+            if not isinstance(context, dict): raise ValueError(self.tr("Request context must be a JSON object."))
+            rules = policy if isinstance(policy, list) else policy.get("rules", []) if isinstance(policy, dict) else []
+            result = privacy_safe(simulate_policy_trace(rules, context), self.settings, "display")
+        except (TypeError, ValueError) as exc:
+            QMessageBox.warning(self, self.tr("Policy twin"), str(exc)); return
+        if result["matched"]:
+            message = self.tr("Decision: {action}. Rule “{name}” matched after evaluating {count} rule(s).").format(action=str(result["action"]).upper(), name=result["name"], count=len(result["trace"]))
+        else:
+            message = self.tr("Decision: no match after evaluating {count} rule(s).").format(count=len(result["trace"]))
+        self.twin_explanation.setText(message); self._scope_audit().append("policy_twin_decision_explained", {"matched": result["matched"], "evaluated": len(result["trace"]), "action": result["action"]})
+
+    def export_policy_twin(self):
+        if not getattr(self, "_last_policy_twin", None): self.analyze_policy_twin()
+        if not getattr(self, "_last_policy_twin", None): return
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export twin evidence"), "policy-twin.json", "JSON (*.json);;PNG graph (*.png)")
+        if not path: return
+        safe = privacy_safe(self._last_policy_twin, self.settings, "export")
+        if Path(path).suffix.lower() == ".png":
+            display = privacy_safe(self._last_policy_twin, self.settings, "display")
+            self.twin_graph.set_graph(safe["nodes"], safe["edges"]); self.twin_graph.grab().save(path, "PNG"); self.twin_graph.set_graph(display["nodes"], display["edges"])
+            format_name = "png"
+        else:
+            Path(path).write_text(json.dumps(safe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"); format_name = "json"
+        self._scope_audit().append("policy_twin_exported", {"format": format_name, "file": os.path.basename(path), "rules": safe["summary"]["rules"]})
+
+    def load_proposed_into_twin(self):
+        try:
+            policy = self._json(self.after_policy, {})
+        except ValueError as exc:
+            QMessageBox.warning(self, self.tr("Policy twin"), str(exc)); return
+        self.twin_policy_input.setPlainText(json.dumps(policy, indent=2, ensure_ascii=False)); self.analyze_policy_twin(); self.tabs.setCurrentIndex(self.twin_tab_index)
+
+    def save_policy_snapshot(self):
+        if self._scope_id() == "*":
+            QMessageBox.warning(self, self.tr("Policy time travel"), self.tr("Select one environment before saving a policy snapshot.")); return
+        try:
+            policy = self._json(self.twin_policy_input, [])
+        except ValueError as exc:
+            QMessageBox.warning(self, self.tr("Policy time travel"), str(exc)); return
+        if len(json.dumps(policy, ensure_ascii=False).encode("utf-8")) > 2 * 1024 * 1024:
+            QMessageBox.warning(self, self.tr("Policy time travel"), self.tr("Policy snapshots are limited to 2 MB.")); return
+        name, ok = QInputDialog.getText(self, self.tr("Save policy snapshot"), self.tr("Snapshot name:"))
+        name = str(name).strip()[:60]
+        if not ok or not name: return
+        scope = self._scope_metadata(); snapshots = self._policy_snapshots()
+        snapshots.append({"id": uuid.uuid4().hex, "name": name, "timestamp": int(time.time()), "environment_id": scope["environment_id"], "environment": scope["environment"], "policy": redact_sensitive(policy)})
+        self.settings.setValue("policy/snapshots", json.dumps(snapshots[-50:], ensure_ascii=False)); self.refresh_policy_snapshots(); self.twin_snapshot_choice.setCurrentIndex(self.twin_snapshot_choice.count() - 1)
+        self._scope_audit().append("policy_snapshot_saved", {"name": name, "rules": policy_twin(policy)["summary"]["rules"]})
+
+    def load_policy_snapshot(self):
+        snapshot = self._selected_policy_snapshot()
+        if not snapshot:
+            QMessageBox.information(self, self.tr("Policy time travel"), self.tr("Select a saved policy snapshot first.")); return
+        self.twin_policy_input.setPlainText(json.dumps(snapshot["policy"], indent=2, ensure_ascii=False)); self.analyze_policy_twin(); self._scope_audit().append("policy_snapshot_loaded", {"name": snapshot.get("name", "")})
+
+    def delete_policy_snapshot(self):
+        snapshot = self._selected_policy_snapshot()
+        if not snapshot: return
+        if QMessageBox.question(self, self.tr("Delete policy snapshot"), self.tr("Delete the selected local policy snapshot?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes: return
+        snapshots = [item for item in self._policy_snapshots() if item["id"] != snapshot["id"]]
+        self.settings.setValue("policy/snapshots", json.dumps(snapshots, ensure_ascii=False)); self.refresh_policy_snapshots(); self._scope_audit().append("policy_snapshot_deleted", {"name": snapshot.get("name", "")})
 
     def compare_policies(self):
         try:

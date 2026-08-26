@@ -73,9 +73,11 @@ ZS API Client is built with security as a top priority:
 ### Productivity
 - **Batch Operations** – Import CSV files for bulk create/delete/update operations
 - **Operations Center** – Local policy diffs and simulations, CSV validation, isolated environment profiles, dashboards, report schedules, and a hash-linked audit trail
+- **Digital Policy Twin** – Visualize first-match rule order, explain local decisions, detect overlapping actions, conflicts, redundant or fully shadowed rules, estimate change blast radius, and compare tenant-scoped time-travel snapshots without applying configuration
+- **Accelerated SOC telemetry** – Render longer live latency series with pyqtgraph downsampling and clipping, with a Qt-native fallback for minimal or offline source installations
 - **Tenant-safe environments** – Keep product hosts, client identifiers, enabled APIs, workspace state, and system-keychain credentials separate per environment; switching clears all in-memory sessions, requests, and responses
 - **Tenant-scoped operations** – Dashboards, posture, anomalies, incidents, audit views, integrations, support bundles, and reports default to the active environment; Advanced mode provides an explicit cross-tenant overview
-- **Configurable privacy boundary** – Credentials are always masked; exports, clipboard data, external AI, webhooks, local automation input, support bundles, scheduled reports, and chart images pseudonymize users, addresses, hosts, tenants, and object IDs by default
+- **Configurable privacy boundary** – Credentials are always masked; exports, clipboard data, external AI, webhooks, local automation input, support bundles, scheduled reports, and chart images pseudonymize users, addresses, hosts, tenants, object IDs, and policy/resource labels by default
 - **Stable local pseudonyms** – A system-keychain-backed HMAC seed keeps correlations useful without storing an original-to-pseudonym map; Settings provides synthetic preview, category controls, an optional on-screen privacy mode, and explicit seed rotation
 - **Background reports** – Optionally register user-level Windows Task Scheduler, macOS LaunchAgent, or Linux systemd jobs so redacted reports run while the GUI is closed; no administrator privileges are required
 - **Self-contained visual reports** – Export an offline HTML leadership/SOC report with embedded artwork, responsive metric cards, severity styling, findings, evidence, and configured identifier obfuscation

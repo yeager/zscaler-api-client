@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, change_control_plan, security_report_data, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, change_control_plan, security_report_data, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers
 
 
 class MemorySettings:
@@ -74,7 +74,7 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertEqual("*", environment_scope_metadata("*", "All")["environment_id"])
 
     def test_identifier_obfuscation_is_stable_selective_and_non_reversible(self):
-        source = {"environment": "Production Europe", "email": "ada@example.com", "sourceIp": "10.1.2.3", "url": "https://tenant.example.com/users/42", "resourceId": 42, "rule": "Allow staff"}
+        source = {"environment": "Production Europe", "email": "ada@example.com", "sourceIp": "10.1.2.3", "url": "https://tenant.example.com/users/42", "resourceId": 42, "name": "Finance policy", "rule": "Allow staff"}
         first = obfuscate_identifiers(source, "a" * 64)
         second = obfuscate_identifiers(source, "a" * 64)
         rotated = obfuscate_identifiers(source, "b" * 64)
@@ -83,9 +83,10 @@ class FeatureServicesTests(unittest.TestCase):
         serialized = json.dumps(first)
         for original in ("Production Europe", "ada@example.com", "10.1.2.3", "tenant.example.com"):
             self.assertNotIn(original, serialized)
+        self.assertNotIn("Finance policy", serialized)
         self.assertEqual("Allow staff", first["rule"])
         self.assertRegex(str(first["sourceIp"]), r"^198\.(18|19)\.")
-        users_only = obfuscate_identifiers(source, "a" * 64, {"addresses": False, "hosts": False, "tenants": False, "ids": False})
+        users_only = obfuscate_identifiers(source, "a" * 64, {"addresses": False, "hosts": False, "tenants": False, "ids": False, "labels": False})
         self.assertEqual("10.1.2.3", users_only["sourceIp"])
         self.assertEqual(42, users_only["resourceId"])
 
@@ -266,3 +267,25 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertNotIn("hidden", exported)
         findings = compliance_findings({"rules": [{"name": "Open", "action": "allow", "conditions": {}}]})
         self.assertEqual("high", findings[0]["severity"])
+
+    def test_policy_twin_finds_shadowing_conflicts_and_blast_radius(self):
+        baseline = {"rules": [{"name": "Staff", "conditions": {"group": "staff"}, "action": "allow"}]}
+        proposed = {"rules": [
+            {"name": "Open", "conditions": {}, "action": "allow"},
+            {"name": "Staff", "conditions": {"group": "staff"}, "action": "block"},
+            {"name": "Guests", "conditions": {"group": "guest"}, "action": "block"},
+        ]}
+        twin = policy_twin(proposed, baseline)
+        self.assertEqual(3, twin["summary"]["rules"])
+        self.assertGreaterEqual(twin["summary"]["conflicts"], 2)
+        self.assertGreaterEqual(twin["summary"]["shadowed"], 2)
+        self.assertGreater(twin["summary"]["blast_radius"], 0)
+        self.assertIn("group", twin["blast_radius"]["affected_dimensions"])
+        self.assertTrue(any(edge["relation"] == "shadowed_conflict" for edge in twin["edges"]))
+
+    def test_policy_twin_treats_disjoint_conditions_as_non_conflicting(self):
+        twin = policy_twin({"rules": [
+            {"name": "Staff", "conditions": {"group": "staff"}, "action": "allow"},
+            {"name": "Guests", "conditions": {"group": "guest"}, "action": "block"},
+        ]})
+        self.assertEqual(0, twin["summary"]["conflicts"])

@@ -494,6 +494,7 @@ class MainWindowTests(unittest.TestCase):
             preview = dialog.privacy_preview.toPlainText()
             self.assertNotIn("ada@example.com", preview)
             self.assertNotIn("10.20.30.40", preview)
+            self.assertNotIn("Finance internet access", preview)
             self.assertIn('"client_secret": "***"', preview)
             dialog.close()
         finally:
@@ -812,7 +813,7 @@ class MainWindowTests(unittest.TestCase):
         self.window._show_ai_visualization([{"name": "A", "count": 3}])
         headers, rows = self.window._ai_export_payload()
         self.assertEqual(headers, ["name", "count"])
-        self.assertEqual(rows, [["A", "3"]])
+        self.assertEqual(len(rows), 1); self.assertEqual(rows[0][1], "3"); self.assertTrue(rows[0][0].startswith("label-"))
 
     def test_tabular_exports_cover_portable_formats(self):
         headers, rows = ["name", "count"], [["A", "3"], ["B", "7"]]
@@ -1415,6 +1416,83 @@ class MainWindowTests(unittest.TestCase):
                 settings.remove("ui/mode")
             else:
                 settings.setValue("ui/mode", previous)
+
+    def test_policy_twin_is_guided_in_basic_and_explains_conflicts(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("ui/mode", None)
+        try:
+            settings.setValue("ui/mode", "basic")
+            dialog = client.OperationsDialog(self.window)
+            self.assertTrue(dialog.tabs.isTabVisible(dialog.twin_tab_index))
+            self.assertTrue(dialog.twin_snapshot_group.isHidden())
+            dialog.twin_policy_input.setPlainText(json.dumps({"rules": [
+                {"name": "Open", "conditions": {}, "action": "allow"},
+                {"name": "Staff", "conditions": {"group": "staff"}, "action": "block"},
+            ]}))
+            dialog.analyze_policy_twin()
+            self.assertEqual("2", dialog.twin_cards["rules"].text())
+            self.assertGreater(int(dialog.twin_cards["conflicts"].text()), 0)
+            self.assertEqual(2, len(dialog.twin_graph.nodes))
+            dialog.twin_context.setText('{"group":"staff"}')
+            dialog.explain_twin_decision()
+            self.assertIn("ALLOW", dialog.twin_explanation.text())
+            dialog.close()
+        finally:
+            settings.remove("ui/mode") if previous is None else settings.setValue("ui/mode", previous)
+
+    def test_accelerated_latency_chart_caps_series_and_has_native_fallback(self):
+        chart = client.HighPerformanceLineChart()
+        chart.set_values([(str(index), float(index)) for index in range(6000)])
+        self.assertEqual(5000, len(chart.values))
+        self.assertIsNotNone(chart._plot)
+        chart.close()
+        with patch.object(client, "pg", None):
+            fallback = client.HighPerformanceLineChart()
+        fallback.set_values([("now", 12.0)])
+        self.assertEqual([("now", 12.0)], fallback._fallback.values)
+        fallback.close()
+
+    def test_policy_twin_json_export_obfuscates_rule_labels(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous_mode = settings.value("privacy/mode", None)
+        previous_labels = settings.value("privacy/obfuscate_labels", None)
+        try:
+            settings.setValue("privacy/mode", "external"); settings.setValue("privacy/obfuscate_labels", "true")
+            dialog = client.OperationsDialog(self.window)
+            dialog.twin_policy_input.setPlainText('[{"name":"Unique Finance Rule","conditions":{},"action":"block"}]')
+            dialog.analyze_policy_twin(record_audit=False)
+            with TemporaryDirectory() as output_dir:
+                destination = str(Path(output_dir) / "twin.json")
+                with patch.object(client.QFileDialog, "getSaveFileName", return_value=(destination, "JSON (*.json)")):
+                    dialog.export_policy_twin()
+                content = Path(destination).read_text(encoding="utf-8")
+                self.assertNotIn("Unique Finance Rule", content)
+                self.assertIn("label-", content)
+            dialog.close()
+        finally:
+            settings.remove("privacy/mode") if previous_mode is None else settings.setValue("privacy/mode", previous_mode)
+            settings.remove("privacy/obfuscate_labels") if previous_labels is None else settings.setValue("privacy/obfuscate_labels", previous_labels)
+
+    def test_policy_snapshot_is_tenant_scoped_bounded_and_secret_free(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous_mode, previous_snapshots = settings.value("ui/mode", None), settings.value("policy/snapshots", None)
+        try:
+            settings.setValue("ui/mode", "advanced"); settings.remove("policy/snapshots")
+            dialog = client.OperationsDialog(self.window)
+            dialog.twin_policy_input.setPlainText('[{"name":"Safe","conditions":{},"action":"block","client_secret":"never-store"}]')
+            with patch.object(client.QInputDialog, "getText", return_value=("Before change", True)):
+                dialog.save_policy_snapshot()
+            stored = str(settings.value("policy/snapshots", ""))
+            self.assertNotIn("never-store", stored); self.assertIn("***", stored)
+            snapshots = json.loads(stored); self.assertEqual(dialog.active_profile["id"], snapshots[0]["environment_id"])
+            self.assertEqual(1, dialog.twin_snapshot_choice.count() - 1)
+            dialog.twin_policy_input.setPlainText('[{"name":"Changed","conditions":{},"action":"block"}]')
+            dialog.analyze_policy_twin(record_audit=False)
+            self.assertGreater(dialog._last_policy_twin["summary"]["changed_rules"], 0)
+            dialog.close()
+        finally:
+            settings.remove("ui/mode") if previous_mode is None else settings.setValue("ui/mode", previous_mode)
+            settings.remove("policy/snapshots") if previous_snapshots is None else settings.setValue("policy/snapshots", previous_snapshots)
 
     def test_due_scheduled_report_runs_locally_without_overwriting(self):
         settings = client.QSettings("Zscaler", "APIClient")

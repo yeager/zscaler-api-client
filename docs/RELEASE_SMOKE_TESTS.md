@@ -38,10 +38,15 @@ tenant or the bundled catalog-only mode.
 8. Open Operations Center in Basic mode and confirm only the active environment
    is available. In Advanced mode, select the explicit cross-tenant overview
    and confirm reports and alert exports identify their data scope.
-9. Create a local scheduled report for one environment and confirm its JSON
+9. In Policy Twin, analyze the bundled example and confirm the graph, decision
+   explanation, conflict findings, and blast-radius cards agree. In Advanced
+   mode, save a synthetic snapshot, change one rule, select the snapshot as the
+   baseline, and verify the changed-rule count. Export JSON and PNG and confirm
+   synthetic rule/resource names are pseudonymized.
+10. Create a local scheduled report for one environment and confirm its JSON
    contains only that environment's retained history and a stable pseudonymized
    scope ID.
-10. Close and reopen the app without a crash.
+11. Close and reopen the app without a crash.
 
 ## macOS
 
