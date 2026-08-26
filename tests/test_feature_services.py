@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture, incident_evidence, change_control_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture, incident_evidence, change_control_plan, security_report_data
 
 
 class MemorySettings:
@@ -75,6 +75,12 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertEqual("high", plan["risk"])
         self.assertTrue(plan["rollback_policy"])
         self.assertNotIn("new", json.dumps(plan))
+
+    def test_security_report_data_has_redacted_ciso_facts(self):
+        report = security_report_data("ciso", [{"method": "GET", "status": 500, "url": "https://example.test?token=hidden"}], [], True)
+        self.assertEqual("ciso", report["kind"])
+        self.assertEqual(1, report["posture"]["metrics"]["failed"])
+        self.assertNotIn("hidden", json.dumps(report))
 
     def test_audit_trail_is_hash_linked(self):
         settings = MemorySettings(); trail = AuditTrail(settings)

@@ -358,6 +358,21 @@ class MainWindowTests(unittest.TestCase):
         self.assertIn('"risk": "high"', dialog.change_review.toPlainText())
         dialog.close()
 
+    def test_reports_and_operations_mode_are_available(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("ui/mode", None)
+        try:
+            settings.setValue("ui/mode", "basic")
+            dialog = client.OperationsDialog(self.window)
+            self.assertFalse(dialog.tabs.isTabVisible(1))
+            self.assertIn("# CISO", dialog.report_preview.toPlainText())
+            dialog.close()
+        finally:
+            if previous is None:
+                settings.remove("ui/mode")
+            else:
+                settings.setValue("ui/mode", previous)
+
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")
         self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")

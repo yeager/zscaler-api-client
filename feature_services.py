@@ -294,3 +294,17 @@ def change_control_plan(before: Any, after: Any) -> dict[str, Any]:
         "proposed_policy": mask(after),
         "rollback_policy": mask(before),
     }
+
+
+def security_report_data(kind: str, history: Iterable[dict[str, Any]], audit_events: Iterable[dict[str, Any]], audit_valid: bool) -> dict[str, Any]:
+    """Create local, redacted facts for CISO, SOC, or operations reports."""
+    if kind not in {"ciso", "soc", "operations"}:
+        raise ValueError("Unknown report type")
+    history_list, audit_list = list(history), list(audit_events)
+    posture = security_posture(history_list, audit_valid)
+    evidence = incident_evidence(history_list, audit_list)
+    return {
+        "kind": kind, "posture": posture, "incident_summary": evidence["summary"],
+        "audit_valid": audit_valid, "audit_events": len(audit_list),
+        "recent_events": evidence["timeline"][:10],
+    }

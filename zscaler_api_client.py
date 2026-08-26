@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, incident_evidence, change_control_plan, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, incident_evidence, change_control_plan, security_report_data, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -4338,9 +4338,28 @@ class OperationsDialog(QDialog):
         git_export = QPushButton(self.tr("Export Git review")); git_export.clicked.connect(lambda: self.export_change_review("git")); change_controls.addWidget(git_export)
         rollback_export = QPushButton(self.tr("Export rollback plan")); rollback_export.clicked.connect(lambda: self.export_change_review("rollback")); change_controls.addWidget(rollback_export); change_controls.addStretch(); change_layout.addLayout(change_controls)
         self.change_tab_index = self.tabs.addTab(change_page, self.tr("Change control"))
+
+        reports_page = QWidget(); reports_layout = QVBoxLayout(reports_page)
+        reports_intro = QLabel(self.tr("Generate local, redacted reports for leadership, SOC, or operations. Reports contain no credentials and are not sent automatically.")); reports_intro.setWordWrap(True); reports_layout.addWidget(reports_intro)
+        report_controls = QHBoxLayout(); report_controls.addWidget(QLabel(self.tr("Report type:")))
+        self.report_type = QComboBox(); self.report_type.addItem(self.tr("CISO security summary"), "ciso"); self.report_type.addItem(self.tr("SOC investigation summary"), "soc"); self.report_type.addItem(self.tr("Operations health summary"), "operations"); report_controls.addWidget(self.report_type)
+        report_generate = QPushButton(self.tr("Generate report")); report_generate.clicked.connect(self.generate_report); report_controls.addWidget(report_generate); report_controls.addStretch(); reports_layout.addLayout(report_controls)
+        self.report_chart = NumericBarChart(); reports_layout.addWidget(self.report_chart)
+        self.report_preview = QPlainTextEdit(); self.report_preview.setReadOnly(True); reports_layout.addWidget(self.report_preview)
+        report_actions = QHBoxLayout(); report_markdown = QPushButton(self.tr("Export report as Markdown")); report_markdown.clicked.connect(lambda: self.export_report("markdown")); report_actions.addWidget(report_markdown)
+        report_json = QPushButton(self.tr("Export report as JSON")); report_json.clicked.connect(lambda: self.export_report("json")); report_actions.addWidget(report_json); report_actions.addStretch(); reports_layout.addLayout(report_actions)
+        self.reports_tab_index = self.tabs.addTab(reports_page, self.tr("Reports"))
+        self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
-        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_incident()
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_incident(); self.generate_report()
+
+    def _apply_operations_mode(self):
+        """Keep basic mode focused on situational awareness and investigation."""
+        basic = self.settings.value("ui/mode", "basic") == "basic"
+        advanced_tabs = (1, 2, 3, 4, 5, 6, self.change_tab_index)
+        for index in advanced_tabs:
+            self.tabs.setTabVisible(index, not basic)
 
     def _json(self, editor, fallback):
         try: return json.loads(editor.toPlainText() or fallback)
@@ -4460,6 +4479,36 @@ class OperationsDialog(QDialog):
         if path:
             Path(path).write_text(content, encoding="utf-8")
             AuditTrail(self.settings).append("change_review_exported", {"kind": kind, "file": os.path.basename(path), "risk": plan["risk"]})
+
+    def _report_data(self):
+        return security_report_data(self.report_type.currentData(), getattr(self.window, "request_history", []), AuditTrail(self.settings).events(), AuditTrail(self.settings).verify())
+
+    def generate_report(self):
+        data = self._report_data()
+        posture, incidents = data["posture"], data["incident_summary"]
+        severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
+        self.report_chart.set_values([(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()])
+        title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}[data["kind"]]
+        lines = [f"# {title}", "", self.tr("Posture score: {score}/100").format(score=posture["score"]), self.tr("Local requests: {count}").format(count=posture["metrics"]["requests"]), self.tr("Failed requests: {count}").format(count=posture["metrics"]["failed"]), self.tr("Audit integrity: {status}").format(status=self.tr("Valid") if data["audit_valid"] else self.tr("Needs review")), "", self.tr("Incident signals"), f"- {self.tr('High')}: {incidents['high']}", f"- {self.tr('Medium')}: {incidents['medium']}"]
+        if data["kind"] == "ciso":
+            lines += ["", self.tr("Executive actions"), "- " + self.tr("Review high-risk findings and approval records."), "- " + self.tr("Use the Security Posture and Change Control workspaces for evidence.")]
+        elif data["kind"] == "soc":
+            lines += ["", self.tr("SOC next steps"), "- " + self.tr("Use Incident Investigation to prepare a review chain."), "- " + self.tr("Export masked evidence before escalation.")]
+        else:
+            lines += ["", self.tr("Operations next steps"), "- " + self.tr("Review slow responses and API failures."), "- " + self.tr("Confirm rate limits and service health with read-only queries.")]
+        self.report_preview.setPlainText("\n".join(lines))
+
+    def export_report(self, format_name):
+        data = self._report_data()
+        if format_name == "json":
+            path, _ = QFileDialog.getSaveFileName(self, self.tr("Export report as JSON"), "security-report.json", "JSON (*.json)")
+            content = json.dumps(data, indent=2, ensure_ascii=False)
+        else:
+            path, _ = QFileDialog.getSaveFileName(self, self.tr("Export report as Markdown"), "security-report.md", "Markdown (*.md)")
+            content = self.report_preview.toPlainText() + "\n"
+        if path:
+            Path(path).write_text(content, encoding="utf-8")
+            AuditTrail(self.settings).append("security_report_exported", {"kind": data["kind"], "format": format_name, "file": os.path.basename(path)})
 
     def compare_policies(self):
         try:
