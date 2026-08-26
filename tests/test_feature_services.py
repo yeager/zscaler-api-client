@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, change_control_plan, security_report_data, validate_request_chain, chain_lookup, resolve_chain_templates
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, change_control_plan, security_report_data, validate_request_chain, chain_lookup, resolve_chain_templates
 
 
 class MemorySettings:
@@ -20,6 +20,36 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertIn("***", serialized)
         self.assertNotIn('"secret"', serialized)
         self.assertNotIn('"other"', serialized)
+
+    def test_response_drift_matches_records_by_identity_and_ignores_order(self):
+        before = {"items": [{"id": "b", "enabled": True}, {"id": "a", "enabled": True}]}
+        after = {"items": [{"id": "a", "enabled": False}, {"id": "b", "enabled": True}]}
+        drift = response_drift(before, after)
+        self.assertEqual(1, len(drift["changes"]))
+        self.assertEqual("$/items[id=a]/enabled", drift["changes"][0]["path"])
+        self.assertEqual("high", drift["changes"][0]["impact"])
+        self.assertEqual({"added": 0, "removed": 0, "changed": 1}, drift["summary"])
+        reordered = response_drift(before, {"items": list(reversed(before["items"]))})
+        self.assertTrue(reordered["unchanged"])
+        self.assertEqual(reordered["baseline_sha256"], reordered["current_sha256"])
+
+    def test_response_drift_masks_secrets_and_supports_volatile_fields(self):
+        before = {"timestamp": "old", "client_secret": "never-show", "value": 1}
+        after = {"timestamp": "new", "client_secret": "still-never-show", "value": 2}
+        drift = response_drift(before, after, ignored_fields=["timestamp"])
+        serialized = json.dumps(drift)
+        self.assertNotIn("never-show", serialized)
+        self.assertEqual(["timestamp"], drift["ignored_fields"])
+        self.assertEqual(["$/value"], [item["path"] for item in drift["changes"]])
+        timestamp_only = response_drift({"timestamp": "old"}, {"timestamp": "new"}, ignored_fields=["timestamp"])
+        self.assertTrue(timestamp_only["unchanged"])
+        self.assertEqual(timestamp_only["baseline_sha256"], timestamp_only["current_sha256"])
+
+    def test_response_drift_reports_add_remove_and_hard_limit(self):
+        drift = response_drift({"items": [{"id": "a"}, {"id": "b"}]}, {"items": [{"id": "b"}, {"id": "c"}]})
+        self.assertEqual(1, drift["summary"]["added"]); self.assertEqual(1, drift["summary"]["removed"])
+        limited = response_drift({}, {str(index): index for index in range(10)}, maximum_changes=3)
+        self.assertEqual(3, len(limited["changes"])); self.assertTrue(limited["truncated"])
 
     def test_mask_handles_sensitive_http_header_variants(self):
         safe = mask({"Set-Cookie": "session=hidden", "X-API-Key": "hidden", "Proxy-Authorization": "hidden",

@@ -53,7 +53,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
-from feature_services import AuditTrail, policy_diff, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
@@ -331,6 +331,47 @@ def redact_url(url: str) -> str:
         for key, value in query
     ])
     return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, parts.fragment))
+
+
+def load_masked_response_exchange(path: str | Path, maximum_bytes: int) -> tuple[dict[str, Any] | None, str]:
+    """Validate and re-mask a local exchange without restoring any executable state."""
+    candidate = Path(path)
+    try:
+        if not candidate.is_file() or candidate.is_symlink() or candidate.stat().st_size > max(1, maximum_bytes):
+            return None, "unavailable"
+        document = json.loads(candidate.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError, RecursionError):
+        return None, "invalid_json"
+    if not isinstance(document, dict) or document.get("schema") != RESPONSE_EXCHANGE_SCHEMA:
+        return None, "unsupported"
+    request, response = document.get("request", {}), document.get("response")
+    try:
+        valid = (isinstance(request, dict) and isinstance(request.get("headers", {}), dict)
+                 and isinstance(response, dict) and isinstance(response.get("headers", {}), dict)
+                 and "body" in response)
+        status_value = int(response.get("status", 0) or 0) if valid else -1
+        size_value = int(response.get("size_bytes", 0) or 0) if valid else -1
+        duration_value = int(response.get("duration_ms", 0) or 0) if valid else -1
+    except (TypeError, ValueError):
+        valid = False
+    if not valid or not 0 <= status_value <= 999 or size_value < 0 or duration_value < 0:
+        return None, "incomplete"
+    safe_document = redact_sensitive(document)
+    safe_request = safe_document.get("request", {})
+    if isinstance(safe_request, dict) and safe_request.get("url"):
+        safe_request["url"] = redact_url(str(safe_request["url"]))
+    return safe_document, ""
+
+
+def response_exchange_error_message(owner: Any, code: str) -> str:
+    """Translate stable exchange validation codes in any Qt dialog/window."""
+    messages = {
+        "unavailable": owner.tr("The response export is unavailable, is a symbolic link, or exceeds the configured transfer limit."),
+        "invalid_json": owner.tr("The response export is not valid UTF-8 JSON."),
+        "unsupported": owner.tr("This is not a supported ZS API response exchange file."),
+        "incomplete": owner.tr("The response exchange file is incomplete."),
+    }
+    return messages.get(code, owner.tr("The response exchange file could not be opened."))
 
 
 def response_cookie(headers: Dict | None, name: str) -> str:
@@ -5221,6 +5262,124 @@ class HistoryDialog(QDialog):
                     self.accept()
 
 
+class ResponseComparisonDialog(QDialog):
+    """Compare a masked active response with a local baseline without network access."""
+    def __init__(self, current_exchange: dict[str, Any], parent=None):
+        super().__init__(parent)
+        self.settings = QSettings("Zscaler", "APIClient")
+        self.current_exchange = redact_sensitive(current_exchange)
+        self.baseline_exchange: dict[str, Any] | None = None
+        self.baseline_name = ""
+        self._last_drift: dict[str, Any] | None = None
+        self.setWindowTitle(self.tr("Response drift comparison")); self.resize(1040, 700)
+        layout = QVBoxLayout(self)
+        intro = QLabel(self.tr("Compare the active masked response with a local ZS API Exchange baseline. Matching records are aligned by id, UUID, resourceId, key, or name. No API request is sent.")); intro.setWordWrap(True); layout.addWidget(intro)
+
+        source_row = QHBoxLayout()
+        source_row.addWidget(QLabel(self.tr("Baseline:")))
+        self.baseline_path = QLineEdit(); self.baseline_path.setReadOnly(True); self.baseline_path.setPlaceholderText(self.tr("Choose a masked response exchange file")); source_row.addWidget(self.baseline_path, 1)
+        choose = QPushButton(self.tr("Open baseline…")); choose.clicked.connect(self._load_baseline); source_row.addWidget(choose)
+        layout.addLayout(source_row)
+
+        ignore_row = QHBoxLayout(); ignore_row.addWidget(QLabel(self.tr("Ignore volatile fields:")))
+        self.ignored_fields = QLineEdit(str(self.settings.value("drift/ignored_fields", "timestamp,createdAt,updatedAt,lastModified,requestId,traceId")))
+        self.ignored_fields.setToolTip(self.tr("Comma-separated field names ignored at every JSON depth. Secrets are always masked independently.")); ignore_row.addWidget(self.ignored_fields, 1)
+        compare = QPushButton(self.tr("Compare responses")); compare.clicked.connect(self.compare); ignore_row.addWidget(compare); layout.addLayout(ignore_row)
+
+        self.summary = QLabel(self.tr("Open a baseline to calculate drift.")); self.summary.setObjectName("sectionTitle"); layout.addWidget(self.summary)
+        self.chart = NumericBarChart(); self.chart.setMaximumHeight(135); layout.addWidget(self.chart)
+        self.table = QTableWidget(0, 6)
+        self.table.setHorizontalHeaderLabels([self.tr("Impact"), self.tr("Change"), self.tr("JSON path"), self.tr("Identity"), self.tr("Baseline value"), self.tr("Current value")])
+        self.table.horizontalHeader().setStretchLastSection(True); self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows); layout.addWidget(self.table)
+
+        actions = QHBoxLayout(); actions.addStretch()
+        self.export_button = QPushButton(self.tr("Export masked drift…")); self.export_button.setEnabled(False); self.export_button.clicked.connect(self.export_drift); actions.addWidget(self.export_button)
+        close = QPushButton(self.tr("Close")); close.clicked.connect(self.reject); actions.addWidget(close); layout.addLayout(actions)
+
+    def _maximum_bytes(self) -> int:
+        try:
+            return max(1, min(1024, int(self.settings.value("advanced/max_transfer_mb", "100")))) * 1024 * 1024
+        except (TypeError, ValueError):
+            return 100 * 1024 * 1024
+
+    def _load_baseline(self):
+        path, _ = QFileDialog.getOpenFileName(self, self.tr("Open response baseline"), "", "ZS API Exchange (*.zsapi.json *.json);;JSON (*.json)")
+        if not path:
+            return
+        document, error_code = load_masked_response_exchange(path, self._maximum_bytes())
+        if document is None:
+            QMessageBox.warning(self, self.tr("Open response baseline"), response_exchange_error_message(self, error_code)); return
+        self.baseline_exchange = document
+        self.baseline_name = Path(path).name
+        self.baseline_path.setText(self.baseline_name)
+        AuditTrail(self.settings).append("response_baseline_opened", {"file": self.baseline_name})
+        self.compare()
+
+    @staticmethod
+    def _response_body(exchange: dict[str, Any]) -> Any:
+        response = exchange.get("response", {}) if isinstance(exchange, dict) else {}
+        return response.get("body") if isinstance(response, dict) else None
+
+    @staticmethod
+    def _serialized_value(value: Any) -> str:
+        return json.dumps(value, ensure_ascii=False, sort_keys=True) if isinstance(value, (dict, list)) else "" if value is None else str(value)
+
+    @classmethod
+    def _cell_value(cls, value: Any) -> str:
+        rendered = cls._serialized_value(value)
+        return rendered if len(rendered) <= 300 else rendered[:297] + "…"
+
+    def compare(self):
+        if self.baseline_exchange is None:
+            QMessageBox.information(self, self.tr("Response drift comparison"), self.tr("Open a baseline response exchange first.")); return
+        ignored = [item.strip() for item in self.ignored_fields.text().split(",") if item.strip()]
+        self.settings.setValue("drift/ignored_fields", ",".join(ignored))
+        drift = response_drift(self._response_body(self.baseline_exchange), self._response_body(self.current_exchange), ignored_fields=ignored)
+        self._last_drift = redact_sensitive(drift)
+        counts, impacts = drift["summary"], drift["impacts"]
+        if drift["unchanged"]:
+            message = self.tr("No drift found in the compared scope.")
+        else:
+            message = self.tr("{total} change(s): {added} added, {removed} removed, {changed} changed · {high} high-impact").format(
+                total=len(drift["changes"]), added=counts["added"], removed=counts["removed"], changed=counts["changed"], high=impacts["high"])
+            if drift["truncated"]:
+                message += " · " + self.tr("Result truncated at {maximum} changes").format(maximum=drift["maximum_changes"])
+        self.summary.setText(message + " · " + self.tr("Baseline {baseline} · current {current}").format(baseline=drift["baseline_sha256"][:12], current=drift["current_sha256"][:12]))
+        self.chart.set_values([(self.tr("Added"), float(counts["added"])), (self.tr("Removed"), float(counts["removed"])), (self.tr("Changed"), float(counts["changed"])), (self.tr("High impact"), float(impacts["high"]))])
+        visible = drift["changes"][:1000]
+        self.table.setRowCount(len(visible))
+        impact_colors = {"high": "#c62828", "medium": "#e65100", "low": "#1565c0"}
+        for row, change in enumerate(visible):
+            values = (change["impact"].title(), change["change"].title(), change["path"], change.get("identity", ""), self._cell_value(change.get("before")), self._cell_value(change.get("after")))
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(value)
+                if column == 0: item.setForeground(QColor(impact_colors.get(change["impact"], "#1565c0")))
+                self.table.setItem(row, column, item)
+        self.table.resizeColumnsToContents(); self.export_button.setEnabled(True)
+        AuditTrail(self.settings).append("response_drift_compared", {"baseline_file": self.baseline_name, "changes": len(drift["changes"]), "high_impact": impacts["high"], "truncated": drift["truncated"]})
+
+    def export_drift(self):
+        if not self._last_drift:
+            return
+        path, selected = QFileDialog.getSaveFileName(self, self.tr("Export masked drift"), "response-drift.json", "JSON (*.json);;CSV (*.csv);;Markdown (*.md)")
+        if not path:
+            return
+        safe = redact_sensitive(self._last_drift); suffix = Path(path).suffix.lower()
+        if suffix == ".csv" or "CSV" in selected:
+            output = io.StringIO(); writer = csv.writer(output); writer.writerow(["impact", "change", "path", "identity", "before", "after"])
+            for item in safe["changes"]: writer.writerow([item["impact"], item["change"], item["path"], item.get("identity", ""), self._serialized_value(item.get("before")), self._serialized_value(item.get("after"))])
+            Path(path).write_text(output.getvalue(), encoding="utf-8")
+        elif suffix == ".md" or "Markdown" in selected:
+            lines = ["# ZS API Client response drift", "", self.summary.text(), "", "| Impact | Change | Path | Identity | Baseline | Current |", "| --- | --- | --- | --- | --- | --- |"]
+            for item in safe["changes"]:
+                values = [str(item.get(key, "")) for key in ("impact", "change", "path", "identity")] + [self._serialized_value(item.get("before")), self._serialized_value(item.get("after"))]
+                lines.append("| " + " | ".join(value.replace("|", "\\|").replace("\n", "<br>") for value in values) + " |")
+            Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+        else:
+            Path(path).write_text(json.dumps(safe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        AuditTrail(self.settings).append("response_drift_exported", {"file": Path(path).name, "format": suffix.lstrip("."), "changes": len(safe["changes"])})
+
+
 class OperationsDialog(QDialog):
     """Advanced local operations: no action is sent to Zscaler without Send."""
     def __init__(self, window, initial_tab=0):
@@ -6611,6 +6770,7 @@ class MainWindow(QMainWindow):
         preview_export_btn.clicked.connect(self._preview_response_export)
         response_info_bar.addWidget(preview_export_btn)
         open_export_btn = QPushButton(self.tr("Open export")); open_export_btn.clicked.connect(self._import_response_exchange); response_info_bar.addWidget(open_export_btn)
+        compare_response_btn = QPushButton(self.tr("Compare drift")); compare_response_btn.clicked.connect(self._compare_response_drift); response_info_bar.addWidget(compare_response_btn)
         response_layout.addLayout(response_info_bar)
 
         # Response body and headers
@@ -6757,6 +6917,7 @@ class MainWindow(QMainWindow):
         history_action.triggered.connect(self._show_history)
         file_menu.addAction(history_action)
         import_response_action = QAction(self.tr("Open response export…"), self); import_response_action.setShortcut("Ctrl+O"); import_response_action.triggered.connect(self._import_response_exchange); file_menu.addAction(import_response_action)
+        compare_response_action = QAction(self.tr("Compare response drift…"), self); compare_response_action.triggered.connect(self._compare_response_drift); file_menu.addAction(compare_response_action)
         
         file_menu.addSeparator()
         
@@ -7907,31 +8068,14 @@ class MainWindow(QMainWindow):
         candidate = Path(path)
         try:
             maximum_mb = max(1, min(1024, int(QSettings("Zscaler", "APIClient").value("advanced/max_transfer_mb", "100"))))
-            if not candidate.is_file() or candidate.is_symlink() or candidate.stat().st_size > maximum_mb * 1024 * 1024:
-                raise ValueError(self.tr("The response export is unavailable, is a symbolic link, or exceeds the configured transfer limit."))
-            document = json.loads(candidate.read_text(encoding="utf-8"))
-            if not isinstance(document, dict) or document.get("schema") != RESPONSE_EXCHANGE_SCHEMA:
-                raise ValueError(self.tr("This is not a supported ZS API response exchange file."))
-            request = document.get("request", {})
-            response = document.get("response")
-            if (not isinstance(request, dict) or not isinstance(request.get("headers", {}), dict)
-                    or not isinstance(response, dict) or not isinstance(response.get("headers", {}), dict)
-                    or "body" not in response):
-                raise ValueError(self.tr("The response exchange file is incomplete."))
-            status_value = int(response.get("status", 0) or 0)
-            size_value = int(response.get("size_bytes", 0) or 0)
-            duration_value = int(response.get("duration_ms", 0) or 0)
-            if not 0 <= status_value <= 999 or size_value < 0 or duration_value < 0:
-                raise ValueError(self.tr("The response exchange file is incomplete."))
-        except (OSError, UnicodeError, ValueError, RecursionError) as error:
-            QMessageBox.warning(self, self.tr("Open response export"), str(redact_sensitive(error)))
+            safe_document, error_code = load_masked_response_exchange(candidate, maximum_mb * 1024 * 1024)
+        except (TypeError, ValueError):
+            safe_document, error_code = None, "unavailable"
+        if safe_document is None:
+            QMessageBox.warning(self, self.tr("Open response export"), response_exchange_error_message(self, error_code))
             return
 
-        safe_document = redact_sensitive(document)
         safe_response = safe_document["response"]
-        request = safe_document.get("request", {})
-        if isinstance(request, dict) and request.get("url"):
-            request["url"] = redact_url(str(request["url"]))
         self._last_response_exchange = safe_document
         self._binary_response = None
         body = safe_response.get("body")
@@ -7951,6 +8095,14 @@ class MainWindow(QMainWindow):
             self._show_graphql_output(body)
         AuditTrail(QSettings("Zscaler", "APIClient")).append("response_export_opened", {"file": candidate.name, "status": status})
         self.status_bar.showMessage(self.tr("Response export opened locally; no API request was sent."))
+
+    def _compare_response_drift(self):
+        """Open a local-only comparison against a masked response baseline."""
+        if self._binary_response is not None:
+            QMessageBox.information(self, self.tr("Response drift comparison"), self.tr("Binary responses cannot be structurally compared. Export and inspect the original file with an appropriate tool.")); return
+        if not self.response_body.toPlainText() and not self._last_response_exchange:
+            QMessageBox.information(self, self.tr("Response drift comparison"), self.tr("Send a request or open a response export before comparing drift.")); return
+        ResponseComparisonDialog(self._response_export_payload(), self).exec()
 
     def _export_ai_result(self):
         path, _ = QFileDialog.getSaveFileName(

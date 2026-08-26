@@ -17,6 +17,7 @@ import re
 import time
 import urllib.parse
 import zipfile
+from collections import Counter
 from dataclasses import dataclass, asdict
 from typing import Any, Iterable
 
@@ -79,6 +80,116 @@ def policy_diff(before: Any, after: Any, path: str = "$") -> list[dict[str, Any]
         return ([{"path": path, "change": "removed", "before": json.loads(v), "after": None} for v in sorted(old - new)] +
                 [{"path": path, "change": "added", "before": None, "after": json.loads(v)} for v in sorted(new - old)])
     return [] if before == after else [{"path": path, "change": "changed", "before": safe_before, "after": safe_after}]
+
+
+DRIFT_IDENTITY_FIELDS = ("id", "uuid", "resourceId", "key", "name")
+DRIFT_HIGH_IMPACT_FIELDS = frozenset({
+    "action", "allow", "block", "conditions", "enabled", "enforcement", "permissions",
+    "policy", "role", "roles", "status", "trust", "authentication", "authorization",
+})
+
+
+def response_drift(before: Any, after: Any, ignored_fields: Iterable[str] = (), maximum_changes: int = 5000) -> dict[str, Any]:
+    """Compare masked API data structurally, matching record lists by stable identities."""
+    ignored = {str(field).strip().casefold() for field in ignored_fields if str(field).strip()}
+    limit = max(1, min(50_000, int(maximum_changes)))
+    safe_before, safe_after = mask(before), mask(after)
+    changes: list[dict[str, Any]] = []
+    truncated = False
+
+    def pointer(value: Any) -> str:
+        return str(value).replace("~", "~0").replace("/", "~1")
+
+    def impact(path: str, change: str) -> str:
+        segments = {segment.split("=", 1)[0].casefold() for segment in re.split(r"[/\[\].]+", path) if segment}
+        if change in {"changed", "removed"} and segments & DRIFT_HIGH_IMPACT_FIELDS:
+            return "high"
+        if change in {"added", "removed"}:
+            return "medium"
+        return "low"
+
+    def add(path: str, change: str, old: Any, new: Any, identity: str = ""):
+        nonlocal truncated
+        if len(changes) >= limit:
+            truncated = True
+            return
+        changes.append({"path": path, "change": change, "impact": impact(path, change),
+                        "identity": identity, "before": old, "after": new})
+
+    def identity_maps(old: list, new: list):
+        combined = old + new
+        if not combined or not all(isinstance(item, dict) for item in combined):
+            return None
+        for field in DRIFT_IDENTITY_FIELDS:
+            if field.casefold() in ignored or is_sensitive_name(field):
+                continue
+            values = [item.get(field) for item in combined]
+            if all(value is not None and not isinstance(value, (dict, list)) for value in values):
+                old_map = {str(item[field]): item for item in old}
+                new_map = {str(item[field]): item for item in new}
+                if len(old_map) == len(old) and len(new_map) == len(new):
+                    return field, old_map, new_map
+        return None
+
+    def visit(old: Any, new: Any, path: str):
+        if truncated:
+            return
+        if type(old) is not type(new):
+            add(path, "changed", old, new); return
+        if isinstance(old, dict):
+            for key in sorted(set(old) | set(new), key=str):
+                if str(key).casefold() in ignored:
+                    continue
+                child = path + "/" + pointer(key)
+                if key not in old:
+                    add(child, "added", None, new[key])
+                elif key not in new:
+                    add(child, "removed", old[key], None)
+                else:
+                    visit(old[key], new[key], child)
+            return
+        if isinstance(old, list):
+            maps = identity_maps(old, new)
+            if maps:
+                field, old_map, new_map = maps
+                for value in sorted(set(old_map) | set(new_map)):
+                    child = f"{path}[{field}={pointer(value)}]"
+                    if value not in old_map:
+                        add(child, "added", None, new_map[value], f"{field}={value}")
+                    elif value not in new_map:
+                        add(child, "removed", old_map[value], None, f"{field}={value}")
+                    else:
+                        visit(old_map[value], new_map[value], child)
+                return
+            old_values, new_values = Counter(canonical(value) for value in old), Counter(canonical(value) for value in new)
+            for value in sorted(set(old_values) | set(new_values)):
+                parsed = json.loads(value)
+                for _ in range(max(0, old_values[value] - new_values[value])):
+                    add(path + "/[]", "removed", parsed, None)
+                for _ in range(max(0, new_values[value] - old_values[value])):
+                    add(path + "/[]", "added", None, parsed)
+            return
+        if old != new:
+            add(path, "changed", old, new)
+
+    visit(safe_before, safe_after, "$")
+    def comparison_scope(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {key: comparison_scope(item) for key, item in value.items() if str(key).casefold() not in ignored}
+        if isinstance(value, list):
+            scoped_items = [comparison_scope(item) for item in value]
+            return sorted(scoped_items, key=canonical)
+        return value
+    scoped_before, scoped_after = comparison_scope(safe_before), comparison_scope(safe_after)
+    summary = {kind: sum(1 for item in changes if item["change"] == kind) for kind in ("added", "removed", "changed")}
+    impacts = {level: sum(1 for item in changes if item["impact"] == level) for level in ("high", "medium", "low")}
+    return {
+        "unchanged": not changes and not truncated, "summary": summary, "impacts": impacts,
+        "changes": changes, "truncated": truncated, "maximum_changes": limit,
+        "ignored_fields": sorted(ignored),
+        "baseline_sha256": hashlib.sha256(canonical(scoped_before).encode("utf-8")).hexdigest(),
+        "current_sha256": hashlib.sha256(canonical(scoped_after).encode("utf-8")).hexdigest(),
+    }
 
 
 def simulate_policy(rules: Iterable[dict[str, Any]], context: dict[str, Any]) -> dict[str, Any]:

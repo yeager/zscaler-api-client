@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - Versioned, masked ZS API response exchanges that preserve request metadata, status, headers, complete REST/GraphQL bodies, and pagination details for safe local reopening without network execution.
 - Unified response export to JSON, YAML, XML, CSV, XLSX, NDJSON, Markdown, HTML, multi-page PDF, HAR, PNG, and SVG without the response viewer's row or column limits.
 - Configurable, cancellable retries for idempotent GET, HEAD, and OPTIONS requests after transient network failures or HTTP 408/429/502/503/504, including bounded `Retry-After` handling and visible retry evidence.
+- Local response-baseline comparison for configuration and inventory drift, with identity-aware list matching, volatile-field exclusions, impact visualization, scoped fingerprints, and masked JSON/CSV/Markdown evidence export.
 
 ### Security
 - Background reports reuse redacted local history, run without administrator privileges, and never receive API credentials.
@@ -27,6 +28,7 @@ All notable changes to this project will be documented in this file.
 - Chain templates reject forward references, executable expressions, credential headers, cross-host destinations, and more than 20 steps.
 - Imported response exchanges are size-limited, reject symbolic links and unknown schemas, are re-masked on ingestion, and never restore authentication or execute the embedded request.
 - POST, PUT, PATCH, and DELETE requests are never retried automatically, preventing duplicate administrative changes.
+- Response baselines use the same size, schema, symlink, structure, and re-masking controls as imported response exchanges; comparisons never send an API request.
 
 ### Fixed
 - Corrected ZIA `JSESSIONID`, Client Connector `jwtToken`/`auth-token`, URL-encoded ZPA credentials, and configurable ZDX v1/v2 authentication semantics against the official product guides.

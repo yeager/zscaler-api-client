@@ -871,6 +871,70 @@ class MainWindowTests(unittest.TestCase):
         warning.assert_called_once()
         self.assertIsNone(self.window._last_response_exchange)
 
+    def test_response_exchange_loader_remasks_baseline_and_rejects_unknown_schema(self):
+        document = {
+            "schema": client.RESPONSE_EXCHANGE_SCHEMA,
+            "request": {"url": "https://example.test?token=never-load", "headers": {"Authorization": "never-load"}},
+            "response": {"status": 200, "size_bytes": 10, "headers": {}, "body": {"client_secret": "never-load", "items": []}},
+        }
+        with TemporaryDirectory() as directory:
+            source = Path(directory) / "baseline.zsapi.json"; source.write_text(json.dumps(document), encoding="utf-8")
+            loaded, error = client.load_masked_response_exchange(source, 1024 * 1024)
+            self.assertFalse(error); self.assertNotIn("never-load", json.dumps(loaded))
+            loaded, error = client.load_masked_response_exchange(source, 1)
+            self.assertIsNone(loaded); self.assertEqual("unavailable", error)
+            link = Path(directory) / "linked.json"; link.symlink_to(source)
+            loaded, error = client.load_masked_response_exchange(link, 1024 * 1024)
+            self.assertIsNone(loaded); self.assertEqual("unavailable", error)
+            document["schema"] = "unknown"; source.write_text(json.dumps(document), encoding="utf-8")
+            loaded, error = client.load_masked_response_exchange(source, 1024 * 1024)
+            self.assertIsNone(loaded); self.assertEqual("unsupported", error)
+
+    def test_response_drift_dialog_is_local_visual_and_exports_masked_result(self):
+        current = {
+            "schema": client.RESPONSE_EXCHANGE_SCHEMA, "request": {},
+            "response": {"status": 200, "headers": {}, "body": {"items": [{"id": "app-1", "enabled": False, "client_secret": "never-export"}]}},
+        }
+        baseline = {
+            "schema": client.RESPONSE_EXCHANGE_SCHEMA, "request": {},
+            "response": {"status": 200, "headers": {}, "body": {"items": [{"id": "app-1", "enabled": True, "client_secret": "older-secret"}]}},
+        }
+        with TemporaryDirectory() as directory:
+            source = Path(directory) / "baseline.zsapi.json"; source.write_text(json.dumps(baseline), encoding="utf-8")
+            target = Path(directory) / "drift.json"
+            dialog = client.ResponseComparisonDialog(current, self.window)
+            with patch.object(client.QFileDialog, "getOpenFileName", return_value=(str(source), "")), patch.object(client, "ApiWorker") as worker:
+                dialog._load_baseline()
+            worker.assert_not_called()
+            self.assertEqual(1, dialog.table.rowCount())
+            self.assertEqual("High", dialog.table.item(0, 0).text())
+            self.assertIn("items[id=app-1]/enabled", dialog.table.item(0, 2).text())
+            self.assertTrue(dialog.chart.values); self.assertTrue(dialog.export_button.isEnabled())
+            with patch.object(client.QFileDialog, "getSaveFileName", return_value=(str(target), "JSON (*.json)")):
+                dialog.export_drift()
+            exported = target.read_text(encoding="utf-8")
+            self.assertNotIn("never-export", exported); self.assertNotIn("older-secret", exported)
+            self.assertIn("baseline_sha256", exported)
+            csv_target = Path(directory) / "drift.csv"
+            with patch.object(client.QFileDialog, "getSaveFileName", return_value=(str(csv_target), "CSV (*.csv)")):
+                dialog.export_drift()
+            self.assertIn("impact,change,path,identity,before,after", csv_target.read_text(encoding="utf-8"))
+            md_target = Path(directory) / "drift.md"
+            with patch.object(client.QFileDialog, "getSaveFileName", return_value=(str(md_target), "Markdown (*.md)")):
+                dialog.export_drift()
+            markdown = md_target.read_text(encoding="utf-8")
+            self.assertIn("| Impact | Change | Path", markdown); self.assertNotIn("never-export", markdown)
+            dialog.close()
+
+    def test_main_response_comparison_requires_active_text_response(self):
+        with patch.object(client.QMessageBox, "information") as information, patch.object(client, "ResponseComparisonDialog") as comparison:
+            self.window._compare_response_drift()
+        information.assert_called_once(); comparison.assert_not_called()
+        self.window.response_body.setPlainText('{"items": []}')
+        with patch.object(client, "ResponseComparisonDialog") as comparison:
+            self.window._compare_response_drift()
+        comparison.assert_called_once(); comparison.return_value.exec.assert_called_once()
+
     def test_request_exports_are_sanitized(self):
         self.window.url_input.setText("https://example.test/users?access_token=do-not-export")
         self.window.headers_table.setItem(0, 0, client.QTableWidgetItem("Authorization"))
