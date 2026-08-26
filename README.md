@@ -56,6 +56,7 @@ ZS API Client is built with security as a top priority:
 - **Request History** – Browse and replay previous requests
 - **Adaptive response views** – Inspect masked JSON as a table, chart, tree, heatmap, topology, or GraphQL schema; use export preview to review masking before writing a file
 - **Complete GraphQL envelopes** – Preserve and display `data`, `errors`, and `extensions`, including partial-success responses
+- **Typed GraphQL variables** – Extract operation variables into a guided editor, validate required values and nested list/scalar types, and insert them into `body.variables` rather than URL parameters
 
 ### Productivity
 - **Batch Operations** – Import CSV files for bulk create/delete/update operations

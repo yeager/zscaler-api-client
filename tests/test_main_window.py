@@ -140,7 +140,10 @@ class MainWindowTests(unittest.TestCase):
     def test_workspace_has_explorer_editor_and_inspector(self):
         self.assertEqual(self.window.main_splitter.count(), 3)
         self.assertEqual(self.window.response_tabs.count(), 8)
-        self.assertEqual(self.window.request_tabs.count(), 4)
+        self.assertEqual(self.window.request_tabs.count(), 5)
+        self.assertFalse(self.window.request_tabs.isTabVisible(self.window.graphql_variables_tab_index))
+        self.window.graphql_mode.setChecked(True)
+        self.assertTrue(self.window.request_tabs.isTabVisible(self.window.graphql_variables_tab_index))
         self.assertIsNotNone(self.window.findChild(client.QFrame, "commandBar"))
 
     def test_operations_shortcuts_can_open_the_relevant_workspace(self):
@@ -319,8 +322,11 @@ class MainWindowTests(unittest.TestCase):
         self.window.graphql_preset_name.setText("test-query")
         self.window.url_input.setText("https://example.test/graphql")
         self.window.body_input.setPlainText('{"query":"query($id: ID!) { user(id: $id) { id } }"}')
-        self.window._populate_table(self.window.params_table, {"id": "user-1"})
-        with patch.object(client, "secure_store", lambda key, value: saved.__setitem__(key, value)), \
+        self.window.graphql_mode.setChecked(True)
+        self.window._refresh_graphql_variables()
+        self.window.graphql_variables_table.setItem(0, 4, client.QTableWidgetItem('"user-1"'))
+        self.window._populate_table(self.window.params_table, {"trace": "true"})
+        with patch.object(client, "secure_store", lambda key, value: (saved.__setitem__(key, value), True)[1]), \
              patch.object(client, "secure_get", lambda key: saved.get(key, "")):
             self.window._save_graphql_query()
             self.window.url_input.clear()
@@ -329,8 +335,77 @@ class MainWindowTests(unittest.TestCase):
             self.window._load_graphql_query()
         self.assertIn("graphql_preset_test-query", saved)
         self.assertIn("user(id", self.window.body_input.toPlainText())
-        self.assertEqual(self.window._table_values(self.window.params_table), {"id": "user-1"})
+        self.assertEqual(self.window._table_values(self.window.params_table), {"trace": "true"})
+        self.assertEqual(self.window._graphql_variable_editor_texts(), {"id": '"user-1"'})
+        legacy = json.loads(saved["graphql_preset_test-query"]); legacy.pop("graphql_variables"); legacy["params"] = {"id": "legacy-user", "trace": "true"}; saved["graphql_preset_test-query"] = json.dumps(legacy)
+        with patch.object(client, "secure_get", lambda key: saved.get(key, "")):
+            self.window._load_graphql_query()
+        self.assertEqual(self.window._graphql_variable_editor_texts(), {"id": "legacy-user"})
+        self.assertEqual(self.window._table_values(self.window.params_table), {"trace": "true"})
         settings.remove("graphql/presets")
+
+    def test_graphql_variables_are_typed_and_sent_in_body_not_url(self):
+        query = "query Lookup($id: ID!, $limit: Int!, $active: Boolean, $tags: [String!]) { user(id: $id) { id } }"
+        definitions = client.graphql_variable_definitions(query)
+        self.assertEqual(["id", "limit", "active", "tags"], [item["name"] for item in definitions])
+        self.assertTrue(definitions[0]["required"])
+        self.window.graphql_mode.setChecked(True)
+        self.window.url_input.setText("https://example.test/graphql")
+        self.window.body_input.setPlainText(json.dumps({"query": query, "variables": {}}))
+        self.window._refresh_graphql_variables()
+        for row, value in enumerate(('"user-1"', "10", "true", '["soc","zia"]')):
+            self.window.graphql_variables_table.setItem(row, 4, client.QTableWidgetItem(value))
+        with patch.object(client, "ApiWorker") as worker_type:
+            self.window._send_request()
+        request = worker_type.call_args.args[0][0]
+        self.assertEqual("https://example.test/graphql", request["url"])
+        self.assertEqual({"id": "user-1", "limit": 10, "active": True, "tags": ["soc", "zia"]}, request["body"]["variables"])
+        multi = "query First($skip: Int = 0) { a } query Second($ids: [ID!]!, $filter: Filter = {enabled: true}) { b }"
+        selected = client.graphql_variable_definitions(multi, "Second")
+        self.assertEqual(["ids", "filter"], [item["name"] for item in selected])
+        self.assertTrue(selected[0]["required"]); self.assertFalse(selected[1]["required"])
+        self.assertEqual("null_not_allowed", client.parse_graphql_variable_value("null", "ID!")[1])
+        self.assertEqual("null_not_allowed", client.parse_graphql_variable_value('["one", null]', "[ID!]!")[1])
+
+    def test_graphql_multiple_operations_require_a_matching_operation_name(self):
+        body = {"query": "query First { a } query Second { b }", "variables": {}}
+        _, errors = self.window._validated_graphql_body(body)
+        self.assertTrue(errors)
+        body["operationName"] = "Missing"
+        _, errors = self.window._validated_graphql_body(body)
+        self.assertTrue(errors)
+        body["operationName"] = "Second"
+        _, errors = self.window._validated_graphql_body(body)
+        self.assertEqual([], errors)
+
+    def test_graphql_preset_keychain_failures_do_not_change_settings(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        settings.setValue("graphql/presets", ["old-query"])
+        self.window._refresh_graphql_presets()
+        self.window.graphql_preset_choice.setCurrentText("old-query")
+        self.window.graphql_preset_name.setText("new-query")
+        with patch.object(client, "secure_get", return_value='{"body":"{}"}'), \
+             patch.object(client, "secure_store_many", return_value=False), \
+             patch.object(client.QMessageBox, "warning") as warning:
+            self.window._rename_graphql_query()
+        self.assertEqual(["old-query"], settings.value("graphql/presets", [], type=list))
+        warning.assert_called_once()
+        with patch.object(client, "secure_delete", return_value=False), \
+             patch.object(client.QMessageBox, "warning") as warning:
+            self.window._delete_graphql_query()
+        self.assertEqual(["old-query"], settings.value("graphql/presets", [], type=list))
+        warning.assert_called_once()
+        settings.remove("graphql/presets")
+
+    def test_graphql_required_variable_blocks_request(self):
+        self.window.graphql_mode.setChecked(True)
+        self.window.url_input.setText("https://example.test/graphql")
+        self.window.body_input.setPlainText('{"query":"query Lookup($id: ID!) { user(id: $id) { id } }","variables":{}}')
+        self.window._refresh_graphql_variables()
+        with patch.object(client, "ApiWorker") as worker_type, patch.object(client.QMessageBox, "warning") as warning:
+            self.window._send_request()
+        worker_type.assert_not_called(); warning.assert_called_once()
+        self.assertEqual(self.window.graphql_variables_tab_index, self.window.request_tabs.currentIndex())
 
     def test_clear_ai_key_removes_keychain_value_and_field(self):
         deleted = []
@@ -685,10 +760,11 @@ class MainWindowTests(unittest.TestCase):
 
     def test_alert_center_uses_saved_error_threshold_and_is_available_in_basic_mode(self):
         settings = client.QSettings("Zscaler", "APIClient")
-        old_mode, old_threshold = settings.value("ui/mode", None), settings.value("monitoring/error_threshold", None)
+        old_mode, old_threshold, old_audit = settings.value("ui/mode", None), settings.value("monitoring/error_threshold", None), settings.value("audit/events", None)
         try:
             settings.setValue("ui/mode", "basic")
             settings.setValue("monitoring/error_threshold", "2")
+            settings.remove("audit/events")
             self.window.request_history = [{"status": 500, "url": "https://example.test"}] * 2
             dialog = client.OperationsDialog(self.window)
             self.assertTrue(dialog.tabs.isTabVisible(dialog.alert_tab_index))
@@ -697,7 +773,7 @@ class MainWindowTests(unittest.TestCase):
             self.assertTrue(dialog.alert_chart.values)
             dialog.close()
         finally:
-            for key, value in (("ui/mode", old_mode), ("monitoring/error_threshold", old_threshold)):
+            for key, value in (("ui/mode", old_mode), ("monitoring/error_threshold", old_threshold), ("audit/events", old_audit)):
                 if value is None:
                     settings.remove(key)
                 else:

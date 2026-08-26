@@ -102,6 +102,117 @@ def graphql_request_is_read_only(body_text: str) -> bool:
     return bool(re.match(r"^(?:query\b|\{)", query, re.IGNORECASE))
 
 
+def _split_graphql_variable_declarations(text: str) -> list[str]:
+    """Split a GraphQL variable definition list without breaking nested defaults."""
+    parts: list[str] = []; start = 0; stack: list[str] = []; quote = ""; escaped = False
+    pairs = {")": "(", "]": "[", "}": "{"}
+    for index, char in enumerate(text):
+        if quote:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = ""
+            continue
+        if char in {'"', "'"}:
+            quote = char
+        elif char in "([{":
+            stack.append(char)
+        elif char in ")]}" and stack and stack[-1] == pairs[char]:
+            stack.pop()
+        elif char == "," and not stack:
+            parts.append(text[start:index].strip()); start = index + 1
+    tail = text[start:].strip()
+    if tail:
+        parts.append(tail)
+    return [part for part in parts if part]
+
+
+def graphql_variable_definitions(query: str, operation_name: str | None = None) -> list[dict[str, Any]]:
+    """Extract typed variables for one GraphQL operation without executing the query."""
+    cleaned = re.sub(r"(?m)#.*$", "", str(query or ""))
+    operation = re.compile(r"\b(query|mutation|subscription)\b\s*([_A-Za-z][_0-9A-Za-z]*)?\s*(\()", re.IGNORECASE)
+    candidates: list[tuple[str, str]] = []
+    for match in operation.finditer(cleaned):
+        depth = 1; quote = ""; escaped = False; end = None
+        for index in range(match.end(), len(cleaned)):
+            char = cleaned[index]
+            if quote:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == quote:
+                    quote = ""
+                continue
+            if char in {'"', "'"}:
+                quote = char
+            elif char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+                if depth == 0:
+                    end = index; break
+        if end is not None:
+            candidates.append((str(match.group(2) or ""), cleaned[match.end():end]))
+    if not candidates:
+        return []
+    if operation_name:
+        selected = next((value for name, value in candidates if name == operation_name), None)
+        if selected is None:
+            return []
+    else:
+        selected = candidates[0][1]
+    definitions = []
+    for raw in _split_graphql_variable_declarations(selected):
+        match = re.match(r"^\s*\$([_A-Za-z][_0-9A-Za-z]*)\s*:\s*([\[_A-Za-z][_0-9A-Za-z!\[\]]*)(?:\s*=\s*(.+))?\s*$", raw, re.DOTALL)
+        if not match:
+            continue
+        type_name = match.group(2); default = match.group(3)
+        definitions.append({"name": match.group(1), "type": type_name, "required": type_name.endswith("!") and default is None, "default": default})
+    return definitions
+
+
+def graphql_operation_names(query: str) -> list[str]:
+    """Return named operations in source order for operationName validation."""
+    cleaned = re.sub(r"(?m)#.*$", "", str(query or ""))
+    return re.findall(r"\b(?:query|mutation|subscription)\b\s+([_A-Za-z][_0-9A-Za-z]*)", cleaned, re.IGNORECASE)
+
+
+def _graphql_value_type_error(value: Any, type_name: str) -> str:
+    required = type_name.endswith("!"); nullable_type = type_name[:-1] if required else type_name
+    if value is None:
+        return "null_not_allowed" if required else ""
+    if nullable_type.startswith("[") and nullable_type.endswith("]"):
+        if not isinstance(value, list):
+            return "expected_list"
+        inner = nullable_type[1:-1]
+        return next((error for item in value if (error := _graphql_value_type_error(item, inner))), "")
+    if nullable_type == "Int" and (isinstance(value, bool) or not isinstance(value, int)):
+        return "expected_int"
+    if nullable_type == "Float" and (isinstance(value, bool) or not isinstance(value, (int, float))):
+        return "expected_float"
+    if nullable_type == "Boolean" and not isinstance(value, bool):
+        return "expected_boolean"
+    return ""
+
+
+def parse_graphql_variable_value(text: str, type_name: str) -> tuple[Any, str]:
+    """Parse one variable as JSON and enforce GraphQL built-in container/scalar types."""
+    raw = str(text or "").strip(); base = type_name.replace("!", "").replace("[", "").replace("]", "")
+    if not raw:
+        return None, "missing"
+    try:
+        value = json.loads(raw)
+    except (TypeError, ValueError):
+        if base in {"String", "ID"} or base not in {"Int", "Float", "Boolean"}:
+            value = raw
+        else:
+            return None, "invalid_json"
+    return value, _graphql_value_type_error(value, type_name)
+
+
 def collect_record_datasets(value: Any, maximum_rows: int = 1000) -> list[tuple[str, list[dict[str, Any]]]]:
     """Collect every tabular JSON branch, merging repeated nested list paths."""
     collected: dict[str, list[dict[str, Any]]] = {}
@@ -5726,7 +5837,7 @@ class MainWindow(QMainWindow):
         request_layout.addLayout(url_layout)
         self.graphql_mode = QCheckBox(self.tr("GraphQL request"))
         self.graphql_mode.setToolTip(self.tr("Send the request body as a GraphQL query and preserve data, errors, and extensions."))
-        self.graphql_mode.toggled.connect(lambda enabled: self.method_combo.setCurrentText("● POST") if enabled else None)
+        self.graphql_mode.toggled.connect(self._on_graphql_mode_toggled)
         request_layout.addWidget(self.graphql_mode)
         graphql_presets = QHBoxLayout()
         self.graphql_preset_name = QLineEdit()
@@ -5800,6 +5911,18 @@ class MainWindow(QMainWindow):
         body_layout.addWidget(self.body_input)
         self.request_tabs.addTab(body_widget, self.tr("Body"))
 
+        graphql_variables_widget = QWidget()
+        graphql_variables_layout = QVBoxLayout(graphql_variables_widget)
+        graphql_variables_intro = QLabel(self.tr("Extract typed variables from the selected GraphQL operation. Values are inserted into the JSON request body, never into the URL.")); graphql_variables_intro.setWordWrap(True); graphql_variables_layout.addWidget(graphql_variables_intro)
+        self.graphql_variables_table = QTableWidget(0, 5)
+        self.graphql_variables_table.setHorizontalHeaderLabels([self.tr("Variable"), self.tr("Type"), self.tr("Required"), self.tr("Default"), self.tr("JSON value")])
+        self.graphql_variables_table.horizontalHeader().setStretchLastSection(True)
+        graphql_variables_layout.addWidget(self.graphql_variables_table)
+        graphql_variable_controls = QHBoxLayout()
+        extract_graphql_variables = QPushButton(self.tr("Extract variables from query")); extract_graphql_variables.clicked.connect(self._refresh_graphql_variables); graphql_variable_controls.addWidget(extract_graphql_variables)
+        self.graphql_variables_status = QLabel(self.tr("No GraphQL variables extracted.")); graphql_variable_controls.addWidget(self.graphql_variables_status); graphql_variable_controls.addStretch(); graphql_variables_layout.addLayout(graphql_variable_controls)
+        self.graphql_variables_tab_index = self.request_tabs.addTab(graphql_variables_widget, self.tr("GraphQL Variables"))
+
         # Path variables are extracted automatically from :name and {name}
         # placeholders in the selected Automation Hub endpoint.
         variables_widget = QWidget()
@@ -5808,7 +5931,8 @@ class MainWindow(QMainWindow):
         self.variables_table.setHorizontalHeaderLabels([self.tr("Variable"), self.tr("Value")])
         self.variables_table.horizontalHeader().setStretchLastSection(True)
         variables_layout.addWidget(self.variables_table)
-        self.request_tabs.addTab(variables_widget, self.tr("Path Variables"))
+        self.path_variables_tab_index = self.request_tabs.addTab(variables_widget, self.tr("Path Variables"))
+        self._on_graphql_mode_toggled(False)
         
         request_layout.addWidget(self.request_tabs)
         self._refresh_graphql_presets()
@@ -6199,6 +6323,8 @@ class MainWindow(QMainWindow):
             return
         
         # Update request
+        self.graphql_mode.setChecked(False)
+        self.graphql_variables_table.setRowCount(0)
         self.method_combo.setCurrentText(f"● {details['method']}")
         
         # Build URL
@@ -6318,7 +6444,7 @@ class MainWindow(QMainWindow):
             self.variables_table.setItem(row, 0, name_item)
             self.variables_table.setItem(row, 1, QTableWidgetItem(""))
         if names:
-            self.request_tabs.setCurrentIndex(3)
+            self.request_tabs.setCurrentIndex(self.path_variables_tab_index)
     
     def _update_api_list(self):
         """Update API dropdown based on enabled APIs in settings."""
@@ -7115,6 +7241,98 @@ class MainWindow(QMainWindow):
         self.graphql_preset_choice.clear()
         self.graphql_preset_choice.addItems(sorted(set(names)))
 
+    def _on_graphql_mode_toggled(self, enabled):
+        if enabled:
+            self.method_combo.setCurrentText("● POST")
+        if hasattr(self, "request_tabs") and hasattr(self, "graphql_variables_tab_index"):
+            self.request_tabs.setTabVisible(self.graphql_variables_tab_index, bool(enabled))
+
+    @staticmethod
+    def _graphql_display_value(value):
+        return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+
+    def _graphql_variable_editor_texts(self):
+        values = {}
+        for row in range(self.graphql_variables_table.rowCount()):
+            name = self.graphql_variables_table.item(row, 0)
+            value = self.graphql_variables_table.item(row, 4)
+            if name:
+                values[name.text()] = value.text() if value else ""
+        return values
+
+    def _refresh_graphql_variables(self, checked=False, query=None, editor_values=None):
+        """Populate a typed editor from the selected GraphQL operation."""
+        if isinstance(checked, str) and query is None:
+            query = checked
+        try:
+            payload = json.loads(self.body_input.toPlainText() or "{}")
+        except (TypeError, ValueError):
+            payload = {}
+        query = str(query if query is not None else payload.get("query", ""))
+        definitions = graphql_variable_definitions(query, str(payload.get("operationName") or "") or None)
+        previous = self._graphql_variable_editor_texts()
+        body_values = payload.get("variables", {}) if isinstance(payload.get("variables", {}), dict) else {}
+        self.graphql_variables_table.setRowCount(len(definitions))
+        missing = 0
+        for row, definition in enumerate(definitions):
+            default = definition.get("default")
+            columns = (definition["name"], definition["type"], self.tr("Yes") if definition["required"] else self.tr("No"), str(default) if default is not None else "—")
+            for column, value in enumerate(columns):
+                item = QTableWidgetItem(str(value)); item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                if column == 2 and definition["required"]:
+                    item.setForeground(QColor("#ef4444")); font = item.font(); font.setBold(True); item.setFont(font)
+                self.graphql_variables_table.setItem(row, column, item)
+            if editor_values is not None and definition["name"] in editor_values:
+                text = str(editor_values[definition["name"]])
+            elif definition["name"] in previous:
+                text = previous[definition["name"]]
+            elif definition["name"] in body_values:
+                text = self._graphql_display_value(body_values[definition["name"]])
+            else:
+                text = ""
+            self.graphql_variables_table.setItem(row, 4, QTableWidgetItem(text))
+            if definition["required"] and not text.strip():
+                missing += 1
+        if definitions:
+            self.graphql_variables_status.setText(self.tr("{count} variable(s) extracted · {missing} required value(s) missing").format(count=len(definitions), missing=missing))
+        else:
+            self.graphql_variables_status.setText(self.tr("No GraphQL variables extracted."))
+        return definitions
+
+    def _validated_graphql_body(self, payload):
+        if not isinstance(payload, dict) or not isinstance(payload.get("query"), str):
+            return None, [self.tr("GraphQL body must be a JSON object containing a query string.")]
+        operation_name = str(payload.get("operationName") or "") or None
+        operation_names = graphql_operation_names(payload["query"]); errors = []
+        if len(operation_names) > 1 and not operation_name:
+            errors.append(self.tr("Choose operationName because the document contains multiple GraphQL operations."))
+        elif operation_name and operation_name not in operation_names:
+            errors.append(self.tr("GraphQL operationName does not match a named operation in the query."))
+        definitions = graphql_variable_definitions(payload["query"], operation_name)
+        current_names = [self.graphql_variables_table.item(row, 0).text() for row in range(self.graphql_variables_table.rowCount()) if self.graphql_variables_table.item(row, 0)]
+        if current_names != [definition["name"] for definition in definitions]:
+            self.graphql_variables_table.setRowCount(0)
+            self._refresh_graphql_variables(query=payload["query"])
+        values = {}
+        for row, definition in enumerate(definitions):
+            item = self.graphql_variables_table.item(row, 4); text = item.text().strip() if item else ""
+            if not text:
+                if definition["required"]:
+                    errors.append(self.tr("Variable ${name} is required.").format(name=definition["name"]))
+                continue
+            value, error = parse_graphql_variable_value(text, definition["type"])
+            if error:
+                errors.append(self.tr("Variable ${name} must be valid for type {type}.").format(name=definition["name"], type=definition["type"]))
+            else:
+                values[definition["name"]] = value
+        existing = payload.get("variables", {})
+        if isinstance(existing, dict):
+            extra = sorted(set(existing) - {definition["name"] for definition in definitions})
+            if extra:
+                errors.append(self.tr("Remove undeclared GraphQL variables: {names}").format(names=", ".join(extra)))
+        result = dict(payload); result["variables"] = values
+        return result, errors
+
     def _show_documented_graphql_help(self, entry):
         details = str(entry.get("details") or entry.get("description") or "")[:3000]
         doc_url = html.escape(str(entry.get("doc_url", "")), quote=True)
@@ -7147,7 +7365,9 @@ class MainWindow(QMainWindow):
         self.method_combo.setCurrentText("● POST")
         self.url_input.setText(self._api_base_url("OneAPI").rstrip("/") + "/zins/graphql")
         self.body_input.setPlainText(json.dumps({"query": query, "variables": {}}, indent=2, ensure_ascii=False))
-        self.request_tabs.setCurrentIndex(2)
+        self.graphql_variables_table.setRowCount(0)
+        definitions = self._refresh_graphql_variables(query=query, editor_values={})
+        self.request_tabs.setCurrentIndex(self.graphql_variables_tab_index if definitions else 2)
         self.status_bar.showMessage(self.tr("Loaded documented ZInsights query. Review time ranges, filters, and fields before sending."))
 
     def _browse_documented_graphql_schema(self):
@@ -7186,8 +7406,9 @@ class MainWindow(QMainWindow):
         if not name:
             QMessageBox.warning(self, self.tr("Warning"), self.tr("Enter a name before saving the GraphQL query."))
             return
-        payload = {"url": self.url_input.text().strip(), "body": self.body_input.toPlainText(), "params": self._table_values(self.params_table)}
-        secure_store(f"graphql_preset_{name}", json.dumps(payload))
+        payload = {"url": self.url_input.text().strip(), "body": self.body_input.toPlainText(), "params": self._table_values(self.params_table), "graphql_variables": self._graphql_variable_editor_texts()}
+        if not secure_store(f"graphql_preset_{name}", json.dumps(payload)):
+            QMessageBox.warning(self, self.tr("Secure storage"), self.tr("The system keychain could not save the GraphQL query.")); return
         settings = QSettings("Zscaler", "APIClient")
         names = settings.value("graphql/presets", [], type=list)
         settings.setValue("graphql/presets", sorted(set(names + [name])))
@@ -7205,7 +7426,18 @@ class MainWindow(QMainWindow):
         self.graphql_mode.setChecked(True)
         self.url_input.setText(payload.get("url", ""))
         self.body_input.setPlainText(payload.get("body", ""))
-        self._populate_table(self.params_table, payload.get("params", {}))
+        params = dict(payload.get("params", {})) if isinstance(payload.get("params", {}), dict) else {}
+        editor_values = payload.get("graphql_variables")
+        if not isinstance(editor_values, dict):
+            try:
+                saved_body = json.loads(payload.get("body", "{}"))
+            except (TypeError, ValueError):
+                saved_body = {}
+            names = {item["name"] for item in graphql_variable_definitions(str(saved_body.get("query", "")), str(saved_body.get("operationName") or "") or None)}
+            editor_values = {name: params.pop(name) for name in list(params) if name in names}
+        self._populate_table(self.params_table, params)
+        self.graphql_variables_table.setRowCount(0)
+        self._refresh_graphql_variables(editor_values=editor_values)
         self.graphql_preset_name.setText(name)
 
     def _rename_graphql_query(self):
@@ -7216,8 +7448,9 @@ class MainWindow(QMainWindow):
         raw = secure_get(f"graphql_preset_{old_name}")
         if not raw:
             return
-        secure_store(f"graphql_preset_{new_name}", raw)
-        secure_delete(f"graphql_preset_{old_name}")
+        if not secure_store_many({f"graphql_preset_{new_name}": raw, f"graphql_preset_{old_name}": ""}):
+            QMessageBox.warning(self, self.tr("Secure storage"), self.tr("The system keychain could not rename the GraphQL query."))
+            return
         settings = QSettings("Zscaler", "APIClient")
         names = settings.value("graphql/presets", [], type=list)
         settings.setValue("graphql/presets", sorted(set((new_name if name == old_name else name) for name in names)))
@@ -7228,7 +7461,9 @@ class MainWindow(QMainWindow):
         name = self.graphql_preset_choice.currentText()
         if not name:
             return
-        secure_delete(f"graphql_preset_{name}")
+        if not secure_delete(f"graphql_preset_{name}"):
+            QMessageBox.warning(self, self.tr("Secure storage"), self.tr("The system keychain could not delete the GraphQL query."))
+            return
         settings = QSettings("Zscaler", "APIClient")
         settings.setValue("graphql/presets", [item for item in settings.value("graphql/presets", [], type=list) if item != name])
         self._refresh_graphql_presets()
@@ -7245,7 +7480,9 @@ class MainWindow(QMainWindow):
         return f"graphql_introspection_{host or 'default'}"
 
     def _save_graphql_introspection(self, url: str, payload: dict):
-        secure_store(self._graphql_schema_key(url), json.dumps(payload))
+        if not secure_store(self._graphql_schema_key(url), json.dumps(payload)):
+            QMessageBox.warning(self, self.tr("Secure storage"), self.tr("The system keychain could not save the GraphQL schema."))
+            return
         self.status_bar.showMessage(self.tr("GraphQL schema saved securely"))
 
     def _load_graphql_introspection(self):
@@ -7329,7 +7566,7 @@ class MainWindow(QMainWindow):
             encoded = urllib.parse.quote(value, safe="")
             url = url.replace(f":{name}", encoded).replace(f"{{{name}}}", encoded)
         if missing_variables:
-            self.request_tabs.setCurrentIndex(3)
+            self.request_tabs.setCurrentIndex(self.path_variables_tab_index)
             QMessageBox.warning(
                 self,
                 self.tr("Missing Path Variables"),
@@ -7393,6 +7630,9 @@ class MainWindow(QMainWindow):
         # Get body
         body = None
         body_text = self.body_input.toPlainText().strip()
+        if self.graphql_mode.isChecked() and not body_text:
+            self.request_tabs.setCurrentIndex(2)
+            QMessageBox.warning(self, self.tr("GraphQL Variables"), self.tr("GraphQL body must be a JSON object containing a query string.")); return
         if body_text and method in ["POST", "PUT", "PATCH"]:
             # Check if content type is form-urlencoded (used by OAuth2 endpoints)
             content_type = headers.get("Content-Type", "")
@@ -7405,6 +7645,13 @@ class MainWindow(QMainWindow):
                 except json.JSONDecodeError as e:
                     QMessageBox.warning(self, self.tr("Error"), f"Invalid JSON: {e}")
                     return
+                if self.graphql_mode.isChecked():
+                    body, variable_errors = self._validated_graphql_body(body)
+                    if variable_errors:
+                        self.request_tabs.setCurrentIndex(self.graphql_variables_tab_index)
+                        QMessageBox.warning(self, self.tr("GraphQL Variables"), "\n".join(variable_errors))
+                        return
+                    self.body_input.setPlainText(json.dumps(body, indent=2, ensure_ascii=False))
         
         # Send request
         self.status_bar.showMessage(self.tr("Sending request..."))
@@ -7707,6 +7954,12 @@ class MainWindow(QMainWindow):
         if entry.get("body"):
             self.body_input.setPlainText(json.dumps(entry["body"], indent=2))
             self.request_tabs.setCurrentIndex(2)
+        graphql_body = entry.get("body") if isinstance(entry.get("body"), dict) else {}
+        is_graphql = isinstance(graphql_body.get("query"), str)
+        self.graphql_mode.setChecked(is_graphql)
+        self.graphql_variables_table.setRowCount(0)
+        if is_graphql:
+            self._refresh_graphql_variables()
         
         # Load headers
         self.headers_table.clearContents()
@@ -7802,6 +8055,9 @@ class MainWindow(QMainWindow):
         self.params_table.clearContents()
         self.headers_table.clearContents()
         self.variables_table.setRowCount(0)
+        self.graphql_variables_table.setRowCount(0)
+        self.graphql_variables_status.setText(self.tr("No GraphQL variables extracted."))
+        self.graphql_mode.setChecked(False)
         self.response_body.clear()
         self.response_headers.clear()
         self.response_info.clear()

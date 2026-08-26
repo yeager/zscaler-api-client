@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - User-approved background report schedules for Windows Task Scheduler, macOS LaunchAgents, and Linux systemd user timers.
 - Headless, network-free report execution with stable schedule IDs and automatic cleanup when schedules are paused or removed.
+- Guided GraphQL variable extraction, required/default metadata, typed JSON validation, multi-operation validation, and secure preset persistence.
 
 ### Security
 - Background reports reuse redacted local history, run without administrator privileges, and never receive API credentials.
