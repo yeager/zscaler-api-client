@@ -332,6 +332,45 @@ SWEDISH_REVIEW.update({
     "{type}: {label} · risk {risk} · {evidence} evidence item(s) · {relationships} relationship(s) · sources: {sources}": "{type}: {label} · risk {risk} · {evidence} underlagspost(er) · {relationships} relation(er) · källor: {sources}",
 })
 
+SWEDISH_REVIEW.update({
+    "Value": "Värde", "Score": "Poäng",
+    "Continuously evaluate a transparent local evidence baseline. Framework mappings are navigational aids—not certification—and no tenant query or remediation runs automatically.": "Utvärdera kontinuerligt en transparent lokal underlagsbaslinje. Ramverksmappningar är navigeringshjälpmedel – inte certifiering – och ingen tenantfråga eller åtgärd körs automatiskt.",
+    "Framework view:": "Ramverksvy:", "All local controls": "Alla lokala kontroller", "NIST CSF 2.0 functions": "NIST CSF 2.0-funktioner", "CISA Zero Trust pillars": "CISA Zero Trust-pelare",
+    "Include proposed policy from Policy diff": "Inkludera föreslagen policy från Policyjämförelse", "Evaluate now": "Utvärdera nu",
+    "Assurance score": "Säkerhetspoäng", "Passed": "Godkända", "Not evaluated": "Inte utvärderade", "Evidence coverage": "Underlagstäckning",
+    "Control": "Kontroll", "Control objective": "Kontrollmål", "Framework mapping": "Ramverksmappning", "Recommendation": "Rekommendation",
+    "Leadership narrative": "Ledningssammanfattning", "Local baseline:": "Lokal baslinje:", "Save assessment baseline": "Spara bedömningsbaslinje",
+    "Export signed evidence": "Exportera signerat underlag", "Verify signed evidence": "Verifiera signerat underlag", "Continuous assurance": "Kontinuerlig säkerhetsbedömning",
+    "No comparison baseline": "Ingen jämförelsebaslinje", "{time} · score {score}/100": "{time} · poäng {score}/100",
+    "Audit evidence integrity": "Auditunderlagets integritet", "Review and restore the local hash-linked audit trail.": "Granska och återställ den lokala hash-länkade auditloggen.",
+    "Operational evidence available": "Operativt underlag tillgängligt", "Collect or import masked read-only evidence for the selected environment.": "Samla in eller importera maskerat skrivskyddat underlag för den valda miljön.",
+    "API health and anomaly monitoring": "API-hälsa och avvikelseövervakning", "Investigate repeated failures, latency regressions, and rate limiting.": "Undersök upprepade fel, försämrad svarstid och hastighetsbegränsning.",
+    "Least-privilege policy baseline": "Policybaslinje för minsta behörighet", "Constrain unconditional allow rules and validate order in Policy Twin.": "Begränsa ovillkorliga tillåt-regler och validera ordningen i Policytvillingen.",
+    "Reviewed write activity": "Granskad skrivaktivitet", "Require a recorded review and rollback artifact for write activity.": "Kräv en registrerad granskning och en återställningsartefakt för skrivaktivitet.",
+    "Incident evidence readiness": "Beredskap för incidentunderlag", "Prepare and export masked investigation evidence for unresolved failures.": "Förbered och exportera maskerat undersökningsunderlag för olösta fel.",
+    "Recovery evidence available": "Återställningsunderlag tillgängligt", "Save a policy snapshot or reviewed rollback artifact before change.": "Spara en policyögonblicksbild eller granskad återställningsartefakt före ändring.",
+    "Pass": "Godkänd", "Fail": "Underkänd",
+    "Local assurance requires attention": "Den lokala säkerhetsbedömningen kräver åtgärd", "No failing controls in the evaluated local scope": "Inga underkända kontroller i det utvärderade lokala omfånget",
+    "{passed} evaluated control(s) passed and {failed} failed.": "{passed} utvärderad(e) kontroll(er) godkändes och {failed} underkändes.",
+    "Evidence coverage is {coverage}% and local posture is {posture}/100.": "Underlagstäckningen är {coverage} % och den lokala säkerhetsnivån är {posture}/100.",
+    "The assurance score changed by {delta:+d} points versus the selected baseline.": "Säkerhetspoängen ändrades med {delta:+d} poäng jämfört med den valda baslinjen.",
+    "Prioritized actions": "Prioriterade åtgärder", "Now": "Nu",
+    "Local evidence limitation: validate results against authoritative tenant and governance records.": "Begränsning i lokalt underlag: validera resultaten mot auktoritativa tenant- och styrningsregister.",
+    "Assessment {identifier} · {frameworks} · local evidence only, not certification.": "Bedömning {identifier} · {frameworks} · endast lokalt underlag, inte certifiering.",
+    "Select one environment before saving an assurance baseline.": "Välj en miljö innan du sparar en säkerhetsbedömningsbaslinje.",
+    "Signed evidence": "Signerat underlag", "The system keychain could not store the evidence signing key.": "Systemets nyckelring kunde inte lagra nyckeln för underlagssignering.",
+    "The protected evidence signing key is invalid. Rotate it in Settings before signing.": "Den skyddade nyckeln för underlagssignering är ogiltig. Rotera den i Inställningar före signering.",
+    "Signed evidence exported · public-key fingerprint {fingerprint}": "Signerat underlag exporterat · den publika nyckelns fingeravtryck {fingerprint}",
+    "Signature verified. Payload digest {digest}; public-key fingerprint {fingerprint}.": "Signaturen verifierades. Innehållets kontrollsumma {digest}; den publika nyckelns fingeravtryck {fingerprint}.",
+    "Signature verification failed: {reason}": "Signaturverifieringen misslyckades: {reason}",
+    "Rotate evidence signing key": "Rotera nyckel för underlagssignering",
+    "Creates a new Ed25519 key in the system keychain. Existing signed packages remain verifiable with their embedded public keys.": "Skapar en ny Ed25519-nyckel i systemets nyckelring. Befintliga signerade paket kan fortfarande verifieras med sina inbäddade publika nycklar.",
+    "Create a new local evidence signing identity? Existing signed packages remain verifiable, but future packages will have a different public-key fingerprint.": "Skapa en ny lokal identitet för underlagssignering? Befintliga signerade paket kan fortfarande verifieras, men framtida paket får ett annat fingeravtryck för den publika nyckeln.",
+    "A new signing key was stored in the system keychain. Public-key fingerprint: {fingerprint}": "En ny signeringsnyckel lagrades i systemets nyckelring. Den publika nyckelns fingeravtryck: {fingerprint}",
+    "Assurance score: {score}/100 · evidence coverage {coverage}%": "Säkerhetspoäng: {score}/100 · underlagstäckning {coverage} %",
+    "Executive assurance narrative": "Ledningens säkerhetssammanfattning", "Evidence coverage: {coverage}%": "Underlagstäckning: {coverage} %",
+})
+
 
 def protect(text: str) -> tuple[str, list[str]]:
     values: list[str] = []

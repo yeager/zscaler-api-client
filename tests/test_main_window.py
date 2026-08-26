@@ -501,6 +501,15 @@ class MainWindowTests(unittest.TestCase):
             for key, value in previous.items():
                 settings.remove(key) if value is None else settings.setValue(key, value)
 
+    def test_evidence_signing_key_rotation_uses_only_system_keychain(self):
+        dialog = client.SettingsDialog(self.window)
+        stored = {}
+        with patch.object(client.QMessageBox, "question", return_value=client.QMessageBox.StandardButton.Yes), patch.object(client, "secure_global_store", side_effect=lambda key, value: stored.update({key: value}) or True), patch.object(client.QMessageBox, "information") as information:
+            dialog._rotate_evidence_signing_key()
+        self.assertIn("evidence_signing_ed25519_private", stored)
+        self.assertEqual(32, len(__import__("base64").b64decode(stored["evidence_signing_ed25519_private"])))
+        information.assert_called_once(); dialog.close()
+
     def test_advanced_settings_load_safe_read_retry_policy(self):
         settings = client.QSettings("Zscaler", "APIClient")
         keys = ("advanced/retry_reads", "advanced/max_read_retries", "advanced/retry_max_wait")
@@ -1453,6 +1462,8 @@ class MainWindowTests(unittest.TestCase):
             self.assertEqual(-1, dialog.data_scope.findData("*"))
             self.assertTrue(dialog.tabs.isTabVisible(dialog.incident_tab_index))
             self.assertFalse(dialog.investigation_views.isTabVisible(dialog.soc_signals_tab_index))
+            self.assertTrue(dialog.tabs.isTabVisible(dialog.assurance_tab_index))
+            self.assertTrue(dialog.assurance_sign.isHidden())
             self.assertIn("# CISO", dialog.report_preview.toPlainText())
             for name in ("zero-trust-hero.png", "security-report-banner.png", "investigation-empty-state.png"):
                 self.assertFalse(client.QPixmap(str(client._resource_path(f"assets/visuals/{name}"))).isNull())
@@ -1489,6 +1500,37 @@ class MainWindowTests(unittest.TestCase):
             dialog.close()
         finally:
             settings.remove("ui/mode") if previous is None else settings.setValue("ui/mode", previous)
+
+    def test_continuous_assurance_baseline_signed_export_and_offline_verify(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous_mode, previous_history = settings.value("ui/mode", None), settings.value("assurance/history", None)
+        try:
+            settings.setValue("ui/mode", "advanced"); settings.remove("assurance/history")
+            self.window.request_history = [{"method": "GET", "status": 500, "url": "https://example.test"}]
+            dialog = client.OperationsDialog(self.window)
+            dialog.after_policy.setPlainText('{"rules":[{"name":"Open","action":"allow","conditions":{}}]}')
+            dialog.refresh_assurance(record_audit=False)
+            self.assertGreater(int(dialog.assurance_cards["failed"].text()), 0)
+            self.assertEqual(7, dialog.assurance_table.rowCount())
+            self.assertFalse(dialog.assurance_sign.isHidden())
+            dialog.save_assurance_baseline(); self.assertEqual(1, len(dialog._assurance_history()))
+            private = client.generate_private_key()
+            with TemporaryDirectory() as output_dir:
+                destination = str(Path(output_dir) / "signed.json")
+                with patch.object(client, "secure_global_get", return_value=private), patch.object(client.QFileDialog, "getSaveFileName", return_value=(destination, "Signed JSON (*.json)")):
+                    dialog.export_signed_assurance()
+                package = json.loads(Path(destination).read_text(encoding="utf-8"))
+                self.assertTrue(client.verify_evidence(package)["valid"])
+                self.assertNotIn(private, json.dumps(package))
+                with patch.object(client.QFileDialog, "getOpenFileName", return_value=(destination, "Signed JSON (*.json)")), patch.object(client.QMessageBox, "information") as information:
+                    dialog.verify_signed_assurance()
+                information.assert_called_once(); self.assertIn("verified", dialog.assurance_status.text().lower())
+            report = dialog._report_html(client.privacy_safe(dialog._report_data(), settings, "export"))
+            self.assertIn("Continuous assurance", report); self.assertIn("LOCAL-GV-01", report)
+            dialog.close()
+        finally:
+            settings.remove("ui/mode") if previous_mode is None else settings.setValue("ui/mode", previous_mode)
+            settings.remove("assurance/history") if previous_history is None else settings.setValue("assurance/history", previous_history)
 
     def test_accelerated_latency_chart_caps_series_and_has_native_fallback(self):
         chart = client.HighPerformanceLineChart()

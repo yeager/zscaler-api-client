@@ -48,10 +48,15 @@ tenant or the bundled catalog-only mode.
     response and confirm the entity graph, filters, potential-path highlighting,
     and correlated signals agree with the source tree. Export incident evidence
     and confirm all labels, identities, addresses, hosts, and IDs are pseudonymized.
-11. Create a local scheduled report for one environment and confirm its JSON
+11. In Continuous assurance, evaluate a synthetic failure and unconditional
+    allow policy, save a tenant-scoped baseline, correct both inputs, and confirm
+    the score delta. Export signed evidence, verify it offline, alter one payload
+    value, and confirm verification fails. Confirm the private Ed25519 key is
+    present only in the system keychain and never in the package or settings.
+12. Create a local scheduled report for one environment and confirm its JSON
    contains only that environment's retained history and a stable pseudonymized
    scope ID.
-12. Close and reopen the app without a crash.
+13. Close and reopen the app without a crash.
 
 ## macOS
 

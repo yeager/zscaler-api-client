@@ -17,6 +17,7 @@ import csv
 import base64
 import errno
 import html
+import hashlib
 import io
 import json
 import mimetypes
@@ -58,7 +59,8 @@ try:
     import pyqtgraph as pg
 except (ImportError, OSError):  # Keep source checkouts usable with the minimal Qt stack.
     pg = None
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from evidence_signing import generate_private_key, public_key, sign_evidence, verify_evidence
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
@@ -3722,7 +3724,7 @@ class NumericBarChart(QWidget):
 
 class HighPerformanceLineChart(QWidget):
     """Accelerated telemetry plot with the native chart as a safe fallback."""
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, axis_label=None, units="", fixed_range=None):
         super().__init__(parent)
         self.values: list[tuple[str, float]] = []
         self.style = "line"
@@ -3730,6 +3732,7 @@ class HighPerformanceLineChart(QWidget):
         layout = QVBoxLayout(self); layout.setContentsMargins(0, 0, 0, 0)
         self._fallback = None
         self._plot = None
+        self._fixed_range = fixed_range
         if pg is None:
             self._fallback = NumericBarChart(); self._fallback.set_style("line"); layout.addWidget(self._fallback)
             return
@@ -3737,12 +3740,13 @@ class HighPerformanceLineChart(QWidget):
         self._plot.setMenuEnabled(False)
         self._plot.setMouseEnabled(x=True, y=False)
         self._plot.showGrid(x=True, y=True, alpha=0.18)
-        self._plot.setLabel("left", self.tr("Latency"), units="ms")
+        self._plot.setLabel("left", axis_label or self.tr("Value"), units=units)
         self._plot.getAxis("left").setTextPen(pg.mkPen("#cbd5e1"))
         self._plot.getAxis("bottom").setTextPen(pg.mkPen("#94a3b8"))
         self._curve = self._plot.plot(pen=pg.mkPen("#38bdf8", width=2), connect="finite")
         self._curve.setDownsampling(auto=True, method="peak")
         self._curve.setClipToView(True)
+        if fixed_range is not None: self._plot.setYRange(float(fixed_range[0]), float(fixed_range[1]), padding=0)
         layout.addWidget(self._plot)
 
     def set_values(self, values: list[tuple[str, float]]):
@@ -3760,7 +3764,7 @@ class HighPerformanceLineChart(QWidget):
             if ticks[-1][0] != len(self.values) - 1:
                 ticks.append((len(self.values) - 1, self.values[-1][0]))
             self._plot.getAxis("bottom").setTicks([ticks])
-            self._plot.enableAutoRange(axis="y", enable=True)
+            if self._fixed_range is None: self._plot.enableAutoRange(axis="y", enable=True)
 
 
 class PolicyTwinGraph(QWidget):
@@ -5010,6 +5014,9 @@ class SettingsDialog(QDialog):
         rotate_privacy.setToolTip(self.tr("Creates new pseudonyms for future views and exports. Existing files are not modified."))
         rotate_privacy.clicked.connect(self._rotate_privacy_key)
         privacy_form.addRow(rotate_privacy)
+        rotate_signing = QPushButton(self.tr("Rotate evidence signing key"))
+        rotate_signing.setToolTip(self.tr("Creates a new Ed25519 key in the system keychain. Existing signed packages remain verifiable with their embedded public keys."))
+        rotate_signing.clicked.connect(self._rotate_evidence_signing_key); privacy_form.addRow(rotate_signing)
         privacy_layout.addWidget(privacy_group)
         preview_group = QGroupBox(self.tr("Obfuscation preview"))
         preview_layout = QVBoxLayout(preview_group)
@@ -5127,6 +5134,15 @@ class SettingsDialog(QDialog):
         AuditTrail(settings).append("privacy_pseudonym_key_rotated", {})
         self._update_privacy_preview()
         QMessageBox.information(self, self.tr("Rotate pseudonym key"), self.tr("The local pseudonym key was rotated. No credentials or source identifiers were stored."))
+
+    def _rotate_evidence_signing_key(self):
+        if QMessageBox.question(self, self.tr("Rotate evidence signing key"), self.tr("Create a new local evidence signing identity? Existing signed packages remain verifiable, but future packages will have a different public-key fingerprint."), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes: return
+        private = generate_private_key()
+        if not secure_global_store("evidence_signing_ed25519_private", private):
+            QMessageBox.warning(self, self.tr("Signed evidence"), self.tr("The system keychain could not store the evidence signing key.")); return
+        fingerprint = hashlib.sha256(public_key(private).encode()).hexdigest()[:16]
+        AuditTrail(QSettings("Zscaler", "APIClient")).append("evidence_signing_key_rotated", {"public_key_fingerprint": fingerprint})
+        QMessageBox.information(self, self.tr("Rotate evidence signing key"), self.tr("A new signing key was stored in the system keychain. Public-key fingerprint: {fingerprint}").format(fingerprint=fingerprint))
     
     def _restore_defaults(self):
         """Restore default settings."""
@@ -6091,7 +6107,7 @@ class OperationsDialog(QDialog):
         self.dashboard_chart = NumericBarChart(); self.dashboard_chart.set_style("pie")
         dashboard_layout.addWidget(QLabel(self.tr("Recent request outcomes")))
         dashboard_layout.addWidget(self.dashboard_chart)
-        self.dashboard_trend = HighPerformanceLineChart()
+        self.dashboard_trend = HighPerformanceLineChart(axis_label=self.tr("Latency"), units="ms")
         dashboard_layout.addWidget(QLabel(self.tr("Recent request latency (ms)")))
         dashboard_layout.addWidget(self.dashboard_trend)
         self.dashboard_events = QTableWidget(0, 4); self.dashboard_events.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Environment"), self.tr("Activity"), self.tr("Status")]); self.dashboard_events.horizontalHeader().setStretchLastSection(True); self.dashboard_events.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
@@ -6247,6 +6263,30 @@ class OperationsDialog(QDialog):
         rollback_export = QPushButton(self.tr("Export rollback plan")); rollback_export.clicked.connect(lambda: self.export_change_review("rollback")); change_controls.addWidget(rollback_export); change_controls.addStretch(); change_layout.addLayout(change_controls)
         self.change_tab_index = self.tabs.addTab(change_page, self.tr("Change control"))
 
+        assurance_page = QWidget(); assurance_layout = QVBoxLayout(assurance_page)
+        assurance_intro = QLabel(self.tr("Continuously evaluate a transparent local evidence baseline. Framework mappings are navigational aids—not certification—and no tenant query or remediation runs automatically.")); assurance_intro.setWordWrap(True); assurance_layout.addWidget(assurance_intro)
+        assurance_controls = QHBoxLayout(); assurance_controls.addWidget(QLabel(self.tr("Framework view:")))
+        self.assurance_framework = QComboBox(); self.assurance_framework.addItem(self.tr("All local controls"), "all"); self.assurance_framework.addItem(self.tr("NIST CSF 2.0 functions"), "nist"); self.assurance_framework.addItem(self.tr("CISA Zero Trust pillars"), "cisa"); self.assurance_framework.currentIndexChanged.connect(self.render_assurance); assurance_controls.addWidget(self.assurance_framework)
+        self.assurance_use_policy = QCheckBox(self.tr("Include proposed policy from Policy diff")); self.assurance_use_policy.setChecked(True); assurance_controls.addWidget(self.assurance_use_policy)
+        run_assurance = QPushButton(self.tr("Evaluate now")); run_assurance.clicked.connect(self.refresh_assurance); assurance_controls.addWidget(run_assurance); assurance_controls.addStretch(); assurance_layout.addLayout(assurance_controls)
+        assurance_cards = QGridLayout(); self.assurance_cards = {}
+        for column, (key, label) in enumerate((("score", self.tr("Assurance score")), ("passed", self.tr("Passed")), ("failed", self.tr("Failed")), ("not_evaluated", self.tr("Not evaluated")), ("coverage_percent", self.tr("Evidence coverage")))):
+            card = QFrame(); card.setObjectName("metricCard"); card_layout = QVBoxLayout(card); title = QLabel(label); title.setObjectName("mutedLabel"); card_layout.addWidget(title)
+            value = QLabel("—"); value.setObjectName("sectionTitle"); font = value.font(); font.setPointSize(18); font.setBold(True); value.setFont(font); card_layout.addWidget(value); self.assurance_cards[key] = value; assurance_cards.addWidget(card, 0, column)
+        assurance_layout.addLayout(assurance_cards)
+        assurance_split = QSplitter(Qt.Orientation.Horizontal)
+        assurance_left = QWidget(); assurance_left_layout = QVBoxLayout(assurance_left); assurance_left_layout.setContentsMargins(0, 0, 0, 0)
+        self.assurance_table = QTableWidget(0, 7); self.assurance_table.setHorizontalHeaderLabels([self.tr("Control"), self.tr("Status"), self.tr("Severity"), self.tr("Control objective"), self.tr("Evidence"), self.tr("Framework mapping"), self.tr("Recommendation")]); self.assurance_table.horizontalHeader().setStretchLastSection(True); self.assurance_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.assurance_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows); assurance_left_layout.addWidget(self.assurance_table); assurance_split.addWidget(assurance_left)
+        assurance_right = QWidget(); assurance_right_layout = QVBoxLayout(assurance_right); assurance_right_layout.setContentsMargins(0, 0, 0, 0); assurance_right_layout.addWidget(QLabel(self.tr("Leadership narrative")))
+        self.assurance_narrative = QPlainTextEdit(); self.assurance_narrative.setReadOnly(True); assurance_right_layout.addWidget(self.assurance_narrative)
+        self.assurance_trend = HighPerformanceLineChart(axis_label=self.tr("Score"), fixed_range=(0, 100)); self.assurance_trend.setMaximumHeight(180); assurance_right_layout.addWidget(self.assurance_trend); assurance_split.addWidget(assurance_right); assurance_split.setSizes([720, 340]); assurance_layout.addWidget(assurance_split)
+        baseline_controls = QHBoxLayout(); baseline_controls.addWidget(QLabel(self.tr("Local baseline:"))); self.assurance_baseline = QComboBox(); baseline_controls.addWidget(self.assurance_baseline, 1)
+        self.assurance_save_baseline = QPushButton(self.tr("Save assessment baseline")); self.assurance_save_baseline.clicked.connect(self.save_assurance_baseline); baseline_controls.addWidget(self.assurance_save_baseline)
+        self.assurance_sign = QPushButton(self.tr("Export signed evidence")); self.assurance_sign.clicked.connect(self.export_signed_assurance); baseline_controls.addWidget(self.assurance_sign)
+        self.assurance_verify = QPushButton(self.tr("Verify signed evidence")); self.assurance_verify.clicked.connect(self.verify_signed_assurance); baseline_controls.addWidget(self.assurance_verify); assurance_layout.addLayout(baseline_controls)
+        self.assurance_status = QLabel(); self.assurance_status.setWordWrap(True); self.assurance_status.setObjectName("mutedLabel"); assurance_layout.addWidget(self.assurance_status)
+        self.assurance_tab_index = self.tabs.addTab(assurance_page, self.tr("Continuous assurance"))
+
         reports_page = QWidget(); reports_layout = QVBoxLayout(reports_page)
         reports_intro = QLabel(self.tr("Generate local, redacted reports for leadership, SOC, or operations. Reports contain no credentials and are not sent automatically.")); reports_intro.setWordWrap(True); reports_layout.addWidget(reports_intro)
         report_controls = QHBoxLayout(); report_controls.addWidget(QLabel(self.tr("Report type:")))
@@ -6322,7 +6362,7 @@ class OperationsDialog(QDialog):
         self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
-        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_webhook_history(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report(); self.refresh_schedules(); self.refresh_policy_snapshots(); self.analyze_policy_twin(record_audit=False); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_webhook_history(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.refresh_assurance_baselines(); self.refresh_assurance(record_audit=False); self.generate_report(); self.refresh_schedules(); self.refresh_policy_snapshots(); self.analyze_policy_twin(record_audit=False); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
 
     def _apply_operations_mode(self):
         """Keep basic mode focused on situational awareness and investigation."""
@@ -6333,6 +6373,7 @@ class OperationsDialog(QDialog):
         self.twin_snapshot_group.setVisible(not basic)
         self.twin_load_proposed.setVisible(not basic)
         self.investigation_views.setTabVisible(self.soc_signals_tab_index, not basic)
+        self.assurance_save_baseline.setVisible(not basic); self.assurance_sign.setVisible(not basic); self.assurance_verify.setVisible(not basic)
 
     def configure_local_monitor(self, enabled=None, record_audit=True):
         """Refresh local views on a user-approved timer; it never sends API calls."""
@@ -6349,7 +6390,7 @@ class OperationsDialog(QDialog):
 
     def refresh_local_signals(self):
         """Update visualizations from retained local data only."""
-        self.refresh_dashboard(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report()
+        self.refresh_dashboard(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.refresh_assurance(record_audit=False); self.generate_report()
 
     def _scope_id(self) -> str:
         return str(self.data_scope.currentData() or self.active_profile["id"])
@@ -6376,7 +6417,7 @@ class OperationsDialog(QDialog):
             if scope["environment_id"] != "*" else
             self.tr("Cross-tenant overview is active. Exports and integrations will include all local environments.")
         )
-        self.refresh_local_signals(); self.refresh_audit(); self.refresh_webhook_history(); self.refresh_schedules(); self.refresh_policy_snapshots(); self.analyze_policy_twin(record_audit=False)
+        self.refresh_assurance_baselines(); self.refresh_local_signals(); self.refresh_audit(); self.refresh_webhook_history(); self.refresh_schedules(); self.refresh_policy_snapshots(); self.analyze_policy_twin(record_audit=False)
 
     def _json(self, editor, fallback):
         try: return json.loads(editor.toPlainText() or fallback)
@@ -6674,14 +6715,133 @@ class OperationsDialog(QDialog):
             Path(path).write_text(content, encoding="utf-8")
             AuditTrail(self.settings).append("change_review_exported", {"kind": kind, "file": os.path.basename(path), "risk": plan["risk"]})
 
+    def _assurance_history(self):
+        try: values = json.loads(str(self.settings.value("assurance/history", "[]") or "[]"))
+        except (TypeError, ValueError): values = []
+        return [item for item in values if isinstance(item, dict) and isinstance(item.get("summary"), dict) and item.get("assessment_id")]
+
+    def refresh_assurance_baselines(self):
+        selected = self.assurance_baseline.currentData() if self.assurance_baseline.count() else ""
+        self.assurance_baseline.clear(); self.assurance_baseline.addItem(self.tr("No comparison baseline"), "")
+        for item in self._assurance_history():
+            environment_id = str(item.get("scope", {}).get("environment_id", "default"))
+            if self._scope_id() not in {"*", environment_id}: continue
+            timestamp = time.strftime("%Y-%m-%d %H:%M", time.localtime(int(item.get("generated_at", 0))))
+            self.assurance_baseline.addItem(self.tr("{time} · score {score}/100").format(time=timestamp, score=item["summary"].get("score", 0)), item["assessment_id"])
+        index = self.assurance_baseline.findData(selected); self.assurance_baseline.setCurrentIndex(index if index >= 0 else 0)
+
+    def _selected_assurance_baseline(self):
+        identifier = str(self.assurance_baseline.currentData() or "")
+        return next((item for item in self._assurance_history() if item.get("assessment_id") == identifier), None)
+
+    def _assurance_policy(self):
+        if not self.assurance_use_policy.isChecked() or not self.after_policy.toPlainText().strip(): return None
+        return self._json(self.after_policy, {})
+
+    def refresh_assurance(self, _checked=False, record_audit=True):
+        try: policy = self._assurance_policy()
+        except ValueError as exc:
+            if record_audit: QMessageBox.warning(self, self.tr("Continuous assurance"), str(exc))
+            policy = None
+        assessment = compliance_assessment(self._scoped_history(), self._scoped_events(), AuditTrail(self.settings).verify(), policy, self._selected_assurance_baseline(), self._scope_metadata())
+        self._last_assurance = assessment; self.render_assurance()
+        if record_audit:
+            self._scope_audit().append("assurance_evaluated", {"score": assessment["summary"]["score"], "failed": assessment["summary"]["failed"], "coverage": assessment["summary"]["coverage_percent"], "policy_included": policy is not None})
+
+    def _assurance_wording(self):
+        return {
+            "LOCAL-GV-01": (self.tr("Audit evidence integrity"), self.tr("Review and restore the local hash-linked audit trail.")),
+            "LOCAL-ID-01": (self.tr("Operational evidence available"), self.tr("Collect or import masked read-only evidence for the selected environment.")),
+            "LOCAL-DE-01": (self.tr("API health and anomaly monitoring"), self.tr("Investigate repeated failures, latency regressions, and rate limiting.")),
+            "LOCAL-PR-01": (self.tr("Least-privilege policy baseline"), self.tr("Constrain unconditional allow rules and validate order in Policy Twin.")),
+            "LOCAL-GV-02": (self.tr("Reviewed write activity"), self.tr("Require a recorded review and rollback artifact for write activity.")),
+            "LOCAL-RS-01": (self.tr("Incident evidence readiness"), self.tr("Prepare and export masked investigation evidence for unresolved failures.")),
+            "LOCAL-RC-01": (self.tr("Recovery evidence available"), self.tr("Save a policy snapshot or reviewed rollback artifact before change.")),
+        }
+
+    def render_assurance(self, _index=0):
+        raw = getattr(self, "_last_assurance", None)
+        if not raw: return
+        data = privacy_safe(raw, self.settings, "display"); summary = data["summary"]
+        for key, widget in self.assurance_cards.items():
+            suffix = "/100" if key == "score" else "%" if key == "coverage_percent" else ""
+            widget.setText(f"{summary[key]}{suffix}")
+        self.assurance_cards["score"].setStyleSheet("color: #34d399;" if summary["score"] >= 80 else "color: #fbbf24;" if summary["score"] >= 60 else "color: #fb7185;")
+        self.assurance_cards["failed"].setStyleSheet("color: #fb7185;" if summary["failed"] else "color: #34d399;")
+        framework = str(self.assurance_framework.currentData() or "all")
+        controls = [item for item in data["controls"] if framework == "all" or any(framework.upper() in mapping.upper() for mapping in item["mappings"])]
+        status_names = {"pass": self.tr("Pass"), "fail": self.tr("Fail"), "not_evaluated": self.tr("Not evaluated")}
+        severity_names = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low")}
+        wording = self._assurance_wording(); self.assurance_table.setRowCount(len(controls))
+        for row, control in enumerate(controls):
+            title, recommendation = wording.get(control["code"], (control["title"], control["recommendation"]))
+            values = (control["code"], status_names.get(control["status"], control["status"]), severity_names.get(control["severity"], control["severity"]), title, json.dumps(control["evidence"], ensure_ascii=False), " · ".join(control["mappings"]), recommendation)
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(str(value))
+                item.setToolTip(str(value))
+                if column == 1: item.setForeground(QColor("#34d399" if control["status"] == "pass" else "#fb7185" if control["status"] == "fail" else "#94a3b8")); font = item.font(); font.setBold(True); item.setFont(font)
+                self.assurance_table.setItem(row, column, item)
+        self.assurance_table.resizeColumnsToContents()
+        narrative = executive_security_narrative(raw, security_posture(self._scoped_history(), AuditTrail(self.settings).verify()))
+        headline = self.tr("Local assurance requires attention") if summary["failed"] else self.tr("No failing controls in the evaluated local scope")
+        lines = [headline, "", self.tr("{passed} evaluated control(s) passed and {failed} failed.").format(passed=summary["passed"], failed=summary["failed"]), self.tr("Evidence coverage is {coverage}% and local posture is {posture}/100.").format(coverage=summary["coverage_percent"], posture=security_posture(self._scoped_history(), AuditTrail(self.settings).verify())["score"])]
+        if summary.get("delta") is not None: lines.append(self.tr("The assurance score changed by {delta:+d} points versus the selected baseline.").format(delta=int(summary["delta"])))
+        lines += ["", self.tr("Prioritized actions")]
+        for action in narrative["recommended_actions"]:
+            recommendation = wording.get(action["control"], ("", action["action"]))[1]; lines.append(f"- {action['control']}: {recommendation}")
+        lines += ["", self.tr("Local evidence limitation: validate results against authoritative tenant and governance records.")]
+        self.assurance_narrative.setPlainText("\n".join(lines))
+        history = [item for item in self._assurance_history() if self._scope_id() in {"*", str(item.get("scope", {}).get("environment_id", "default"))}]
+        trend = [(time.strftime("%m-%d %H:%M", time.localtime(int(item.get("generated_at", 0)))), float(item["summary"].get("score", 0))) for item in history[-100:]]
+        trend.append((self.tr("Now"), float(summary["score"]))); self.assurance_trend.set_values(trend)
+        self.assurance_status.setText(self.tr("Assessment {identifier} · {frameworks} · local evidence only, not certification.").format(identifier=data["assessment_id"][:12], frameworks=", ".join(data["frameworks"])))
+
+    def save_assurance_baseline(self):
+        if self._scope_id() == "*": QMessageBox.warning(self, self.tr("Continuous assurance"), self.tr("Select one environment before saving an assurance baseline.")); return
+        if not getattr(self, "_last_assurance", None): self.refresh_assurance(record_audit=False)
+        history = self._assurance_history(); history.append(self._last_assurance); self.settings.setValue("assurance/history", json.dumps(history[-100:], ensure_ascii=False)); self.refresh_assurance_baselines(); self.assurance_baseline.setCurrentIndex(self.assurance_baseline.count() - 1)
+        self._scope_audit().append("assurance_baseline_saved", {"assessment_id": self._last_assurance["assessment_id"], "score": self._last_assurance["summary"]["score"]})
+
+    def export_signed_assurance(self):
+        if not getattr(self, "_last_assurance", None): self.refresh_assurance(record_audit=False)
+        private = secure_global_get("evidence_signing_ed25519_private")
+        if not private:
+            private = generate_private_key()
+            if not secure_global_store("evidence_signing_ed25519_private", private): QMessageBox.warning(self, self.tr("Signed evidence"), self.tr("The system keychain could not store the evidence signing key.")); return
+        try: package = sign_evidence(privacy_safe(self._last_assurance, self.settings, "export"), private)
+        except (TypeError, ValueError): QMessageBox.warning(self, self.tr("Signed evidence"), self.tr("The protected evidence signing key is invalid. Rotate it in Settings before signing.")); return
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export signed evidence"), "signed-assurance.json", "Signed JSON (*.json)")
+        if not path: return
+        Path(path).write_text(json.dumps(package, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        fingerprint = hashlib.sha256(package["public_key"].encode()).hexdigest()[:16]; self.assurance_status.setText(self.tr("Signed evidence exported · public-key fingerprint {fingerprint}").format(fingerprint=fingerprint))
+        self._scope_audit().append("signed_assurance_exported", {"file": os.path.basename(path), "assessment_id": self._last_assurance["assessment_id"], "public_key_fingerprint": fingerprint})
+
+    def verify_signed_assurance(self):
+        path, _ = QFileDialog.getOpenFileName(self, self.tr("Verify signed evidence"), "", "Signed JSON (*.json)")
+        if not path: return
+        source = Path(path)
+        try:
+            if source.is_symlink() or not source.is_file() or source.stat().st_size > 50 * 1024 * 1024: raise ValueError("unsafe")
+            package = json.loads(source.read_text(encoding="utf-8")); result = verify_evidence(package)
+        except (OSError, ValueError, json.JSONDecodeError): result = {"valid": False, "reason": "file_invalid"}
+        if result["valid"]:
+            fingerprint = hashlib.sha256(result["public_key"].encode()).hexdigest()[:16]; message = self.tr("Signature verified. Payload digest {digest}; public-key fingerprint {fingerprint}.").format(digest=result["payload_sha256"][:16], fingerprint=fingerprint)
+            QMessageBox.information(self, self.tr("Signed evidence"), message)
+        else:
+            message = self.tr("Signature verification failed: {reason}").format(reason=result["reason"]); QMessageBox.warning(self, self.tr("Signed evidence"), message)
+        self.assurance_status.setText(message); self._scope_audit().append("signed_assurance_verified", {"file": os.path.basename(path), "valid": bool(result["valid"]), "reason": result["reason"]})
+
     def _report_data(self):
         return security_report_data(self.report_type.currentData(), self._scoped_history(), self._scoped_events(), AuditTrail(self.settings).verify(), self._scope_metadata())
 
     def _report_lines(self, data):
         posture, incidents = data["posture"], data["incident_summary"]
+        assurance = data.get("assurance", {"summary": {"score": 0, "passed": 0, "failed": 0, "coverage_percent": 0}, "controls": []})
         title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}[data["kind"]]
-        lines = [f"# {title}", "", self.tr("Data scope: {name}").format(name=data["scope"]["environment"]), self.tr("Posture score: {score}/100").format(score=posture["score"]), self.tr("Local requests: {count}").format(count=posture["metrics"]["requests"]), self.tr("Failed requests: {count}").format(count=posture["metrics"]["failed"]), self.tr("Audit integrity: {status}").format(status=self.tr("Valid") if data["audit_valid"] else self.tr("Needs review")), "", self.tr("Incident signals"), f"- {self.tr('High')}: {incidents['high']}", f"- {self.tr('Medium')}: {incidents['medium']}"]
+        lines = [f"# {title}", "", self.tr("Data scope: {name}").format(name=data["scope"]["environment"]), self.tr("Posture score: {score}/100").format(score=posture["score"]), self.tr("Assurance score: {score}/100 · evidence coverage {coverage}%").format(score=assurance["summary"]["score"], coverage=assurance["summary"]["coverage_percent"]), self.tr("Local requests: {count}").format(count=posture["metrics"]["requests"]), self.tr("Failed requests: {count}").format(count=posture["metrics"]["failed"]), self.tr("Audit integrity: {status}").format(status=self.tr("Valid") if data["audit_valid"] else self.tr("Needs review")), "", self.tr("Incident signals"), f"- {self.tr('High')}: {incidents['high']}", f"- {self.tr('Medium')}: {incidents['medium']}"]
         if data["kind"] == "ciso":
+            lines += ["", self.tr("Executive assurance narrative"), self.tr("Local assurance requires attention") if assurance["summary"]["failed"] else self.tr("No failing controls in the evaluated local scope")]
+            lines += ["- " + self.tr("{passed} evaluated control(s) passed and {failed} failed.").format(passed=assurance["summary"]["passed"], failed=assurance["summary"]["failed"])]
             lines += ["", self.tr("Executive actions"), "- " + self.tr("Review high-risk findings and approval records."), "- " + self.tr("Use the Security Posture and Change Control workspaces for evidence.")]
         elif data["kind"] == "soc":
             lines += ["", self.tr("SOC next steps"), "- " + self.tr("Use Incident Investigation to prepare a review chain."), "- " + self.tr("Export masked evidence before escalation.")]
@@ -6699,6 +6859,7 @@ class OperationsDialog(QDialog):
     def _report_html(self, data):
         """Create a self-contained visual report with embedded, offline artwork."""
         posture, incidents = data["posture"], data["incident_summary"]
+        assurance = data.get("assurance", {"summary": {"score": 0, "coverage_percent": 0}, "controls": []})
         title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}[data["kind"]]
         try:
             banner = base64.b64encode(_resource_path("assets/visuals/security-report-banner.png").read_bytes()).decode("ascii")
@@ -6711,6 +6872,7 @@ class OperationsDialog(QDialog):
             (self.tr("Local requests"), metrics["requests"], "neutral"),
             (self.tr("Failed requests"), metrics["failed"], "risk" if metrics["failed"] else "good"),
             (self.tr("Audit integrity"), self.tr("Valid") if data["audit_valid"] else self.tr("Needs review"), "good" if data["audit_valid"] else "risk"),
+            (self.tr("Assurance score"), f"{assurance['summary']['score']}/100", "good" if assurance["summary"]["score"] >= 80 else "warn" if assurance["summary"]["score"] >= 60 else "risk"),
         )
         card_html = "".join(f'<section class="metric {tone}"><span>{html.escape(str(label))}</span><strong>{html.escape(str(value))}</strong></section>' for label, value, tone in cards)
         finding_rows = "".join(
@@ -6721,9 +6883,16 @@ class OperationsDialog(QDialog):
             f"<tr><td>{html.escape(str(item.get('time', '')))}</td><td>{html.escape(str(item.get('source', '')))}</td><td>{html.escape(str(item.get('summary', '')))}</td></tr>"
             for item in data.get("recent_events", [])
         ) or f"<tr><td colspan='3'>{html.escape(self.tr('No recent evidence.'))}</td></tr>"
+        wording = self._assurance_wording()
+        assurance_rows = "".join(f"<tr><td>{html.escape(str(item['code']))}</td><td><span class='severity {'low' if item['status'] == 'pass' else 'high' if item['status'] == 'fail' else 'info'}'>{html.escape(item['status'].replace('_', ' ').title())}</span></td><td>{html.escape(wording.get(item['code'], (item['title'], ''))[0])}</td><td>{html.escape(' · '.join(item['mappings']))}</td></tr>" for item in assurance.get("controls", []))
+        assurance_summary = assurance["summary"]
+        narrative_headline = self.tr("Local assurance requires attention") if assurance_summary.get("failed") else self.tr("No failing controls in the evaluated local scope")
+        narrative_observations = [self.tr("{passed} evaluated control(s) passed and {failed} failed.").format(passed=assurance_summary.get("passed", 0), failed=assurance_summary.get("failed", 0)), self.tr("Evidence coverage is {coverage}% and local posture is {posture}/100.").format(coverage=assurance_summary.get("coverage_percent", 0), posture=posture["score"])]
+        if assurance_summary.get("delta") is not None: narrative_observations.append(self.tr("The assurance score changed by {delta:+d} points versus the selected baseline.").format(delta=int(assurance_summary["delta"])))
+        narrative_items = "".join(f"<li>{html.escape(str(item))}</li>" for item in narrative_observations)
         return f"""<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>{html.escape(title)}</title><style>
-body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}main{{max-width:1100px;margin:auto;padding:28px}}.hero{{min-height:260px;border:1px solid #17375b;border-radius:22px;background-color:#0a1830;background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:32px;box-sizing:border-box}}h1{{font-size:34px;margin:0}}.scope{{color:#9db4cc;margin-top:8px}}.metrics{{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}}.metric{{background:#0d1e33;border:1px solid #1c3b5d;border-radius:16px;padding:18px}}.metric span{{display:block;color:#9db4cc}}.metric strong{{display:block;font-size:26px;margin-top:7px}}.good strong{{color:#34d399}}.warn strong{{color:#fbbf24}}.risk strong{{color:#fb7185}}.panel{{background:#0d1e33;border:1px solid #1c3b5d;border-radius:16px;padding:20px;margin-top:16px}}table{{width:100%;border-collapse:collapse}}th,td{{text-align:left;padding:10px;border-bottom:1px solid #1c3b5d}}th{{color:#7dd3fc}}.severity{{font-weight:700}}.critical,.high{{color:#fb7185}}.medium{{color:#fbbf24}}.low,.info{{color:#7dd3fc}}footer{{color:#7890a8;margin-top:24px;font-size:12px}}@media(max-width:760px){{.metrics{{grid-template-columns:1fr 1fr}}}}
-</style></head><body><main><header class='hero' style='{banner_style}'><div><h1>{html.escape(title)}</h1><div class='scope'>{html.escape(self.tr('Data scope: {name}').format(name=data['scope']['environment']))}</div></div></header><div class='metrics'>{card_html}</div><section class='panel'><h2>{html.escape(self.tr('Security findings'))}</h2><table><thead><tr><th>{html.escape(self.tr('Severity'))}</th><th>{html.escape(self.tr('Finding'))}</th><th>{html.escape(self.tr('Count'))}</th></tr></thead><tbody>{finding_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Recent evidence'))}</h2><table><thead><tr><th>{html.escape(self.tr('Time'))}</th><th>{html.escape(self.tr('Source'))}</th><th>{html.escape(self.tr('Evidence'))}</th></tr></thead><tbody>{event_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Incident signals'))}</h2><p>{html.escape(self.tr('High'))}: {int(incidents['high'])} · {html.escape(self.tr('Medium'))}: {int(incidents['medium'])}</p></section><footer>ZS API Client · {html.escape(self.tr('Generated locally; credentials are never included.'))}</footer></main></body></html>"""
+body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}main{{max-width:1100px;margin:auto;padding:28px}}.hero{{min-height:260px;border:1px solid #17375b;border-radius:22px;background-color:#0a1830;background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:32px;box-sizing:border-box}}h1{{font-size:34px;margin:0}}.scope{{color:#9db4cc;margin-top:8px}}.metrics{{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:20px 0}}.metric{{background:#0d1e33;border:1px solid #1c3b5d;border-radius:16px;padding:18px}}.metric span{{display:block;color:#9db4cc}}.metric strong{{display:block;font-size:26px;margin-top:7px}}.good strong{{color:#34d399}}.warn strong{{color:#fbbf24}}.risk strong{{color:#fb7185}}.panel{{background:#0d1e33;border:1px solid #1c3b5d;border-radius:16px;padding:20px;margin-top:16px}}table{{width:100%;border-collapse:collapse}}th,td{{text-align:left;padding:10px;border-bottom:1px solid #1c3b5d}}th{{color:#7dd3fc}}.severity{{font-weight:700}}.critical,.high{{color:#fb7185}}.medium{{color:#fbbf24}}.low,.info{{color:#7dd3fc}}footer{{color:#7890a8;margin-top:24px;font-size:12px}}@media(max-width:760px){{.metrics{{grid-template-columns:1fr 1fr}}}}
+</style></head><body><main><header class='hero' style='{banner_style}'><div><h1>{html.escape(title)}</h1><div class='scope'>{html.escape(self.tr('Data scope: {name}').format(name=data['scope']['environment']))}</div></div></header><div class='metrics'>{card_html}</div><section class='panel'><h2>{html.escape(self.tr('Executive assurance narrative'))}</h2><h3>{html.escape(narrative_headline)}</h3><ul>{narrative_items}</ul><p>{html.escape(self.tr('Local evidence limitation: validate results against authoritative tenant and governance records.'))}</p></section><section class='panel'><h2>{html.escape(self.tr('Continuous assurance'))}</h2><p>{html.escape(self.tr('Evidence coverage: {coverage}%').format(coverage=assurance['summary']['coverage_percent']))}</p><table><thead><tr><th>{html.escape(self.tr('Control'))}</th><th>{html.escape(self.tr('Status'))}</th><th>{html.escape(self.tr('Control objective'))}</th><th>{html.escape(self.tr('Framework mapping'))}</th></tr></thead><tbody>{assurance_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Security findings'))}</h2><table><thead><tr><th>{html.escape(self.tr('Severity'))}</th><th>{html.escape(self.tr('Finding'))}</th><th>{html.escape(self.tr('Count'))}</th></tr></thead><tbody>{finding_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Recent evidence'))}</h2><table><thead><tr><th>{html.escape(self.tr('Time'))}</th><th>{html.escape(self.tr('Source'))}</th><th>{html.escape(self.tr('Evidence'))}</th></tr></thead><tbody>{event_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Incident signals'))}</h2><p>{html.escape(self.tr('High'))}: {int(incidents['high'])} · {html.escape(self.tr('Medium'))}: {int(incidents['medium'])}</p></section><footer>ZS API Client · {html.escape(self.tr('Generated locally; credentials are never included.'))}</footer></main></body></html>"""
 
     def export_report(self, format_name):
         data = privacy_safe(self._report_data(), self.settings, "export")

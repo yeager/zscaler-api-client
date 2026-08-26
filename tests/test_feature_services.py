@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers
 
 
 class MemorySettings:
@@ -195,6 +195,25 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertEqual("ciso", report["kind"])
         self.assertEqual(1, report["posture"]["metrics"]["failed"])
         self.assertNotIn("hidden", json.dumps(report))
+
+    def test_continuous_compliance_is_explicit_scoped_and_comparable(self):
+        history = [{"method": "POST", "status": 500, "url": "https://example.test?token=hidden"}]
+        policy = {"rules": [{"name": "Open", "action": "allow", "conditions": {}}], "client_secret": "hidden"}
+        first = compliance_assessment(history, [], True, policy, scope={"environment_id": "tenant-a", "environment": "Tenant A"})
+        self.assertEqual(4, first["summary"]["failed"])
+        self.assertTrue(any(item["code"] == "LOCAL-PR-01" and item["status"] == "fail" for item in first["controls"]))
+        self.assertNotIn("hidden", json.dumps(first)); self.assertEqual(64, len(first["assessment_id"]))
+        improved = compliance_assessment([{"method": "GET", "status": 200}], [{"action": "policy_snapshot_saved"}], True,
+                                         {"rules": [{"name": "Scoped", "action": "allow", "conditions": {"group": "staff"}}]}, first)
+        self.assertGreater(improved["summary"]["score"], first["summary"]["score"])
+        self.assertGreater(improved["summary"]["delta"], 0)
+
+    def test_executive_narrative_uses_only_assessment_facts(self):
+        assessment = compliance_assessment([{"method": "GET", "status": 500}], [], False)
+        narrative = executive_security_narrative(assessment, {"score": 62})
+        self.assertIn("requires attention", narrative["headline"])
+        self.assertTrue(narrative["business_risks"]); self.assertTrue(narrative["recommended_actions"])
+        self.assertIn("62/100", narrative["observations"][1])
 
     def test_request_chain_validation_preserves_execution_body_but_rejects_unsafe_urls(self):
         plan = validate_request_chain([{"method": "POST", "url": "/api/v1/users", "body": {"name": "Ada"}}])

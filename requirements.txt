@@ -1,5 +1,6 @@
 PySide6>=6.5.0
 keyring>=24.0.0
+cryptography>=42.0.0
 numpy>=1.26.0
 pyqtgraph>=0.13.7,<0.15
 pyinstaller>=6.0.0

@@ -1021,11 +1021,82 @@ def security_report_data(kind: str, history: Iterable[dict[str, Any]], audit_eve
     history_list, audit_list = list(history), list(audit_events)
     posture = security_posture(history_list, audit_valid)
     evidence = incident_evidence(history_list, audit_list)
+    assurance = compliance_assessment(history_list, audit_list, audit_valid, scope=scope)
     return {
         "kind": kind, "posture": posture, "incident_summary": evidence["summary"],
         "audit_valid": audit_valid, "audit_events": len(audit_list),
         "recent_events": evidence["timeline"][:10], "scope": mask(scope or environment_scope_metadata("default", "Default")),
+        "assurance": assurance, "executive_narrative": executive_security_narrative(assurance, posture),
     }
+
+
+def compliance_assessment(
+    history: Iterable[dict[str, Any]],
+    audit_events: Iterable[dict[str, Any]],
+    audit_valid: bool,
+    policy: Any = None,
+    previous: dict[str, Any] | None = None,
+    scope: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Evaluate a transparent local baseline; this is not certification."""
+    events, audits = list(history), list(audit_events)
+    writes = [item for item in events if str(item.get("method", "")).upper() in {"POST", "PUT", "PATCH", "DELETE"}]
+    failures = [item for item in events if not str(item.get("status", "")).startswith("2")]
+    audit_actions = {str(item.get("action", "")) for item in audits}
+    policy_available = isinstance(policy, (dict, list))
+    policy_findings = compliance_findings(policy) if policy_available else []
+    open_allow = [item for item in policy_findings if item["message"] == "Allow rule has no conditions"]
+
+    def control(identifier, title, status, severity, evidence, mappings, recommendation):
+        return {"code": identifier, "title": title, "status": status, "severity": severity, "evidence": mask(evidence),
+                "mappings": mappings, "recommendation": recommendation}
+
+    controls = [
+        control("LOCAL-GV-01", "Audit evidence integrity", "pass" if audit_valid else "fail", "critical",
+                {"audit_events": len(audits), "chain_valid": audit_valid}, ["NIST CSF 2.0 · GOVERN"], "Review and restore the local hash-linked audit trail."),
+        control("LOCAL-ID-01", "Operational evidence available", "pass" if events else "not_evaluated", "medium",
+                {"retained_requests": len(events)}, ["NIST CSF 2.0 · IDENTIFY", "CISA Zero Trust · Visibility and Analytics"], "Collect or import masked read-only evidence for the selected environment."),
+        control("LOCAL-DE-01", "API health and anomaly monitoring", "pass" if events and len(failures) / len(events) <= 0.1 else "fail" if events else "not_evaluated", "high",
+                {"requests": len(events), "failures": len(failures)}, ["NIST CSF 2.0 · DETECT", "CISA Zero Trust · Visibility and Analytics"], "Investigate repeated failures, latency regressions, and rate limiting."),
+        control("LOCAL-PR-01", "Least-privilege policy baseline", "fail" if open_allow else "pass" if policy_available else "not_evaluated", "high",
+                {"policy_loaded": policy_available, "unconditional_allow_rules": len(open_allow)}, ["NIST CSF 2.0 · PROTECT", "CISA Zero Trust · Applications and Workloads"], "Constrain unconditional allow rules and validate order in Policy Twin."),
+        control("LOCAL-GV-02", "Reviewed write activity", "pass" if writes and "change_review_approved" in audit_actions else "fail" if writes else "not_evaluated", "high",
+                {"write_requests": len(writes), "approval_recorded": "change_review_approved" in audit_actions}, ["NIST CSF 2.0 · GOVERN"], "Require a recorded review and rollback artifact for write activity."),
+        control("LOCAL-RS-01", "Incident evidence readiness", "pass" if not failures or bool(audit_actions & {"incident_evidence_exported", "incident_chain_prepared", "soc_entities_correlated"}) else "fail", "medium",
+                {"failures": len(failures), "investigation_evidence_prepared": bool(audit_actions & {"incident_evidence_exported", "incident_chain_prepared", "soc_entities_correlated"})}, ["NIST CSF 2.0 · RESPOND"], "Prepare and export masked investigation evidence for unresolved failures."),
+        control("LOCAL-RC-01", "Recovery evidence available", "pass" if bool(audit_actions & {"policy_snapshot_saved", "change_review_exported"}) else "not_evaluated", "medium",
+                {"snapshot_or_rollback_recorded": bool(audit_actions & {"policy_snapshot_saved", "change_review_exported"})}, ["NIST CSF 2.0 · RECOVER"], "Save a policy snapshot or reviewed rollback artifact before change."),
+    ]
+    evaluated = [item for item in controls if item["status"] != "not_evaluated"]
+    passed = sum(1 for item in evaluated if item["status"] == "pass")
+    score = round(100 * passed / len(evaluated)) if evaluated else 0
+    previous_score = previous.get("summary", {}).get("score") if isinstance(previous, dict) else None
+    delta = score - int(previous_score) if isinstance(previous_score, (int, float)) else None
+    summary = {"score": score, "passed": passed, "failed": sum(1 for item in evaluated if item["status"] == "fail"),
+               "not_evaluated": len(controls) - len(evaluated), "coverage_percent": round(100 * len(evaluated) / len(controls)), "delta": delta}
+    body = {"generated_at": int(time.time()), "scope": mask(scope or environment_scope_metadata("default", "Default")), "summary": summary,
+            "controls": controls, "frameworks": ["Local evidence baseline", "NIST CSF 2.0 functions", "CISA Zero Trust Maturity Model pillars"],
+            "disclaimer": "Local evidence assessment only; it is not an audit, certification, or proof of framework compliance."}
+    body["assessment_id"] = hashlib.sha256(canonical(body).encode("utf-8")).hexdigest()
+    return body
+
+
+def executive_security_narrative(assessment: dict[str, Any], posture: dict[str, Any]) -> dict[str, Any]:
+    """Create a deterministic leadership narrative from explicit local facts."""
+    summary = assessment.get("summary", {})
+    failed = [item for item in assessment.get("controls", []) if item.get("status") == "fail"]
+    score = int(summary.get("score", 0))
+    headline = "Local assurance requires attention" if failed else "No failing controls in the evaluated local scope"
+    observations = [f"{summary.get('passed', 0)} evaluated controls passed and {summary.get('failed', 0)} failed.",
+                    f"Evidence coverage is {summary.get('coverage_percent', 0)}% and local posture is {posture.get('score', 0)}/100."]
+    if summary.get("delta") is not None:
+        observations.append(f"The assurance score changed by {int(summary['delta']):+d} points versus the selected baseline.")
+    risks = [{"control": item["code"], "title": item["title"], "severity": item["severity"], "evidence": item["evidence"]} for item in failed]
+    actions = [{"control": item["code"], "action": item["recommendation"]} for item in failed[:5]]
+    if not actions:
+        actions.append({"control": "LOCAL", "action": "Maintain evidence collection and review not-evaluated controls."})
+    return {"headline": headline, "observations": observations, "business_risks": risks, "recommended_actions": actions,
+            "confidence": "Derived deterministically from retained local evidence; validate against authoritative tenant and governance records."}
 
 
 def validate_request_chain(steps: Any, maximum: int = 20) -> dict[str, Any]:
