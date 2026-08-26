@@ -374,12 +374,12 @@
         <message>
             <location filename="../zscaler_api_client.py" line="4649" />
             <source>Heatmap</source>
-            <translation>Heatmap</translation>
+            <translation>Värmekarta</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="4652" />
             <source>Topology</source>
-            <translation>Topology</translation>
+            <translation>Topologi</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="4655" />
@@ -738,12 +738,12 @@
         <message>
             <location filename="../zscaler_api_client.py" line="5545" />
             <source>Export preview</source>
-            <translation>Export preview</translation>
+            <translation>Exportförhandsgranskning</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5546" />
             <source>Sensitive fields are masked in every export.</source>
-            <translation>Sensitive fields are masked in every export.</translation>
+            <translation>Känsliga fält maskeras i varje export.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5553" />
@@ -766,17 +766,17 @@
         <message>
             <location filename="../zscaler_api_client.py" line="5766" />
             <source>Nodes</source>
-            <translation>Nodes</translation>
+            <translation>Noder</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5766" />
             <source>Connections</source>
-            <translation>Connections</translation>
+            <translation>Anslutningar</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5768" />
             <source>No nodes or connections were found in this response.</source>
-            <translation>No nodes or connections were found in this response.</translation>
+            <translation>Inga noder eller anslutningar hittades i svaret.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5805" />
@@ -985,7 +985,7 @@
         <message>
             <location filename="../zscaler_api_client.py" line="4416" />
             <source>Operations Center</source>
-            <translation>Operations Center</translation>
+            <translation>Åtgärdscenter</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="4419" />
