@@ -711,6 +711,71 @@ class MainWindowTests(unittest.TestCase):
         self.assertIn("xl/worksheets/sheet1.xml", workbook.namelist())
         self.assertIn("name", workbook.read("xl/worksheets/sheet1.xml").decode())
 
+    def test_xlsx_keeps_columns_after_z_and_pdf_keeps_all_pages(self):
+        headers = [f"column-{index}" for index in range(30)]
+        workbook = zipfile.ZipFile(BytesIO(self.window._xlsx_bytes(headers, [headers])))
+        sheet = workbook.read("xl/worksheets/sheet1.xml").decode()
+        self.assertIn('r="AA1"', sheet)
+        self.assertIn("column-29", sheet)
+        report = self.window._pdf_bytes("Full report", [f"line {index}" for index in range(130)])
+        self.assertTrue(report.startswith(b"%PDF-"))
+        self.assertRegex(report, rb"/Count [3-9]")
+
+    def test_response_exchange_serializers_and_har_are_masked(self):
+        self.window._last_response_exchange = {
+            "schema": client.RESPONSE_EXCHANGE_SCHEMA,
+            "request": {"method": "POST", "url": "https://example.test/items?api_key=never-export", "headers": {"Authorization": "never-export"}, "body": {"client_secret": "never-export"}},
+            "response": {"status": 200, "reason": "OK", "headers": {"Set-Cookie": "never-export"}, "body": {"items": [{"name": "A", "count": 3}]}},
+        }
+        payload = self.window._response_export_payload()
+        rendered = json.dumps(payload)
+        self.assertNotIn("never-export", rendered)
+        self.assertTrue(self.window._yaml_text(payload).startswith("---"))
+        ET.fromstring(self.window._xml_text(payload))
+        har = self.window._response_har(payload)
+        self.assertEqual("1.2", har["log"]["version"])
+        self.assertNotIn("never-export", json.dumps(har))
+
+    def test_response_table_export_uses_full_source_not_ui_limit(self):
+        records = [{"id": index, **{f"field-{column}": column for column in range(28)}} for index in range(150)]
+        self.window._last_response_exchange = {
+            "schema": client.RESPONSE_EXCHANGE_SCHEMA,
+            "request": {}, "response": {"status": 200, "headers": {}, "body": {"records": records}},
+        }
+        self.window._render_response_visualization({"records": records})
+        headers, rows = self.window._response_export_table()
+        self.assertEqual(150, len(rows))
+        self.assertGreater(len(headers), 26)
+
+    def test_response_exchange_reopens_locally_without_api_worker(self):
+        document = {
+            "schema": client.RESPONSE_EXCHANGE_SCHEMA,
+            "request": {"method": "GET", "url": "https://example.test?token=never-open", "headers": {}},
+            "response": {"status": 200, "reason": "OK", "size_bytes": 50, "headers": {"X-Test": "yes"}, "body": {"data": [{"name": "A", "password": "never-open"}]}},
+        }
+        with TemporaryDirectory() as directory:
+            source = Path(directory) / "response.zsapi.json"
+            source.write_text(json.dumps(document), encoding="utf-8")
+            with patch.object(client.QFileDialog, "getOpenFileName", return_value=(str(source), "")), \
+                 patch.object(client, "ApiWorker") as worker_type:
+                self.window._import_response_exchange()
+            worker_type.assert_not_called()
+        visible = self.window.response_body.toPlainText() + json.dumps(self.window._last_response_exchange)
+        self.assertNotIn("never-open", visible)
+        self.assertIn("A", self.window.response_body.toPlainText())
+        self.assertIn("no API request", self.window.status_bar.currentMessage())
+
+    def test_response_exchange_rejects_untrusted_structure(self):
+        document = {"schema": client.RESPONSE_EXCHANGE_SCHEMA, "request": {"headers": []}, "response": {"status": "not-a-number", "headers": {}, "body": {}}}
+        with TemporaryDirectory() as directory:
+            source = Path(directory) / "invalid.json"
+            source.write_text(json.dumps(document), encoding="utf-8")
+            with patch.object(client.QFileDialog, "getOpenFileName", return_value=(str(source), "")), \
+                 patch.object(client.QMessageBox, "warning") as warning:
+                self.window._import_response_exchange()
+        warning.assert_called_once()
+        self.assertIsNone(self.window._last_response_exchange)
+
     def test_request_exports_are_sanitized(self):
         self.window.url_input.setText("https://example.test/users?access_token=do-not-export")
         self.window.headers_table.setItem(0, 0, client.QTableWidgetItem("Authorization"))

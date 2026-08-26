@@ -142,6 +142,15 @@ SWEDISH_REVIEW.update({
     "List ZIdentity users with pagination": "Lista ZIdentity-användare med sidindelning",
     "List ZIdentity groups": "Lista ZIdentity-grupper",
     "List AI Security workloads": "Lista AI Security-arbetsbelastningar",
+    "Open export": "Öppna export",
+    "Open response export…": "Öppna svarsexport…",
+    "Open response export": "Öppna svarsexport",
+    "No tabular response data is available to export.": "Det finns inga tabulära svarsdata att exportera.",
+    "The response export is unavailable, is a symbolic link, or exceeds the configured transfer limit.": "Svarsexporten är inte tillgänglig, är en symbolisk länk eller överskrider den konfigurerade överföringsgränsen.",
+    "This is not a supported ZS API response exchange file.": "Detta är inte en ZS API-svarsfil som stöds.",
+    "The response exchange file is incomplete.": "Svarsfilen är ofullständig.",
+    "Imported": "Importerad",
+    "Response export opened locally; no API request was sent.": "Svarsexporten öppnades lokalt; ingen API-begäran skickades.",
 })
 
 

@@ -25,6 +25,7 @@ import shlex
 import shutil
 import subprocess
 import sys
+import textwrap
 import time
 import uuid
 import urllib.request
@@ -54,6 +55,7 @@ from schedule_services import register_background_schedule, unregister_backgroun
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
+RESPONSE_EXCHANGE_SCHEMA = "https://github.com/yeager/zscaler-api-client/schemas/response-exchange/v1"
 
 # Locale registry. App translations are loaded from translations/ at startup;
 # English is the explicit source-language fallback when a catalog is absent.
@@ -6121,6 +6123,7 @@ class MainWindow(QMainWindow):
         self._binary_response_name = "response.bin"
         self._binary_response_type = "application/octet-stream"
         self._selected_endpoint_details: dict[str, Any] | None = None
+        self._last_response_exchange: dict[str, Any] | None = None
         
         self._setup_ui()
         self._setup_menu()
@@ -6475,6 +6478,7 @@ class MainWindow(QMainWindow):
         preview_export_btn = QPushButton(self.tr("Preview export"))
         preview_export_btn.clicked.connect(self._preview_response_export)
         response_info_bar.addWidget(preview_export_btn)
+        open_export_btn = QPushButton(self.tr("Open export")); open_export_btn.clicked.connect(self._import_response_exchange); response_info_bar.addWidget(open_export_btn)
         response_layout.addLayout(response_info_bar)
 
         # Response body and headers
@@ -6620,6 +6624,7 @@ class MainWindow(QMainWindow):
         history_action.setShortcut("Ctrl+H")
         history_action.triggered.connect(self._show_history)
         file_menu.addAction(history_action)
+        import_response_action = QAction(self.tr("Open response export…"), self); import_response_action.setShortcut("Ctrl+O"); import_response_action.triggered.connect(self._import_response_exchange); file_menu.addAction(import_response_action)
         
         file_menu.addSeparator()
         
@@ -7597,30 +7602,147 @@ class MainWindow(QMainWindow):
                 self.status_bar.showMessage(self.tr("Original binary response saved"))
             return
         path, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Export response"), "response.json",
-            "JSON (*.json);;Markdown (*.md);;HTML (*.html);;PDF (*.pdf)"
+            self, self.tr("Export response"), "response.zsapi.json",
+            "ZS API Exchange (*.zsapi.json);;JSON (*.json);;YAML (*.yaml);;XML (*.xml);;CSV (*.csv);;Excel (*.xlsx);;NDJSON (*.jsonl);;Markdown (*.md);;HTML (*.html);;PDF (*.pdf);;HAR (*.har);;PNG chart (*.png);;SVG chart (*.svg)"
         )
         if not path:
             return
-        raw = self.response_body.toPlainText()
-        try:
-            body = json.loads(raw)
-        except json.JSONDecodeError:
-            body = raw
-        headers = dict(line.split(": ", 1) for line in self.response_headers.toPlainText().splitlines() if ": " in line)
-        payload = redact_sensitive({"body": body, "headers": headers})
+        payload = self._response_export_payload()
+        lower_path = path.lower()
         suffix = Path(path).suffix.lower()
-        if suffix == ".md":
-            content = "# ZS API Client response\n\n```json\n" + json.dumps(payload, indent=2) + "\n```\n"
+        if lower_path.endswith(".zsapi.json") or suffix == ".json":
+            Path(path).write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        elif suffix == ".yaml":
+            Path(path).write_text(self._yaml_text(payload), encoding="utf-8")
+        elif suffix == ".xml":
+            Path(path).write_text(self._xml_text(payload), encoding="utf-8")
+        elif suffix == ".har":
+            Path(path).write_text(json.dumps(self._response_har(payload), indent=2, ensure_ascii=False), encoding="utf-8")
+        elif suffix in {".csv", ".xlsx", ".jsonl"}:
+            headers, rows = self._response_export_table()
+            if not headers:
+                QMessageBox.information(self, self.tr("Export response"), self.tr("No tabular response data is available to export."))
+                return
+            Path(path).write_bytes(self._tabular_export_bytes(suffix, headers, rows))
+        elif suffix == ".png":
+            if not self.response_chart.values:
+                QMessageBox.information(self, self.tr("Export response"), self.tr("No chart data is available to export."))
+                return
+            self.response_chart.grab().save(path, "PNG")
+        elif suffix == ".svg":
+            if not self.response_chart.values:
+                QMessageBox.information(self, self.tr("Export response"), self.tr("No chart data is available to export."))
+                return
+            Path(path).write_text(self._chart_svg(self.response_chart.values, self.response_chart.style), encoding="utf-8")
+        elif suffix == ".md":
+            content = "# ZS API Client response\n\n```json\n" + json.dumps(payload, indent=2, ensure_ascii=False) + "\n```\n"
             Path(path).write_text(content, encoding="utf-8")
         elif suffix == ".html":
-            content = "<!doctype html><html><head><meta charset=\"utf-8\"><title>ZS API Client response</title></head><body><h1>ZS API Client response</h1><pre>" + html.escape(json.dumps(payload, indent=2)) + "</pre></body></html>"
+            content = "<!doctype html><html><head><meta charset=\"utf-8\"><title>ZS API Client response</title></head><body><h1>ZS API Client response</h1><pre>" + html.escape(json.dumps(payload, indent=2, ensure_ascii=False)) + "</pre></body></html>"
             Path(path).write_text(content, encoding="utf-8")
         elif suffix == ".pdf":
-            Path(path).write_bytes(self._pdf_bytes("ZS API Client response", json.dumps(payload, indent=2).splitlines()))
+            Path(path).write_bytes(self._pdf_bytes("ZS API Client response", json.dumps(payload, indent=2, ensure_ascii=False).splitlines()))
         else:
-            Path(path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            Path(path).write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        AuditTrail(QSettings("Zscaler", "APIClient")).append("response_exported", {"format": suffix.lstrip("."), "file": os.path.basename(path)})
         self.status_bar.showMessage(self.tr("Masked response exported"))
+
+    def _response_export_payload(self) -> dict[str, Any]:
+        """Return a fresh, deeply masked exchange document for the active response."""
+        if self._last_response_exchange:
+            payload = dict(self._last_response_exchange)
+        else:
+            raw = self.response_body.toPlainText()
+            try:
+                body = json.loads(raw)
+            except (TypeError, ValueError):
+                body = raw
+            headers = dict(line.split(": ", 1) for line in self.response_headers.toPlainText().splitlines() if ": " in line)
+            payload = {
+                "schema": RESPONSE_EXCHANGE_SCHEMA,
+                "app_version": __version__,
+                "request": {},
+                "response": {"status": 0, "reason": "", "size_bytes": len(raw.encode("utf-8")), "headers": headers, "body": body},
+            }
+        payload["schema"] = RESPONSE_EXCHANGE_SCHEMA
+        payload["app_version"] = __version__
+        payload["exported_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        safe = redact_sensitive(payload)
+        request = safe.get("request", {}) if isinstance(safe, dict) else {}
+        if isinstance(request, dict) and request.get("url"):
+            request["url"] = redact_url(str(request["url"]))
+        return safe
+
+    def _response_export_table(self) -> tuple[list[str], list[list[str]]]:
+        """Rebuild the selected table from the source response without the UI row cap."""
+        payload = self._response_export_payload()
+        body = payload.get("response", {}).get("body") if isinstance(payload.get("response"), dict) else None
+        datasets = collect_record_datasets(body, maximum_rows=sys.maxsize)
+        selected_path = None
+        selected_index = self.response_dataset_choice.currentData()
+        if isinstance(selected_index, int) and 0 <= selected_index < len(self._response_datasets):
+            selected_path = self._response_datasets[selected_index][0]
+        rows = next((items for path, items in datasets if path == selected_path), datasets[0][1] if datasets else [])
+        headers = list(dict.fromkeys(str(key) for row in rows for key in row))
+        output = [[json.dumps(row.get(key), ensure_ascii=False) if isinstance(row.get(key), (dict, list)) else str(row.get(key, "")) for key in headers] for row in rows]
+        return headers, redact_sensitive(output)
+
+    @staticmethod
+    def _yaml_text(value: Any) -> str:
+        """Serialize JSON-compatible exchange data as dependency-free YAML."""
+        def render(item: Any, depth: int) -> list[str]:
+            indent = "  " * depth
+            if isinstance(item, dict):
+                lines = []
+                for key, child in item.items():
+                    safe_key = json.dumps(str(key), ensure_ascii=False)
+                    if isinstance(child, (dict, list)):
+                        lines.append(f"{indent}{safe_key}:")
+                        lines.extend(render(child, depth + 1))
+                    else:
+                        lines.append(f"{indent}{safe_key}: {json.dumps(child, ensure_ascii=False)}")
+                return lines
+            if isinstance(item, list):
+                lines = []
+                for child in item:
+                    if isinstance(child, (dict, list)):
+                        lines.append(f"{indent}-")
+                        lines.extend(render(child, depth + 1))
+                    else:
+                        lines.append(f"{indent}- {json.dumps(child, ensure_ascii=False)}")
+                return lines
+            return [f"{indent}{json.dumps(item, ensure_ascii=False)}"]
+        return "---\n" + "\n".join(render(value, 0)) + "\n"
+
+    @staticmethod
+    def _xml_text(value: Any) -> str:
+        """Serialize exchange data to typed XML without unsafe element names."""
+        def render(item: Any, name: str = "item") -> str:
+            attr = f' name="{xml_escape(str(name), {chr(34): "&quot;"})}"'
+            if isinstance(item, dict):
+                return f"<field{attr} type=\"object\">" + "".join(render(child, str(key)) for key, child in item.items()) + "</field>"
+            if isinstance(item, list):
+                return f"<field{attr} type=\"array\">" + "".join(render(child) for child in item) + "</field>"
+            kind = "null" if item is None else "boolean" if isinstance(item, bool) else "number" if isinstance(item, (int, float)) else "string"
+            text_value = "" if item is None else str(item).lower() if isinstance(item, bool) else str(item)
+            return f"<field{attr} type=\"{kind}\">{xml_escape(text_value)}</field>"
+        return '<?xml version="1.0" encoding="UTF-8"?>\n<zs-api-exchange>' + render(value, "document") + "</zs-api-exchange>\n"
+
+    @staticmethod
+    def _response_har(payload: dict[str, Any]) -> dict[str, Any]:
+        request = payload.get("request", {}) if isinstance(payload.get("request"), dict) else {}
+        response = payload.get("response", {}) if isinstance(payload.get("response"), dict) else {}
+        body = response.get("body")
+        response_text = json.dumps(body, ensure_ascii=False) if isinstance(body, (dict, list)) else str(body or "")
+        request_body = request.get("body", "")
+        if isinstance(request_body, (dict, list)):
+            request_body = json.dumps(request_body, ensure_ascii=False)
+        return {"log": {"version": "1.2", "creator": {"name": "ZS API Client", "version": __version__}, "entries": [{
+            "startedDateTime": payload.get("exported_at", ""), "time": int(response.get("duration_ms", 0) or 0),
+            "request": {"method": str(request.get("method", "GET")), "url": str(request.get("url", "")), "httpVersion": "HTTP/1.1", "headers": [{"name": str(key), "value": str(value)} for key, value in request.get("headers", {}).items()], "queryString": [{"name": key, "value": value} for key, value in urllib.parse.parse_qsl(urllib.parse.urlsplit(str(request.get("url", ""))).query, keep_blank_values=True)], "postData": {"mimeType": "application/json", "text": str(request_body)}, "headersSize": -1, "bodySize": len(str(request_body).encode("utf-8"))},
+            "response": {"status": int(response.get("status", 0) or 0), "statusText": str(response.get("reason", "")), "httpVersion": "HTTP/1.1", "headers": [{"name": str(key), "value": str(value)} for key, value in response.get("headers", {}).items()], "content": {"size": int(response.get("size_bytes", len(response_text.encode("utf-8"))) or 0), "mimeType": "application/json", "text": response_text}, "redirectURL": "", "headersSize": -1, "bodySize": int(response.get("size_bytes", len(response_text.encode("utf-8"))) or 0)},
+            "cache": {}, "timings": {"send": 0, "wait": int(response.get("duration_ms", 0) or 0), "receive": 0}
+        }]}}
 
     def _preview_response_export(self):
         """Show exactly what will leave the application, with secrets already masked."""
@@ -7636,16 +7758,67 @@ class MainWindow(QMainWindow):
             text = QPlainTextEdit(preview); text.setReadOnly(True); layout.addWidget(text)
             buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); buttons.rejected.connect(dialog.reject); layout.addWidget(buttons)
             dialog.exec(); return
-        raw = self.response_body.toPlainText()
-        try: body = json.loads(raw)
-        except json.JSONDecodeError: body = raw
-        headers = dict(line.split(": ", 1) for line in self.response_headers.toPlainText().splitlines() if ": " in line)
-        preview = json.dumps(redact_sensitive({"body": body, "headers": headers}), indent=2)
+        preview = json.dumps(self._response_export_payload(), indent=2, ensure_ascii=False)
         dialog = QDialog(self); dialog.setWindowTitle(self.tr("Export preview")); dialog.resize(760, 520)
         layout = QVBoxLayout(dialog); note = QLabel(self.tr("Sensitive fields are masked in every export.")); layout.addWidget(note)
         text = QPlainTextEdit(preview); text.setReadOnly(True); layout.addWidget(text)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); buttons.rejected.connect(dialog.reject); layout.addWidget(buttons)
         dialog.exec()
+
+    def _import_response_exchange(self):
+        """Open a masked exchange locally; never restore credentials or execute its request."""
+        path, _ = QFileDialog.getOpenFileName(
+            self, self.tr("Open response export"), "", "ZS API Exchange (*.zsapi.json *.json);;JSON (*.json)"
+        )
+        if not path:
+            return
+        candidate = Path(path)
+        try:
+            maximum_mb = max(1, min(1024, int(QSettings("Zscaler", "APIClient").value("advanced/max_transfer_mb", "100"))))
+            if not candidate.is_file() or candidate.is_symlink() or candidate.stat().st_size > maximum_mb * 1024 * 1024:
+                raise ValueError(self.tr("The response export is unavailable, is a symbolic link, or exceeds the configured transfer limit."))
+            document = json.loads(candidate.read_text(encoding="utf-8"))
+            if not isinstance(document, dict) or document.get("schema") != RESPONSE_EXCHANGE_SCHEMA:
+                raise ValueError(self.tr("This is not a supported ZS API response exchange file."))
+            request = document.get("request", {})
+            response = document.get("response")
+            if (not isinstance(request, dict) or not isinstance(request.get("headers", {}), dict)
+                    or not isinstance(response, dict) or not isinstance(response.get("headers", {}), dict)
+                    or "body" not in response):
+                raise ValueError(self.tr("The response exchange file is incomplete."))
+            status_value = int(response.get("status", 0) or 0)
+            size_value = int(response.get("size_bytes", 0) or 0)
+            duration_value = int(response.get("duration_ms", 0) or 0)
+            if not 0 <= status_value <= 999 or size_value < 0 or duration_value < 0:
+                raise ValueError(self.tr("The response exchange file is incomplete."))
+        except (OSError, UnicodeError, ValueError, RecursionError) as error:
+            QMessageBox.warning(self, self.tr("Open response export"), str(redact_sensitive(error)))
+            return
+
+        safe_document = redact_sensitive(document)
+        safe_response = safe_document["response"]
+        request = safe_document.get("request", {})
+        if isinstance(request, dict) and request.get("url"):
+            request["url"] = redact_url(str(request["url"]))
+        self._last_response_exchange = safe_document
+        self._binary_response = None
+        body = safe_response.get("body")
+        if isinstance(body, (dict, list)):
+            self.response_body.setPlainText(json.dumps(body, indent=2, ensure_ascii=False))
+        else:
+            self.response_body.setPlainText(str(body if body is not None else ""))
+        headers = safe_response.get("headers", {})
+        self.response_headers.setPlainText("\n".join(f"{key}: {value}" for key, value in headers.items()))
+        status = int(safe_response.get("status", 0) or 0)
+        reason = str(safe_response.get("reason", ""))
+        size = int(safe_response.get("size_bytes", len(self.response_body.toPlainText().encode("utf-8"))) or 0)
+        self.response_info.setText(f"<span style='color: #1565c0; font-weight: bold;'>{self.tr('Imported')} · {status} {html.escape(reason)}</span> · {self._format_size(size)}")
+        self._show_ai_visualization(body)
+        self._render_response_visualization(body)
+        if isinstance(body, dict) and any(key in body for key in ("data", "errors", "extensions")):
+            self._show_graphql_output(body)
+        AuditTrail(QSettings("Zscaler", "APIClient")).append("response_export_opened", {"file": candidate.name, "status": status})
+        self.status_bar.showMessage(self.tr("Response export opened locally; no API request was sent."))
 
     def _export_ai_result(self):
         path, _ = QFileDialog.getSaveFileName(
@@ -7705,11 +7878,23 @@ class MainWindow(QMainWindow):
     @staticmethod
     def _xlsx_bytes(headers: list[str], rows: list[list[str]]) -> bytes:
         """Create a standards-compatible single-sheet XLSX using inline strings."""
+        def column_name(index: int) -> str:
+            result = ""
+            index += 1
+            while index:
+                index, remainder = divmod(index - 1, 26)
+                result = chr(65 + remainder) + result
+            return result
+
+        def excel_text(value: Any) -> str:
+            # XML 1.0 rejects most C0 control characters.
+            return re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", str(value))
+
         sheet_rows = []
         for row_number, row in enumerate([headers, *rows], 1):
             cells = "".join(
-                f'<c r="{chr(65 + column)}{row_number}" t="inlineStr"><is><t>{xml_escape(str(value))}</t></is></c>'
-                for column, value in enumerate(row[:26])
+                f'<c r="{column_name(column)}{row_number}" t="inlineStr"><is><t>{xml_escape(excel_text(value))}</t></is></c>'
+                for column, value in enumerate(row)
             )
             sheet_rows.append(f'<row r="{row_number}">{cells}</row>')
         sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>' + "".join(sheet_rows) + "</sheetData></worksheet>"
@@ -7724,17 +7909,23 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def _pdf_bytes(title: str, lines: list[str]) -> bytes:
-        """Write a small portable PDF report; data is text-only and already masked."""
-        safe_lines = [title, ""] + [str(line)[:150] for line in lines[:55]]
+        """Write a multi-page portable PDF report without truncating masked data."""
+        safe_lines = [title, ""]
+        for line in lines:
+            safe_lines.extend(textwrap.wrap(str(line), width=90, replace_whitespace=False, drop_whitespace=False) or [""])
+        pages = [safe_lines[index:index + 54] for index in range(0, len(safe_lines), 54)] or [[]]
         escape_pdf = lambda value: value.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
-        stream = "BT\n/F1 10 Tf\n50 790 Td\n" + "\n".join(f"({escape_pdf(line)}) Tj\n0 -13 Td" for line in safe_lines) + "\nET"
-        objects = [
-            "<< /Type /Catalog /Pages 2 0 R >>",
-            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>",
-            f"<< /Length {len(stream.encode('latin-1', 'replace'))} >>\nstream\n{stream}\nendstream",
-            "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
-        ]
+        page_count = len(pages)
+        font_object = 3 + page_count * 2
+        page_objects = [3 + index * 2 for index in range(page_count)]
+        objects = ["<< /Type /Catalog /Pages 2 0 R >>", f"<< /Type /Pages /Kids [{' '.join(f'{number} 0 R' for number in page_objects)}] /Count {page_count} >>"]
+        for index, page in enumerate(pages):
+            page_object = 3 + index * 2
+            content_object = page_object + 1
+            stream = "BT\n/F1 9 Tf\n42 770 Td\n" + "\n".join(f"({escape_pdf(line)}) Tj\n0 -13 Td" for line in page) + "\nET"
+            objects.append(f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 {font_object} 0 R >> >> /Contents {content_object} 0 R >>")
+            objects.append(f"<< /Length {len(stream.encode('latin-1', 'replace'))} >>\nstream\n{stream}\nendstream")
+        objects.append("<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>")
         output = io.BytesIO()
         output.write(b"%PDF-1.4\n")
         offsets = [0]
@@ -7754,12 +7945,16 @@ class MainWindow(QMainWindow):
 
     def _svg_chart(self) -> str:
         """Export the current masked chart as a portable, dependency-free SVG."""
-        values = self.ai_chart.values
+        return self._chart_svg(self.ai_chart.values, self.ai_chart.style)
+
+    @staticmethod
+    def _chart_svg(values: list[tuple[str, float]], style: str) -> str:
+        """Export masked chart values as a portable, dependency-free SVG."""
         width, height = 800, 360
         maximum = max((value for _, value in values), default=1) or 1
         palette = ("#0078d4", "#2e7d32", "#e65100", "#6a1b9a", "#c62828")
         content = ['<rect width="800" height="360" fill="#252526"/>']
-        if self.ai_chart.style == "pie":
+        if style == "pie":
             import math
             total = sum(value for _, value in values) or 1
             start = -90.0
@@ -7770,7 +7965,7 @@ class MainWindow(QMainWindow):
                 large = 1 if end - start > 180 else 0
                 content.append(f'<path d="M 400 180 L {start_x:.1f} {start_y:.1f} A 130 130 0 {large} 1 {end_x:.1f} {end_y:.1f} Z" fill="{palette[index % len(palette)]}"/><text x="20" y="{25 + index * 18}" fill="white">{html.escape(str(label))}: {value:g}</text>')
                 start = end
-        elif self.ai_chart.style == "line":
+        elif style == "line":
             points = [f"{55 + index * (720 / max(1, len(values) - 1)):.1f},{310 - value / maximum * 250:.1f}" for index, (_, value) in enumerate(values)]
             content.append('<polyline points="' + " ".join(points) + '" fill="none" stroke="#0078d4" stroke-width="3"/>')
             content.extend(f'<circle cx="{point.split(",")[0]}" cy="{point.split(",")[1]}" r="4" fill="#0078d4"/><text x="{55 + index * (720 / max(1, len(values) - 1)):.1f}" y="340" text-anchor="middle" fill="white">{html.escape(str(label))[:12]}</text>' for index, ((label, _), point) in enumerate(zip(values, points)))
@@ -8605,11 +8800,29 @@ class MainWindow(QMainWindow):
                         name=self._binary_response_name, type=self._binary_response_type, size=size_str,
                     ))
                 elif raw_text is not None:
-                    self.response_body.setPlainText(redact_sensitive(raw_text))
+                    display_data = redact_sensitive(raw_text)
+                    self.response_body.setPlainText(str(display_data))
                 elif self.pretty_print_enabled:
                     self.response_body.setPlainText(json.dumps(display_data, indent=indent_val))
                 else:
                     self.response_body.setPlainText(json.dumps(display_data, separators=(',', ':')))
+                pending_exchange = getattr(self, "_pending_request", None) or {}
+                safe_request = redact_sensitive({
+                    key: pending_exchange.get(key)
+                    for key in ("method", "url", "headers", "body", "body_mode", "pagination")
+                    if key in pending_exchange
+                })
+                if isinstance(safe_request, dict) and safe_request.get("url"):
+                    safe_request["url"] = redact_url(str(safe_request["url"]))
+                self._last_response_exchange = redact_sensitive({
+                    "schema": RESPONSE_EXCHANGE_SCHEMA,
+                    "app_version": __version__,
+                    "request": safe_request,
+                    "response": {
+                        "status": status_code, "reason": reason, "duration_ms": duration_ms,
+                        "size_bytes": resp_size, "headers": safe_response_headers, "body": display_data,
+                    },
+                })
                 self._show_ai_visualization(display_data)
                 self._render_response_visualization(display_data)
                 if self.graphql_mode.isChecked() and isinstance(payload, dict):
@@ -8706,6 +8919,25 @@ class MainWindow(QMainWindow):
                     for key, value in response_headers.items()
                 }
                 self.response_headers.setPlainText("\n".join(f"{key}: {value}" for key, value in safe_response_headers.items()))
+                pending_exchange = getattr(self, "_pending_request", None) or {}
+                safe_request = redact_sensitive({
+                    key: pending_exchange.get(key)
+                    for key in ("method", "url", "headers", "body", "body_mode", "pagination")
+                    if key in pending_exchange
+                })
+                if isinstance(safe_request, dict) and safe_request.get("url"):
+                    safe_request["url"] = redact_url(str(safe_request["url"]))
+                self._last_response_exchange = redact_sensitive({
+                    "schema": RESPONSE_EXCHANGE_SCHEMA,
+                    "app_version": __version__,
+                    "request": safe_request,
+                    "response": {
+                        "status": status, "reason": self.tr("Request failed"), "duration_ms": duration_ms,
+                        "size_bytes": len(str(safe_error).encode("utf-8")), "headers": safe_response_headers, "body": safe_error,
+                    },
+                })
+                self._show_ai_visualization(safe_error)
+                self._render_response_visualization(safe_error)
                 self.status_bar.showMessage(self.tr("Request failed"))
                 self._log_output(f"Error: {safe_error[:50]}...", "error")
             
@@ -8957,6 +9189,7 @@ class MainWindow(QMainWindow):
         self._set_body_mode("json")
         self.multipart_file_path.clear()
         self._binary_response = None
+        self._last_response_exchange = None
         self.params_table.clearContents()
         self.headers_table.clearContents()
         self.variables_table.setRowCount(0)
