@@ -43,7 +43,7 @@ from PySide6.QtWidgets import (
     QCheckBox, QScrollArea, QFrame, QStackedWidget, QGridLayout
     , QInputDialog
 )
-from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
+from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
 from feature_services import AuditTrail, policy_diff, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
@@ -119,6 +119,28 @@ def collect_record_datasets(value: Any, maximum_rows: int = 1000) -> list[tuple[
 
     visit(value, "$")
     return [(path, rows[:maximum_rows]) for path, rows in collected.items()]
+
+
+def validate_local_automation_path(value: str) -> tuple[Path | None, str]:
+    """Accept only a small, explicit, non-symlinked Python automation file."""
+    raw = str(value or "").strip()
+    if not raw:
+        return None, "missing"
+    candidate = Path(raw).expanduser()
+    if not candidate.is_absolute():
+        return None, "not_absolute"
+    if candidate.is_symlink():
+        return None, "symlink"
+    try:
+        resolved = candidate.resolve(strict=True)
+        stat = resolved.stat()
+    except OSError:
+        return None, "unavailable"
+    if not resolved.is_file() or resolved.suffix.lower() != ".py":
+        return None, "not_python"
+    if stat.st_size > 1_048_576:
+        return None, "too_large"
+    return resolved, ""
 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
@@ -4477,23 +4499,25 @@ class OperationsDialog(QDialog):
         self.role_choice.setCurrentIndex(max(0, self.role_choice.findData(self.settings.value("access/role", "admin"))))
         self.alert_threshold = QLineEdit(str(self.settings.value("monitoring/error_threshold", "10")))
         self.webhook_url = QLineEdit(str(self.settings.value("automation/webhook_url", ""))); self.webhook_url.setPlaceholderText("https://hooks.example.invalid/...")
-        self.plugin_path = QLineEdit(str(self.settings.value("automation/local_plugin", ""))); self.plugin_path.setPlaceholderText(self.tr("Optional local automation script; never runs without approval"))
+        self.plugin_path = QLineEdit(str(self.settings.value("automation/local_plugin", ""))); self.plugin_path.setPlaceholderText(self.tr("Absolute path to a reviewed local Python automation"))
         governance_layout.addRow(self.tr("Local role:"), self.role_choice); governance_layout.addRow(self.tr("Alert threshold (errors):"), self.alert_threshold); governance_layout.addRow(self.tr("Webhook endpoint (disabled until approved):"), self.webhook_url); governance_layout.addRow(self.tr("Local automation:"), self.plugin_path)
         governance_save = QPushButton(self.tr("Save governance settings")); governance_save.clicked.connect(self.save_governance); governance_layout.addRow(governance_save)
-        governance_note = QLabel(self.tr("Read-only mode blocks write requests. Webhooks and local automation are saved only; this app will ask before any execution.")); governance_note.setWordWrap(True); governance_layout.addRow(governance_note)
+        governance_note = QLabel(self.tr("Read-only mode blocks write requests and local automation. Every webhook or local automation execution requires explicit approval.")); governance_note.setWordWrap(True); governance_layout.addRow(governance_note)
         self.tabs.addTab(governance_page, self.tr("Governance"))
 
         integrations_page = QWidget(); integrations_layout = QVBoxLayout(integrations_page)
         integrations_intro = QLabel(self.tr("Official integrations are optional. Credentials remain in the system keychain and no command runs automatically.")); integrations_intro.setWordWrap(True); integrations_layout.addWidget(integrations_intro)
         self.integration_status = QTableWidget(0, 3); self.integration_status.setHorizontalHeaderLabels([self.tr("Integration"), self.tr("Status"), self.tr("Recommended use")]); self.integration_status.horizontalHeader().setStretchLastSection(True); self.integration_status.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); integrations_layout.addWidget(self.integration_status)
         self.integration_preview = QPlainTextEdit(); self.integration_preview.setReadOnly(True); integrations_layout.addWidget(self.integration_preview)
-        integration_buttons = QHBoxLayout()
-        refresh_integrations = QPushButton(self.tr("Check local integrations")); refresh_integrations.clicked.connect(self.refresh_integrations); integration_buttons.addWidget(refresh_integrations)
-        terraform_preview = QPushButton(self.tr("Prepare Terraform import")); terraform_preview.clicked.connect(lambda: self.prepare_integration("terraform")); integration_buttons.addWidget(terraform_preview)
-        mcp_preview = QPushButton(self.tr("Prepare MCP connection")); mcp_preview.clicked.connect(lambda: self.prepare_integration("mcp")); integration_buttons.addWidget(mcp_preview)
-        sdk_preview = QPushButton(self.tr("Prepare SDK configuration")); sdk_preview.clicked.connect(lambda: self.prepare_integration("sdk")); integration_buttons.addWidget(sdk_preview)
-        webhook_test = QPushButton(self.tr("Send masked webhook test")); webhook_test.clicked.connect(self.send_webhook_test); integration_buttons.addWidget(webhook_test)
-        copy_preview = QPushButton(self.tr("Copy reviewed command")); copy_preview.clicked.connect(self.copy_integration_preview); integration_buttons.addWidget(copy_preview)
+        integration_buttons = QGridLayout()
+        refresh_integrations = QPushButton(self.tr("Check local integrations")); refresh_integrations.clicked.connect(self.refresh_integrations); integration_buttons.addWidget(refresh_integrations, 0, 0)
+        terraform_preview = QPushButton(self.tr("Prepare Terraform import")); terraform_preview.clicked.connect(lambda: self.prepare_integration("terraform")); integration_buttons.addWidget(terraform_preview, 0, 1)
+        mcp_preview = QPushButton(self.tr("Prepare MCP connection")); mcp_preview.clicked.connect(lambda: self.prepare_integration("mcp")); integration_buttons.addWidget(mcp_preview, 0, 2)
+        sdk_preview = QPushButton(self.tr("Prepare SDK configuration")); sdk_preview.clicked.connect(lambda: self.prepare_integration("sdk")); integration_buttons.addWidget(sdk_preview, 0, 3)
+        webhook_test = QPushButton(self.tr("Send masked webhook test")); webhook_test.clicked.connect(self.send_webhook_test); integration_buttons.addWidget(webhook_test, 1, 0)
+        local_automation = QPushButton(self.tr("Run reviewed local automation")); local_automation.clicked.connect(self.run_local_automation); integration_buttons.addWidget(local_automation, 1, 1)
+        copy_preview = QPushButton(self.tr("Copy reviewed command")); copy_preview.clicked.connect(self.copy_integration_preview); integration_buttons.addWidget(copy_preview, 1, 2)
+        for column in range(4): integration_buttons.setColumnStretch(column, 1)
         integrations_layout.addLayout(integration_buttons); self.tabs.addTab(integrations_page, self.tr("Integrations"))
 
         audit_page = QWidget(); audit_layout = QVBoxLayout(audit_page)
@@ -4999,11 +5023,14 @@ class OperationsDialog(QDialog):
         try: threshold = max(1, int(self.alert_threshold.text()))
         except ValueError:
             QMessageBox.warning(self, self.tr("Governance"), self.tr("Alert threshold must be a positive integer.")); return
+        automation_path = self.plugin_path.text().strip()
+        if automation_path and validate_local_automation_path(automation_path)[0] is None:
+            QMessageBox.warning(self, self.tr("Governance"), self.tr("Local automation must be an existing absolute path to a non-symlinked .py file no larger than 1 MiB.")); return
         self.settings.setValue("access/role", self.role_choice.currentData())
         self.settings.setValue("monitoring/error_threshold", str(threshold))
         self.settings.setValue("automation/webhook_url", self.webhook_url.text().strip())
-        self.settings.setValue("automation/local_plugin", self.plugin_path.text().strip())
-        AuditTrail(self.settings).append("governance_updated", {"role": self.role_choice.currentData(), "threshold": threshold, "webhook_configured": bool(self.webhook_url.text().strip()), "plugin_configured": bool(self.plugin_path.text().strip())})
+        self.settings.setValue("automation/local_plugin", automation_path)
+        AuditTrail(self.settings).append("governance_updated", {"role": self.role_choice.currentData(), "threshold": threshold, "webhook_configured": bool(self.webhook_url.text().strip()), "plugin_configured": bool(automation_path)})
         QMessageBox.information(self, self.tr("Governance"), self.tr("Governance settings saved."))
 
     def refresh_integrations(self):
@@ -5033,6 +5060,72 @@ class OperationsDialog(QDialog):
     def _webhook_payload(self):
         posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
         return {"source": "ZS API Client", "event": "connectivity_test", "timestamp": int(time.time()), "posture": {"score": posture["score"], "metrics": posture["metrics"]}}
+
+    def _local_automation_payload(self):
+        """Build the only data passed to local automation; credentials and raw responses are excluded."""
+        posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
+        return redact_sensitive({
+            "source": "ZS API Client", "event": "local_security_snapshot", "timestamp": int(time.time()),
+            "posture": {"score": posture["score"], "metrics": posture["metrics"], "findings": posture["findings"]},
+            "alerts": self._alert_data(),
+        })
+
+    def run_local_automation(self):
+        """Run one explicitly approved Python file with masked JSON on standard input."""
+        if self.settings.value("access/role", "admin") == "readonly":
+            QMessageBox.warning(self, self.tr("Local automation"), self.tr("Read-only mode blocks local automation.")); return
+        script, _ = validate_local_automation_path(str(self.settings.value("automation/local_plugin", "")))
+        if script is None:
+            QMessageBox.warning(self, self.tr("Local automation"), self.tr("Configure a valid local Python automation in Governance first.")); return
+        if hasattr(self, "local_automation_process") and self.local_automation_process.state() != QProcess.ProcessState.NotRunning:
+            QMessageBox.information(self, self.tr("Local automation"), self.tr("Local automation is already running.")); return
+        payload = json.dumps(self._local_automation_payload(), ensure_ascii=False, indent=2) + "\n"
+        self.integration_preview.setPlainText(payload)
+        if QMessageBox.question(
+            self, self.tr("Local automation"),
+            self.tr("Run the reviewed Python file with masked local posture and alert data? The process receives no API credentials."),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel,
+        ) != QMessageBox.StandardButton.Yes:
+            return
+        process = QProcess(self); self.local_automation_process = process; self._local_automation_timed_out = False
+        environment = QProcessEnvironment()
+        for key in ("PATH", "SystemRoot", "WINDIR", "TEMP", "TMP", "TMPDIR", "LANG", "LC_ALL"):
+            if os.environ.get(key):
+                environment.insert(key, os.environ[key])
+        environment.insert("PYTHONNOUSERSITE", "1")
+        process.setProcessEnvironment(environment)
+        process.setWorkingDirectory(str(script.parent))
+        process.setProgram(sys.executable)
+        process.setArguments(["-I", str(script)])
+        process.started.connect(lambda: (process.write(payload.encode("utf-8")), process.closeWriteChannel()))
+        process.finished.connect(self._on_local_automation_finished)
+        process.errorOccurred.connect(self._on_local_automation_error)
+        process.start()
+        QTimer.singleShot(15_000, self._timeout_local_automation)
+        AuditTrail(self.settings).append("local_automation_started", {"script": script.name, "input_bytes": len(payload.encode("utf-8"))})
+
+    def _timeout_local_automation(self):
+        process = getattr(self, "local_automation_process", None)
+        if process is not None and process.state() != QProcess.ProcessState.NotRunning:
+            self._local_automation_timed_out = True
+            process.kill()
+            AuditTrail(self.settings).append("local_automation_timed_out", {})
+            QMessageBox.warning(self, self.tr("Local automation"), self.tr("Local automation exceeded the 15-second limit and was stopped."))
+
+    def _on_local_automation_finished(self, exit_code, exit_status):
+        process = self.local_automation_process
+        stdout = bytes(process.readAllStandardOutput()).decode("utf-8", "replace")[:65_536]
+        stderr = bytes(process.readAllStandardError()).decode("utf-8", "replace")[:65_536]
+        result = redact_sensitive({"exit_code": int(exit_code), "stdout": stdout, "stderr": stderr})
+        self.integration_preview.setPlainText(json.dumps(result, indent=2, ensure_ascii=False))
+        AuditTrail(self.settings).append("local_automation_finished", {"exit_code": int(exit_code), "stdout_bytes": len(stdout.encode("utf-8")), "stderr_bytes": len(stderr.encode("utf-8"))})
+        if not getattr(self, "_local_automation_timed_out", False):
+            QMessageBox.information(self, self.tr("Local automation"), self.tr("Local automation completed with exit code {code}.").format(code=exit_code))
+
+    def _on_local_automation_error(self, process_error):
+        AuditTrail(self.settings).append("local_automation_failed", {"process_error": str(process_error)})
+        if process_error == QProcess.ProcessError.FailedToStart:
+            QMessageBox.warning(self, self.tr("Local automation"), self.tr("Local automation failed to start."))
 
     def send_webhook_test(self):
         endpoint = str(self.settings.value("automation/webhook_url", "")).strip()

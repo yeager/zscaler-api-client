@@ -684,6 +684,48 @@ class MainWindowTests(unittest.TestCase):
         self.assertNotIn("hidden", json.dumps(payload))
         dialog.close()
 
+    def test_local_automation_is_explicit_isolated_and_masked(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        old_role, old_path = settings.value("access/role", None), settings.value("automation/local_plugin", None)
+        try:
+            with TemporaryDirectory() as directory:
+                script = Path(directory) / "reviewed.py"
+                script.write_text("import sys\nprint(sys.stdin.read())\n", encoding="utf-8")
+                self.assertEqual(script.resolve(), client.validate_local_automation_path(str(script))[0])
+                self.assertIsNone(client.validate_local_automation_path("relative.py")[0])
+                settings.setValue("access/role", "admin")
+                settings.setValue("automation/local_plugin", str(script))
+                self.window.request_history = [{"method": "GET", "status": 500, "headers": {"Authorization": "hidden"}}]
+                dialog = client.OperationsDialog(self.window)
+                with patch.object(client.QMessageBox, "question", return_value=client.QMessageBox.StandardButton.Yes), \
+                     patch.object(client, "QProcess") as process_type, patch.object(client.QTimer, "singleShot"):
+                    process = process_type.return_value
+                    dialog.run_local_automation()
+                process.setProgram.assert_called_once_with(client.sys.executable)
+                process.setArguments.assert_called_once_with(["-I", str(script.resolve())])
+                process.start.assert_called_once()
+                environment = process.setProcessEnvironment.call_args.args[0]
+                self.assertFalse(environment.contains("AWS_SECRET_ACCESS_KEY"))
+                self.assertNotIn("hidden", dialog.integration_preview.toPlainText())
+                dialog.close()
+                actual = client.OperationsDialog(self.window)
+                with patch.object(client.QMessageBox, "question", return_value=client.QMessageBox.StandardButton.Yes), \
+                     patch.object(client.QMessageBox, "information"), patch.object(client.QMessageBox, "warning"):
+                    actual.run_local_automation()
+                    self.assertTrue(actual.local_automation_process.waitForFinished(5000))
+                    self.app.processEvents()
+                result = json.loads(actual.integration_preview.toPlainText())
+                self.assertEqual(0, result["exit_code"])
+                self.assertIn("local_security_snapshot", result["stdout"])
+                self.assertNotIn("hidden", result["stdout"])
+                actual.close()
+        finally:
+            for key, value in (("access/role", old_role), ("automation/local_plugin", old_path)):
+                if value is None:
+                    settings.remove(key)
+                else:
+                    settings.setValue(key, value)
+
     def test_api_chain_preview_is_masked_and_confined_to_active_host(self):
         self.window.api_type.setCurrentText("ZIA")
         self.window.zia_session = "session"
