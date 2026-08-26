@@ -4246,7 +4246,7 @@ class OperationsDialog(QDialog):
         tabs.addTab(governance_page, self.tr("Governance"))
 
         audit_page = QWidget(); audit_layout = QVBoxLayout(audit_page)
-        self.audit_output = QPlainTextEdit(); self.audit_output.setReadOnly(True); audit_layout.addWidget(self.audit_output)
+        self.audit_timeline = QTableWidget(0, 3); self.audit_timeline.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Event"), self.tr("Details")]); self.audit_timeline.horizontalHeader().setStretchLastSection(True); self.audit_timeline.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); audit_layout.addWidget(self.audit_timeline)
         audit_controls = QHBoxLayout()
         audit_refresh = QPushButton(self.tr("Refresh audit trail")); audit_refresh.clicked.connect(self.refresh_audit); audit_controls.addWidget(audit_refresh)
         schedule = QPushButton(self.tr("Schedule report")); schedule.clicked.connect(self.configure_schedule); audit_controls.addWidget(schedule)
@@ -4281,7 +4281,10 @@ class OperationsDialog(QDialog):
             self.dashboard_events.setItem(row, 2, QTableWidgetItem("✓" if valid else "!"))
 
     def compare_policies(self):
-        try: self.diff_result.setPlainText(json.dumps(policy_diff(self._json(self.before_policy, {}), self._json(self.after_policy, {})), indent=2))
+        try:
+            changes = policy_diff(self._json(self.before_policy, {}), self._json(self.after_policy, {}))
+            counts = {kind: sum(1 for item in changes if item["change"] == kind) for kind in ("added", "removed", "changed")}
+            self.diff_result.setPlainText(json.dumps({"summary": counts, "changes": changes}, indent=2))
         except ValueError as exc: QMessageBox.warning(self, self.tr("Policy diff"), str(exc))
 
     def export_policy(self, format_name):
@@ -4318,7 +4321,12 @@ class OperationsDialog(QDialog):
 
     def refresh_audit(self):
         trail = AuditTrail(self.settings)
-        self.audit_output.setPlainText(json.dumps({"valid": trail.verify(), "events": trail.events()}, indent=2))
+        events = list(reversed(trail.events()))
+        self.audit_timeline.setRowCount(len(events))
+        for row, event in enumerate(events):
+            self.audit_timeline.setItem(row, 0, QTableWidgetItem(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(event.get("timestamp", 0)))))
+            self.audit_timeline.setItem(row, 1, QTableWidgetItem(event.get("action", "")))
+            self.audit_timeline.setItem(row, 2, QTableWidgetItem(json.dumps(event.get("details", {}), ensure_ascii=False)))
 
     def configure_schedule(self):
         name, ok = QInputDialog.getText(self, self.tr("Scheduled report"), self.tr("Report name and cadence:"), text="Security dashboard — daily")
