@@ -24,6 +24,26 @@ METHOD_URL = re.compile(
     r"(https://[^\s<>\"]+)",
     re.IGNORECASE,
 )
+RELATIVE_METHOD_URL = re.compile(
+    r'\b(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\s+(/[^\s<>"]+)',
+    re.IGNORECASE,
+)
+
+# Some Automation Hub operation pages expose only the path in their searchable
+# content. These are the documented OneAPI prefixes for those products; keeping
+# the mapping explicit prevents a relative path from ever becoming an arbitrary
+# host request.
+ONEAPI_PRODUCT_BASES = {
+    "bi": "https://api.zsapi.net/bi",
+    "easm": "https://api.zsapi.net/easm/easm-ui/v1",
+    "zcc": "https://api.zsapi.net/zcc",
+    "zcell": "https://api.zsapi.net/zcell/config",
+    "zcloudconnector": "https://api.zsapi.net/ztw/api/v1",
+    "zdx": "https://api.zsapi.net/zdx",
+    "zia": "https://api.zsapi.net/zia/api/v1",
+    "zid": "https://api.zsapi.net/ziam/admin/api/v1",
+    "zpa": "https://api.zsapi.net/zpa",
+}
 
 
 def fetch_page(page: int) -> dict:
@@ -37,11 +57,22 @@ def fetch_page(page: int) -> dict:
 
 
 def endpoint_from(document: dict) -> dict | None:
+    # The search index occasionally contains generated category pages under a
+    # duplicated /docs/docs/ path. They repeat a child operation and are not
+    # executable reference pages themselves.
+    if "/docs/docs/" in str(document.get("url", "")):
+        return None
     content = document.get("content", "")
     match = METHOD_URL.search(content)
-    if not match:
-        return None
-    method, url = match.groups()
+    if match:
+        method, url = match.groups()
+    else:
+        relative = RELATIVE_METHOD_URL.search(content)
+        base = product_base(document)
+        if not relative or not base:
+            return None
+        method, path = relative.groups()
+        url = base.rstrip("/") + "/" + path.lstrip("/")
     return {
         "product": document.get("product") or "other",
         "category": category_from(document),
@@ -51,6 +82,14 @@ def endpoint_from(document: dict) -> dict | None:
         "description": document.get("description") or "",
         "doc_url": document.get("url") or "",
     }
+
+
+def product_base(document: dict) -> str:
+    product = document.get("product") or ""
+    if product == "ai-security":
+        path = str(document.get("file_path", "")).lower()
+        return "https://api.zsapi.net/aisecurity/aispm/v1" if "aispm" in path else "https://api.zsapi.net/aisecurity/airt"
+    return ONEAPI_PRODUCT_BASES.get(product, "")
 
 
 def category_from(document: dict) -> str:
@@ -72,13 +111,20 @@ def main() -> int:
     for page in range(2, pages + 1):
         documents.extend(hit["document"] for hit in fetch_page(page).get("hits", []))
 
-    endpoints = [endpoint for doc in documents if (endpoint := endpoint_from(doc))]
+    candidates = [endpoint for doc in documents if (endpoint := endpoint_from(doc))]
+    endpoints_by_operation = {}
+    for endpoint in candidates:
+        key = (endpoint["method"], endpoint["url"])
+        current = endpoints_by_operation.get(key)
+        if current is None or len(endpoint["name"]) > len(current["name"]):
+            endpoints_by_operation[key] = endpoint
+    endpoints = list(endpoints_by_operation.values())
     endpoints.sort(key=lambda item: (item["product"], item["category"], item["name"], item["method"]))
     output = Path(__file__).resolve().parents[1] / "data" / "zscaler_api_catalog.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(endpoints, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"Wrote {len(endpoints)} endpoints from {len(documents)} API reference pages to {output}")
-    if len(endpoints) < 900:
+    if len(endpoints) < 1000:
         print("Refusing an unexpectedly incomplete catalog", file=sys.stderr)
         return 1
     return 0

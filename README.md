@@ -32,7 +32,7 @@ ZS API Client is built with security as a top priority:
 ## ✨ Features
 
 ### API Coverage
-- **Automation Hub catalog** – 900+ executable REST operations generated from
+- **Automation Hub catalog** – 1,000+ executable REST operations generated from
   [Zscaler Automation Hub](https://automate.zscaler.com), including:
   - AI Security, Business Insights, EASM, Event Monitoring, and URBAC
   - ZIA (Zscaler Internet Access)
@@ -46,7 +46,7 @@ ZS API Client is built with security as a top priority:
   the bundled catalog directly from the official documentation index.
 
 ### Developer Experience
-- **900+ Endpoints** – Browse all executable Automation Hub REST operations in an organized tree view
+- **1,000+ Endpoints** – Browse all executable Automation Hub REST operations in an organized tree view
 - **Inline Documentation** – Direct links to official Zscaler API docs for each endpoint
 - **Request Builder** – Full control over URL, params, headers, and JSON body
 - **Syntax Highlighting** – Beautiful JSON response formatting

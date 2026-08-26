@@ -61,17 +61,31 @@ class ApiCatalogTests(unittest.TestCase):
             },
         )
 
+    def test_extracts_documented_relative_oneapi_paths(self):
+        cases = (
+            ("zia", "/docs/api-reference-and-guides/api-reference/zia/rules/item", "GET /firewallRules", "https://api.zsapi.net/zia/api/v1/firewallRules"),
+            ("zpa", "/docs/api-reference-and-guides/api-reference/zpa/apps/item", "PUT /mgmtconfig/v1/admin/customers/:customerId/application/:id", "https://api.zsapi.net/zpa/mgmtconfig/v1/admin/customers/:customerId/application/:id"),
+            ("ai-security", "/docs/api-reference-and-guides/api-reference/ai-security/airedteaming/item", "POST /api/v2/model-benchmarks/request", "https://api.zsapi.net/aisecurity/airt/api/v2/model-benchmarks/request"),
+        )
+        for product, file_path, content, expected in cases:
+            endpoint = CATALOG_BUILDER.endpoint_from({
+                "product": product, "file_path": file_path, "content": content,
+                "title": "Operation", "url": "https://automate.zscaler.com/docs/operation",
+            })
+            self.assertEqual(expected, endpoint["url"])
+
     def test_bundled_catalog_has_broad_product_coverage(self):
         catalog = json.loads(
             (ROOT / "data" / "zscaler_api_catalog.json").read_text(encoding="utf-8")
         )
-        self.assertGreaterEqual(len(catalog), 900)
+        self.assertGreaterEqual(len(catalog), 1000)
         products = {entry["product"] for entry in catalog}
         self.assertTrue(
             {"zia", "zpa", "zdx", "zcc", "zid", "zcloudconnector", "easm"}
             <= products
         )
         self.assertTrue(all(entry["url"].startswith("https://") for entry in catalog))
+        self.assertEqual(len(catalog), len({(entry["method"], entry["url"]) for entry in catalog}))
 
     def test_spdx_sbom_describes_artifact_with_hash_and_dependencies(self):
         document = SBOM_BUILDER.build_document(ROOT / "README.md")
