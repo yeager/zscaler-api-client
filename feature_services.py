@@ -13,6 +13,7 @@ import csv
 import hashlib
 import io
 import json
+import re
 import time
 import urllib.parse
 import zipfile
@@ -465,11 +466,16 @@ def validate_request_chain(steps: Any, maximum: int = 20) -> dict[str, Any]:
         return {"valid": False, "errors": ["Chain must contain at least one step"], "steps": []}
     if len(steps) > maximum:
         return {"valid": False, "errors": [f"Chain is limited to {maximum} steps"], "steps": []}
-    valid_steps, errors = [], []
+    valid_steps, errors, known_ids = [], [], set()
     for index, raw in enumerate(steps, 1):
         if not isinstance(raw, dict):
             errors.append(f"Step {index} must be an object")
             continue
+        step_id = str(raw.get("id") or f"step{index}").strip()
+        if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,63}", step_id):
+            errors.append(f"Step {index} has an invalid id")
+        elif step_id in known_ids:
+            errors.append(f"Step {index} has a duplicate id")
         method, url = str(raw.get("method", "GET")).upper(), str(raw.get("url", "")).strip()
         if method not in {"GET", "POST", "PUT", "PATCH", "DELETE"}:
             errors.append(f"Step {index} has an unsupported method")
@@ -479,8 +485,78 @@ def validate_request_chain(steps: Any, maximum: int = 20) -> dict[str, Any]:
         body = raw.get("body")
         if body is not None and not isinstance(body, (dict, list, str)):
             errors.append(f"Step {index} body must be JSON data or text")
+        body_mode = str(raw.get("body_mode", "json"))
+        if body_mode not in {"json", "raw", "form"}:
+            errors.append(f"Step {index} has an unsupported body mode")
+        headers = raw.get("headers", {})
+        if not isinstance(headers, dict) or any(not isinstance(value, str) for value in headers.values()):
+            errors.append(f"Step {index} headers must be string values")
+            headers = {}
+        if any(is_sensitive_name(name) for name in headers):
+            errors.append(f"Step {index} must not contain credential headers")
+        references = chain_references({"url": url, "body": body, "headers": headers})
+        unknown = sorted({reference.split(".", 1)[0] for reference in references} - known_ids)
+        if unknown:
+            errors.append(f"Step {index} references unavailable steps: {', '.join(unknown)}")
+        if chain_has_invalid_template({"url": url, "body": body, "headers": headers}):
+            errors.append(f"Step {index} has an invalid template")
         if not errors or not any(error.startswith(f"Step {index} ") for error in errors):
             # Keep the original body for the explicitly approved request.  Callers
             # must use mask() when previewing, persisting or auditing this plan.
-            valid_steps.append({"method": method, "url": url, "body": body})
+            valid_steps.append({"id": step_id, "method": method, "url": url, "body": body, "body_mode": body_mode, "headers": headers})
+            known_ids.add(step_id)
     return {"valid": not errors, "errors": errors, "steps": valid_steps}
+
+
+CHAIN_REFERENCE = re.compile(r"\{\{\s*([A-Za-z][A-Za-z0-9_-]*(?:\.(?:[A-Za-z_][A-Za-z0-9_-]*|\d+))+)\s*\}\}")
+
+
+def chain_references(value: Any) -> list[str]:
+    """Collect declarative references without evaluating arbitrary expressions."""
+    if isinstance(value, dict):
+        return sum((chain_references(item) for item in value.values()), [])
+    if isinstance(value, list):
+        return sum((chain_references(item) for item in value), [])
+    return CHAIN_REFERENCE.findall(value) if isinstance(value, str) else []
+
+
+def chain_has_invalid_template(value: Any) -> bool:
+    if isinstance(value, dict):
+        return any(chain_has_invalid_template(item) for item in value.values())
+    if isinstance(value, list):
+        return any(chain_has_invalid_template(item) for item in value)
+    if not isinstance(value, str):
+        return False
+    return "{{" in CHAIN_REFERENCE.sub("", value) or "}}" in CHAIN_REFERENCE.sub("", value)
+
+
+def chain_lookup(context: dict[str, Any], reference: str) -> Any:
+    """Resolve a key/index path from completed chain steps only."""
+    segments = reference.split(".")
+    value: Any = context[segments[0]]
+    for segment in segments[1:]:
+        if isinstance(value, dict) and segment in value:
+            value = value[segment]
+        elif isinstance(value, list) and segment.isdigit() and int(segment) < len(value):
+            value = value[int(segment)]
+        else:
+            raise ValueError(f"Reference is unavailable: {reference}")
+    return value
+
+
+def resolve_chain_templates(value: Any, context: dict[str, Any], url_value: bool = False) -> Any:
+    """Resolve safe references recursively; URL substitutions are always encoded."""
+    if isinstance(value, dict):
+        return {key: resolve_chain_templates(item, context, url_value=False) for key, item in value.items()}
+    if isinstance(value, list):
+        return [resolve_chain_templates(item, context, url_value=False) for item in value]
+    if not isinstance(value, str):
+        return value
+    exact = CHAIN_REFERENCE.fullmatch(value)
+    if exact and not url_value:
+        return chain_lookup(context, exact.group(1))
+    def replacement(match):
+        resolved = chain_lookup(context, match.group(1))
+        rendered = canonical(resolved) if isinstance(resolved, (dict, list)) else str(resolved)
+        return urllib.parse.quote(rendered, safe="") if url_value else rendered
+    return CHAIN_REFERENCE.sub(replacement, value)

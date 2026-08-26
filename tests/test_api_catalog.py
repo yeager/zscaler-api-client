@@ -39,6 +39,8 @@ class ApiCatalogTests(unittest.TestCase):
             "hidden",
             client.redact_url("https://example.test/token?access_token=hidden&page=1"),
         )
+        self.assertNotIn("hidden", client.redact_sensitive("https://example.test/users?token=hidden&page=1"))
+        self.assertIn("https://", client.redact_sensitive("https://example.test/users?token=hidden&page=1"))
     def test_extracts_method_url_and_metadata(self):
         document = {
             "content": "List users GET https://api.zsapi.net/zia/api/v1/users Request",
@@ -100,6 +102,24 @@ class ApiCatalogTests(unittest.TestCase):
         self.assertEqual([], metadata["parameters"])
         self.assertNotIn("request_body", metadata)
 
+    def test_extracts_only_documented_pagination_patterns(self):
+        cursor = CATALOG_BUILDER.request_metadata_from({"content": (
+            "Request Query Parameters pageId string pageSize int32 Responses 200 OK "
+            "Schema items object[] nextPage string CURL Request Parameters pageId — query pageSize — query"
+        )})
+        self.assertEqual(
+            {"mode": "cursor", "position_param": "pageId", "next_field": "nextPage", "size_param": "pageSize"},
+            cursor["pagination"],
+        )
+        numbered = CATALOG_BUILDER.request_metadata_from({"content": (
+            "Request Query Parameters page int32 pageSize int32 Responses 200 OK "
+            "CURL Request Parameters page — query pageSize — query"
+        )})
+        self.assertEqual("page", numbered["pagination"]["mode"])
+        self.assertNotIn("pagination", CATALOG_BUILDER.request_metadata_from({"content": (
+            "Request Query Parameters limit int32 Responses 200 OK CURL Request Parameters limit — query"
+        )}))
+
     def test_extracts_documented_relative_oneapi_paths(self):
         cases = (
             ("zia", "/docs/api-reference-and-guides/api-reference/zia/rules/item", "GET /firewallRules", "https://api.zsapi.net/zia/api/v1/firewallRules"),
@@ -142,6 +162,7 @@ class ApiCatalogTests(unittest.TestCase):
         self.assertGreaterEqual(sum(len(entry.get("parameters", [])) for entry in catalog), 1700)
         self.assertGreaterEqual(sum("request_body" in entry for entry in catalog), 225)
         self.assertGreaterEqual(sum(bool(entry.get("response_codes")) for entry in catalog), 800)
+        self.assertGreaterEqual(sum(bool(entry.get("pagination")) for entry in catalog), 120)
         self.assertTrue(all("documentation_updated_at" in entry for entry in catalog))
 
     def test_bundled_graphql_catalog_covers_all_documented_queries_and_types(self):

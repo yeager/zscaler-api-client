@@ -167,6 +167,28 @@ def request_metadata_from(document: dict) -> dict:
             "description": description,
         })
 
+    query_names = {
+        str(parameter["name"]).lower(): str(parameter["name"])
+        for parameter in result["parameters"] if parameter["in"] == "query"
+    }
+    pagination = None
+    if "page" in query_names and any(name in query_names for name in ("pagesize", "page_size", "size", "limit")):
+        size_key = next(name for name in ("pagesize", "page_size", "size", "limit") if name in query_names)
+        pagination = {"mode": "page", "position_param": query_names["page"], "size_param": query_names[size_key], "start": 1}
+    elif "offset" in query_names and "limit" in query_names:
+        pagination = {"mode": "offset", "position_param": query_names["offset"], "size_param": query_names["limit"], "start": 0}
+    else:
+        cursor_key = next((name for name in ("pageid", "cursor", "pagetoken", "page_token") if name in query_names), None)
+        response_section = content.split("Responses", 1)[1] if "Responses" in content else ""
+        next_field = next((field for field in ("nextPage", "nextPageId", "nextCursor", "next_page", "next_cursor") if re.search(rf"\b{field}\b", response_section)), None)
+        if cursor_key and next_field:
+            size_key = next((name for name in ("pagesize", "page_size", "size", "limit") if name in query_names), None)
+            pagination = {"mode": "cursor", "position_param": query_names[cursor_key], "next_field": next_field}
+            if size_key:
+                pagination["size_param"] = query_names[size_key]
+    if pagination:
+        result["pagination"] = pagination
+
     body = _json_value_after(preview, " Body ")
     if body is not None:
         result["request_body"] = body

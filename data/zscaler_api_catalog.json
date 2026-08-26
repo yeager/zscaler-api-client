@@ -2598,7 +2598,13 @@
       "429",
       "500"
     ],
-    "documentation_updated_at": 1787716099
+    "documentation_updated_at": 1787716099,
+    "pagination": {
+      "mode": "cursor",
+      "position_param": "cursor",
+      "next_field": "next_cursor",
+      "size_param": "page_size"
+    }
   },
   {
     "product": "ai-security",
@@ -2698,7 +2704,13 @@
       "429",
       "500"
     ],
-    "documentation_updated_at": 1787760241
+    "documentation_updated_at": 1787760241,
+    "pagination": {
+      "mode": "cursor",
+      "position_param": "cursor",
+      "next_field": "next_cursor",
+      "size_param": "page_size"
+    }
   },
   {
     "product": "ai-security",
@@ -2852,7 +2864,13 @@
       "429",
       "500"
     ],
-    "documentation_updated_at": 1787494581
+    "documentation_updated_at": 1787494581,
+    "pagination": {
+      "mode": "cursor",
+      "position_param": "cursor",
+      "next_field": "next_cursor",
+      "size_param": "page_size"
+    }
   },
   {
     "product": "ai-security",
@@ -2928,7 +2946,13 @@
       "429",
       "500"
     ],
-    "documentation_updated_at": 1787716070
+    "documentation_updated_at": 1787716070,
+    "pagination": {
+      "mode": "cursor",
+      "position_param": "cursor",
+      "next_field": "next_cursor",
+      "size_param": "page_size"
+    }
   },
   {
     "product": "ai-security",
@@ -3044,7 +3068,13 @@
       "429",
       "500"
     ],
-    "documentation_updated_at": 1787411512
+    "documentation_updated_at": 1787411512,
+    "pagination": {
+      "mode": "cursor",
+      "position_param": "cursor",
+      "next_field": "next_cursor",
+      "size_param": "page_size"
+    }
   },
   {
     "product": "bi",
@@ -3924,7 +3954,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787596759
+    "documentation_updated_at": 1787596759,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "event-monitoring",
@@ -4505,7 +4541,13 @@
       "404",
       "429"
     ],
-    "documentation_updated_at": 1787761825
+    "documentation_updated_at": 1787761825,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcc",
@@ -4549,7 +4591,13 @@
       "404",
       "429"
     ],
-    "documentation_updated_at": 1787676589
+    "documentation_updated_at": 1787676589,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcc",
@@ -4593,7 +4641,13 @@
       "404",
       "429"
     ],
-    "documentation_updated_at": 1787761724
+    "documentation_updated_at": 1787761724,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcc",
@@ -4637,7 +4691,13 @@
       "404",
       "429"
     ],
-    "documentation_updated_at": 1787718078
+    "documentation_updated_at": 1787718078,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcc",
@@ -4697,7 +4757,13 @@
       "404",
       "429"
     ],
-    "documentation_updated_at": 1787761771
+    "documentation_updated_at": 1787761771,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcc",
@@ -4902,7 +4968,13 @@
       "404",
       "429"
     ],
-    "documentation_updated_at": 1787761967
+    "documentation_updated_at": 1787761967,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcc",
@@ -4946,7 +5018,13 @@
       "404",
       "429"
     ],
-    "documentation_updated_at": 1787718300
+    "documentation_updated_at": 1787718300,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcc",
@@ -4990,7 +5068,13 @@
       "404",
       "429"
     ],
-    "documentation_updated_at": 1787621161
+    "documentation_updated_at": 1787621161,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcc",
@@ -5034,7 +5118,13 @@
       "404",
       "429"
     ],
-    "documentation_updated_at": 1787718355
+    "documentation_updated_at": 1787718355,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcc",
@@ -5534,7 +5624,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787677327
+    "documentation_updated_at": 1787677327,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "size",
+      "start": 1
+    }
   },
   {
     "product": "zcell",
@@ -5618,7 +5714,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787546680
+    "documentation_updated_at": 1787546680,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "size",
+      "start": 1
+    }
   },
   {
     "product": "zcell",
@@ -5670,7 +5772,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787762416
+    "documentation_updated_at": 1787762416,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "size",
+      "start": 1
+    }
   },
   {
     "product": "zcell",
@@ -5793,6 +5901,12 @@
       "500"
     ],
     "documentation_updated_at": 1787621605,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "size",
+      "start": 1
+    },
     "request_body": {
       "id": 0,
       "modifiedByUserId": "string",
@@ -6493,6 +6607,12 @@
       "500"
     ],
     "documentation_updated_at": 1787574819,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "size",
+      "start": 1
+    },
     "request_body": {
       "iccid": [
         "string"
@@ -6752,7 +6872,13 @@
       "401",
       "403"
     ],
-    "documentation_updated_at": 1787622386
+    "documentation_updated_at": 1787622386,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -7146,7 +7272,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787331951
+    "documentation_updated_at": 1787331951,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -7187,7 +7319,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787374302
+    "documentation_updated_at": 1787374302,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -7879,7 +8017,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787678923
+    "documentation_updated_at": 1787678923,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -8179,7 +8323,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787623147
+    "documentation_updated_at": 1787623147,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -8548,7 +8698,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787623386
+    "documentation_updated_at": 1787623386,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -8589,7 +8745,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787720749
+    "documentation_updated_at": 1787720749,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -8706,7 +8868,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787720647
+    "documentation_updated_at": 1787720647,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -8812,7 +8980,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787576534
+    "documentation_updated_at": 1787576534,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -8958,27 +9132,6 @@
   {
     "product": "zcloudconnector",
     "category": "Partner Integrations",
-    "name": "Delete Aws Account",
-    "method": "DELETE",
-    "url": "https://api.zsapi.net/ztw/api/v1/publicCloudInfo/:id",
-    "description": "Removes a specific AWS account based on the provided ID.",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/partner-integrations/aws-account-z-resource-delete-aws-account",
-    "parameters": [
-      {
-        "name": "id",
-        "in": "path",
-        "type": "int32",
-        "required": true,
-        "default": "",
-        "description": "The unique ID of the AWS account."
-      }
-    ],
-    "response_codes": [],
-    "documentation_updated_at": 1787623856
-  },
-  {
-    "product": "zcloudconnector",
-    "category": "Partner Integrations",
     "name": "Disable Aws Account",
     "method": "PUT",
     "url": "https://api.zsapi.net/ztw/api/v1/publicCloudInfo/:id/changeState",
@@ -9057,7 +9210,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787764980
+    "documentation_updated_at": 1787764980,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -9086,19 +9245,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787465085
-  },
-  {
-    "product": "zcloudconnector",
-    "category": "Partner Integrations",
-    "name": "Get Account Groups Count",
-    "method": "GET",
-    "url": "https://api.zsapi.net/ztw/api/v1/accountGroups/count",
-    "description": "Retrieves the total number of AWS account groups.",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/partner-integrations/aws-account-group-z-resource-get-account-groups-count",
-    "parameters": [],
-    "response_codes": [],
-    "documentation_updated_at": 1787679650
+    "documentation_updated_at": 1787465085,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -9139,7 +9292,56 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787721159
+    "documentation_updated_at": 1787721159,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
+  },
+  {
+    "product": "zcloudconnector",
+    "category": "Partner Integrations",
+    "name": "Get Aws Account By Id",
+    "method": "GET",
+    "url": "https://api.zsapi.net/ztw/api/v1/publicCloudInfo/:id",
+    "description": "Retrieves the existing AWS account details based on the provided ID.",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/partner-integrations/aws-account-z-resource-get-aws-account-by-id",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "type": "int32",
+        "required": true,
+        "default": "",
+        "description": "The unique ID of the AWS account. Query Parameters"
+      },
+      {
+        "name": "page",
+        "in": "query",
+        "type": "int32",
+        "required": false,
+        "default": "1",
+        "description": "Specifies the page offset."
+      },
+      {
+        "name": "pageSize",
+        "in": "query",
+        "type": "int32",
+        "required": false,
+        "default": "250",
+        "description": "Specifies the page size."
+      }
+    ],
+    "response_codes": [],
+    "documentation_updated_at": 1787765197,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -9161,92 +9363,9 @@
     "url": "https://api.zsapi.net/ztw/api/v1/publicCloudInfo/lite",
     "description": "Retrieves basic information about the AWS cloud accounts. For additional details, use the <code>GET /publicCloudInfo</code> method.",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/partner-integrations/aws-account-z-resource-get-aws-account-summary",
-    "parameters": [
-      {
-        "name": "cloudType",
-        "in": "query",
-        "type": "string",
-        "required": false,
-        "default": "AWS",
-        "description": "Possible values: [ AWS , AZURE , GCP ] The cloud type. The default and mandatory value is AWS."
-      },
-      {
-        "name": "search",
-        "in": "query",
-        "type": "string",
-        "required": false,
-        "default": "",
-        "description": "The search string."
-      },
-      {
-        "name": "page",
-        "in": "query",
-        "type": "int32",
-        "required": false,
-        "default": "1",
-        "description": "Specifies the page offset."
-      },
-      {
-        "name": "pageSize",
-        "in": "query",
-        "type": "int32",
-        "required": false,
-        "default": "250",
-        "description": "Specifies the page size."
-      }
-    ],
+    "parameters": [],
     "response_codes": [],
-    "documentation_updated_at": 1787465347
-  },
-  {
-    "product": "zcloudconnector",
-    "category": "Partner Integrations",
-    "name": "Get Aws Supported Regions",
-    "method": "GET",
-    "url": "https://api.zsapi.net/ztw/api/v1/publicCloudInfo/supportedRegions",
-    "description": "Retrieves a list of AWS regions supported for  workload discovery settings (WDS).",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/partner-integrations/aws-account-z-resource-get-aws-supported-regions",
-    "parameters": [
-      {
-        "name": "page",
-        "in": "query",
-        "type": "int32",
-        "required": false,
-        "default": "1",
-        "description": "Specifies the page offset."
-      },
-      {
-        "name": "pageSize",
-        "in": "query",
-        "type": "int32",
-        "required": false,
-        "default": "250",
-        "description": "Specifies the page size."
-      }
-    ],
-    "response_codes": [],
-    "documentation_updated_at": 1787721235
-  },
-  {
-    "product": "zcloudconnector",
-    "category": "Partner Integrations",
-    "name": "Get Cloud Formation Template Url",
-    "method": "GET",
-    "url": "https://api.zsapi.net/ztw/api/v1/publicCloudInfo/cloudFormationTemplate",
-    "description": "Retrieves the CloudFormation template URL. To learn more, see <a href='https://help.zscaler.com/cloud-branch-connector/adding-amazon-web-services-account' target='_blank'>Adding an Amazon Web Services Account</a>.",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/partner-integrations/aws-account-z-resource-get-cloud-formation-template-url",
-    "parameters": [
-      {
-        "name": "awsAccountId",
-        "in": "query",
-        "type": "string",
-        "required": false,
-        "default": "",
-        "description": "(Optional) The AWS account ID to customize the CloudFormation template URL. If an awsAccountId is provided, the URL is customized with account-specific values, or a generic template URL is returned."
-      }
-    ],
-    "response_codes": [],
-    "documentation_updated_at": 1787721253
+    "documentation_updated_at": 1787765227
   },
   {
     "product": "zcloudconnector",
@@ -9338,12 +9457,100 @@
   },
   {
     "product": "zcloudconnector",
+    "category": "Partner Integrations",
+    "name": "Update Aws Account",
+    "method": "PUT",
+    "url": "https://api.zsapi.net/ztw/api/v1/publicCloudInfo/:id",
+    "description": "Updates the existing AWS account details based on the provided ID.",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/partner-integrations/aws-account-z-resource-update-aws-account",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "type": "int32",
+        "required": true,
+        "default": "",
+        "description": "The unique ID of the AWS account. application/json Body id int32 The unique ID of the AWS account. name string The name of the AWS account. The name must be non-null, non-empty, unique, and 128 characters or fewer in length. accountDetails object The AWS account details. awsAccountId string The AWS account ID where workloads are deployed. The ID is non-null, non-empty, and unique, and contains 12 digits. awsRoleName string The AWS trusting role in your account. The name is non-null, non-empty, and 64 characters or fewer in length. cloudWatchGroupArn string The resource name (ARN) of the AWS Cl"
+      }
+    ],
+    "response_codes": [],
+    "documentation_updated_at": 1787765290,
+    "request_body": {
+      "id": 0,
+      "name": "string",
+      "accountDetails": {
+        "awsAccountId": "string",
+        "awsRoleName": "string",
+        "cloudWatchGroupArn": "string",
+        "eventBusName": "string",
+        "externalId": "string",
+        "logInfoType": "INFO",
+        "troubleShootingLogging": true,
+        "trustedAccountId": "string",
+        "trustedRole": "string"
+      },
+      "accountGroups": [
+        {
+          "id": 0,
+          "name": "string",
+          "isNameL10nTag": true,
+          "extensions": {},
+          "deleted": true,
+          "externalId": "string",
+          "associationTime": 0
+        }
+      ],
+      "cloudType": "AWS",
+      "externalId": "string",
+      "lastModTime": 0,
+      "lastModUser": {
+        "id": 0,
+        "name": "string",
+        "isNameL10nTag": true,
+        "extensions": {},
+        "deleted": true,
+        "externalId": "string",
+        "associationTime": 0
+      },
+      "lastSyncTime": 0,
+      "regionStatus": [
+        {
+          "id": 0,
+          "name": "string",
+          "cloudType": "AWS",
+          "status": true
+        }
+      ],
+      "supportedRegions": [
+        {
+          "id": 0,
+          "name": "string",
+          "cloudType": "AWS"
+        }
+      ]
+    },
+    "request_content_type": "application/json"
+  },
+  {
+    "product": "zcloudconnector",
     "category": "Policy Management",
-    "name": "Ec Rule Z Resource Get Forwarding Rule By ID",
-    "method": "GET",
+    "name": "Create Rdr Rule",
+    "method": "POST",
+    "url": "https://api.zsapi.net/ztw/api/v1/ecRules/ecRdr",
+    "description": "Creates a new traffic forwarding rule. To learn more, see <a href='https://help.zscaler.com/cloud-branch-connector/configuring-traffic-forwarding-rule' target='_blank'>Configuring Traffic Forwarding Rules</a>.",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/policy-management/ec-rule-z-resource-create-rdr-rule",
+    "parameters": [],
+    "response_codes": [],
+    "documentation_updated_at": 1787765380
+  },
+  {
+    "product": "zcloudconnector",
+    "category": "Policy Management",
+    "name": "Ec Rule Z Resource Delete Rdr Forwarding Rule",
+    "method": "DELETE",
     "url": "https://api.zsapi.net/ztw/api/v1/ecRules/ecRdr/:ruleId",
-    "description": "Retrieves the traffic forwarding rule configuration based on the specified forwarding rule ID.",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/policy-management/ec-rule-z-resource-get-forwarding-rule-by-id",
+    "description": "Deletes the traffic forwarding rule configuration based on the specified ID.",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/policy-management/ec-rule-z-resource-delete-rdr-forwarding-rule",
     "parameters": [
       {
         "name": "ruleId",
@@ -9355,7 +9562,19 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787721391
+    "documentation_updated_at": 1787765394
+  },
+  {
+    "product": "zcloudconnector",
+    "category": "Policy Management",
+    "name": "Ec Rule Z Resource Get Forwarding Rule By ID",
+    "method": "GET",
+    "url": "https://api.zsapi.net/ztw/api/v1/ecRules/ecRdr/:ruleId",
+    "description": "Retrieves the traffic forwarding rule configuration based on the specified forwarding rule ID.",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/api-reference/zcloudconnector/policy-management/ec-rule-z-resource-get-forwarding-rule-by-id",
+    "parameters": [],
+    "response_codes": [],
+    "documentation_updated_at": 1787765415
   },
   {
     "product": "zcloudconnector",
@@ -9440,7 +9659,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787624217
+    "documentation_updated_at": 1787624217,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -9698,7 +9923,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787293641
+    "documentation_updated_at": 1787293641,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -9842,7 +10073,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787721986
+    "documentation_updated_at": 1787721986,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -10177,7 +10414,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787680971
+    "documentation_updated_at": 1787680971,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -10206,7 +10449,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787625102
+    "documentation_updated_at": 1787625102,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -10243,7 +10492,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787722282
+    "documentation_updated_at": 1787722282,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -10272,7 +10527,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787681038
+    "documentation_updated_at": 1787681038,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -11572,7 +11833,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787722963
+    "documentation_updated_at": 1787722963,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zcloudconnector",
@@ -11601,7 +11868,13 @@
       }
     ],
     "response_codes": [],
-    "documentation_updated_at": 1787417817
+    "documentation_updated_at": 1787417817,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -11777,7 +12050,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787681815
+    "documentation_updated_at": 1787681815,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -11843,7 +12122,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787681858
+    "documentation_updated_at": 1787681858,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -11979,7 +12264,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787626057
+    "documentation_updated_at": 1787626057,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zdx",
@@ -12053,7 +12344,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787501963
+    "documentation_updated_at": 1787501963,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zdx",
@@ -13348,7 +13645,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787189732
+    "documentation_updated_at": 1787189732,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -13446,7 +13749,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787626923
+    "documentation_updated_at": 1787626923,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -13900,7 +14209,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787724169
+    "documentation_updated_at": 1787724169,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -14227,7 +14542,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787724192
+    "documentation_updated_at": 1787724192,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -14513,7 +14834,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787659445
+    "documentation_updated_at": 1787659445,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -15749,7 +16076,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787627870
+    "documentation_updated_at": 1787627870,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -16106,7 +16439,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787725266
+    "documentation_updated_at": 1787725266,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -16232,7 +16571,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787725309
+    "documentation_updated_at": 1787725309,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -16306,7 +16651,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787659863
+    "documentation_updated_at": 1787659863,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zdx",
@@ -16388,7 +16739,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787504077
+    "documentation_updated_at": 1787504077,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zdx",
@@ -16751,7 +17108,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787725482
+    "documentation_updated_at": 1787725482,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zdx",
@@ -17249,7 +17612,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787745869
+    "documentation_updated_at": 1787745869,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zdx",
@@ -17684,7 +18053,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787746391
+    "documentation_updated_at": 1787746391,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -17750,7 +18125,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787746434
+    "documentation_updated_at": 1787746434,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zdx",
@@ -17933,7 +18314,13 @@
       "404",
       "500"
     ],
-    "documentation_updated_at": 1787726207
+    "documentation_updated_at": 1787726207,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -19978,7 +20365,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787748130
+    "documentation_updated_at": 1787748130,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -20232,7 +20625,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787534164
+    "documentation_updated_at": 1787534164,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -20973,7 +21372,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787705394
+    "documentation_updated_at": 1787705394,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -21028,7 +21433,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787705414
+    "documentation_updated_at": 1787705414,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -21209,7 +21620,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787749682
+    "documentation_updated_at": 1787749682,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -21572,7 +21989,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787664527
+    "documentation_updated_at": 1787664527,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -21603,7 +22026,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787585426
+    "documentation_updated_at": 1787585426,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -22403,7 +22832,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787750857
+    "documentation_updated_at": 1787750857,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -23040,7 +23475,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787633995
+    "documentation_updated_at": 1787633995,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -23865,7 +24306,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787451728
+    "documentation_updated_at": 1787451728,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -24054,7 +24501,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787752017
+    "documentation_updated_at": 1787752017,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -24199,7 +24652,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787708170
+    "documentation_updated_at": 1787708170,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -24643,7 +25102,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787708579
+    "documentation_updated_at": 1787708579,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -24775,7 +25240,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787588175
+    "documentation_updated_at": 1787588175,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -25512,7 +25983,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787322657
+    "documentation_updated_at": 1787322657,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -25543,7 +26020,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787667650
+    "documentation_updated_at": 1787667650,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -25582,7 +26065,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787635502
+    "documentation_updated_at": 1787635502,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -26479,7 +26968,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787753800
+    "documentation_updated_at": 1787753800,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -26733,7 +27228,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787753954
+    "documentation_updated_at": 1787753954,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -26832,7 +27333,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787710036
+    "documentation_updated_at": 1787710036,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -27185,7 +27692,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787754134
+    "documentation_updated_at": 1787754134,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -27248,7 +27761,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787323966
+    "documentation_updated_at": 1787323966,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -27324,7 +27843,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787710325
+    "documentation_updated_at": 1787710325,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -27394,7 +27919,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787754405
+    "documentation_updated_at": 1787754405,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -27478,7 +28009,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787754446
+    "documentation_updated_at": 1787754446,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -27680,7 +28217,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787405891
+    "documentation_updated_at": 1787405891,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -28790,7 +29333,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787637938
+    "documentation_updated_at": 1787637938,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -28896,7 +29445,13 @@
       "403",
       "500"
     ],
-    "documentation_updated_at": 1787711609
+    "documentation_updated_at": 1787711609,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pageSize",
+      "start": 1
+    }
   },
   {
     "product": "zia",
@@ -29120,7 +29675,13 @@
       "200",
       "401"
     ],
-    "documentation_updated_at": 1787406929
+    "documentation_updated_at": 1787406929,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zid",
@@ -29363,7 +29924,13 @@
       "200",
       "401"
     ],
-    "documentation_updated_at": 1787755837
+    "documentation_updated_at": 1787755837,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zid",
@@ -29411,7 +29978,13 @@
       "200",
       "401"
     ],
-    "documentation_updated_at": 1787373260
+    "documentation_updated_at": 1787373260,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zid",
@@ -29567,7 +30140,13 @@
       "200",
       "401"
     ],
-    "documentation_updated_at": 1787455717
+    "documentation_updated_at": 1787455717,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zid",
@@ -29684,7 +30263,13 @@
       "200",
       "401"
     ],
-    "documentation_updated_at": 1787591606
+    "documentation_updated_at": 1787591606,
+    "pagination": {
+      "mode": "offset",
+      "position_param": "offset",
+      "size_param": "limit",
+      "start": 0
+    }
   },
   {
     "product": "zid",
@@ -29914,7 +30499,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787249816
+    "documentation_updated_at": 1787249816,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -30450,7 +31041,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787638724
+    "documentation_updated_at": 1787638724,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -30793,7 +31390,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787326061
+    "documentation_updated_at": 1787326061,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -31242,7 +31845,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787592187
+    "documentation_updated_at": 1787592187,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -31826,7 +32435,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787592578
+    "documentation_updated_at": 1787592578,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -32795,7 +33410,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787203138
+    "documentation_updated_at": 1787203138,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -33107,7 +33728,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787543031
+    "documentation_updated_at": 1787543031,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -33171,7 +33798,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787757243
+    "documentation_updated_at": 1787757243,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -33235,7 +33868,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787672035
+    "documentation_updated_at": 1787672035,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -33387,7 +34026,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787672126
+    "documentation_updated_at": 1787672126,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -33886,7 +34531,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787203553
+    "documentation_updated_at": 1787203553,
+    "pagination": {
+      "mode": "cursor",
+      "position_param": "pageId",
+      "next_field": "nextPage",
+      "size_param": "pageSize"
+    }
   },
   {
     "product": "zpa",
@@ -34082,7 +34733,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787757675
+    "documentation_updated_at": 1787757675,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -34154,7 +34811,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787616589
+    "documentation_updated_at": 1787616589,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -34867,7 +35530,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787754754
+    "documentation_updated_at": 1787754754,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -35058,7 +35727,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787710812
+    "documentation_updated_at": 1787710812,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -36027,7 +36702,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787758137
+    "documentation_updated_at": 1787758137,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -36099,7 +36780,13 @@
       "200",
       "401"
     ],
-    "documentation_updated_at": 1787714269
+    "documentation_updated_at": 1787714269,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -36662,7 +37349,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787673339
+    "documentation_updated_at": 1787673339,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -37009,7 +37702,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787758694
+    "documentation_updated_at": 1787758694,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -37553,7 +38252,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787758868
+    "documentation_updated_at": 1787758868,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -37673,7 +38378,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787714797
+    "documentation_updated_at": 1787714797,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -38218,7 +38929,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787759113
+    "documentation_updated_at": 1787759113,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -38394,7 +39111,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787715111
+    "documentation_updated_at": 1787715111,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -38458,7 +39181,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787715094
+    "documentation_updated_at": 1787715094,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -38834,7 +39563,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787715319
+    "documentation_updated_at": 1787715319,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -39155,7 +39890,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787759515
+    "documentation_updated_at": 1787759515,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -39730,7 +40471,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787759635
+    "documentation_updated_at": 1787759635,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -39906,7 +40653,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787329300
+    "documentation_updated_at": 1787329300,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -39961,7 +40714,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787715649
+    "documentation_updated_at": 1787715649,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -40008,7 +40767,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787759745
+    "documentation_updated_at": 1787759745,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -40104,7 +40869,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787715736
+    "documentation_updated_at": 1787715736,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -40248,7 +41019,13 @@
       "500",
       "503"
     ],
-    "documentation_updated_at": 1787759879
+    "documentation_updated_at": 1787759879,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",
@@ -40358,7 +41135,13 @@
     "response_codes": [
       "200"
     ],
-    "documentation_updated_at": 1787715853
+    "documentation_updated_at": 1787715853,
+    "pagination": {
+      "mode": "page",
+      "position_param": "page",
+      "size_param": "pagesize",
+      "start": 1
+    }
   },
   {
     "product": "zpa",

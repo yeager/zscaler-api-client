@@ -87,6 +87,46 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual("DELETE", self.window.method_combo.currentText().replace("● ", ""))
         self.assertEqual(1, self.window.variables_table.rowCount())
 
+    def test_documented_pagination_is_explicit_and_uses_bounded_worker(self):
+        details = {
+            "method": "GET", "path": "/zia/api/v1/users", "absolute_url": "https://api.zsapi.net/zia/api/v1/users",
+            "description": "Lists users", "doc_url": "", "response_codes": ["200"],
+            "parameters": [
+                {"name": "page", "in": "query", "type": "int32", "required": False, "default": "1", "description": "Page"},
+                {"name": "pageSize", "in": "query", "type": "int32", "required": False, "default": "50", "description": "Page size"},
+            ],
+            "pagination": {"mode": "page", "position_param": "page", "size_param": "pageSize", "start": 1},
+        }
+        item = client.QTreeWidgetItem(["GET Users"]); item.setData(0, client.Qt.ItemDataRole.UserRole, details)
+        self.window._on_endpoint_selected(item, 0)
+        self.assertTrue(self.window.pagination_controls_widget.isEnabled())
+        self.assertFalse(self.window.paginate_request.isChecked())
+        self.assertEqual("50", self.window.pagination_page_size.currentText())
+        self.window.paginate_request.setChecked(True); self.window.pagination_max_pages.setCurrentText("5")
+        with patch.object(client, "PaginatedApiWorker") as worker_type:
+            self.window._send_request()
+        request, pagination = worker_type.call_args.args
+        self.assertEqual("GET", request["method"])
+        self.assertEqual(50, pagination["page_size"]); self.assertEqual(5, pagination["max_pages"])
+
+    def test_partial_pagination_is_visibly_not_complete(self):
+        self.window._pending_request = {"method": "GET", "url": "https://example.test/users", "headers": {}, "body": None, "body_mode": "json", "start_time": 0}
+        self.window._on_request_finished({"results": [{"success": True, "request": {}, "data": {
+            "items": [{"id": 1}], "_page_responses": [{"items": [{"id": 1}]}],
+            "_pagination": {"complete": False, "pages_fetched": 1, "records_fetched": 1, "limited_by_max_pages": True},
+            "_status_code": 200, "_reason": "OK", "_size": 10, "_headers": {},
+        }}]})
+        self.assertIn("Partial pagination result", self.window.response_info.text())
+        self.assertIn("stopped before completion", self.window.status_bar.currentMessage())
+
+    def test_cancel_request_is_cooperative_and_empty_cancel_clears_pending_state(self):
+        worker = MagicMock(); worker.isRunning.return_value = True; self.window.worker = worker
+        self.window.cancel_request_btn.setEnabled(True); self.window._cancel_request()
+        worker.requestInterruption.assert_called_once(); self.assertFalse(self.window.cancel_request_btn.isEnabled())
+        self.window._pending_request = {"method": "GET", "url": "https://example.test", "headers": {}, "body": None, "body_mode": "json", "start_time": 0}
+        self.window._on_request_finished({"results": [], "cancelled": True})
+        self.assertIsNone(self.window._pending_request); self.assertIn("cancelled", self.window.status_bar.currentMessage())
+
     def test_all_supported_products_resolve_relative_api_origins(self):
         settings = client.QSettings("Zscaler", "APIClient")
         configuration = {
@@ -153,6 +193,79 @@ class MainWindowTests(unittest.TestCase):
             worker.run()
         self.assertTrue(result[0]["stopped_early"])
         self.assertEqual(1, len(result[0]["results"]))
+
+    def test_paginated_worker_merges_numbered_pages_and_preserves_page_envelopes(self):
+        worker = client.PaginatedApiWorker(
+            {"url": "https://example.test/users?search=soc", "method": "GET"},
+            {"mode": "page", "position_param": "page", "size_param": "pageSize", "start": 1, "page_size": 2, "max_pages": 5},
+        )
+        urls, emitted = [], []
+        responses = [
+            {"items": [{"id": 1}, {"id": 2}], "page": 1, "totalPages": 2, "_status_code": 200, "_size": 20, "_headers": {}},
+            {"items": [{"id": 3}], "page": 2, "totalPages": 2, "_status_code": 200, "_size": 10, "_headers": {}},
+        ]
+        def request(req):
+            urls.append(req["url"]); return responses[len(urls) - 1]
+        worker.finished.connect(emitted.append)
+        with patch.object(worker, "_make_request", side_effect=request): worker.run()
+        data = emitted[0]["results"][0]["data"]
+        self.assertEqual([{"id": 1}, {"id": 2}, {"id": 3}], data["items"])
+        self.assertEqual(2, len(data["_page_responses"]))
+        self.assertTrue(data["_pagination"]["complete"])
+        self.assertIn("search=soc", urls[1]); self.assertIn("page=2", urls[1]); self.assertIn("pageSize=2", urls[1])
+
+    def test_paginated_worker_follows_cursor_and_marks_hard_page_limit(self):
+        worker = client.PaginatedApiWorker(
+            {"url": "https://example.test/users", "method": "GET"},
+            {"mode": "cursor", "position_param": "pageId", "next_field": "nextPage", "size_param": "pageSize", "page_size": 20, "max_pages": 2},
+        )
+        urls, emitted = [], []
+        responses = [
+            {"items": [{"id": 1}], "nextPage": "cursor-a", "_status_code": 200, "_size": 10, "_headers": {}},
+            {"items": [{"id": 2}], "nextPage": "cursor-b", "_status_code": 200, "_size": 10, "_headers": {}},
+        ]
+        def request(req): urls.append(req["url"]); return responses[len(urls) - 1]
+        worker.finished.connect(emitted.append)
+        with patch.object(worker, "_make_request", side_effect=request): worker.run()
+        summary = emitted[0]["results"][0]["data"]["_pagination"]
+        self.assertFalse(summary["complete"]); self.assertTrue(summary["limited_by_max_pages"])
+        self.assertNotIn("pageId=", urls[0]); self.assertIn("pageId=cursor-a", urls[1])
+
+    def test_paginated_worker_cancellation_retains_completed_page_as_partial(self):
+        worker = client.PaginatedApiWorker(
+            {"url": "https://example.test/users", "method": "GET"},
+            {"mode": "page", "position_param": "page", "size_param": "pageSize", "page_size": 1, "max_pages": 5},
+        )
+        emitted = []; worker.finished.connect(emitted.append)
+        response = {"items": [{"id": 1}], "_status_code": 200, "_size": 10, "_headers": {}}
+        with patch.object(worker, "_make_request", return_value=response), patch.object(worker, "isInterruptionRequested", side_effect=[False, True]): worker.run()
+        data = emitted[0]["results"][0]["data"]
+        self.assertEqual([{"id": 1}], data["items"])
+        self.assertTrue(data["_pagination"]["cancelled"]); self.assertFalse(data["_pagination"]["complete"])
+
+    def test_pagination_helpers_do_not_ambiguously_merge_multiple_lists(self):
+        self.assertEqual(([1], "items"), client.paginated_records({"items": [1], "warnings": [2]}))
+        self.assertEqual((None, ""), client.paginated_records({"users": [1], "groups": [2]}))
+        self.assertEqual("next", client.nested_response_value({"pagination": {"nextPage": "next"}}, "nextPage"))
+
+    def test_chain_worker_resolves_prior_response_into_encoded_url_and_typed_body(self):
+        steps = [
+            {"id": "users", "method": "GET", "url": "/users", "resolved_url": "https://example.test/users", "body": None, "headers": {}},
+            {"id": "detail", "method": "POST", "url": "/users/{{users.items.0.id}}", "resolved_url": "https://example.test/users/{{users.items.0.id}}", "body": {"enabled": "{{users.items.0.enabled}}"}, "headers": {"X-Case": "{{users.items.0.case}}"}},
+        ]
+        worker = client.ApiChainWorker(steps, {"Authorization": "Bearer in-memory"})
+        requests, emitted = [], []
+        def make_request(request):
+            requests.append(request)
+            if len(requests) == 1:
+                return {"items": [{"id": "user/a", "enabled": True, "case": "case-1"}], "_status_code": 200, "_headers": {}}
+            return {"updated": True, "_status_code": 200, "_headers": {}}
+        worker.finished.connect(emitted.append)
+        with patch.object(worker, "_make_request", side_effect=make_request): worker.run()
+        self.assertEqual("https://example.test/users/user%2Fa", requests[1]["url"])
+        self.assertIs(True, requests[1]["body"]["enabled"])
+        self.assertEqual("case-1", requests[1]["headers"]["X-Case"])
+        self.assertEqual(2, len(emitted[0]["results"]))
 
     def test_api_worker_preserves_metadata_for_list_response(self):
         response = MagicMock(); response.read.return_value = b'[{"name":"Ada"}]'; response.status = 206; response.reason = "Partial Content"; response.headers.items.return_value = [("X-Request-ID", "abc")]
@@ -1177,6 +1290,41 @@ class MainWindowTests(unittest.TestCase):
         self.assertNotIn("also-hidden", dialog.api_chain_preview.toPlainText())
         dialog.api_chain_input.setPlainText('[{"method":"GET","url":"https://other.example.test/users"}]')
         self.assertFalse(dialog.validate_api_chain()["valid"])
+        dialog.close()
+
+    def test_api_chain_ui_runs_dataflow_worker_and_exports_masked_csv(self):
+        self.window.api_type.setCurrentText("ZIA"); self.window.zia_session = "session"
+        dialog = client.OperationsDialog(self.window)
+        dialog.api_chain_input.setPlainText(json.dumps([
+            {"id": "users", "method": "GET", "url": "/api/v1/users"},
+            {"id": "detail", "method": "GET", "url": "/api/v1/users/{{users.items.0.id}}"},
+        ]))
+        with patch.object(client.QMessageBox, "question", return_value=client.QMessageBox.StandardButton.Yes), patch.object(client, "ApiChainWorker") as worker_type:
+            dialog.run_api_chain()
+        steps, headers = worker_type.call_args.args[:2]
+        self.assertEqual("detail", steps[1]["id"]); self.assertIn("{{users.items.0.id}}", steps[1]["resolved_url"])
+        self.assertIn("Cookie", headers)
+        dialog._last_chain_results = [{"success": False, "error": "client_secret=hidden", "status_code": 400, "duration_ms": 5, "request": {"id": "detail", "method": "GET", "url": "https://example.test?token=hidden"}}]
+        with TemporaryDirectory() as directory:
+            target = str(Path(directory) / "chain.csv")
+            with patch.object(client.QFileDialog, "getSaveFileName", return_value=(target, "CSV (*.csv)")):
+                dialog.export_api_chain()
+            exported = Path(target).read_text(encoding="utf-8")
+        self.assertNotIn("hidden", exported); self.assertIn("detail", exported); self.assertIn("***", exported)
+        dialog.close()
+
+    def test_api_chain_results_render_status_table_chart_and_masked_raw_evidence(self):
+        dialog = client.OperationsDialog(self.window)
+        result = {"results": [
+            {"success": True, "duration_ms": 12, "request": {"id": "users", "method": "GET", "url": "https://example.test/users"}, "data": {"items": [{"id": 1}], "_status_code": 200, "_headers": {}}},
+            {"success": False, "duration_ms": 7, "status_code": 500, "error": "token=hidden", "request": {"id": "detail", "method": "GET", "url": "https://example.test/detail?token=hidden"}},
+        ], "stopped_early": False}
+        with patch.object(client.QMessageBox, "information"):
+            dialog._on_api_chain_finished(result)
+        self.assertEqual(2, dialog.api_chain_table.rowCount())
+        self.assertEqual("1", dialog.api_chain_table.item(0, 3).text())
+        self.assertEqual([("Succeeded", 1.0), ("Failed", 1.0)], dialog.api_chain_chart.values)
+        self.assertNotIn("hidden", dialog.api_chain_result.toPlainText())
         dialog.close()
 
     def test_llm_failure_masks_secret_like_text(self):

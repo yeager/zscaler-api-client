@@ -49,7 +49,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
-from feature_services import AuditTrail, policy_diff, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
@@ -301,13 +301,13 @@ def redact_sensitive(value: Any) -> Any:
             except (ValueError, TypeError):
                 pass
         masked = re.sub(
-            r"(?i)(\b(?:authorization|proxy-?authorization|set-?cookie|cookie|password|(?:client_)?secret|(?:access|refresh)_token|x-?api-?key|api_?key)\s*[:=]\s*)(?:[\"'])?[^\s,;&}\]\"']+",
+            r"(?i)(\b(?:authorization|proxy-?authorization|set-?cookie|cookie|password|(?:client_)?secret|(?:access|refresh)_token|token|jwt-?token|auth-?token|session-?id|j-?session-?id|x-?api-?key|api_?key)\s*[:=]\s*)(?:[\"'])?[^\s,;&}\]\"']+",
             r"\1***",
             value,
         )
         if masked != value:
             return masked
-    if isinstance(value, str) and "=" in value:
+    if isinstance(value, str) and "=" in value and "://" not in value:
         pairs = urllib.parse.parse_qsl(value, keep_blank_values=True)
         if pairs:
             return urllib.parse.urlencode([
@@ -2641,6 +2641,7 @@ def _automation_entry_details(entry: Dict[str, Any]) -> Dict[str, Any]:
         "response_codes": entry.get("response_codes", []),
         "request_content_type": entry.get("request_content_type", ""),
         "documentation_updated_at": entry.get("documentation_updated_at", ""),
+        "pagination": entry.get("pagination"),
     }
     if "request_body" in entry:
         details["body"] = entry["request_body"]
@@ -2807,6 +2808,41 @@ def api_result_headers(result: Dict) -> Dict:
     return dict(payload.get("_headers") or {}) if isinstance(payload, dict) else {}
 
 
+def url_with_query_value(url: str, name: str, value: Any) -> str:
+    """Replace one query parameter while preserving all unrelated values."""
+    parts = urllib.parse.urlsplit(url)
+    pairs = [(key, item) for key, item in urllib.parse.parse_qsl(parts.query, keep_blank_values=True) if key != name]
+    pairs.append((name, str(value)))
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, urllib.parse.urlencode(pairs), parts.fragment))
+
+
+def paginated_records(payload: Any) -> tuple[list | None, str]:
+    """Return a documented API page's primary collection without discarding its envelope."""
+    if isinstance(payload, list):
+        return payload, "items"
+    if not isinstance(payload, dict):
+        return None, ""
+    for name in ("items", "results", "data", "records", "resources", "content", "list"):
+        if isinstance(payload.get(name), list):
+            return payload[name], name
+    lists = [(str(name), value) for name, value in payload.items() if isinstance(value, list) and not str(name).startswith("_")]
+    return (lists[0][1], lists[0][0]) if len(lists) == 1 else (None, "")
+
+
+def nested_response_value(payload: Any, name: str, maximum_depth: int = 3) -> Any:
+    """Find an exact response-envelope field within a shallow metadata hierarchy."""
+    if not isinstance(payload, dict) or maximum_depth < 0:
+        return None
+    if name in payload:
+        return payload[name]
+    for key in ("pagination", "page", "meta", "metadata", "links"):
+        if isinstance(payload.get(key), dict):
+            found = nested_response_value(payload[key], name, maximum_depth - 1)
+            if found is not None:
+                return found
+    return None
+
+
 class ApiWorker(QThread):
     """Worker thread for API requests."""
     finished = Signal(dict)
@@ -2822,7 +2858,10 @@ class ApiWorker(QThread):
         total = len(self.requests)
         
         stopped_early = False
+        cancelled = False
         for i, req in enumerate(self.requests):
+            if self.isInterruptionRequested():
+                cancelled = True; stopped_early = i < total; break
             try:
                 result = self._make_request(req)
                 results.append({"success": True, "data": result, "request": req})
@@ -2837,7 +2876,7 @@ class ApiWorker(QThread):
                 break
             time.sleep(0.1)  # Rate limiting
         
-        self.finished.emit({"results": results, "stopped_early": stopped_early})
+        self.finished.emit({"results": results, "stopped_early": stopped_early, "cancelled": cancelled})
     
     def _make_request(self, req: Dict) -> Dict:
         url = req["url"]
@@ -2948,6 +2987,160 @@ class ApiWorker(QThread):
             except Exception:
                 pass
             raise ApiRequestError(e.code, f"HTTP {e.code}: {e.reason}\n{error_body}", dict(e.headers.items()) if e.headers else {})
+
+
+class PaginatedApiWorker(ApiWorker):
+    """Fetch a bounded, documentation-described collection without guessing pagination."""
+    def __init__(self, request: Dict, pagination: Dict):
+        super().__init__([request])
+        self.pagination = dict(pagination)
+
+    @staticmethod
+    def _business_payload(data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        if "_payload" in data:
+            return data["_payload"]
+        return {key: value for key, value in data.items() if not str(key).startswith("_")}
+
+    def run(self):
+        original = dict(self.requests[0])
+        mode = str(self.pagination.get("mode", ""))
+        position_param = str(self.pagination.get("position_param", ""))
+        size_param = str(self.pagination.get("size_param", ""))
+        page_size = max(1, min(1000, int(self.pagination.get("page_size", 100))))
+        maximum_pages = max(1, min(100, int(self.pagination.get("max_pages", 10))))
+        settings = QSettings("Zscaler", "APIClient")
+        try:
+            maximum_bytes = max(1, min(1024, int(settings.value("advanced/max_transfer_mb", "100")))) * 1024 * 1024
+        except (TypeError, ValueError):
+            maximum_bytes = 100 * 1024 * 1024
+        pages, records, collection_name = [], [], "items"
+        total_bytes = 0
+        cursor = ""
+        position = int(self.pagination.get("start", 1 if mode == "page" else 0))
+        seen_cursors = set()
+        partial_error = ""
+        cancelled = False
+        last_data: dict = {}
+        more_available = False
+
+        for index in range(maximum_pages):
+            if self.isInterruptionRequested():
+                cancelled = True
+                break
+            request = dict(original)
+            page_url = original["url"]
+            if size_param:
+                page_url = url_with_query_value(page_url, size_param, page_size)
+            if mode == "cursor":
+                if cursor:
+                    page_url = url_with_query_value(page_url, position_param, cursor)
+            else:
+                page_url = url_with_query_value(page_url, position_param, position)
+            request["url"] = page_url
+            try:
+                data = self._make_request(request)
+            except ApiRequestError as error:
+                if not pages:
+                    self.finished.emit({"results": [{"success": False, "error": str(error), "status_code": error.status_code, "response_headers": error.response_headers, "request": original}], "stopped_early": False})
+                    return
+                partial_error = str(error)
+                break
+            except Exception as error:
+                if not pages:
+                    self.finished.emit({"results": [{"success": False, "error": str(error), "status_code": 0, "request": original}], "stopped_early": False})
+                    return
+                partial_error = str(error)
+                break
+            last_data = data if isinstance(data, dict) else {}
+            total_bytes += int(last_data.get("_size") or 0)
+            if total_bytes > maximum_bytes:
+                partial_error = "Combined paginated response exceeds the configured transfer limit"
+                break
+            business = self._business_payload(data)
+            pages.append(business)
+            page_records, detected_name = paginated_records(business)
+            if page_records is not None:
+                collection_name = detected_name or collection_name
+                records.extend(page_records)
+            self.progress.emit(index + 1, maximum_pages)
+
+            if mode == "cursor":
+                next_value = nested_response_value(business, str(self.pagination.get("next_field", "")))
+                if next_value in (None, "") or str(next_value) in seen_cursors:
+                    more_available = False
+                    break
+                cursor = str(next_value); seen_cursors.add(cursor); more_available = True
+            elif page_records is None or not page_records:
+                more_available = False
+                break
+            elif mode == "offset":
+                position += len(page_records); more_available = True
+            else:
+                total_pages = nested_response_value(business, "totalPages")
+                current_page = nested_response_value(business, "page")
+                if total_pages is not None:
+                    try:
+                        if int(current_page if current_page is not None else position) >= int(total_pages):
+                            more_available = False
+                            break
+                    except (TypeError, ValueError):
+                        pass
+                position += 1; more_available = True
+            time.sleep(0.1)
+
+        complete = not partial_error and not more_available and not cancelled
+        pagination_summary = {
+            "mode": mode, "pages_fetched": len(pages), "records_fetched": len(records),
+            "complete": complete, "limited_by_max_pages": bool(more_available and not partial_error and not cancelled),
+            "cancelled": cancelled,
+        }
+        if partial_error:
+            pagination_summary["error"] = redact_sensitive(partial_error)
+        merged = {
+            collection_name: records, "_page_responses": pages, "_pagination": pagination_summary,
+            "_status_code": int(last_data.get("_status_code") or 200), "_reason": last_data.get("_reason", "OK"),
+            "_size": total_bytes, "_headers": last_data.get("_headers", {}),
+        }
+        self.finished.emit({"results": [{"success": True, "data": merged, "request": original}], "stopped_early": cancelled, "cancelled": cancelled})
+
+
+class ApiChainWorker(ApiWorker):
+    """Resolve approved references between sequential requests without evaluating code."""
+    def __init__(self, steps: List[Dict], base_headers: Dict, stop_on_failure: bool = True):
+        super().__init__([], stop_on_failure=stop_on_failure)
+        self.steps = steps
+        self.base_headers = dict(base_headers)
+
+    def run(self):
+        results, context, stopped_early, cancelled = [], {}, False, False
+        total = len(self.steps)
+        for index, step in enumerate(self.steps):
+            if self.isInterruptionRequested():
+                cancelled = True; stopped_early = index < total; break
+            started = time.time()
+            try:
+                resolved_url = resolve_chain_templates(step["resolved_url"], context, url_value=True)
+                custom_headers = {key: str(value) for key, value in resolve_chain_templates(step.get("headers", {}), context).items()}
+                body = resolve_chain_templates(step.get("body"), context)
+                request = {
+                    "id": step["id"], "url": resolved_url, "method": step["method"],
+                    "headers": {**self.base_headers, **custom_headers}, "body": body, "body_mode": step.get("body_mode", "json"),
+                }
+                data = self._make_request(request)
+                context[step["id"]] = PaginatedApiWorker._business_payload(data)
+                results.append({"success": True, "data": data, "request": request, "duration_ms": int((time.time() - started) * 1000)})
+            except ApiRequestError as error:
+                results.append({"success": False, "error": str(error), "status_code": error.status_code, "response_headers": error.response_headers, "request": {"id": step["id"], "url": step.get("resolved_url", step["url"]), "method": step["method"]}, "duration_ms": int((time.time() - started) * 1000)})
+            except Exception as error:
+                results.append({"success": False, "error": str(error), "status_code": 0, "request": {"id": step["id"], "url": step.get("resolved_url", step["url"]), "method": step["method"]}, "duration_ms": int((time.time() - started) * 1000)})
+            self.progress.emit(index + 1, total)
+            if not results[-1]["success"] and self.stop_on_failure:
+                stopped_early = index + 1 < total
+                break
+            time.sleep(0.1)
+        self.finished.emit({"results": results, "stopped_early": stopped_early, "cancelled": cancelled})
 
 
 class LlmWorker(QThread):
@@ -5084,15 +5277,20 @@ class OperationsDialog(QDialog):
         self.reports_tab_index = self.tabs.addTab(reports_page, self.tr("Reports"))
 
         chain_page = QWidget(); chain_layout = QVBoxLayout(chain_page)
-        chain_intro = QLabel(self.tr("Run a reviewed sequence against the active authenticated environment. Chains are limited to 20 steps, stay on the selected product host, and every run requires approval.")); chain_intro.setWordWrap(True); chain_layout.addWidget(chain_intro)
+        chain_intro = QLabel(self.tr("Run a reviewed sequence against the active authenticated environment. Chains are limited to 20 steps, stay on the selected product host, and can reference earlier JSON values with {{stepId.path.0.value}}. Every run requires approval.")); chain_intro.setWordWrap(True); chain_layout.addWidget(chain_intro)
         chain_layout.addWidget(QLabel(self.tr("Chain JSON")))
-        self.api_chain_input = QPlainTextEdit('[\n  {"method": "GET", "url": "/api/v1/users"}\n]')
-        self.api_chain_input.setPlaceholderText(self.tr("A JSON list of API requests. Relative paths use the active product host.")); chain_layout.addWidget(self.api_chain_input)
+        self.api_chain_input = QPlainTextEdit('[\n  {"id": "users", "method": "GET", "url": "/api/v1/users"}\n]')
+        self.api_chain_input.setPlaceholderText(self.tr("A JSON list of API requests. Relative paths use the active product host; references can use only completed step IDs.")); chain_layout.addWidget(self.api_chain_input)
         self.api_chain_preview = QPlainTextEdit(); self.api_chain_preview.setReadOnly(True); self.api_chain_preview.setMaximumHeight(130); chain_layout.addWidget(self.api_chain_preview)
+        self.api_chain_chart = NumericBarChart(); self.api_chain_chart.setMaximumHeight(120); chain_layout.addWidget(self.api_chain_chart)
+        self.api_chain_table = QTableWidget(0, 5); self.api_chain_table.setHorizontalHeaderLabels([self.tr("Step"), self.tr("Method"), self.tr("Status"), self.tr("Records"), self.tr("Duration")]); self.api_chain_table.horizontalHeader().setStretchLastSection(True); self.api_chain_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); chain_layout.addWidget(self.api_chain_table)
         self.api_chain_result = QPlainTextEdit(); self.api_chain_result.setReadOnly(True); chain_layout.addWidget(self.api_chain_result)
+        self._last_chain_results = []
         self.api_chain_stop_on_error = QCheckBox(self.tr("Stop after the first failed step")); self.api_chain_stop_on_error.setChecked(True); chain_layout.addWidget(self.api_chain_stop_on_error)
         chain_actions = QHBoxLayout(); validate_chain = QPushButton(self.tr("Validate chain")); validate_chain.clicked.connect(self.validate_api_chain); chain_actions.addWidget(validate_chain)
-        run_chain = QPushButton(self.tr("Run approved chain")); run_chain.clicked.connect(self.run_api_chain); chain_actions.addWidget(run_chain); chain_actions.addStretch(); chain_layout.addLayout(chain_actions)
+        run_chain = QPushButton(self.tr("Run approved chain")); run_chain.clicked.connect(self.run_api_chain); chain_actions.addWidget(run_chain)
+        self.cancel_chain_btn = QPushButton(self.tr("Cancel chain")); self.cancel_chain_btn.setEnabled(False); self.cancel_chain_btn.clicked.connect(self.cancel_api_chain); chain_actions.addWidget(self.cancel_chain_btn)
+        export_chain = QPushButton(self.tr("Export masked chain results")); export_chain.clicked.connect(self.export_api_chain); chain_actions.addWidget(export_chain); chain_actions.addStretch(); chain_layout.addLayout(chain_actions)
         self.chain_tab_index = self.tabs.addTab(chain_page, self.tr("API chains"))
         self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
@@ -5393,7 +5591,7 @@ class OperationsDialog(QDialog):
     def validate_api_chain(self):
         plan = self._api_chain_plan()
         preview = {"valid": plan["valid"], "errors": plan.get("errors", []), "steps": [
-            {"method": step["method"], "url": redact_url(step.get("resolved_url", step["url"])), "body": mask(step.get("body"))}
+            {"id": step["id"], "method": step["method"], "url": redact_url(step.get("resolved_url", step["url"])), "headers": mask(step.get("headers", {})), "body_mode": step.get("body_mode", "json"), "body": mask(step.get("body"))}
             for step in plan.get("steps", [])]}
         self.api_chain_preview.setPlainText(json.dumps(preview, indent=2, ensure_ascii=False))
         if plan["valid"]:
@@ -5416,18 +5614,26 @@ class OperationsDialog(QDialog):
         if QMessageBox.question(self, self.tr("Run approved chain"), message, QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
             AuditTrail(self.settings).append("api_chain_cancelled", {"count": len(steps)}); return
         headers = self._chain_headers()
-        requests = [{"url": step["resolved_url"], "method": step["method"], "headers": dict(headers), "body": step.get("body")} for step in steps]
         self.api_chain_result.clear()
-        self.api_chain_worker = ApiWorker(requests, stop_on_failure=self.api_chain_stop_on_error.isChecked())
+        self.api_chain_table.setRowCount(0); self.api_chain_chart.set_values([]); self._last_chain_results = []
+        self.api_chain_worker = ApiChainWorker(steps, headers, stop_on_failure=self.api_chain_stop_on_error.isChecked())
         self.api_chain_worker.progress.connect(self._on_api_chain_progress)
         self.api_chain_worker.finished.connect(self._on_api_chain_finished)
         self.api_chain_worker.start()
+        self.cancel_chain_btn.setEnabled(True)
         AuditTrail(self.settings).append("api_chain_started", {"count": len(steps), "api": self.window._current_api_type(), "write_steps": len(writes), "stop_on_failure": self.api_chain_stop_on_error.isChecked()})
 
     def _on_api_chain_progress(self, completed, total):
         self.api_chain_result.setPlainText(self.tr("Running API chain step {completed} of {total}...").format(completed=completed, total=total))
 
+    def cancel_api_chain(self):
+        worker = getattr(self, "api_chain_worker", None)
+        if worker is not None and worker.isRunning():
+            worker.requestInterruption(); self.cancel_chain_btn.setEnabled(False)
+            self.api_chain_result.setPlainText(self.tr("Cancellation requested; the current HTTP request will finish and no new chain step will start."))
+
     def _on_api_chain_finished(self, result):
+        self.cancel_chain_btn.setEnabled(False)
         results = result.get("results", [])
         successful = sum(1 for item in results if item.get("success")); failed = len(results) - successful
         safe_results = redact_sensitive(mask(results))
@@ -5436,15 +5642,54 @@ class OperationsDialog(QDialog):
             if isinstance(request, dict) and "url" in request:
                 request["url"] = redact_url(request["url"])
         self.api_chain_result.setPlainText(json.dumps(safe_results, indent=2, ensure_ascii=False))
+        self._last_chain_results = safe_results
+        self.api_chain_table.setRowCount(len(results))
+        for row, item in enumerate(results):
+            request = item.get("request", {})
+            status = api_result_status(item)
+            business = PaginatedApiWorker._business_payload(item.get("data")) if item.get("success") else None
+            page_records, _ = paginated_records(business)
+            values = (
+                str(request.get("id", f"step{row + 1}")), str(request.get("method", "")),
+                str(status), str(len(page_records)) if page_records is not None else "—",
+                self.tr("{duration} ms").format(duration=item.get("duration_ms", 0)),
+            )
+            for column, value in enumerate(values):
+                cell = QTableWidgetItem(value)
+                if column == 2:
+                    cell.setForeground(QColor("#2e7d32" if item.get("success") else "#c62828"))
+                self.api_chain_table.setItem(row, column, cell)
+        self.api_chain_table.resizeColumnsToContents()
+        self.api_chain_chart.set_values([(self.tr("Succeeded"), float(successful)), (self.tr("Failed"), float(failed))])
         for item in results:
             request = item.get("request", {})
             self.window._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=api_result_status(item), response_headers=api_result_headers(item))
         stopped_early = bool(result.get("stopped_early"))
-        AuditTrail(self.settings).append("api_chain_finished", {"successful": successful, "failed": failed, "stopped_early": stopped_early})
+        cancelled = bool(result.get("cancelled"))
+        AuditTrail(self.settings).append("api_chain_finished", {"successful": successful, "failed": failed, "stopped_early": stopped_early, "cancelled": cancelled})
         message = self.tr("API chain completed: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed)
-        if stopped_early:
+        if cancelled:
+            message += "\n\n" + self.tr("The chain was cancelled before all steps started; completed results were retained.")
+        elif stopped_early:
             message += "\n\n" + self.tr("The chain stopped after the first failed step.")
         QMessageBox.information(self, self.tr("API chains"), message)
+
+    def export_api_chain(self):
+        if not self._last_chain_results:
+            QMessageBox.information(self, self.tr("API chains"), self.tr("Run a chain before exporting its masked results.")); return
+        path, selected = QFileDialog.getSaveFileName(self, self.tr("Export masked chain results"), "api-chain-results.json", "JSON (*.json);;CSV (*.csv)")
+        if not path:
+            return
+        safe_results = redact_sensitive(mask(self._last_chain_results))
+        if Path(path).suffix.lower() == ".csv" or "CSV" in selected:
+            output = io.StringIO(); writer = csv.writer(output); writer.writerow(["step", "method", "url", "status", "duration_ms", "error"])
+            for index, item in enumerate(safe_results, 1):
+                request = item.get("request", {})
+                writer.writerow([request.get("id", f"step{index}"), request.get("method", ""), redact_url(request.get("url", "")), api_result_status(item), item.get("duration_ms", 0), item.get("error", "")])
+            Path(path).write_text(output.getvalue(), encoding="utf-8")
+        else:
+            Path(path).write_text(json.dumps(safe_results, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        AuditTrail(self.settings).append("api_chain_exported", {"format": "csv" if Path(path).suffix.lower() == ".csv" else "json", "steps": len(safe_results), "file": os.path.basename(path)})
 
     def compare_policies(self):
         try:
@@ -6030,6 +6275,9 @@ class MainWindow(QMainWindow):
         self.send_btn.setShortcut("Ctrl+Return")
         self.send_btn.clicked.connect(self._send_request)
         url_layout.addWidget(self.send_btn)
+        self.cancel_request_btn = QPushButton(self.tr("Cancel")); self.cancel_request_btn.setEnabled(False)
+        self.cancel_request_btn.setToolTip(self.tr("Stop before the next page or chain step; the current HTTP request is allowed to finish safely."))
+        self.cancel_request_btn.clicked.connect(self._cancel_request); url_layout.addWidget(self.cancel_request_btn)
         
         self.curl_btn = QPushButton(self.tr("cURL"))
         self.curl_btn.setToolTip(self.tr("Copy request as cURL command (Ctrl+Shift+C)"))
@@ -6042,6 +6290,20 @@ class MainWindow(QMainWindow):
         self.graphql_mode.setToolTip(self.tr("Send the request body as a GraphQL query and preserve data, errors, and extensions."))
         self.graphql_mode.toggled.connect(self._on_graphql_mode_toggled)
         request_layout.addWidget(self.graphql_mode)
+        pagination_controls = QHBoxLayout()
+        self.paginate_request = QCheckBox(self.tr("Fetch all pages"))
+        self.paginate_request.setToolTip(self.tr("Follow only the pagination parameters documented for the selected read operation."))
+        pagination_controls.addWidget(self.paginate_request)
+        pagination_controls.addWidget(QLabel(self.tr("Page size:")))
+        self.pagination_page_size = QComboBox(); self.pagination_page_size.setEditable(True)
+        self.pagination_page_size.addItems(["20", "50", "100", "250", "500"]); self.pagination_page_size.setCurrentText("100")
+        pagination_controls.addWidget(self.pagination_page_size)
+        pagination_controls.addWidget(QLabel(self.tr("Maximum pages:")))
+        self.pagination_max_pages = QComboBox(); self.pagination_max_pages.addItems(["2", "5", "10", "25", "50", "100"]); self.pagination_max_pages.setCurrentText("10")
+        pagination_controls.addWidget(self.pagination_max_pages); pagination_controls.addStretch()
+        self.pagination_controls_widget = QWidget(); self.pagination_controls_widget.setLayout(pagination_controls)
+        self.pagination_controls_widget.setEnabled(False)
+        request_layout.addWidget(self.pagination_controls_widget)
         graphql_presets = QHBoxLayout()
         self.graphql_preset_name = QLineEdit()
         self.graphql_preset_name.setPlaceholderText(self.tr("Saved GraphQL query name"))
@@ -6709,6 +6971,7 @@ class MainWindow(QMainWindow):
         if not parameters and "params" in details:
             self._populate_table(self.params_table, details["params"])
         self._populate_api_guide(details)
+        self._configure_documented_pagination(details)
         
         # Update help with documentation link
         doc_url = html.escape(str(details.get("doc_url", "")), quote=True)
@@ -6738,9 +7001,31 @@ class MainWindow(QMainWindow):
             self.request_guide_table.setColumnWidth(column, min(maximum, max(70, self.request_guide_table.columnWidth(column))))
         body_text = self.tr("body template available") if "body" in details else self.tr("no body template")
         codes = ", ".join(map(str, details.get("response_codes", []))) or self.tr("not listed")
-        self.request_guide_status.setText(
-            self.tr("{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.").format(
-                count=len(parameters), body=body_text, codes=codes,
+        status = self.tr("{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.").format(
+            count=len(parameters), body=body_text, codes=codes,
+        )
+        if isinstance(details.get("pagination"), dict):
+            status += " " + self.tr("Documented {mode} pagination is available as an explicit bounded option.").format(mode=details["pagination"].get("mode", ""))
+        self.request_guide_status.setText(status)
+
+    def _configure_documented_pagination(self, details: dict):
+        """Expose bounded pagination only when the selected GET operation documents it."""
+        pagination = details.get("pagination") if isinstance(details.get("pagination"), dict) else None
+        available = bool(pagination) and str(details.get("method", "")).upper() == "GET" and not self.graphql_mode.isChecked()
+        self.paginate_request.setChecked(False)
+        self.pagination_controls_widget.setEnabled(available)
+        if not available:
+            return
+        size_param = str(pagination.get("size_param", ""))
+        documented = next((parameter for parameter in details.get("parameters", []) if parameter.get("name") == size_param), {})
+        default = str(documented.get("default", ""))
+        if default.isdigit() and 1 <= int(default) <= 1000:
+            self.pagination_page_size.setCurrentText(default)
+        else:
+            self.pagination_page_size.setCurrentText("100")
+        self.paginate_request.setToolTip(
+            self.tr("Documented {mode} pagination using {parameter}. Results retain every page and stop at the configured maximum.").format(
+                mode=str(pagination.get("mode", "")), parameter=str(pagination.get("position_param", "")),
             )
         )
 
@@ -6749,6 +7034,8 @@ class MainWindow(QMainWindow):
         if self._selected_endpoint_details is None:
             return
         self._selected_endpoint_details = None
+        self.paginate_request.setChecked(False)
+        self.pagination_controls_widget.setEnabled(False)
         self.request_guide_status.setText(self.tr("The URL was edited manually. Select an endpoint again to attach its documented request contract."))
 
     def _populate_path_variables(self, url: str):
@@ -7712,6 +7999,11 @@ class MainWindow(QMainWindow):
                 self.body_mode.setEnabled(False)
         elif hasattr(self, "body_mode"):
             self.body_mode.setEnabled(True)
+        if hasattr(self, "pagination_controls_widget"):
+            available = bool(self._selected_endpoint_details and self._selected_endpoint_details.get("pagination")) and not enabled
+            self.pagination_controls_widget.setEnabled(available)
+            if enabled:
+                self.paginate_request.setChecked(False)
         if hasattr(self, "request_tabs") and hasattr(self, "graphql_variables_tab_index"):
             self.request_tabs.setTabVisible(self.graphql_variables_tab_index, bool(enabled))
 
@@ -8175,6 +8467,7 @@ class MainWindow(QMainWindow):
         # Send request
         self.status_bar.showMessage(self.tr("Sending request..."))
         self.send_btn.setEnabled(False)
+        self.cancel_request_btn.setEnabled(True)
         
         # Log the request
         self._log_output(f"{method} {url[:60]}{'...' if len(url) > 60 else ''}")
@@ -8196,19 +8489,58 @@ class MainWindow(QMainWindow):
             "body_mode": body_mode,
             "start_time": time.time(),
         }
-        
-        self.worker = ApiWorker([request])
+
+        pagination = details.get("pagination") if isinstance(details.get("pagination"), dict) else None
+        if self.paginate_request.isChecked():
+            if method != "GET" or not pagination:
+                self.send_btn.setEnabled(True)
+                self.cancel_request_btn.setEnabled(False)
+                self._pending_request = None
+                QMessageBox.warning(self, self.tr("Pagination unavailable"), self.tr("Select a documented paginated GET operation before fetching all pages."))
+                return
+            try:
+                page_size = max(1, min(1000, int(self.pagination_page_size.currentText())))
+            except ValueError:
+                page_size = 100
+            pagination = {**pagination, "page_size": page_size, "max_pages": int(self.pagination_max_pages.currentText())}
+            self._pending_request["pagination"] = pagination
+            self.worker = PaginatedApiWorker(request, pagination)
+            self.worker.progress.connect(self._on_pagination_progress)
+        else:
+            self.worker = ApiWorker([request])
         self.worker.finished.connect(self._on_request_finished)
         self.worker.start()
+
+    def _on_pagination_progress(self, completed: int, maximum: int):
+        self.status_bar.showMessage(
+            self.tr("Fetching page {page} of at most {maximum}…").format(page=completed, maximum=maximum)
+        )
+
+    def _cancel_request(self):
+        worker = getattr(self, "worker", None)
+        if worker is not None and worker.isRunning():
+            worker.requestInterruption()
+            self.cancel_request_btn.setEnabled(False)
+            self.status_bar.showMessage(self.tr("Cancellation requested; waiting for the current HTTP request to finish safely…"))
     
     def _on_request_finished(self, result: Dict):
         self.send_btn.setEnabled(True)
+        self.cancel_request_btn.setEnabled(False)
         
         # Calculate duration
         duration_ms = None
         if hasattr(self, "_pending_request") and self._pending_request:
             duration_ms = int((time.time() - self._pending_request["start_time"]) * 1000)
         
+        if not result.get("results") and result.get("cancelled"):
+            self.response_info.setText(f"<span style='color: #e65100; font-weight: bold;'>{self.tr('Request cancelled')}</span>")
+            self.status_bar.showMessage(self.tr("Request cancelled before completion"))
+            pending = getattr(self, "_pending_request", None)
+            if pending:
+                self._add_to_history(pending["method"], pending["url"], pending["headers"], pending["body"], status=0, duration_ms=duration_ms, body_mode=pending.get("body_mode", "json"))
+            self._pending_request = None
+            return
+
         if result["results"]:
             res = result["results"][0]
             status = api_result_status(res)
@@ -8286,7 +8618,23 @@ class MainWindow(QMainWindow):
                         self._save_graphql_introspection(self.url_input.text().strip(), display_data)
                         self._populate_graphql_schema_tree(display_data)
                         self._graphql_introspection_pending = False
-                self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms · {size_str})")
+                pagination_info = payload.get("_pagination") if isinstance(payload, dict) and isinstance(payload.get("_pagination"), dict) else None
+                if pagination_info:
+                    if pagination_info.get("complete"):
+                        self.status_bar.showMessage(
+                            self.tr("Pagination complete: {pages} page(s), {records} record(s)").format(
+                                pages=pagination_info.get("pages_fetched", 0), records=pagination_info.get("records_fetched", 0),
+                            )
+                        )
+                    else:
+                        self.response_info.setText(self.response_info.text() + f" · <span style='color: #e65100; font-weight: bold;'>{self.tr('Partial pagination result')}</span>")
+                        self.status_bar.showMessage(
+                            self.tr("Pagination stopped before completion: {pages} page(s), {records} record(s)").format(
+                                pages=pagination_info.get("pages_fetched", 0), records=pagination_info.get("records_fetched", 0),
+                            )
+                        )
+                else:
+                    self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms · {size_str})")
                 
                 # Check for session token in response
                 api_type = self._current_api_type()
@@ -8615,6 +8963,8 @@ class MainWindow(QMainWindow):
         self.graphql_variables_table.setRowCount(0)
         self.graphql_variables_status.setText(self.tr("No GraphQL variables extracted."))
         self._selected_endpoint_details = None
+        self.paginate_request.setChecked(False)
+        self.pagination_controls_widget.setEnabled(False)
         self.request_guide_table.setRowCount(0)
         self.request_guide_status.setText(self.tr("Select a documented endpoint to inspect its request contract."))
         self.graphql_mode.setChecked(False)

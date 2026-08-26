@@ -52,8 +52,10 @@ ZS API Client is built with security as a top priority:
 - **1,000+ Endpoints** – Browse all executable Automation Hub REST operations in an organized tree view
 - **Inline Documentation** – Direct links to official Zscaler API docs for each endpoint
 - **API Guide contracts** – Inspect documented query, path, and header fields with types, required flags, defaults, body templates, and response codes directly in the request editor
+- **Complete collection reads** – Explicitly follow documented numbered, offset, or cursor pagination with hard page/transfer limits, retained page envelopes, and partial-result warnings
 - **Documentation-grounded AI** – Natural-language matches attach the same request contract and suggest only parameters published for that operation
 - **Request Builder** – Full control over URL, params, headers, and JSON body
+- **Dataflow chains** – Build reviewed, same-host workflows where later requests safely reference earlier JSON values; inspect a status chart/table and export masked evidence
 - **Complete HTTP bodies** – Send JSON, raw text, URL-encoded forms, or multipart file uploads without persisting local file paths
 - **Binary downloads** – Preserve CSV, ZIP, PDF, certificates, and other files byte-for-byte with safe filenames, explicit export confirmation, and configurable transfer limits
 - **Syntax Highlighting** – Beautiful JSON response formatting

@@ -10,6 +10,9 @@ All notable changes to this project will be documented in this file.
 - Guided GraphQL variable extraction, required/default metadata, typed JSON validation, multi-operation validation, and secure preset persistence.
 - JSON, raw text, URL-encoded form, and multipart file request modes plus byte-exact binary response downloads.
 - Documentation-derived request contracts for 1,000+ REST operations, including guided parameters, body templates, response codes, and AI-assisted contract loading.
+- Explicit bounded pagination for documented page/pageSize, offset/limit, and cursor/next-page contracts, preserving every page plus a merged visualizable collection.
+- Dataflow API chains with typed references to earlier JSON responses, URL-safe substitution, visual execution summaries, and masked JSON/CSV evidence export.
+- Cooperative cancellation for requests, multi-page reads, and API chains; the active HTTP call finishes safely while no new page or step begins.
 
 ### Security
 - Background reports reuse redacted local history, run without administrator privileges, and never receive API credentials.
@@ -17,6 +20,8 @@ All notable changes to this project will be documented in this file.
 - Multipart history stores only the selected filename and masked metadata, while binary exports require explicit confirmation and obey a configurable transfer limit.
 - Required documented query and header values are validated before execution; optional defaults are shown but never sent implicitly.
 - Double-clicking a documented write operation now prepares it for review instead of executing it; sending requires a separate explicit action.
+- Pagination never follows undocumented parameters, enforces page and aggregate transfer limits, and marks unproven or interrupted collections as partial.
+- Chain templates reject forward references, executable expressions, credential headers, cross-host destinations, and more than 20 steps.
 
 ### Fixed
 - Corrected ZIA `JSESSIONID`, Client Connector `jwtToken`/`auth-token`, URL-encoded ZPA credentials, and configurable ZDX v1/v2 authentication semantics against the official product guides.

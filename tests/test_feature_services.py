@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, change_control_plan, security_report_data, validate_request_chain
+from feature_services import AuditTrail, policy_diff, simulate_policy, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, change_control_plan, security_report_data, validate_request_chain, chain_lookup, resolve_chain_templates
 
 
 class MemorySettings:
@@ -110,6 +110,23 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertEqual({"name": "Ada"}, plan["steps"][0]["body"])
         self.assertFalse(validate_request_chain([{"method": "GET", "url": "http://example.test"}])["valid"])
         self.assertFalse(validate_request_chain([])["valid"])
+
+    def test_request_chain_supports_only_prior_declarative_references(self):
+        plan = validate_request_chain([
+            {"id": "users", "method": "GET", "url": "/api/v1/users"},
+            {"id": "detail", "method": "POST", "url": "/api/v1/users/{{users.items.0.id}}", "body": {"groupId": "{{users.items.0.group.id}}"}},
+        ])
+        self.assertTrue(plan["valid"]); self.assertEqual("detail", plan["steps"][1]["id"])
+        self.assertFalse(validate_request_chain([{"id": "first", "url": "/{{later.id}}"}, {"id": "later", "url": "/users"}])["valid"])
+        self.assertFalse(validate_request_chain([{"id": "a", "url": "/users", "headers": {"Authorization": "secret"}}])["valid"])
+        self.assertFalse(validate_request_chain([{"id": "a", "url": "/users/{{ python() }}"}])["valid"])
+
+    def test_chain_resolution_preserves_body_types_and_encodes_url_values(self):
+        context = {"users": {"items": [{"id": "user/a", "enabled": True, "groups": ["soc"]}]}}
+        self.assertEqual("user/a", chain_lookup(context, "users.items.0.id"))
+        self.assertEqual("/users/user%2Fa", resolve_chain_templates("/users/{{users.items.0.id}}", context, url_value=True))
+        self.assertIs(True, resolve_chain_templates("{{users.items.0.enabled}}", context))
+        self.assertEqual(["soc"], resolve_chain_templates("{{users.items.0.groups}}", context))
 
     def test_operational_alerts_use_local_history_and_configured_threshold(self):
         alerts = operational_alerts([
