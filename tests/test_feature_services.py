@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, change_control_plan, security_report_data, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, change_control_plan, security_report_data, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers
 
 
 class MemorySettings:
@@ -72,6 +72,33 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertEqual([records[1]], environment_scope(records, "tenant-b"))
         self.assertEqual(records, environment_scope(records, "*"))
         self.assertEqual("*", environment_scope_metadata("*", "All")["environment_id"])
+
+    def test_identifier_obfuscation_is_stable_selective_and_non_reversible(self):
+        source = {"environment": "Production Europe", "email": "ada@example.com", "sourceIp": "10.1.2.3", "url": "https://tenant.example.com/users/42", "resourceId": 42, "rule": "Allow staff"}
+        first = obfuscate_identifiers(source, "a" * 64)
+        second = obfuscate_identifiers(source, "a" * 64)
+        rotated = obfuscate_identifiers(source, "b" * 64)
+        self.assertEqual(first, second)
+        self.assertNotEqual(first["environment"], rotated["environment"])
+        serialized = json.dumps(first)
+        for original in ("Production Europe", "ada@example.com", "10.1.2.3", "tenant.example.com"):
+            self.assertNotIn(original, serialized)
+        self.assertEqual("Allow staff", first["rule"])
+        self.assertRegex(str(first["sourceIp"]), r"^198\.(18|19)\.")
+        users_only = obfuscate_identifiers(source, "a" * 64, {"addresses": False, "hosts": False, "tenants": False, "ids": False})
+        self.assertEqual("10.1.2.3", users_only["sourceIp"])
+        self.assertEqual(42, users_only["resourceId"])
+
+    def test_identifier_obfuscation_covers_structured_strings_and_url_ids(self):
+        source = {
+            "body": '{"userId":"ada-42","tenantId":"tenant-7"}',
+            "url": "https://user:password@tenant.example.com/users/42?customerId=acme&email=ada%40example.com",
+        }
+        safe = obfuscate_identifiers(source, "c" * 64)
+        rendered = json.dumps(safe)
+        for original in ("ada-42", "tenant-7", "tenant.example.com", "/42", "acme", "ada@example.com", "password"):
+            self.assertNotIn(original, rendered)
+        self.assertIn("host-", safe["url"])
 
     def test_simulator_uses_first_matching_rule(self):
         result = simulate_policy([

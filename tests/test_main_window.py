@@ -482,6 +482,24 @@ class MainWindowTests(unittest.TestCase):
         self.assertGreaterEqual(dialog.language_choice.findData("sv"), 0)
         dialog.close()
 
+    def test_privacy_settings_default_to_safe_external_obfuscation(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        keys = ["privacy/mode", *client.PRIVACY_CATEGORY_KEYS.values()]
+        previous = {key: settings.value(key, None) for key in keys}
+        try:
+            for key in keys: settings.remove(key)
+            dialog = client.SettingsDialog(self.window)
+            self.assertEqual("external", dialog.privacy_mode.currentData())
+            self.assertTrue(all(control.isChecked() for control in dialog.privacy_category_controls.values()))
+            preview = dialog.privacy_preview.toPlainText()
+            self.assertNotIn("ada@example.com", preview)
+            self.assertNotIn("10.20.30.40", preview)
+            self.assertIn('"client_secret": "***"', preview)
+            dialog.close()
+        finally:
+            for key, value in previous.items():
+                settings.remove(key) if value is None else settings.setValue(key, value)
+
     def test_advanced_settings_load_safe_read_retry_policy(self):
         settings = client.QSettings("Zscaler", "APIClient")
         keys = ("advanced/retry_reads", "advanced/max_read_retries", "advanced/retry_max_wait")
@@ -831,6 +849,26 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual("1.2", har["log"]["version"])
         self.assertNotIn("never-export", json.dumps(har))
 
+    def test_response_export_obfuscates_identifiers_but_keeps_metrics(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("privacy/mode", None)
+        try:
+            settings.setValue("privacy/mode", "external")
+            self.window._last_response_exchange = {
+                "schema": client.RESPONSE_EXCHANGE_SCHEMA,
+                "request": {"method": "GET", "url": "https://tenant.example.test/users"},
+                "response": {"status": 200, "headers": {}, "body": {"users": [{
+                    "id": "user-42", "email": "analyst@example.test", "sourceIp": "10.2.3.4", "count": 7,
+                }]}},
+            }
+            payload = self.window._response_export_payload()
+            rendered = json.dumps(payload)
+            for source in ("tenant.example.test", "user-42", "analyst@example.test", "10.2.3.4"):
+                self.assertNotIn(source, rendered)
+            self.assertEqual(7, payload["response"]["body"]["users"][0]["count"])
+        finally:
+            settings.remove("privacy/mode") if previous is None else settings.setValue("privacy/mode", previous)
+
     def test_response_table_export_uses_full_source_not_ui_limit(self):
         records = [{"id": index, **{f"field-{column}": column for column in range(28)}} for index in range(150)]
         self.window._last_response_exchange = {
@@ -945,6 +983,13 @@ class MainWindowTests(unittest.TestCase):
         self.assertNotIn("do-not-export", curl)
         self.assertNotIn("do-not-export", str(collection))
         self.assertIn("***", curl)
+
+    def test_request_export_drops_url_userinfo_and_obfuscates_url_ids(self):
+        self.window.url_input.setText("https://operator:password@tenant.example.test/users/42?customerId=acme")
+        curl = self.window._masked_curl_command()
+        for source in ("operator", "password", "tenant.example.test", "/42", "acme"):
+            self.assertNotIn(source, curl)
+        self.assertIn("host-", curl)
 
     def test_request_exports_mask_sensitive_http_header_variants(self):
         self.window.url_input.setText("https://example.test")
@@ -1272,7 +1317,9 @@ class MainWindowTests(unittest.TestCase):
                 ]
                 generated = client.run_report_schedules(settings, history, now=now, selected_id="tenant_report")
                 report = json.loads(Path(generated[0]).read_text(encoding="utf-8"))
-                self.assertEqual(tenant_id, report["scope"]["environment_id"])
+                self.assertNotEqual(tenant_id, report["scope"]["environment_id"])
+                self.assertTrue(report["scope"]["environment_id"].startswith("tenant-"))
+                self.assertNotEqual("Tenant B", report["scope"]["environment"])
                 self.assertEqual(1, report["posture"]["metrics"]["requests"])
                 self.assertEqual(0, report["posture"]["metrics"]["failed"])
                 event = client.AuditTrail(settings).events()[-1]
@@ -1356,6 +1403,12 @@ class MainWindowTests(unittest.TestCase):
             self.assertFalse(dialog.tabs.isTabVisible(1))
             self.assertEqual(-1, dialog.data_scope.findData("*"))
             self.assertIn("# CISO", dialog.report_preview.toPlainText())
+            for name in ("zero-trust-hero.png", "security-report-banner.png", "investigation-empty-state.png"):
+                self.assertFalse(client.QPixmap(str(client._resource_path(f"assets/visuals/{name}"))).isNull())
+            visual_report = dialog._report_html(client.privacy_safe(dialog._report_data(), settings, "export"))
+            self.assertIn("data:image/png;base64,", visual_report)
+            self.assertIn("Posture score", visual_report)
+            self.assertIn("<table>", visual_report)
             dialog.close()
         finally:
             if previous is None:
@@ -1589,7 +1642,7 @@ class MainWindowTests(unittest.TestCase):
             with patch.object(client.QFileDialog, "getSaveFileName", return_value=(target, "CSV (*.csv)")):
                 dialog.export_api_chain()
             exported = Path(target).read_text(encoding="utf-8")
-        self.assertNotIn("hidden", exported); self.assertIn("detail", exported); self.assertIn("***", exported)
+        self.assertNotIn("hidden", exported); self.assertNotIn("detail", exported); self.assertIn("id-", exported); self.assertIn("***", exported)
         dialog.close()
 
     def test_api_chain_results_render_status_table_chart_and_masked_raw_evidence(self):

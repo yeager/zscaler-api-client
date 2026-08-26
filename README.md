@@ -63,6 +63,7 @@ ZS API Client is built with security as a top priority:
 - **Copy as cURL** – Export any request for command-line use or scripting
 - **Request History** – Browse redacted requests by tenant environment; cross-environment replay is blocked until the matching profile is active
 - **Adaptive response views** – Inspect masked JSON as a table, chart, tree, heatmap, topology, or GraphQL schema; use export preview to review masking before writing a file
+- **Purpose-built visual design** – Responsive zero-trust, investigation, and executive-report artwork enrich onboarding and operational empty states without replacing accessible data views
 - **Complete GraphQL envelopes** – Preserve and display `data`, `errors`, and `extensions`, including partial-success responses
 - **Portable response exchanges** – Save a versioned, masked request/response package and reopen it locally for investigation without restoring credentials or sending a request
 - **Environment and response drift** – Compare an active masked response with a saved baseline, align inventories by stable record identity, ignore configured volatile fields, visualize impact, and export masked evidence without network access
@@ -74,7 +75,10 @@ ZS API Client is built with security as a top priority:
 - **Operations Center** – Local policy diffs and simulations, CSV validation, isolated environment profiles, dashboards, report schedules, and a hash-linked audit trail
 - **Tenant-safe environments** – Keep product hosts, client identifiers, enabled APIs, workspace state, and system-keychain credentials separate per environment; switching clears all in-memory sessions, requests, and responses
 - **Tenant-scoped operations** – Dashboards, posture, anomalies, incidents, audit views, integrations, support bundles, and reports default to the active environment; Advanced mode provides an explicit cross-tenant overview
+- **Configurable privacy boundary** – Credentials are always masked; exports, clipboard data, external AI, webhooks, local automation input, support bundles, scheduled reports, and chart images pseudonymize users, addresses, hosts, tenants, and object IDs by default
+- **Stable local pseudonyms** – A system-keychain-backed HMAC seed keeps correlations useful without storing an original-to-pseudonym map; Settings provides synthetic preview, category controls, an optional on-screen privacy mode, and explicit seed rotation
 - **Background reports** – Optionally register user-level Windows Task Scheduler, macOS LaunchAgent, or Linux systemd jobs so redacted reports run while the GUI is closed; no administrator privileges are required
+- **Self-contained visual reports** – Export an offline HTML leadership/SOC report with embedded artwork, responsive metric cards, severity styling, findings, evidence, and configured identifier obfuscation
 - **Local governance controls** – Administrator, analyst, and read-only roles; the latter blocks mutating API requests before they leave the client
 - **Redacted support bundles** – Create diagnostics archives without API credentials or sensitive request values
 - **Multi-language UI** – 20 language profiles, including Swedish, European languages, Arabic, Persian, Japanese, Korean, and Simplified Chinese

@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import hmac
 import io
+import ipaddress
 import json
 import re
 import time
@@ -26,6 +28,87 @@ SENSITIVE_NAMES = {
     "authorization", "cookie", "password", "secret", "token", "api_key", "apikey",
     "client_secret", "key_secret", "access_token", "refresh_token",
 }
+EMAIL_PATTERN = re.compile(r"(?<![\w.+-])([A-Z0-9._%+-]+)@([A-Z0-9.-]+\.[A-Z]{2,})(?![\w.-])", re.IGNORECASE)
+IP_PATTERN = re.compile(r"(?<![\w:])(?:\d{1,3}\.){3}\d{1,3}(?![\w:])|(?<![\w:])(?:[0-9A-F]{1,4}:){2,7}[0-9A-F]{0,4}(?![\w:])", re.IGNORECASE)
+
+
+def _identifier_token(kind: str, value: Any, salt: str) -> str:
+    digest = hmac.new(str(salt).encode("utf-8"), str(value).casefold().encode("utf-8"), hashlib.sha256).hexdigest()[:16]
+    return f"{kind}-{digest}"
+
+
+def _obfuscated_ip(value: str, salt: str) -> str:
+    try:
+        address = ipaddress.ip_address(value)
+    except ValueError:
+        return value
+    number = int(hmac.new(str(salt).encode(), str(address).encode(), hashlib.sha256).hexdigest()[:8], 16)
+    if address.version == 4:
+        number %= 131_072
+        return f"198.{18 + number // 65_536}.{number // 256 % 256}.{number % 256}"
+    return f"2001:db8::{1 + number % 65534:x}"
+
+
+def obfuscate_identifiers(value: Any, salt: str, categories: dict[str, bool] | None = None, field: str = "") -> Any:
+    """Create stable local pseudonyms without retaining a source-to-value map."""
+    enabled = {"users": True, "addresses": True, "hosts": True, "tenants": True, "ids": True}
+    enabled.update(categories or {})
+    normalized = "".join(character for character in str(field).casefold() if character.isalnum())
+    tenant_field = any(part in normalized for part in ("tenant", "customer", "organization", "environment"))
+    user_field = normalized in {"user", "username", "email", "mail", "login", "upn", "userprincipalname", "displayname", "owner", "createdby", "modifiedby", "actor", "principal", "subject"} or normalized.endswith(("userid", "username", "useremail"))
+    host_field = normalized in {"url", "uri", "host", "hostname", "domain", "fqdn", "endpoint", "cloud", "origin", "devicename", "computername", "machinename", "servername", "dnsname"} or normalized.endswith(("host", "hostname", "domain", "fqdn"))
+    if isinstance(value, dict):
+        return {key: obfuscate_identifiers(item, salt, enabled, str(key)) for key, item in value.items()}
+    if isinstance(value, list):
+        return [obfuscate_identifiers(item, salt, enabled, field) for item in value]
+    if not isinstance(value, str):
+        if tenant_field and value is not None:
+            return _identifier_token("tenant", value, salt) if enabled["tenants"] else value
+        if user_field and value is not None:
+            return _identifier_token("user", value, salt) if enabled["users"] else value
+        if enabled["ids"] and normalized.endswith(("id", "uuid", "guid", "identifier")) and value is not None:
+            return _identifier_token("id", value, salt)
+        return value
+    text = value
+    stripped = text.strip()
+    if stripped.startswith(("{", "[")):
+        try:
+            parsed = json.loads(stripped)
+            return json.dumps(obfuscate_identifiers(parsed, salt, enabled, field), ensure_ascii=False)
+        except (TypeError, ValueError):
+            pass
+    if tenant_field:
+        return _identifier_token("tenant", text, salt) if enabled["tenants"] else text
+    if user_field:
+        return _identifier_token("user", text, salt) if enabled["users"] else text
+    if enabled["ids"] and (normalized.endswith(("id", "uuid", "guid", "identifier")) or normalized in {"keyid", "resourcekey"}):
+        return _identifier_token("id", text, salt)
+    if host_field and enabled["hosts"]:
+        parsed = urllib.parse.urlsplit(text)
+        if parsed.scheme and parsed.hostname:
+            try:
+                port_number = parsed.port
+            except ValueError:
+                port_number = None
+            port = f":{port_number}" if port_number else ""
+            hostname = _identifier_token("host", parsed.hostname, salt) + ".invalid"
+            path = "/".join(
+                _identifier_token("id", segment, salt)
+                if enabled["ids"] and (segment.isdigit() or re.fullmatch(r"[0-9a-fA-F-]{16,}", segment)) else segment
+                for segment in parsed.path.split("/")
+            )
+            query = urllib.parse.urlencode([
+                (key, obfuscate_identifiers(item, salt, enabled, key))
+                for key, item in urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
+            ], doseq=True)
+            text = urllib.parse.urlunsplit((parsed.scheme, hostname + port, path, query, parsed.fragment))
+        elif text:
+            text = _identifier_token("host", text, salt) + ".invalid"
+    if enabled["users"]:
+        text = EMAIL_PATTERN.sub(lambda match: _identifier_token("user", match.group(0), salt) + "@redacted.invalid", text)
+    if enabled["addresses"]:
+        text = IP_PATTERN.sub(lambda match: _obfuscated_ip(match.group(0), salt), text)
+    return text
 
 
 def is_sensitive_name(value: Any) -> bool:
@@ -41,7 +124,15 @@ def safe_url(value: Any) -> str:
     parts = urllib.parse.urlsplit(str(value or ""))
     query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
     safe_query = urllib.parse.urlencode([(key, "***" if is_sensitive_name(key) else item) for key, item in query], safe="*")
-    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, "***" if parts.fragment else ""))
+    hostname = parts.hostname or ""
+    if ":" in hostname and not hostname.startswith("["):
+        hostname = f"[{hostname}]"
+    try:
+        port = parts.port
+    except ValueError:
+        port = None
+    netloc = hostname + (f":{port}" if port else "")
+    return urllib.parse.urlunsplit((parts.scheme, netloc, parts.path, safe_query, "***" if parts.fragment else ""))
 
 
 def environment_scope(records: Iterable[dict[str, Any]], environment_id: str | None) -> list[dict[str, Any]]:

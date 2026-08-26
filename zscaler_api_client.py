@@ -48,12 +48,12 @@ from PySide6.QtWidgets import (
     QTableWidgetItem, QHeaderView, QFileDialog, QMessageBox,
     QGroupBox, QFormLayout, QDialog, QDialogButtonBox, QProgressBar,
     QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
-    QCheckBox, QScrollArea, QFrame, QStackedWidget, QGridLayout
+    QCheckBox, QScrollArea, QFrame, QStackedWidget, QGridLayout, QSizePolicy
     , QInputDialog
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
@@ -493,7 +493,69 @@ def redact_url(url: str) -> str:
     ], safe="*")
     # OAuth redirect URLs commonly place access tokens in the fragment.
     safe_fragment = "***" if parts.fragment else ""
-    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, safe_fragment))
+    hostname = parts.hostname or ""
+    if ":" in hostname and not hostname.startswith("["):
+        hostname = f"[{hostname}]"
+    try:
+        port = parts.port
+    except ValueError:
+        port = None
+    netloc = hostname + (f":{port}" if port else "")
+    return urllib.parse.urlunsplit((parts.scheme, netloc, parts.path, safe_query, safe_fragment))
+
+
+PRIVACY_CATEGORY_KEYS = {
+    "users": "privacy/obfuscate_users",
+    "addresses": "privacy/obfuscate_addresses",
+    "hosts": "privacy/obfuscate_hosts",
+    "tenants": "privacy/obfuscate_tenants",
+    "ids": "privacy/obfuscate_ids",
+}
+_privacy_session_salt = ""
+
+
+def privacy_salt(settings: QSettings | None = None) -> str:
+    """Return a keychain-backed pseudonym salt without retaining a mapping."""
+    global _privacy_session_salt
+    settings = settings or QSettings("Zscaler", "APIClient")
+    legacy = str(settings.value("privacy/pseudonym_salt", "") or "")
+    salt = secure_global_get("privacy_pseudonym_salt")
+    if not re.fullmatch(r"[0-9a-f]{64}", salt) and re.fullmatch(r"[0-9a-f]{64}", legacy):
+        salt = legacy
+        if secure_global_store("privacy_pseudonym_salt", salt):
+            settings.remove("privacy/pseudonym_salt")
+    elif legacy:
+        settings.remove("privacy/pseudonym_salt")
+    if not re.fullmatch(r"[0-9a-f]{64}", salt):
+        if not re.fullmatch(r"[0-9a-f]{64}", _privacy_session_salt):
+            _privacy_session_salt = uuid.uuid4().hex + uuid.uuid4().hex
+        salt = _privacy_session_salt
+        if secure_global_store("privacy_pseudonym_salt", salt):
+            _privacy_session_salt = ""
+    return salt
+
+
+def rotate_privacy_salt(settings: QSettings | None = None) -> str:
+    """Break correlation with previous pseudonyms without retaining old mappings."""
+    global _privacy_session_salt
+    settings = settings or QSettings("Zscaler", "APIClient")
+    salt = uuid.uuid4().hex + uuid.uuid4().hex
+    settings.remove("privacy/pseudonym_salt")
+    _privacy_session_salt = "" if secure_global_store("privacy_pseudonym_salt", salt) else salt
+    return salt
+
+
+def privacy_safe(value: Any, settings: QSettings | None = None, target: str = "export") -> Any:
+    """Always mask secrets and apply configured identifier pseudonymization."""
+    settings = settings or QSettings("Zscaler", "APIClient")
+    safe = redact_sensitive(value)
+    mode = str(settings.value("privacy/mode", "external") or "external")
+    if mode not in {"off", "external", "everywhere"}:
+        mode = "external"
+    if mode == "off" or (target == "display" and mode != "everywhere"):
+        return safe
+    categories = {name: settings.value(key, "true") == "true" for name, key in PRIVACY_CATEGORY_KEYS.items()}
+    return obfuscate_identifiers(safe, privacy_salt(settings), categories)
 
 
 def load_masked_response_exchange(path: str | Path, maximum_bytes: int) -> tuple[dict[str, Any] | None, str]:
@@ -768,6 +830,27 @@ def secure_get(key: str) -> str:
         return ""
     return _credential_cache.get(_tenant_credential_key(key), "")
 
+def secure_global_get(key: str) -> str:
+    """Retrieve an app-wide protected value without tenant namespacing."""
+    if not _load_all_credentials():
+        return ""
+    return _credential_cache.get(key, "")
+
+def secure_global_store(key: str, value: str) -> bool:
+    """Store an app-wide protected value in the system keychain."""
+    global _credential_cache
+    if not _load_all_credentials():
+        return False
+    previous = dict(_credential_cache)
+    if value:
+        _credential_cache[key] = value
+    else:
+        _credential_cache.pop(key, None)
+    if _save_all_credentials():
+        return True
+    _credential_cache.clear(); _credential_cache.update(previous)
+    return False
+
 def secure_delete(key: str) -> bool:
     """Delete credential from system keychain."""
     return secure_store(key, "")
@@ -937,7 +1020,7 @@ def run_report_schedules(
             if kind not in {"ciso", "soc", "operations"}:
                 kind = "ciso"
             data = security_report_data(kind, environment_scope(history, scope["environment_id"]), environment_scope(trail.events(), scope["environment_id"]), trail.verify(), scope)
-            content = json.dumps(redact_sensitive(data), indent=2, ensure_ascii=False) + "\n"
+            content = json.dumps(privacy_safe(data, settings, "export"), indent=2, ensure_ascii=False) + "\n"
             destination = write_new_report(output_dir, scheduled_report_filename(schedule.get("name", "security-report"), now), content)
             generated.append(str(destination))
             schedule_trail.append("scheduled_report_generated", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "kind": kind, "file": destination.name, "background": bool(selected_id)})
@@ -2868,6 +2951,31 @@ def _resource_path(relative_path: str) -> Path:
     return bundle_root / relative_path
 
 
+class VisualAssetLabel(QLabel):
+    """Responsive bundled artwork that degrades cleanly when an asset is absent."""
+    def __init__(self, relative_path: str, height: int, *, crop: bool = False, parent=None):
+        super().__init__(parent)
+        self._source = QPixmap(str(_resource_path(relative_path)))
+        self._crop = crop
+        self.setFixedHeight(height)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setStyleSheet("background: transparent; border: none;")
+        self.setVisible(not self._source.isNull())
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if self._source.isNull() or self.width() <= 0 or self.height() <= 0:
+            return
+        mode = Qt.AspectRatioMode.KeepAspectRatioByExpanding if self._crop else Qt.AspectRatioMode.KeepAspectRatio
+        scaled = self._source.scaled(self.size(), mode, Qt.TransformationMode.SmoothTransformation)
+        if self._crop and (scaled.width() > self.width() or scaled.height() > self.height()):
+            left = max(0, (scaled.width() - self.width()) // 2)
+            top = max(0, (scaled.height() - self.height()) // 2)
+            scaled = scaled.copy(left, top, min(self.width(), scaled.width()), min(self.height(), scaled.height()))
+        self.setPixmap(scaled)
+
+
 def _load_automation_hub_catalog() -> List[Dict[str, Any]]:
     """Read the bundled Automation Hub catalog."""
     catalog_path = _resource_path("data/zscaler_api_catalog.json")
@@ -3822,6 +3930,9 @@ class SetupWizard(QDialog):
     def _make_welcome_page(self):
         page = QWidget()
         layout = QVBoxLayout(page)
+        hero = VisualAssetLabel("assets/visuals/zero-trust-hero.png", 170, crop=True)
+        hero.setAccessibleName(self.tr("Abstract zero trust security network"))
+        layout.addWidget(hero)
         title = QLabel(self.tr("<h1>Welcome to ZS API Client</h1>"))
         layout.addWidget(title)
         intro = QLabel(self.tr(
@@ -4696,6 +4807,42 @@ class SettingsDialog(QDialog):
         
         tabs.addTab(display_widget, self.tr("Display"))
 
+        # === Privacy Tab ===
+        privacy_widget = QWidget()
+        privacy_layout = QVBoxLayout(privacy_widget)
+        privacy_group = QGroupBox(self.tr("Privacy"))
+        privacy_form = QFormLayout(privacy_group)
+        self.privacy_mode = QComboBox()
+        self.privacy_mode.addItem(self.tr("Secrets only (identifiers visible)"), "off")
+        self.privacy_mode.addItem(self.tr("Obfuscate exports and external integrations (recommended)"), "external")
+        self.privacy_mode.addItem(self.tr("Obfuscate exports, integrations, and on-screen data"), "everywhere")
+        self.privacy_mode.currentIndexChanged.connect(self._update_privacy_preview)
+        privacy_form.addRow(self.tr("Identifier obfuscation:"), self.privacy_mode)
+        privacy_note = QLabel(self.tr("Credentials and authentication material are always masked. Identifier pseudonyms are stable until the local pseudonym key is rotated; no original-to-pseudonym mapping is stored."))
+        privacy_note.setWordWrap(True); privacy_form.addRow(privacy_note)
+        self.privacy_users = QCheckBox(self.tr("Usernames, display names, and email addresses"))
+        self.privacy_addresses = QCheckBox(self.tr("IPv4 and IPv6 addresses"))
+        self.privacy_hosts = QCheckBox(self.tr("Hostnames, domains, and URL hosts"))
+        self.privacy_tenants = QCheckBox(self.tr("Tenant, customer, organization, and environment names"))
+        self.privacy_ids = QCheckBox(self.tr("Object IDs, UUIDs, GUIDs, and client identifiers"))
+        self.privacy_category_controls = {
+            "users": self.privacy_users, "addresses": self.privacy_addresses, "hosts": self.privacy_hosts,
+            "tenants": self.privacy_tenants, "ids": self.privacy_ids,
+        }
+        for control in self.privacy_category_controls.values():
+            control.toggled.connect(self._update_privacy_preview); privacy_form.addRow(control)
+        rotate_privacy = QPushButton(self.tr("Rotate local pseudonym key"))
+        rotate_privacy.setToolTip(self.tr("Creates new pseudonyms for future views and exports. Existing files are not modified."))
+        rotate_privacy.clicked.connect(self._rotate_privacy_key)
+        privacy_form.addRow(rotate_privacy)
+        privacy_layout.addWidget(privacy_group)
+        preview_group = QGroupBox(self.tr("Obfuscation preview"))
+        preview_layout = QVBoxLayout(preview_group)
+        preview_layout.addWidget(QLabel(self.tr("Preview of exported or externally shared data using synthetic examples:")))
+        self.privacy_preview = QPlainTextEdit(); self.privacy_preview.setReadOnly(True); self.privacy_preview.setMaximumHeight(210)
+        preview_layout.addWidget(self.privacy_preview); privacy_layout.addWidget(preview_group); privacy_layout.addStretch()
+        tabs.addTab(privacy_widget, self.tr("Privacy"))
+
         # === Language Tab ===
         language_widget = QWidget()
         language_layout = QVBoxLayout(language_widget)
@@ -4771,12 +4918,39 @@ class SettingsDialog(QDialog):
         """Keep first-time configuration focused while preserving expert controls."""
         advanced = self.mode_choice.currentData() == "advanced"
         for group in self.findChildren(QGroupBox):
-            if group.title().startswith("OneAPI") or group.title() in {self.tr("Language"), self.tr("AI / LLM")}:
+            if group.title().startswith("OneAPI") or group.title() in {self.tr("Language"), self.tr("AI / LLM"), self.tr("Privacy"), self.tr("Obfuscation preview")}:
                 continue
             group.setVisible(advanced)
         for index in range(self.settings_tabs.count()):
             title = self.settings_tabs.tabText(index)
-            self.settings_tabs.setTabVisible(index, advanced or title in {self.tr("Credentials"), self.tr("Language")})
+            self.settings_tabs.setTabVisible(index, advanced or title in {self.tr("Credentials"), self.tr("Privacy"), self.tr("Language")})
+
+    def _privacy_categories(self) -> dict[str, bool]:
+        return {name: control.isChecked() for name, control in self.privacy_category_controls.items()}
+
+    def _update_privacy_preview(self, *_args):
+        sample = {
+            "environment": "Production Europe", "email": "ada@example.com", "sourceIp": "10.20.30.40",
+            "url": "https://tenant.example.com/api/v1/users/42", "resourceId": "8d81b2e7-1f00-4f00-a100-000000000042",
+            "client_secret": "always-hidden",
+        }
+        safe = redact_sensitive(sample)
+        if self.privacy_mode.currentData() != "off":
+            safe = obfuscate_identifiers(safe, privacy_salt(), self._privacy_categories())
+        self.privacy_preview.setPlainText(json.dumps(safe, indent=2, ensure_ascii=False))
+
+    def _rotate_privacy_key(self):
+        if QMessageBox.question(
+            self, self.tr("Rotate pseudonym key"),
+            self.tr("Rotate the local pseudonym key? Future pseudonyms will change and will no longer correlate with previous exports."),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel,
+        ) != QMessageBox.StandardButton.Yes:
+            return
+        settings = QSettings("Zscaler", "APIClient")
+        rotate_privacy_salt(settings)
+        AuditTrail(settings).append("privacy_pseudonym_key_rotated", {})
+        self._update_privacy_preview()
+        QMessageBox.information(self, self.tr("Rotate pseudonym key"), self.tr("The local pseudonym key was rotated. No credentials or source identifiers were stored."))
     
     def _restore_defaults(self):
         """Restore default settings."""
@@ -4806,6 +4980,8 @@ class SettingsDialog(QDialog):
             self.word_wrap.setCurrentIndex(0)
             self.font_size.setCurrentText("11")
             self.theme.setCurrentIndex(2)
+            self.privacy_mode.setCurrentIndex(max(0, self.privacy_mode.findData("external")))
+            for control in self.privacy_category_controls.values(): control.setChecked(True)
             self.zdx_api_version.setCurrentIndex(max(0, self.zdx_api_version.findData("v2")))
     
     def _load_settings(self):
@@ -4893,6 +5069,9 @@ class SettingsDialog(QDialog):
         self.word_wrap.setCurrentIndex(1 if settings.value("display/word_wrap", "false") == "true" else 0)
         self.font_size.setCurrentText(settings.value("display/font_size", "11"))
         self.theme.setCurrentIndex(int(settings.value("display/theme", "2")))
+        self.privacy_mode.setCurrentIndex(max(0, self.privacy_mode.findData(settings.value("privacy/mode", "external"))))
+        for name, control in self.privacy_category_controls.items():
+            control.setChecked(settings.value(PRIVACY_CATEGORY_KEYS[name], "true") == "true")
         language = str(settings.value("language", "system"))
         self.language_choice.setCurrentIndex(max(0, self.language_choice.findData(language)))
         self.mode_choice.setCurrentIndex(0 if settings.value("ui/mode", "basic") == "basic" else 1)
@@ -4902,6 +5081,7 @@ class SettingsDialog(QDialog):
         if secure_get("ai_api_key"):
             self.ai_api_key.setPlaceholderText(self.tr("Configured securely in your system keychain"))
         self.ai_allow_external.setChecked(settings.value("ai/allow_external", "false") == "true")
+        self._update_privacy_preview()
 
     def _clear_ai_key(self):
         secure_delete("ai_api_key")
@@ -5132,6 +5312,9 @@ class SettingsDialog(QDialog):
         settings.setValue("display/word_wrap", "true" if self.word_wrap.currentIndex() == 1 else "false")
         settings.setValue("display/font_size", self.font_size.currentText())
         settings.setValue("display/theme", str(self.theme.currentIndex()))
+        settings.setValue("privacy/mode", self.privacy_mode.currentData())
+        for name, control in self.privacy_category_controls.items():
+            settings.setValue(PRIVACY_CATEGORY_KEYS[name], "true" if control.isChecked() else "false")
         settings.setValue("language", self.language_choice.currentData())
         settings.setValue("ui/mode", self.mode_choice.currentData())
         settings.setValue("ai/provider", self.ai_provider.currentData())
@@ -5673,7 +5856,7 @@ class ResponseComparisonDialog(QDialog):
         path, selected = QFileDialog.getSaveFileName(self, self.tr("Export masked drift"), "response-drift.json", "JSON (*.json);;CSV (*.csv);;Markdown (*.md)")
         if not path:
             return
-        safe = redact_sensitive(self._last_drift); suffix = Path(path).suffix.lower()
+        safe = privacy_safe(self._last_drift, self.settings, "export"); suffix = Path(path).suffix.lower()
         if suffix == ".csv" or "CSV" in selected:
             output = io.StringIO(); writer = csv.writer(output); writer.writerow(["impact", "change", "path", "identity", "before", "after"])
             for item in safe["changes"]: writer.writerow([item["impact"], item["change"], item["path"], item.get("identity", ""), self._serialized_value(item.get("before")), self._serialized_value(item.get("after"))])
@@ -5847,6 +6030,8 @@ class OperationsDialog(QDialog):
         self.incident_type = QComboBox(); self.incident_type.addItem(self.tr("API failure investigation"), "failures"); self.incident_type.addItem(self.tr("Change activity review"), "changes"); self.incident_type.addItem(self.tr("Slow response investigation"), "performance"); chain_controls.addWidget(self.incident_type)
         chain_prepare = QPushButton(self.tr("Prepare investigation chain")); chain_prepare.clicked.connect(self.prepare_incident_chain); chain_controls.addWidget(chain_prepare); chain_controls.addStretch(); incident_layout.addLayout(chain_controls)
         self.incident_chain = QPlainTextEdit(); self.incident_chain.setReadOnly(True); self.incident_chain.setMaximumHeight(120); incident_layout.addWidget(self.incident_chain)
+        self.incident_empty_art = VisualAssetLabel("assets/visuals/investigation-empty-state.png", 165)
+        self.incident_empty_art.setAccessibleName(self.tr("Security investigation evidence map")); incident_layout.addWidget(self.incident_empty_art)
         self.incident_timeline = QTableWidget(0, 4); self.incident_timeline.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Source"), self.tr("Severity"), self.tr("Evidence")]); self.incident_timeline.horizontalHeader().setStretchLastSection(True); self.incident_timeline.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); incident_layout.addWidget(self.incident_timeline)
         incident_actions = QHBoxLayout(); incident_refresh = QPushButton(self.tr("Refresh investigation")); incident_refresh.clicked.connect(self.refresh_incident); incident_actions.addWidget(incident_refresh)
         incident_export = QPushButton(self.tr("Export incident evidence")); incident_export.clicked.connect(self.export_incident_evidence); incident_actions.addWidget(incident_export); incident_actions.addStretch(); incident_layout.addLayout(incident_actions)
@@ -5867,10 +6052,13 @@ class OperationsDialog(QDialog):
         report_controls = QHBoxLayout(); report_controls.addWidget(QLabel(self.tr("Report type:")))
         self.report_type = QComboBox(); self.report_type.addItem(self.tr("CISO security summary"), "ciso"); self.report_type.addItem(self.tr("SOC investigation summary"), "soc"); self.report_type.addItem(self.tr("Operations health summary"), "operations"); report_controls.addWidget(self.report_type)
         report_generate = QPushButton(self.tr("Generate report")); report_generate.clicked.connect(self.generate_report); report_controls.addWidget(report_generate); report_controls.addStretch(); reports_layout.addLayout(report_controls)
+        report_banner = VisualAssetLabel("assets/visuals/security-report-banner.png", 120, crop=True)
+        report_banner.setAccessibleName(self.tr("Security posture report artwork")); reports_layout.addWidget(report_banner)
         self.report_chart = NumericBarChart(); reports_layout.addWidget(self.report_chart)
         self.report_preview = QPlainTextEdit(); self.report_preview.setReadOnly(True); reports_layout.addWidget(self.report_preview)
         report_actions = QHBoxLayout(); report_markdown = QPushButton(self.tr("Export report as Markdown")); report_markdown.clicked.connect(lambda: self.export_report("markdown")); report_actions.addWidget(report_markdown)
         report_json = QPushButton(self.tr("Export report as JSON")); report_json.clicked.connect(lambda: self.export_report("json")); report_actions.addWidget(report_json); report_actions.addStretch(); reports_layout.addLayout(report_actions)
+        report_html = QPushButton(self.tr("Export visual report as HTML")); report_html.clicked.connect(lambda: self.export_report("html")); report_actions.insertWidget(2, report_html)
         reports_layout.addWidget(QLabel(self.tr("Scheduled reports")))
         self.report_schedules = QTableWidget(0, 7)
         self.report_schedules.setHorizontalHeaderLabels([self.tr("Name"), self.tr("Environment"), self.tr("Type"), self.tr("Cadence"), self.tr("Next run"), self.tr("Mode"), self.tr("Status")])
@@ -5975,7 +6163,7 @@ class OperationsDialog(QDialog):
 
     def refresh_dashboard(self):
         history = self._scoped_history()
-        events = self._scoped_events()
+        events = privacy_safe(self._scoped_events(), self.settings, "display")
         successful = sum(1 for item in history if str(item.get("status", "")).startswith("2"))
         total = len(history)
         self.dashboard_cards["requests"].setText(str(total))
@@ -5984,7 +6172,8 @@ class OperationsDialog(QDialog):
         self.dashboard_cards["audit"].setText("✓" if valid else "!")
         self.dashboard_cards["audit"].setStyleSheet("color: #22c55e;" if valid else "color: #f97316;")
         self.dashboard_cards["audit"].setToolTip(self.tr("Audit chain is valid") if valid else self.tr("Audit chain needs review"))
-        self.dashboard_cards["environment"].setText(self._scope_metadata()["environment"])
+        display_scope = privacy_safe(self._scope_metadata(), self.settings, "display")
+        self.dashboard_cards["environment"].setText(display_scope["environment"])
         alerts = self._alert_data()["alerts"]
         self.dashboard_cards["alerts"].setText(str(len(alerts)))
         self.dashboard_cards["alerts"].setStyleSheet("color: #ef4444;" if alerts else "color: #22c55e;")
@@ -6033,7 +6222,7 @@ class OperationsDialog(QDialog):
         return data
 
     def refresh_alerts(self):
-        data = self._alert_data(); alerts = data["alerts"]
+        data = privacy_safe(self._alert_data(), self.settings, "display"); alerts = data["alerts"]
         self.alert_summary.setText(self.tr("{count} local alert(s) · error threshold: {threshold}").format(count=len(alerts), threshold=data["threshold"]))
         labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low")}
         self.alert_chart.set_style("pie")
@@ -6056,12 +6245,12 @@ class OperationsDialog(QDialog):
             self.alert_table.setItem(row, 3, QTableWidgetItem(json.dumps(mask(alert["evidence"]), ensure_ascii=False)))
 
     def copy_alert_summary(self):
-        QApplication.clipboard().setText(json.dumps(mask(self._alert_data()), indent=2, ensure_ascii=False))
+        QApplication.clipboard().setText(json.dumps(privacy_safe(self._alert_data(), self.settings, "clipboard"), indent=2, ensure_ascii=False))
         self._scope_audit().append("local_alert_summary_copied", {})
         self.alert_summary.setToolTip(self.tr("Copied to clipboard"))
 
     def _alert_export_content(self, format_name):
-        data = mask(self._alert_data())
+        data = privacy_safe(self._alert_data(), self.settings, "export")
         if format_name == "json":
             return json.dumps(data, indent=2, ensure_ascii=False)
         lines = ["# " + self.tr("Local alert summary"), "", self.tr("Data scope: {name}").format(name=data["scope"]["environment"]), self.tr("Error threshold: {threshold}").format(threshold=data["threshold"]), self.tr("Local requests: {count}").format(count=data["requests"]), self.tr("Failed requests: {count}").format(count=data["failed"]), ""]
@@ -6085,8 +6274,10 @@ class OperationsDialog(QDialog):
         return evidence
 
     def refresh_incident(self):
-        evidence = self._incident_evidence()
+        evidence = privacy_safe(self._incident_evidence(), self.settings, "display")
         timeline = evidence["timeline"]
+        self.incident_empty_art.setVisible(not timeline and not self.incident_empty_art._source.isNull())
+        self.incident_timeline.setVisible(bool(timeline))
         self.incident_timeline.setRowCount(len(timeline))
         severity_labels = {"high": self.tr("High"), "medium": self.tr("Medium"), "info": self.tr("Info")}
         for row, item in enumerate(timeline):
@@ -6109,7 +6300,7 @@ class OperationsDialog(QDialog):
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Export incident evidence"), "incident-evidence.json", "JSON (*.json)")
         if not path:
             return
-        Path(path).write_text(json.dumps(self._incident_evidence(), indent=2, ensure_ascii=False), encoding="utf-8")
+        Path(path).write_text(json.dumps(privacy_safe(self._incident_evidence(), self.settings, "export"), indent=2, ensure_ascii=False), encoding="utf-8")
         self._scope_audit().append("incident_evidence_exported", {"file": os.path.basename(path)})
 
     def _change_plan(self):
@@ -6140,12 +6331,12 @@ class OperationsDialog(QDialog):
 
     def export_change_review(self, kind):
         try:
-            plan = self._change_plan()
+            plan = privacy_safe(self._change_plan(), self.settings, "export")
         except ValueError as exc:
             QMessageBox.warning(self, self.tr("Change control"), str(exc)); return
         if kind == "rollback":
             path, _ = QFileDialog.getSaveFileName(self, self.tr("Export rollback plan"), "rollback-policy.json", "JSON (*.json)")
-            content = json.dumps({"rollback_policy": plan["rollback_policy"], "reference": self.change_ticket.text().strip()}, indent=2, ensure_ascii=False)
+            content = json.dumps(privacy_safe({"rollback_policy": plan["rollback_policy"], "reference": self.change_ticket.text().strip()}, self.settings, "export"), indent=2, ensure_ascii=False)
         else:
             path, _ = QFileDialog.getSaveFileName(self, self.tr("Export Git review"), "policy-review.md", "Markdown (*.md)")
             content = "# Policy change review\n\n" + json.dumps({"risk": plan["risk"], "change_counts": plan["change_counts"], "compliance_findings": plan["compliance_findings"]}, indent=2, ensure_ascii=False) + "\n\n## Proposed policy (redacted)\n```json\n" + policy_as_code(plan["proposed_policy"], "json") + "```\n\n## Rollback\nUse the separately exported rollback plan after change approval.\n"
@@ -6156,11 +6347,8 @@ class OperationsDialog(QDialog):
     def _report_data(self):
         return security_report_data(self.report_type.currentData(), self._scoped_history(), self._scoped_events(), AuditTrail(self.settings).verify(), self._scope_metadata())
 
-    def generate_report(self):
-        data = self._report_data()
+    def _report_lines(self, data):
         posture, incidents = data["posture"], data["incident_summary"]
-        severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
-        self.report_chart.set_style("pie"); self.report_chart.set_values([(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()])
         title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}[data["kind"]]
         lines = [f"# {title}", "", self.tr("Data scope: {name}").format(name=data["scope"]["environment"]), self.tr("Posture score: {score}/100").format(score=posture["score"]), self.tr("Local requests: {count}").format(count=posture["metrics"]["requests"]), self.tr("Failed requests: {count}").format(count=posture["metrics"]["failed"]), self.tr("Audit integrity: {status}").format(status=self.tr("Valid") if data["audit_valid"] else self.tr("Needs review")), "", self.tr("Incident signals"), f"- {self.tr('High')}: {incidents['high']}", f"- {self.tr('Medium')}: {incidents['medium']}"]
         if data["kind"] == "ciso":
@@ -6169,16 +6357,55 @@ class OperationsDialog(QDialog):
             lines += ["", self.tr("SOC next steps"), "- " + self.tr("Use Incident Investigation to prepare a review chain."), "- " + self.tr("Export masked evidence before escalation.")]
         else:
             lines += ["", self.tr("Operations next steps"), "- " + self.tr("Review slow responses and API failures."), "- " + self.tr("Confirm rate limits and service health with read-only queries.")]
-        self.report_preview.setPlainText("\n".join(lines))
+        return lines
+
+    def generate_report(self):
+        data = privacy_safe(self._report_data(), self.settings, "display")
+        posture = data["posture"]
+        severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
+        self.report_chart.set_style("pie"); self.report_chart.set_values([(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()])
+        self.report_preview.setPlainText("\n".join(self._report_lines(data)))
+
+    def _report_html(self, data):
+        """Create a self-contained visual report with embedded, offline artwork."""
+        posture, incidents = data["posture"], data["incident_summary"]
+        title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}[data["kind"]]
+        try:
+            banner = base64.b64encode(_resource_path("assets/visuals/security-report-banner.png").read_bytes()).decode("ascii")
+            banner_style = f"background-image:linear-gradient(90deg,rgba(4,12,27,.15),rgba(4,12,27,.05)),url(data:image/png;base64,{banner});"
+        except OSError:
+            banner_style = ""
+        metrics = posture["metrics"]
+        cards = (
+            (self.tr("Posture score"), f"{posture['score']}/100", "good" if posture["score"] >= 80 else "warn"),
+            (self.tr("Local requests"), metrics["requests"], "neutral"),
+            (self.tr("Failed requests"), metrics["failed"], "risk" if metrics["failed"] else "good"),
+            (self.tr("Audit integrity"), self.tr("Valid") if data["audit_valid"] else self.tr("Needs review"), "good" if data["audit_valid"] else "risk"),
+        )
+        card_html = "".join(f'<section class="metric {tone}"><span>{html.escape(str(label))}</span><strong>{html.escape(str(value))}</strong></section>' for label, value, tone in cards)
+        finding_rows = "".join(
+            f"<tr><td><span class='severity {html.escape(str(item['severity']))}'>{html.escape(str(item['severity']).title())}</span></td><td>{html.escape(str(item['code']).replace('_', ' ').title())}</td><td>{int(item.get('count', 0))}</td></tr>"
+            for item in posture["findings"]
+        ) or f"<tr><td colspan='3'>{html.escape(self.tr('No local findings.'))}</td></tr>"
+        event_rows = "".join(
+            f"<tr><td>{html.escape(str(item.get('time', '')))}</td><td>{html.escape(str(item.get('source', '')))}</td><td>{html.escape(str(item.get('summary', '')))}</td></tr>"
+            for item in data.get("recent_events", [])
+        ) or f"<tr><td colspan='3'>{html.escape(self.tr('No recent evidence.'))}</td></tr>"
+        return f"""<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>{html.escape(title)}</title><style>
+body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}main{{max-width:1100px;margin:auto;padding:28px}}.hero{{min-height:260px;border:1px solid #17375b;border-radius:22px;background-color:#0a1830;background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:32px;box-sizing:border-box}}h1{{font-size:34px;margin:0}}.scope{{color:#9db4cc;margin-top:8px}}.metrics{{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}}.metric{{background:#0d1e33;border:1px solid #1c3b5d;border-radius:16px;padding:18px}}.metric span{{display:block;color:#9db4cc}}.metric strong{{display:block;font-size:26px;margin-top:7px}}.good strong{{color:#34d399}}.warn strong{{color:#fbbf24}}.risk strong{{color:#fb7185}}.panel{{background:#0d1e33;border:1px solid #1c3b5d;border-radius:16px;padding:20px;margin-top:16px}}table{{width:100%;border-collapse:collapse}}th,td{{text-align:left;padding:10px;border-bottom:1px solid #1c3b5d}}th{{color:#7dd3fc}}.severity{{font-weight:700}}.critical,.high{{color:#fb7185}}.medium{{color:#fbbf24}}.low,.info{{color:#7dd3fc}}footer{{color:#7890a8;margin-top:24px;font-size:12px}}@media(max-width:760px){{.metrics{{grid-template-columns:1fr 1fr}}}}
+</style></head><body><main><header class='hero' style='{banner_style}'><div><h1>{html.escape(title)}</h1><div class='scope'>{html.escape(self.tr('Data scope: {name}').format(name=data['scope']['environment']))}</div></div></header><div class='metrics'>{card_html}</div><section class='panel'><h2>{html.escape(self.tr('Security findings'))}</h2><table><thead><tr><th>{html.escape(self.tr('Severity'))}</th><th>{html.escape(self.tr('Finding'))}</th><th>{html.escape(self.tr('Count'))}</th></tr></thead><tbody>{finding_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Recent evidence'))}</h2><table><thead><tr><th>{html.escape(self.tr('Time'))}</th><th>{html.escape(self.tr('Source'))}</th><th>{html.escape(self.tr('Evidence'))}</th></tr></thead><tbody>{event_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Incident signals'))}</h2><p>{html.escape(self.tr('High'))}: {int(incidents['high'])} · {html.escape(self.tr('Medium'))}: {int(incidents['medium'])}</p></section><footer>ZS API Client · {html.escape(self.tr('Generated locally; credentials are never included.'))}</footer></main></body></html>"""
 
     def export_report(self, format_name):
-        data = self._report_data()
+        data = privacy_safe(self._report_data(), self.settings, "export")
         if format_name == "json":
             path, _ = QFileDialog.getSaveFileName(self, self.tr("Export report as JSON"), "security-report.json", "JSON (*.json)")
             content = json.dumps(data, indent=2, ensure_ascii=False)
+        elif format_name == "html":
+            path, _ = QFileDialog.getSaveFileName(self, self.tr("Export visual report as HTML"), "security-report.html", "HTML (*.html)")
+            content = self._report_html(data)
         else:
             path, _ = QFileDialog.getSaveFileName(self, self.tr("Export report as Markdown"), "security-report.md", "Markdown (*.md)")
-            content = self.report_preview.toPlainText() + "\n"
+            content = "\n".join(self._report_lines(data)) + "\n"
         if path:
             Path(path).write_text(content, encoding="utf-8")
             self._scope_audit().append("security_report_exported", {"kind": data["kind"], "format": format_name, "file": os.path.basename(path)})
@@ -6286,11 +6513,12 @@ class OperationsDialog(QDialog):
         results = result.get("results", [])
         successful = sum(1 for item in results if item.get("success")); failed = len(results) - successful
         safe_results = redact_sensitive(mask(results))
-        for item in safe_results:
+        display_results = privacy_safe(safe_results, self.settings, "display")
+        for item in display_results:
             request = item.get("request", {})
             if isinstance(request, dict) and "url" in request:
                 request["url"] = redact_url(request["url"])
-        self.api_chain_result.setPlainText(json.dumps(safe_results, indent=2, ensure_ascii=False))
+        self.api_chain_result.setPlainText(json.dumps(display_results, indent=2, ensure_ascii=False))
         self._last_chain_results = safe_results
         self.api_chain_table.setRowCount(len(results))
         for row, item in enumerate(results):
@@ -6298,8 +6526,9 @@ class OperationsDialog(QDialog):
             status = api_result_status(item)
             business = PaginatedApiWorker._business_payload(item.get("data")) if item.get("success") else None
             page_records, _ = paginated_records(business)
+            display_request = privacy_safe(request, self.settings, "display")
             values = (
-                str(request.get("id", f"step{row + 1}")), str(request.get("method", "")),
+                str(display_request.get("id", f"step{row + 1}")), str(request.get("method", "")),
                 str(status), str(len(page_records)) if page_records is not None else "—",
                 self.tr("{duration} ms").format(duration=item.get("duration_ms", 0)),
             )
@@ -6329,7 +6558,7 @@ class OperationsDialog(QDialog):
         path, selected = QFileDialog.getSaveFileName(self, self.tr("Export masked chain results"), "api-chain-results.json", "JSON (*.json);;CSV (*.csv)")
         if not path:
             return
-        safe_results = redact_sensitive(mask(self._last_chain_results))
+        safe_results = privacy_safe(self._last_chain_results, self.settings, "export")
         if Path(path).suffix.lower() == ".csv" or "CSV" in selected:
             output = io.StringIO(); writer = csv.writer(output); writer.writerow(["step", "method", "url", "status", "duration_ms", "error"])
             for index, item in enumerate(safe_results, 1):
@@ -6345,12 +6574,12 @@ class OperationsDialog(QDialog):
             after = self._json(self.after_policy, {})
             changes = policy_diff(self._json(self.before_policy, {}), after)
             counts = {kind: sum(1 for item in changes if item["change"] == kind) for kind in ("added", "removed", "changed")}
-            self.diff_result.setPlainText(json.dumps({"summary": counts, "changes": changes}, indent=2))
+            self.diff_result.setPlainText(json.dumps(privacy_safe({"summary": counts, "changes": changes}, self.settings, "display"), indent=2))
             self._render_policy_overview(after)
         except ValueError as exc: QMessageBox.warning(self, self.tr("Policy diff"), str(exc))
 
     def _render_policy_overview(self, policy):
-        overview = policy_overview(policy)
+        overview = privacy_safe(policy_overview(policy), self.settings, "display")
         self.policy_chart.set_style("pie"); self.policy_chart.set_values([(action.title(), float(count)) for action, count in overview["actions"].items()])
         self.policy_rules.setRowCount(len(overview["rules"]))
         for row, rule in enumerate(overview["rules"]):
@@ -6369,7 +6598,7 @@ class OperationsDialog(QDialog):
             for column, value in enumerate(values): self.best_practices.setItem(row, column, QTableWidgetItem(value))
 
     def export_policy(self, format_name):
-        try: payload = policy_as_code(self._json(self.after_policy, {}), format_name)
+        try: payload = policy_as_code(privacy_safe(self._json(self.after_policy, {}), self.settings, "export"), format_name)
         except ValueError as exc: QMessageBox.warning(self, self.tr("Policy export"), str(exc)); return
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Export policy"), f"policy.{format_name}", f"{format_name.upper()} (*.{format_name})")
         if path:
@@ -6381,14 +6610,15 @@ class OperationsDialog(QDialog):
             policy = self._json(self.after_policy, {})
             findings = compliance_findings(policy)
         except ValueError as exc: QMessageBox.warning(self, self.tr("Compliance"), str(exc)); return
-        self._render_policy_overview(policy); self._render_best_practices(findings)
-        self.diff_result.setPlainText(json.dumps({"best_practice_findings": findings, "count": len(findings), "scope": "local policy heuristic"}, indent=2))
+        self._render_policy_overview(policy); self._render_best_practices(privacy_safe(findings, self.settings, "display"))
+        self.diff_result.setPlainText(json.dumps(privacy_safe({"best_practice_findings": findings, "count": len(findings), "scope": "local policy heuristic"}, self.settings, "display"), indent=2))
 
     def run_simulation(self):
         try:
             result = simulate_policy_trace(self._json(self.rules_input, []), self._json(self.context_input, {}))
-            self.simulation_result.setPlainText(json.dumps(result, indent=2))
-            trace = result["trace"]
+            display_result = privacy_safe(result, self.settings, "display")
+            self.simulation_result.setPlainText(json.dumps(display_result, indent=2))
+            trace = display_result["trace"]
             self.simulation_chart.set_values([(self.tr("Rules evaluated"), float(len(trace))), (self.tr("Matched rule"), 1.0 if result["matched"] else 0.0)])
             self.simulation_path.setRowCount(len(trace))
             for row, item in enumerate(trace):
@@ -6457,7 +6687,7 @@ class OperationsDialog(QDialog):
         preview = self.integration_preview.toPlainText()
         if not preview:
             QMessageBox.information(self, self.tr("Integrations"), self.tr("Prepare an integration first.")); return
-        QApplication.clipboard().setText(preview)
+        QApplication.clipboard().setText(str(privacy_safe(preview, self.settings, "clipboard")))
         AuditTrail(self.settings).append("integration_command_copied", {})
         self.integration_preview.setToolTip(self.tr("Copied to clipboard"))
 
@@ -6476,11 +6706,11 @@ class OperationsDialog(QDialog):
     def _local_automation_payload(self):
         """Build the only data passed to local automation; credentials and raw responses are excluded."""
         posture = security_posture(self._scoped_history(), AuditTrail(self.settings).verify())
-        return redact_sensitive({
+        return privacy_safe({
             "source": "ZS API Client", "event": "local_security_snapshot", "timestamp": int(time.time()), "scope": self._scope_metadata(),
             "posture": {"score": posture["score"], "metrics": posture["metrics"], "findings": posture["findings"]},
             "alerts": self._alert_data(),
-        })
+        }, self.settings, "external")
 
     def run_local_automation(self):
         """Run one explicitly approved Python file with masked JSON on standard input."""
@@ -6530,7 +6760,7 @@ class OperationsDialog(QDialog):
         process = self.local_automation_process
         stdout = bytes(process.readAllStandardOutput()).decode("utf-8", "replace")[:65_536]
         stderr = bytes(process.readAllStandardError()).decode("utf-8", "replace")[:65_536]
-        result = redact_sensitive({"exit_code": int(exit_code), "stdout": stdout, "stderr": stderr})
+        result = privacy_safe({"exit_code": int(exit_code), "stdout": stdout, "stderr": stderr}, self.settings, "display")
         self.integration_preview.setPlainText(json.dumps(result, indent=2, ensure_ascii=False))
         self._scope_audit(getattr(self, "_local_automation_audit_scope", None)).append("local_automation_finished", {"exit_code": int(exit_code), "stdout_bytes": len(stdout.encode("utf-8")), "stderr_bytes": len(stderr.encode("utf-8"))})
         if not getattr(self, "_local_automation_timed_out", False):
@@ -6554,7 +6784,7 @@ class OperationsDialog(QDialog):
             QMessageBox.warning(self, self.tr("Webhook delivery"), message); return
         if hasattr(self, "webhook_worker") and self.webhook_worker.isRunning():
             QMessageBox.information(self, self.tr("Webhook delivery"), self.tr("A webhook delivery is already running.")); return
-        safe_payload = redact_sensitive(payload)
+        safe_payload = privacy_safe(payload, self.settings, "external")
         self.integration_preview.setPlainText(json.dumps(safe_payload, indent=2, ensure_ascii=False))
         scope = self._scope_metadata()
         if QMessageBox.question(self, self.tr("Webhook delivery"), confirmation + "\n\n" + self.tr("Data scope: {name}").format(name=scope["environment"]), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
@@ -6581,13 +6811,13 @@ class OperationsDialog(QDialog):
 
     def _on_webhook_failed(self, error):
         kind = getattr(self, "_webhook_delivery_kind", "unknown")
-        safe_error = redact_sensitive(error)
+        safe_error = privacy_safe(error, self.settings, "display")
         self._scope_audit(getattr(self, "_webhook_delivery_scope", None)).append(f"webhook_{kind}_failed", {"error": safe_error})
         self.refresh_webhook_history(); self.refresh_audit()
         QMessageBox.warning(self, self.tr("Webhook delivery"), self.tr("Masked webhook delivery failed: {error}").format(error=safe_error))
 
     def refresh_audit(self):
-        events = list(reversed(self._scoped_events()))
+        events = list(reversed(privacy_safe(self._scoped_events(), self.settings, "display")))
         self.audit_timeline.setRowCount(len(events))
         for row, event in enumerate(events):
             self.audit_timeline.setItem(row, 0, QTableWidgetItem(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(event.get("timestamp", 0)))))
@@ -6739,7 +6969,8 @@ class OperationsDialog(QDialog):
     def create_support_bundle(self):
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Save support bundle"), "zs-api-client-support.zip", "ZIP (*.zip)")
         if path:
-            support_bundle(path, {"version": __version__, "scope": self._scope_metadata(), "settings": {"language": self.settings.value("language", "system"), "mode": self.settings.value("ui/mode", "basic")}}, self._scoped_events())
+            diagnostics = {"version": __version__, "scope": self._scope_metadata(), "settings": {"language": self.settings.value("language", "system"), "mode": self.settings.value("ui/mode", "basic")}}
+            support_bundle(path, privacy_safe(diagnostics, self.settings, "export"), privacy_safe(self._scoped_events(), self.settings, "export"))
             self._scope_audit().append("support_bundle_created", {"file": os.path.basename(path)})
             QMessageBox.information(self, self.tr("Support bundle"), self.tr("A redacted support bundle was created."))
 
@@ -8232,11 +8463,13 @@ class MainWindow(QMainWindow):
         self.request_tabs.setCurrentIndex(0)
 
     def _on_llm_completed(self, answer: str):
-        self.ai_summary.setText(self.ai_summary.text().replace(self.tr("Asking configured LLM…"), redact_sensitive(answer)))
+        safe_answer = privacy_safe(answer, QSettings("Zscaler", "APIClient"), "display")
+        self.ai_summary.setText(self.ai_summary.text().replace(self.tr("Asking configured LLM…"), safe_answer))
 
     def _on_llm_failed(self, error: str):
         fallback = self.tr("LLM unavailable; using the local catalog assistant.")
-        self.ai_summary.setText(self.ai_summary.text().replace(self.tr("Asking configured LLM…"), f"{fallback}: {redact_sensitive(error)}"))
+        safe_error = privacy_safe(error, QSettings("Zscaler", "APIClient"), "display")
+        self.ai_summary.setText(self.ai_summary.text().replace(self.tr("Asking configured LLM…"), f"{fallback}: {safe_error}"))
 
     def _ask_configured_llm(self, question: str, candidates: list[dict]) -> str:
         """Call a configured OpenAI-compatible endpoint without credentials or API responses."""
@@ -8258,10 +8491,12 @@ class MainWindow(QMainWindow):
             raise ValueError(self.tr("AI question is too long (maximum 2000 characters)."))
         url = endpoint if endpoint.endswith("/chat/completions") else f"{endpoint}/chat/completions"
         catalog = [{key: item[key] for key in ("product", "name", "method", "url", "description")} for item in candidates]
+        safe_question = privacy_safe({"question": question}, settings, "external")["question"]
+        safe_catalog = privacy_safe(catalog, settings, "external")
         prompt = (
             "You are a Zscaler OneAPI assistant. Use only the supplied API catalog candidates. "
             "Do not request, reveal, or include secrets. Explain the best safe request in concise plain text.\n"
-            f"Question: {redact_sensitive(question)}\nCandidates: {json.dumps(redact_sensitive(catalog))}"
+            f"Question: {safe_question}\nCandidates: {json.dumps(safe_catalog)}"
         )
         headers = {"Content-Type": "application/json"}
         if key:
@@ -8313,12 +8548,15 @@ class MainWindow(QMainWindow):
             if not self.response_chart.values:
                 QMessageBox.information(self, self.tr("Export response"), self.tr("No chart data is available to export."))
                 return
+            original_values = list(self.response_chart.values)
+            self.response_chart.set_values(self._privacy_chart_values(original_values))
             self.response_chart.grab().save(path, "PNG")
+            self.response_chart.set_values(original_values)
         elif suffix == ".svg":
             if not self.response_chart.values:
                 QMessageBox.information(self, self.tr("Export response"), self.tr("No chart data is available to export."))
                 return
-            Path(path).write_text(self._chart_svg(self.response_chart.values, self.response_chart.style), encoding="utf-8")
+            Path(path).write_text(self._chart_svg(self._privacy_chart_values(self.response_chart.values), self.response_chart.style), encoding="utf-8")
         elif suffix == ".md":
             content = "# ZS API Client response\n\n```json\n" + json.dumps(payload, indent=2, ensure_ascii=False) + "\n```\n"
             Path(path).write_text(content, encoding="utf-8")
@@ -8352,7 +8590,7 @@ class MainWindow(QMainWindow):
         payload["schema"] = RESPONSE_EXCHANGE_SCHEMA
         payload["app_version"] = __version__
         payload["exported_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-        safe = redact_sensitive(payload)
+        safe = privacy_safe(payload, QSettings("Zscaler", "APIClient"), "export")
         request = safe.get("request", {}) if isinstance(safe, dict) else {}
         if isinstance(request, dict) and request.get("url"):
             request["url"] = redact_url(str(request["url"]))
@@ -8467,7 +8705,8 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, self.tr("Open response export"), response_exchange_error_message(self, error_code))
             return
 
-        safe_response = safe_document["response"]
+        display_document = privacy_safe(safe_document, QSettings("Zscaler", "APIClient"), "display")
+        safe_response = display_document["response"]
         self._last_response_exchange = safe_document
         self._binary_response = None
         body = safe_response.get("body")
@@ -8509,7 +8748,10 @@ class MainWindow(QMainWindow):
             if not self.ai_chart.values:
                 QMessageBox.information(self, self.tr("Export AI result"), self.tr("No chart data is available to export."))
                 return
+            original_values = list(self.ai_chart.values)
+            self.ai_chart.set_values(self._privacy_chart_values(original_values))
             self.ai_chart.grab().save(path, "PNG")
+            self.ai_chart.set_values(original_values)
         elif suffix == ".svg":
             if not self.ai_chart.values:
                 QMessageBox.information(self, self.tr("Export AI result"), self.tr("No chart data is available to export."))
@@ -8617,11 +8859,20 @@ class MainWindow(QMainWindow):
     def _ai_export_payload(self) -> tuple[list[str], list[list[str]]]:
         headers = [self.ai_table.horizontalHeaderItem(col).text() if self.ai_table.horizontalHeaderItem(col) else "" for col in range(self.ai_table.columnCount())]
         rows = [[self.ai_table.item(row, col).text() if self.ai_table.item(row, col) else "" for col in range(self.ai_table.columnCount())] for row in range(self.ai_table.rowCount())]
-        return headers, redact_sensitive(rows)
+        records = [dict(zip(headers, row)) for row in rows]
+        safe_records = privacy_safe(records, QSettings("Zscaler", "APIClient"), "export")
+        return headers, [[str(record.get(header, "")) for header in headers] for record in safe_records]
+
+    def _privacy_chart_values(self, values, target="export"):
+        settings = QSettings("Zscaler", "APIClient")
+        return [
+            (privacy_safe({"name": str(label)}, settings, target)["name"], float(value))
+            for label, value in values
+        ]
 
     def _svg_chart(self) -> str:
         """Export the current masked chart as a portable, dependency-free SVG."""
-        return self._chart_svg(self.ai_chart.values, self.ai_chart.style)
+        return self._chart_svg(self._privacy_chart_values(self.ai_chart.values), self.ai_chart.style)
 
     @staticmethod
     def _chart_svg(values: list[tuple[str, float]], style: str) -> str:
@@ -8655,6 +8906,7 @@ class MainWindow(QMainWindow):
 
     def _masked_request_parts(self) -> tuple[str, str, dict[str, str], str]:
         method = self.method_combo.currentText().replace("● ", "")
+        body_mode = str(self.body_mode.currentData() or "json")
         url = redact_url(self.url_input.text())
         headers: dict[str, str] = {}
         for row in range(self.headers_table.rowCount()):
@@ -8664,10 +8916,19 @@ class MainWindow(QMainWindow):
                 headers[key] = "***" if is_sensitive_name(key) else str(redact_sensitive(value_item.text()))
         raw_body = self.body_input.toPlainText().strip()
         try:
-            body = json.dumps(redact_sensitive(json.loads(raw_body)), indent=2) if raw_body else ""
+            body_value = redact_sensitive(json.loads(raw_body)) if raw_body and body_mode != "form" else ""
         except json.JSONDecodeError:
-            body = str(redact_sensitive(raw_body))
-        return method, url, headers, body
+            body_value = str(redact_sensitive(raw_body))
+        if raw_body and body_mode == "form":
+            pairs = urllib.parse.parse_qsl(raw_body, keep_blank_values=True)
+            safe_pairs = [
+                privacy_safe({key: "***" if is_sensitive_name(key) else value}, QSettings("Zscaler", "APIClient"), "export")
+                for key, value in pairs
+            ]
+            body_value = urllib.parse.urlencode([(key, item[key]) for (key, _), item in zip(pairs, safe_pairs)], safe="*")
+        safe = privacy_safe({"url": url, "headers": headers, "body": body_value}, QSettings("Zscaler", "APIClient"), "export")
+        body = json.dumps(safe["body"], indent=2, ensure_ascii=False) if isinstance(safe["body"], (dict, list)) else str(safe["body"])
+        return method, str(safe["url"]), safe["headers"], body
 
     def _masked_curl_command(self) -> str:
         method, url, headers, body = self._masked_request_parts()
@@ -9437,10 +9698,10 @@ class MainWindow(QMainWindow):
                 binary_type = response_data.pop("_content_type", "application/octet-stream") if isinstance(response_data, dict) else "application/octet-stream"
                 payload = response_data.pop("_payload", response_data) if isinstance(response_data, dict) else response_data
                 size_str = self._format_size(resp_size)
-                safe_response_headers = {
+                safe_response_headers = privacy_safe({
                     key: "***" if is_sensitive_name(key) else redact_sensitive(value)
                     for key, value in response_headers.items()
-                }
+                }, QSettings("Zscaler", "APIClient"), "display")
                 self.response_headers.setPlainText(
                     "\n".join(f"{key}: {value}" for key, value in safe_response_headers.items())
                 )
@@ -9473,7 +9734,7 @@ class MainWindow(QMainWindow):
                 self._binary_response = base64.b64decode(binary_base64, validate=True) if binary_base64 is not None else None
                 self._binary_response_name = safe_download_filename({}, str(binary_name), str(binary_type))
                 self._binary_response_type = str(binary_type)
-                display_data = redact_sensitive(payload)
+                display_data = privacy_safe(payload, settings, "display")
                 if self._binary_response is not None:
                     display_data = {
                         "file_name": self._binary_response_name,
@@ -9484,7 +9745,7 @@ class MainWindow(QMainWindow):
                         name=self._binary_response_name, type=self._binary_response_type, size=size_str,
                     ))
                 elif raw_text is not None:
-                    display_data = redact_sensitive(raw_text)
+                    display_data = privacy_safe(raw_text, settings, "display")
                     self.response_body.setPlainText(str(display_data))
                 elif self.pretty_print_enabled:
                     self.response_body.setPlainText(json.dumps(display_data, indent=indent_val))
@@ -9504,7 +9765,8 @@ class MainWindow(QMainWindow):
                     "request": safe_request,
                     "response": {
                         "status": status_code, "reason": reason, "duration_ms": duration_ms,
-                        "size_bytes": resp_size, "retry_count": retry_count, "headers": safe_response_headers, "body": display_data,
+                        "size_bytes": resp_size, "retry_count": retry_count,
+                        "headers": redact_sensitive(response_headers), "body": redact_sensitive(payload),
                     },
                 })
                 self._show_ai_visualization(display_data)
@@ -9868,9 +10130,9 @@ class MainWindow(QMainWindow):
         raw = self.response_body.toPlainText()
         if raw:
             try:
-                text = json.dumps(redact_sensitive(json.loads(raw)), indent=2)
+                text = json.dumps(privacy_safe(json.loads(raw), QSettings("Zscaler", "APIClient"), "clipboard"), indent=2)
             except json.JSONDecodeError:
-                text = str(redact_sensitive(raw))
+                text = str(privacy_safe(raw, QSettings("Zscaler", "APIClient"), "clipboard"))
             QApplication.clipboard().setText(text)
             self.status_bar.showMessage(self.tr("Masked response copied to clipboard"))
         else:

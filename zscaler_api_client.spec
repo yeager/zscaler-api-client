@@ -17,6 +17,7 @@ pyqt6_submodules = collect_submodules('PyQt6')
 # Path to translations - include compiled .qm files
 translations_path = Path('translations')
 translation_files = [(str(f), 'translations') for f in translations_path.glob('*.qm')]
+visual_files = [(str(f), 'assets/visuals') for f in Path('assets/visuals').glob('*.png')]
 
 a = Analysis(
     ['zscaler_api_client.py'],
@@ -25,6 +26,7 @@ a = Analysis(
     datas=[
         *pyqt6_datas,
         *translation_files,
+        *visual_files,
     ],
     hiddenimports=[
         *pyqt6_submodules,

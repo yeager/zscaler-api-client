@@ -27,15 +27,21 @@ tenant or the bundled catalog-only mode.
 5. In Advanced network settings, confirm safe-read retries, maximum retry
    count, and maximum wait can be changed. Confirm no retry option enables
    automatic write retries.
-6. Create a second environment without entering credentials. Confirm it has
+6. Open Privacy settings and confirm external obfuscation is selected by
+   default. Verify the synthetic preview hides the example user, IP, host,
+   tenant, object ID, and secret. Export a response as JSON and PNG and confirm
+   neither contains the original identifiers. Rotate the pseudonym key only
+   with synthetic data and confirm the preview changes.
+7. Create a second environment without entering credentials. Confirm it has
    no copied keychain secrets, switching environments clears request/response
    data, and history from the first environment cannot be loaded.
-7. Open Operations Center in Basic mode and confirm only the active environment
+8. Open Operations Center in Basic mode and confirm only the active environment
    is available. In Advanced mode, select the explicit cross-tenant overview
    and confirm reports and alert exports identify their data scope.
-8. Create a local scheduled report for one environment and confirm its JSON
-   contains only that environment's retained history and matching scope ID.
-9. Close and reopen the app without a crash.
+9. Create a local scheduled report for one environment and confirm its JSON
+   contains only that environment's retained history and a stable pseudonymized
+   scope ID.
+10. Close and reopen the app without a crash.
 
 ## macOS
 
