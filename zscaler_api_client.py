@@ -5713,6 +5713,25 @@ class MainWindow(QMainWindow):
         """Get current API type without indicator emoji."""
         return self.api_type.currentText().replace("🟢 ", "").replace("🔴 ", "")
 
+    def _api_base_url(self, api_type: str | None = None) -> str:
+        """Resolve the normal API origin for every configured product."""
+        api_type = api_type or self._current_api_type()
+        settings = QSettings("Zscaler", "APIClient")
+        if api_type == "OneAPI":
+            cloud = str(settings.value("oneapi/cloud", "")).strip()
+            if cloud and cloud.upper() != "PRODUCTION" and "." not in cloud:
+                return f"https://api.{cloud.lower()}.zsapi.net"
+            return "https://api.zsapi.net"
+        product_hosts = {
+            "ZIA": ("zia/cloud", "zsapi.zscaler.net"), "ZPA": ("zpa/cloud", "config.private.zscaler.com"),
+            "ZDX": ("zdx/cloud", "api.zdxcloud.net"), "ZCC": ("zcc/cloud", "api.zscaler.com"),
+            "ZIdentity": ("zidentity/domain", ""), "ZTW": ("ztw/cloud", "connector.zscaler.net"),
+            "ZWA": ("zwa/cloud", "workflow.zscaler.com"), "EASM": ("easm/cloud", "api.zscaler.com"),
+        }
+        key, default = product_hosts.get(api_type, ("", ""))
+        host = str(settings.value(key, default)).strip()
+        return f"https://{host}" if host else ""
+
     def _update_auth_indicators(self):
         """Update api_type combo with auth indicators."""
         for i in range(self.api_type.count()):
@@ -6446,25 +6465,10 @@ class MainWindow(QMainWindow):
         # If URL is a relative path, prepend the appropriate base URL
         self._log_output(f"URL before fix: {url[:80]}", "info")
         if url.startswith("/"):
-            settings = QSettings("Zscaler", "APIClient")
-            api_type = self.api_type.currentText().replace("🟢 ", "").replace("🔴 ", "")
-            if api_type == "OneAPI":
-                cloud = settings.value("oneapi/cloud", "").strip()
-                is_non_prod = cloud and cloud.upper() != "PRODUCTION" and "." not in cloud
-                if is_non_prod:
-                    base = f"https://api.{cloud.lower()}.zsapi.net"
-                else:
-                    base = "https://api.zsapi.net"
-            elif api_type == "ZIA":
-                base = f"https://{settings.value('zia/cloud', 'zsapi.zscaler.net')}"
-            elif api_type == "ZPA":
-                base = f"https://{settings.value('zpa/cloud', 'config.private.zscaler.com')}"
-            elif api_type == "ZDX":
-                base = f"https://{settings.value('zdx/cloud', 'api.zdxcloud.net')}"
-            elif api_type == "ZCC":
-                base = f"https://{settings.value('zcc/cloud', 'api.zscaler.com')}"
-            else:
-                base = ""
+            base = self._api_base_url()
+            if not base:
+                QMessageBox.warning(self, self.tr("Warning"), self.tr("Configure a base URL for the selected product before sending a relative API path."))
+                return
             url = base + url
             self.url_input.setText(url)
         

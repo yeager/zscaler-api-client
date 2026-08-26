@@ -43,6 +43,54 @@ class MainWindowTests(unittest.TestCase):
             ["customerId", "appId"],
         )
 
+    def test_all_supported_products_resolve_relative_api_origins(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        configuration = {
+            "zia/cloud": "zia.example.test", "zpa/cloud": "zpa.example.test", "zdx/cloud": "zdx.example.test",
+            "zcc/cloud": "zcc.example.test", "zidentity/domain": "id.example.test", "ztw/cloud": "ztw.example.test",
+            "zwa/cloud": "zwa.example.test", "easm/cloud": "easm.example.test", "oneapi/cloud": "beta",
+        }
+        previous = {key: settings.value(key, None) for key in configuration}
+        try:
+            for key, value in configuration.items():
+                settings.setValue(key, value)
+            expected = {
+                "ZIA": "https://zia.example.test", "ZPA": "https://zpa.example.test",
+                "ZDX": "https://zdx.example.test", "ZCC": "https://zcc.example.test",
+                "ZIdentity": "https://id.example.test", "ZTW": "https://ztw.example.test",
+                "ZWA": "https://zwa.example.test", "EASM": "https://easm.example.test",
+                "OneAPI": "https://api.beta.zsapi.net",
+            }
+            self.assertEqual(expected, {api: self.window._api_base_url(api) for api in expected})
+        finally:
+            for key, value in previous.items():
+                if value is None:
+                    settings.remove(key)
+                else:
+                    settings.setValue(key, value)
+
+    def test_manual_relative_request_uses_selected_product_origin(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        old_cloud, old_role = settings.value("zwa/cloud", None), settings.value("access/role", None)
+        try:
+            settings.setValue("zwa/cloud", "workflow.example.test")
+            settings.setValue("access/role", "admin")
+            if self.window.api_type.findText("ZWA") < 0:
+                self.window.api_type.addItem("ZWA")
+            self.window.api_type.setCurrentText("ZWA")
+            self.window.method_combo.setCurrentText("● GET")
+            self.window.url_input.setText("/api/v1/workflows")
+            with patch.object(client, "ApiWorker") as worker_type:
+                self.window._send_request()
+            request = worker_type.call_args.args[0][0]
+            self.assertEqual("https://workflow.example.test/api/v1/workflows", request["url"])
+        finally:
+            for key, value in (("zwa/cloud", old_cloud), ("access/role", old_role)):
+                if value is None:
+                    settings.remove(key)
+                else:
+                    settings.setValue(key, value)
+
     def test_workspace_has_explorer_editor_and_inspector(self):
         self.assertEqual(self.window.main_splitter.count(), 3)
         self.assertEqual(self.window.response_tabs.count(), 8)
