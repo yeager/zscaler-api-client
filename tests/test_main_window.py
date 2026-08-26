@@ -300,6 +300,20 @@ class MainWindowTests(unittest.TestCase):
                 else:
                     settings.setValue(key, value)
 
+    def test_clear_request_removes_all_derived_response_views(self):
+        self.window.url_input.setText("https://example.test")
+        self.window._populate_path_variables("https://example.test/users/{id}")
+        self.window._render_response_visualization({"items": [{"name": "Ada", "count": 3}]})
+        self.window._show_ai_visualization([{"name": "Ada", "count": 3}])
+        self.window.graphql_schema_tree.addTopLevelItem(client.QTreeWidgetItem(["User"]))
+        self.window._clear_request()
+        self.assertFalse(self.window.url_input.text())
+        self.assertEqual(0, self.window.variables_table.rowCount())
+        self.assertEqual(0, self.window.response_table.rowCount())
+        self.assertEqual([], self.window.response_chart.values)
+        self.assertEqual(0, self.window.graphql_schema_tree.topLevelItemCount())
+        self.assertEqual(0, self.window.ai_table.rowCount())
+
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")
         self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")

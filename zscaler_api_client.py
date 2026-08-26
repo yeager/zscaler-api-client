@@ -6532,14 +6532,26 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, self.tr("Warning"), self.tr("No response to copy"))
     
     def _clear_request(self):
-        """Clear all request fields."""
+        """Clear request input and every response-derived view as one unit."""
         self.url_input.clear()
         self.body_input.clear()
         self.params_table.clearContents()
         self.headers_table.clearContents()
+        self.variables_table.setRowCount(0)
         self.response_body.clear()
         self.response_headers.clear()
         self.response_info.clear()
+        self.response_tree.clear()
+        for table in (self.response_table, self.response_heatmap, self.ai_table):
+            table.clearContents()
+            table.setRowCount(0)
+            table.setColumnCount(0)
+        self.response_chart.set_values([])
+        self.response_topology.clear()
+        self.graphql_schema_tree.clear()
+        self.ai_chart.set_values([])
+        self.ai_preview.clear()
+        self.ai_summary.setText(self.tr("Ask in plain language. Sensitive values are masked before display or export."))
         self.help_text.clear()
         self.status_bar.showMessage(self.tr("Request cleared"))
     
