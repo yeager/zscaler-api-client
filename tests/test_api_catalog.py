@@ -58,8 +58,47 @@ class ApiCatalogTests(unittest.TestCase):
                 "url": "https://api.zsapi.net/zia/api/v1/users",
                 "description": "Returns users.",
                 "doc_url": "https://automate.zscaler.com/docs/list-users",
+                "parameters": [],
+                "response_codes": [],
             },
         )
+
+    def test_extracts_documented_request_preview_without_guessing(self):
+        document = {
+            "product": "zia",
+            "title": "Create resource",
+            "description": "Creates a resource.",
+            "file_path": "/docs/api-reference-and-guides/api-reference/zia/resources/create",
+            "url": "https://automate.zscaler.com/docs/create",
+            "updated_at": 1770000000,
+            "content": (
+                "Create resource POST https://api.zsapi.net/zia/api/v1/resources "
+                "Request Query Parameters enabled boolean required Enable it Default value: false "
+                "tag string Optional tag application/json Body name string required "
+                "Responses 201 400 401 Created application/json Schema id int64 "
+                "CURL Request Collapse all Base URL Edit https://api.zsapi.net/zia/api/v1 "
+                "Parameters Show optional parameters enabled — query --- true false "
+                "tag — query --- Body {\"name\":\"string\",\"enabled\":false}"
+            ),
+        }
+        endpoint = CATALOG_BUILDER.endpoint_from(document)
+        self.assertEqual(["201", "400", "401"], endpoint["response_codes"])
+        self.assertEqual("application/json", endpoint["request_content_type"])
+        self.assertEqual({"name": "string", "enabled": False}, endpoint["request_body"])
+        self.assertEqual(
+            {"name": "enabled", "in": "query", "type": "boolean", "required": True,
+             "default": "false", "description": "Enable it"},
+            endpoint["parameters"][0],
+        )
+        self.assertEqual("tag", endpoint["parameters"][1]["name"])
+        self.assertFalse(endpoint["parameters"][1]["required"])
+
+    def test_request_metadata_does_not_invent_missing_preview_fields(self):
+        metadata = CATALOG_BUILDER.request_metadata_from({
+            "content": "Operation GET https://api.zsapi.net/example Request userId string Responses 200 OK"
+        })
+        self.assertEqual([], metadata["parameters"])
+        self.assertNotIn("request_body", metadata)
 
     def test_extracts_documented_relative_oneapi_paths(self):
         cases = (
@@ -99,6 +138,11 @@ class ApiCatalogTests(unittest.TestCase):
         )
         self.assertTrue(all(entry["url"].startswith("https://") for entry in catalog))
         self.assertEqual(len(catalog), len({(entry["method"], entry["url"]) for entry in catalog}))
+        self.assertGreaterEqual(sum(bool(entry.get("parameters")) for entry in catalog), 650)
+        self.assertGreaterEqual(sum(len(entry.get("parameters", [])) for entry in catalog), 1700)
+        self.assertGreaterEqual(sum("request_body" in entry for entry in catalog), 225)
+        self.assertGreaterEqual(sum(bool(entry.get("response_codes")) for entry in catalog), 800)
+        self.assertTrue(all("documentation_updated_at" in entry for entry in catalog))
 
     def test_bundled_graphql_catalog_covers_all_documented_queries_and_types(self):
         catalog = json.loads((ROOT / "data" / "zscaler_graphql_catalog.json").read_text(encoding="utf-8"))

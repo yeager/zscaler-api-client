@@ -9,11 +9,14 @@ All notable changes to this project will be documented in this file.
 - Headless, network-free report execution with stable schedule IDs and automatic cleanup when schedules are paused or removed.
 - Guided GraphQL variable extraction, required/default metadata, typed JSON validation, multi-operation validation, and secure preset persistence.
 - JSON, raw text, URL-encoded form, and multipart file request modes plus byte-exact binary response downloads.
+- Documentation-derived request contracts for 1,000+ REST operations, including guided parameters, body templates, response codes, and AI-assisted contract loading.
 
 ### Security
 - Background reports reuse redacted local history, run without administrator privileges, and never receive API credentials.
 - ZIA session cookies and Client Connector JWTs are masked, kept in memory, and removed from the request editor immediately after authentication.
 - Multipart history stores only the selected filename and masked metadata, while binary exports require explicit confirmation and obey a configurable transfer limit.
+- Required documented query and header values are validated before execution; optional defaults are shown but never sent implicitly.
+- Double-clicking a documented write operation now prepares it for review instead of executing it; sending requires a separate explicit action.
 
 ### Fixed
 - Corrected ZIA `JSESSIONID`, Client Connector `jwtToken`/`auth-token`, URL-encoded ZPA credentials, and configurable ZDX v1/v2 authentication semantics against the official product guides.

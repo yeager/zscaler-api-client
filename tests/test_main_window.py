@@ -44,6 +44,49 @@ class MainWindowTests(unittest.TestCase):
             ["customerId", "appId"],
         )
 
+    def test_documented_rest_contract_populates_guide_and_blocks_missing_required_value(self):
+        details = {
+            "method": "POST", "path": "/zia/api/v1/resources", "absolute_url": "https://api.zsapi.net/zia/api/v1/resources",
+            "description": "Creates a resource", "doc_url": "https://automate.zscaler.com/docs/resource",
+            "request_content_type": "application/json", "body": {"name": "string"}, "response_codes": ["201", "400"],
+            "parameters": [
+                {"name": "tenant", "in": "query", "type": "string", "required": True, "default": "", "description": "Tenant name"},
+                {"name": "trace", "in": "query", "type": "boolean", "required": False, "default": "false", "description": "Trace request"},
+            ],
+        }
+        item = client.QTreeWidgetItem(["POST Create resource"])
+        item.setData(0, client.Qt.ItemDataRole.UserRole, details)
+        self.window._on_endpoint_selected(item, 0)
+        self.assertEqual("tenant", self.window.params_table.item(0, 0).text())
+        self.assertFalse(self.window.params_table.item(0, 1).text())
+        self.assertEqual(2, self.window.request_guide_table.rowCount())
+        self.assertEqual("false", self.window.request_guide_table.item(1, 4).text())
+        self.assertEqual({"name": "string"}, json.loads(self.window.body_input.toPlainText()))
+        self.assertEqual("Content-Type", self.window.headers_table.item(0, 0).text())
+        with patch.object(client, "ApiWorker") as worker, patch.object(client.QMessageBox, "warning") as warning:
+            self.window._send_request()
+        worker.assert_not_called(); warning.assert_called_once()
+        self.window.params_table.setItem(0, 1, client.QTableWidgetItem("soc"))
+        self.window.send_btn.setEnabled(True)
+        with patch.object(client, "ApiWorker") as worker:
+            self.window._send_request()
+        worker.assert_called_once()
+        self.window._detach_endpoint_contract()
+        self.assertIsNone(self.window._selected_endpoint_details)
+        self.assertIn("edited manually", self.window.request_guide_status.text())
+
+    def test_double_click_prepares_documented_write_without_sending(self):
+        details = {
+            "method": "DELETE", "path": "/zia/api/v1/users/:id", "absolute_url": "https://api.zsapi.net/zia/api/v1/users/:id",
+            "description": "Deletes a user", "doc_url": "", "parameters": [], "response_codes": ["204"],
+        }
+        item = client.QTreeWidgetItem(["DELETE User"]); item.setData(0, client.Qt.ItemDataRole.UserRole, details)
+        with patch.object(self.window, "_send_request") as send, patch.object(client.QMessageBox, "information") as information:
+            self.window._on_endpoint_double_clicked(item, 0)
+        send.assert_not_called(); information.assert_called_once()
+        self.assertEqual("DELETE", self.window.method_combo.currentText().replace("● ", ""))
+        self.assertEqual(1, self.window.variables_table.rowCount())
+
     def test_all_supported_products_resolve_relative_api_origins(self):
         settings = client.QSettings("Zscaler", "APIClient")
         configuration = {
@@ -188,7 +231,7 @@ class MainWindowTests(unittest.TestCase):
     def test_workspace_has_explorer_editor_and_inspector(self):
         self.assertEqual(self.window.main_splitter.count(), 3)
         self.assertEqual(self.window.response_tabs.count(), 8)
-        self.assertEqual(self.window.request_tabs.count(), 5)
+        self.assertEqual(self.window.request_tabs.count(), 6)
         self.assertFalse(self.window.request_tabs.isTabVisible(self.window.graphql_variables_tab_index))
         self.window.graphql_mode.setChecked(True)
         self.assertTrue(self.window.request_tabs.isTabVisible(self.window.graphql_variables_tab_index))
@@ -391,6 +434,30 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(self.window._graphql_variable_editor_texts(), {"id": "legacy-user"})
         self.assertEqual(self.window._table_values(self.window.params_table), {"trace": "true"})
         settings.remove("graphql/presets")
+
+    def test_catalog_ai_attaches_documented_contract_and_never_invents_parameters(self):
+        endpoint = {
+            "product": "zia", "category": "Users", "name": "List users", "description": "Lists users",
+            "method": "GET", "url": "https://api.zsapi.net/zia/api/v1/users", "doc_url": "https://automate.zscaler.com/docs/users",
+            "parameters": [{"name": "limit", "in": "query", "type": "int32", "required": False, "default": "", "description": "Maximum results"}],
+            "response_codes": ["200"],
+        }
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("ai/provider", None)
+        try:
+            settings.setValue("ai/provider", "catalog")
+            self.window.ai_question.setText("list all zia users with pagination")
+            with patch.object(client, "AUTOMATION_HUB_CATALOG", [endpoint]), patch.object(client, "ApiWorker") as worker:
+                self.window._run_ai_assistant()
+            worker.assert_not_called()
+            preview = json.loads(self.window.ai_preview.toPlainText())
+            self.assertEqual({"limit": "100"}, preview["suggested_params"])
+            self.assertNotIn("pageSize", preview["suggested_params"])
+            self.assertEqual("limit", self.window.params_table.item(0, 0).text())
+            self.assertEqual(1, self.window.request_guide_table.rowCount())
+            self.assertIsNotNone(self.window._selected_endpoint_details)
+        finally:
+            settings.remove("ai/provider") if previous is None else settings.setValue("ai/provider", previous)
 
     def test_graphql_variables_are_typed_and_sent_in_body_not_url(self):
         query = "query Lookup($id: ID!, $limit: Int!, $active: Boolean, $tags: [String!]) { user(id: $id) { id } }"

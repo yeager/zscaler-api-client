@@ -2629,6 +2629,24 @@ def _load_graphql_catalog() -> List[Dict[str, Any]]:
         return []
 
 
+def _automation_entry_details(entry: Dict[str, Any]) -> Dict[str, Any]:
+    """Convert one bundled Automation Hub operation into request-editor data."""
+    details = {
+        "method": entry["method"],
+        "path": urllib.parse.urlsplit(entry["url"]).path,
+        "absolute_url": entry["url"],
+        "description": entry.get("description", ""),
+        "doc_url": entry.get("doc_url", ""),
+        "parameters": entry.get("parameters", []),
+        "response_codes": entry.get("response_codes", []),
+        "request_content_type": entry.get("request_content_type", ""),
+        "documentation_updated_at": entry.get("documentation_updated_at", ""),
+    }
+    if "request_body" in entry:
+        details["body"] = entry["request_body"]
+    return details
+
+
 def _load_automation_hub_endpoints() -> Dict[str, Dict[str, Dict[str, Any]]]:
     """Load every usable REST endpoint published by Automation Hub."""
     catalog = AUTOMATION_HUB_CATALOG
@@ -2640,13 +2658,7 @@ def _load_automation_hub_endpoints() -> Dict[str, Dict[str, Dict[str, Any]]]:
         product = entry.get("product", "other").upper()
         category = entry.get("category", "Other")
         group = f"{product} · {category}"
-        details = {
-            "method": entry["method"],
-            "path": urllib.parse.urlsplit(entry["url"]).path,
-            "absolute_url": entry["url"],
-            "description": entry.get("description", ""),
-            "doc_url": entry.get("doc_url", ""),
-        }
+        details = _automation_entry_details(entry)
         group_items = endpoints.setdefault(group, {})
         base_name = entry["name"]
         name = base_name
@@ -5863,6 +5875,7 @@ class MainWindow(QMainWindow):
         self._binary_response: bytes | None = None
         self._binary_response_name = "response.bin"
         self._binary_response_type = "application/octet-stream"
+        self._selected_endpoint_details: dict[str, Any] | None = None
         
         self._setup_ui()
         self._setup_menu()
@@ -6009,6 +6022,7 @@ class MainWindow(QMainWindow):
         
         self.url_input = QLineEdit()
         self.url_input.setPlaceholderText(self.tr("Enter URL or select endpoint..."))
+        self.url_input.textEdited.connect(self._detach_endpoint_contract)
         url_layout.addWidget(self.url_input)
         
         self.send_btn = QPushButton(self.tr("Send"))
@@ -6149,6 +6163,21 @@ class MainWindow(QMainWindow):
         self.variables_table.horizontalHeader().setStretchLastSection(True)
         variables_layout.addWidget(self.variables_table)
         self.path_variables_tab_index = self.request_tabs.addTab(variables_widget, self.tr("Path Variables"))
+
+        guide_widget = QWidget()
+        guide_layout = QVBoxLayout(guide_widget)
+        self.request_guide_status = QLabel(self.tr("Select a documented endpoint to inspect its request contract."))
+        self.request_guide_status.setWordWrap(True)
+        guide_layout.addWidget(self.request_guide_status)
+        self.request_guide_table = QTableWidget(0, 6)
+        self.request_guide_table.setHorizontalHeaderLabels([
+            self.tr("Location"), self.tr("Name"), self.tr("Type"), self.tr("Required"),
+            self.tr("Default"), self.tr("Description"),
+        ])
+        self.request_guide_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.request_guide_table.horizontalHeader().setStretchLastSection(True)
+        guide_layout.addWidget(self.request_guide_table)
+        self.api_guide_tab_index = self.request_tabs.addTab(guide_widget, self.tr("API Guide"))
         self._on_graphql_mode_toggled(False)
         
         request_layout.addWidget(self.request_tabs)
@@ -6538,6 +6567,7 @@ class MainWindow(QMainWindow):
         details = item.data(0, Qt.ItemDataRole.UserRole)
         if not details:
             return
+        self._selected_endpoint_details = details
         
         # Update request
         self.graphql_mode.setChecked(False)
@@ -6632,23 +6662,94 @@ class MainWindow(QMainWindow):
         # Update body if present
         if "body" in details:
             self.body_input.setPlainText(json.dumps(details["body"], indent=2))
+            content_type = str(details.get("request_content_type") or "application/json")
+            if content_type == "application/x-www-form-urlencoded":
+                self._set_body_mode("form")
+            elif content_type == "multipart/form-data":
+                self._set_body_mode("multipart")
+            else:
+                self._set_body_mode("json")
             self.request_tabs.setCurrentIndex(2)  # Body tab
         else:
             self.body_input.clear()
         
-        # Update params
+        # Populate only explicitly documented request parameters. Optional
+        # defaults remain visible in the guide but are not sent implicitly.
         self.params_table.clearContents()
-        if "params" in details:
-            for row, (key, value) in enumerate(details["params"].items()):
-                if row < self.params_table.rowCount():
-                    self.params_table.setItem(row, 0, QTableWidgetItem(key))
-                    self.params_table.setItem(row, 1, QTableWidgetItem(value))
+        self.headers_table.clearContents()
+        parameters = details.get("parameters", []) if isinstance(details.get("parameters", []), list) else []
+        query_parameters = [parameter for parameter in parameters if parameter.get("in") == "query"]
+        header_parameters = [parameter for parameter in parameters if parameter.get("in") == "header"]
+        self.params_table.setRowCount(max(12, len(query_parameters)))
+        self.headers_table.setRowCount(max(12, len(header_parameters) + (1 if details.get("body") is not None else 0)))
+        for row, parameter in enumerate(query_parameters):
+            name_item = QTableWidgetItem(str(parameter.get("name", "")))
+            name_item.setToolTip(str(parameter.get("description", "")))
+            if parameter.get("required"):
+                font = name_item.font(); font.setBold(True); name_item.setFont(font)
+            self.params_table.setItem(row, 0, name_item)
+            value_item = QTableWidgetItem("")
+            value_item.setToolTip(self.tr("Required value") if parameter.get("required") else self.tr("Optional value"))
+            self.params_table.setItem(row, 1, value_item)
+        header_row = 0
+        if details.get("body") is not None:
+            self.headers_table.setItem(header_row, 0, QTableWidgetItem("Content-Type"))
+            self.headers_table.setItem(header_row, 1, QTableWidgetItem(str(details.get("request_content_type") or "application/json")))
+            header_row += 1
+        for parameter in header_parameters:
+            name_item = QTableWidgetItem(str(parameter.get("name", "")))
+            name_item.setToolTip(str(parameter.get("description", "")))
+            if parameter.get("required"):
+                font = name_item.font(); font.setBold(True); name_item.setFont(font)
+            self.headers_table.setItem(header_row, 0, name_item)
+            value_item = QTableWidgetItem("")
+            value_item.setToolTip(self.tr("Required value") if parameter.get("required") else self.tr("Optional value"))
+            self.headers_table.setItem(header_row, 1, value_item)
+            header_row += 1
+        if not parameters and "params" in details:
+            self._populate_table(self.params_table, details["params"])
+        self._populate_api_guide(details)
         
         # Update help with documentation link
-        doc_url = details.get("doc_url", "")
-        doc_link = f"<br><br><a href='{doc_url}'>📖 View Documentation</a>" if doc_url else ""
-        self.help_text.setText(f"<b>{item.text(0)}</b><br><br>{details['description']}{doc_link}")
+        doc_url = html.escape(str(details.get("doc_url", "")), quote=True)
+        doc_link = f"<br><br><a href='{doc_url}'>📖 {self.tr('View Documentation')}</a>" if doc_url else ""
+        response_codes = ", ".join(map(str, details.get("response_codes", [])))
+        responses = f"<br><br><b>{self.tr('Documented response codes')}:</b> {html.escape(response_codes)}" if response_codes else ""
+        self.help_text.setText(
+            f"<b>{html.escape(item.text(0))}</b><br><br>"
+            f"{html.escape(str(details.get('description', '')))}{responses}{doc_link}"
+        )
         self.help_text.setOpenExternalLinks(True)
+
+    def _populate_api_guide(self, details: dict):
+        """Render the documentation-derived request contract without making guesses."""
+        parameters = details.get("parameters", []) if isinstance(details.get("parameters", []), list) else []
+        self.request_guide_table.setRowCount(len(parameters))
+        for row, parameter in enumerate(parameters):
+            values = (
+                str(parameter.get("in", "")), str(parameter.get("name", "")),
+                str(parameter.get("type", "")), self.tr("Yes") if parameter.get("required") else self.tr("No"),
+                str(parameter.get("default", "")), str(parameter.get("description", "")),
+            )
+            for column, value in enumerate(values):
+                self.request_guide_table.setItem(row, column, QTableWidgetItem(value))
+        self.request_guide_table.resizeColumnsToContents()
+        for column, maximum in enumerate((90, 220, 100, 90, 120)):
+            self.request_guide_table.setColumnWidth(column, min(maximum, max(70, self.request_guide_table.columnWidth(column))))
+        body_text = self.tr("body template available") if "body" in details else self.tr("no body template")
+        codes = ", ".join(map(str, details.get("response_codes", []))) or self.tr("not listed")
+        self.request_guide_status.setText(
+            self.tr("{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.").format(
+                count=len(parameters), body=body_text, codes=codes,
+            )
+        )
+
+    def _detach_endpoint_contract(self, text: str = ""):
+        """Stop enforcing stale metadata after the user manually changes the URL."""
+        if self._selected_endpoint_details is None:
+            return
+        self._selected_endpoint_details = None
+        self.request_guide_status.setText(self.tr("The URL was edited manually. Select an endpoint again to attach its documented request contract."))
 
     def _populate_path_variables(self, url: str):
         """Populate editable values for placeholders in an endpoint URL."""
@@ -6782,11 +6883,17 @@ class MainWindow(QMainWindow):
         self.endpoint_count.setText(label.format(count=visible_count))
 
     def _on_endpoint_double_clicked(self, item, column: int):
-        """Double-click an endpoint to select and send."""
+        """Run reads quickly, but require a separate action for every write."""
         details = item.data(0, Qt.ItemDataRole.UserRole)
         if not details:
             return
         self._on_endpoint_selected(item, column)
+        if str(details.get("method", "")).upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+            QMessageBox.information(
+                self, self.tr("Write request prepared"),
+                self.tr("The documented write template is ready. Review the API Guide, parameters, and body, then choose Send explicitly."),
+            )
+            return
         self._send_request()
 
     def _load_wizard_request(self, method: str, url: str, task_name: str):
@@ -7075,10 +7182,10 @@ class MainWindow(QMainWindow):
             self.ai_table.setRowCount(0)
             return
         best = matches[0]
-        self.method_combo.setCurrentText(f"● {best['method']}")
-        self.url_input.setText(best["url"])
-        self._populate_path_variables(best["url"])
-        summary = self.tr("Suggested request: {method} {name}. Review path variables before running.").format(method=best["method"], name=best["name"])
+        request_item = QTreeWidgetItem([f"{best['method']} {best['name']}"])
+        request_item.setData(0, Qt.ItemDataRole.UserRole, _automation_entry_details(best))
+        self._on_endpoint_selected(request_item, 0)
+        summary = self.tr("Suggested request: {method} {name}. Review the attached API Guide and all template values before running.").format(method=best["method"], name=best["name"])
         if provider in {"openai", "local"}:
             summary = f"{summary}\n\n{self.tr('Asking configured LLM…') }"
             self.ai_llm_worker = LlmWorker(lambda: self._ask_configured_llm(question, matches[:5]))
@@ -7095,11 +7202,29 @@ class MainWindow(QMainWindow):
         self.ai_table.resizeColumnsToContents()
         self._log_output(f"AI catalog match: {best['method']} {redact_url(best['url'])}", "info")
         suggestions = {}
+        documented_query = {
+            str(parameter.get("name", "")).lower(): str(parameter.get("name", ""))
+            for parameter in best.get("parameters", []) if parameter.get("in") == "query"
+        }
         if any(token in words for token in {"all", "many", "page", "pagination", "limit"}):
-            suggestions["pageSize"] = "100"
+            for candidate in ("pagesize", "page_size", "limit", "size"):
+                if candidate in documented_query:
+                    suggestions[documented_query[candidate]] = "100"
+                    break
         if "filter" in words or "search" in words:
-            suggestions["search"] = "<review-required>"
-        self.ai_preview.setPlainText(json.dumps(redact_sensitive({"method": best["method"], "url": best["url"], "suggested_params": suggestions}), indent=2))
+            for candidate in ("search", "filter", "query", "q"):
+                if candidate in documented_query:
+                    suggestions[documented_query[candidate]] = "<review-required>"
+                    break
+        preview = {
+            "method": best["method"], "url": best["url"],
+            "documented_parameters": best.get("parameters", []),
+            "suggested_params": suggestions,
+            "response_codes": best.get("response_codes", []),
+        }
+        if "request_body" in best:
+            preview["body_template"] = best["request_body"]
+        self.ai_preview.setPlainText(json.dumps(redact_sensitive(preview), indent=2))
 
     def _review_ai_request(self):
         """Require a human acknowledgement before executing an AI-derived request."""
@@ -7966,6 +8091,21 @@ class MainWindow(QMainWindow):
             value_item = self.params_table.item(row, 1)
             if key_item and value_item and key_item.text() and value_item.text():
                 params[key_item.text()] = value_item.text()
+
+        details = self._selected_endpoint_details or {}
+        documented = details.get("parameters", []) if isinstance(details.get("parameters", []), list) else []
+        required_query = [str(item.get("name", "")) for item in documented if item.get("in") == "query" and item.get("required")]
+        required_headers = [str(item.get("name", "")) for item in documented if item.get("in") == "header" and item.get("required")]
+        missing_query = [name for name in required_query if not str(params.get(name, "")).strip()]
+        header_names = {str(key).lower(): value for key, value in headers.items()}
+        missing_headers = [name for name in required_headers if not str(header_names.get(name.lower(), "")).strip()]
+        if missing_query or missing_headers:
+            self.request_tabs.setCurrentIndex(0 if missing_query else 1)
+            QMessageBox.warning(
+                self, self.tr("Missing documented parameters"),
+                self.tr("Enter required values for: {names}").format(names=", ".join(missing_query + missing_headers)),
+            )
+            return
         
         if params:
             url += "?" + urllib.parse.urlencode(params)
@@ -8474,6 +8614,9 @@ class MainWindow(QMainWindow):
         self.variables_table.setRowCount(0)
         self.graphql_variables_table.setRowCount(0)
         self.graphql_variables_status.setText(self.tr("No GraphQL variables extracted."))
+        self._selected_endpoint_details = None
+        self.request_guide_table.setRowCount(0)
+        self.request_guide_status.setText(self.tr("Select a documented endpoint to inspect its request contract."))
         self.graphql_mode.setChecked(False)
         self.response_body.clear()
         self.response_headers.clear()

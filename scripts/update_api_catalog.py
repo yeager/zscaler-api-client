@@ -46,6 +46,14 @@ ONEAPI_PRODUCT_BASES = {
 }
 GRAPHQL_ENDPOINT = "https://api.zsapi.net/zins/graphql"
 GRAPHQL_QUERY = re.compile(r"\bQUERY\s+(query\b.+?)\s+RESPONSE\b", re.IGNORECASE | re.DOTALL)
+PREVIEW_PARAMETER = re.compile(
+    r"([A-Za-z][A-Za-z0-9_.\[\]-]*)\s+—\s+(query|path|header|cookie)\b",
+    re.IGNORECASE,
+)
+PARAMETER_TYPE = re.compile(
+    r"\b(string|boolean|integer|number|object|array|int32|int64|float|double|date|date-time|binary)(\[\])?\b",
+    re.IGNORECASE,
+)
 
 
 def fetch_page(page: int) -> dict:
@@ -75,7 +83,7 @@ def endpoint_from(document: dict) -> dict | None:
             return None
         method, path = relative.groups()
         url = base.rstrip("/") + "/" + path.lstrip("/")
-    return {
+    endpoint = {
         "product": document.get("product") or "other",
         "category": category_from(document),
         "name": document.get("title") or document.get("description") or url,
@@ -84,6 +92,92 @@ def endpoint_from(document: dict) -> dict | None:
         "description": document.get("description") or "",
         "doc_url": document.get("url") or "",
     }
+    endpoint.update(request_metadata_from(document))
+    return endpoint
+
+
+def _json_value_after(text: str, marker: str) -> object | None:
+    """Decode the first balanced JSON value after the final preview marker."""
+    marker_at = text.rfind(marker)
+    if marker_at < 0:
+        return None
+    tail = text[marker_at + len(marker):].lstrip()
+    decoder = json.JSONDecoder()
+    for position, character in enumerate(tail):
+        if character not in "[{":
+            continue
+        try:
+            value, _ = decoder.raw_decode(tail[position:])
+            return value
+        except json.JSONDecodeError:
+            continue
+    return None
+
+
+def request_metadata_from(document: dict) -> dict:
+    """Extract only explicit Automation Hub request-preview metadata.
+
+    Operation pages expose a flattened, interactive ``CURL Request`` preview.
+    Its location labels and balanced JSON example are substantially safer than
+    guessing parameters from prose or response schemas.
+    """
+    content = str(document.get("content") or "")
+    result = {"parameters": [], "response_codes": []}
+    if document.get("updated_at"):
+        result["documentation_updated_at"] = document["updated_at"]
+
+    response_section = content.split("Responses", 1)[1][:180] if "Responses" in content else ""
+    result["response_codes"] = list(dict.fromkeys(re.findall(r"\b[1-5]\d\d\b", response_section)))
+    if "CURL Request" not in content:
+        return result
+
+    preview = content.rsplit("CURL Request", 1)[1]
+    request_section = content.split("Request", 1)[1].split("Responses", 1)[0] if "Request" in content else ""
+    preview_parameters = list(PREVIEW_PARAMETER.finditer(preview))
+    for index, match in enumerate(preview_parameters):
+        name, location = match.group(1), match.group(2).lower()
+        definition = re.search(rf"\b{re.escape(name)}\s+", request_section)
+        parameter_type, required, default, description = "", False, "", ""
+        if definition:
+            next_definition = len(request_section)
+            for later in preview_parameters[index + 1:]:
+                candidate = re.search(rf"\b{re.escape(later.group(1))}\s+", request_section[definition.end():])
+                if candidate:
+                    next_definition = definition.end() + candidate.start()
+                    break
+            fragment = request_section[definition.end():next_definition]
+            type_match = PARAMETER_TYPE.match(fragment.strip())
+            if type_match:
+                parameter_type = type_match.group(1).lower() + (type_match.group(2) or "")
+                details = fragment.strip()[type_match.end():].strip()
+                required = bool(re.match(r"required\b", details, re.IGNORECASE))
+                if required:
+                    details = re.sub(r"^required\b", "", details, flags=re.IGNORECASE).strip()
+                default_match = re.search(r"\bDefault value:\s*([^\s]+)", details, re.IGNORECASE)
+                if default_match:
+                    default = default_match.group(1).strip(".,")
+                    details = details[:default_match.start()].strip()
+                description = re.sub(r"\s+", " ", details).strip()[:600]
+        result["parameters"].append({
+            "name": name,
+            "in": location,
+            "type": parameter_type,
+            "required": required or location == "path",
+            "default": default,
+            "description": description,
+        })
+
+    body = _json_value_after(preview, " Body ")
+    if body is not None:
+        result["request_body"] = body
+        request_lower = request_section.lower()
+        if "multipart/form-data" in request_lower:
+            result["request_content_type"] = "multipart/form-data"
+        elif "application/x-www-form-urlencoded" in request_lower:
+            result["request_content_type"] = "application/x-www-form-urlencoded"
+        else:
+            result["request_content_type"] = "application/json"
+    return result
 
 
 def product_base(document: dict) -> str:
