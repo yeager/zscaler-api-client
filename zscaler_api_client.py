@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -4308,9 +4308,18 @@ class OperationsDialog(QDialog):
         schedule = QPushButton(self.tr("Schedule report")); schedule.clicked.connect(self.configure_schedule); audit_controls.addWidget(schedule)
         bundle = QPushButton(self.tr("Create redacted support bundle")); bundle.clicked.connect(self.create_support_bundle); audit_controls.addWidget(bundle)
         audit_layout.addLayout(audit_controls); self.tabs.addTab(audit_page, self.tr("Audit & automation"))
+
+        posture_page = QWidget(); posture_layout = QVBoxLayout(posture_page)
+        posture_intro = QLabel(self.tr("Local security posture uses redacted request history and audit integrity. It is an operational signal, not a tenant security assessment.")); posture_intro.setWordWrap(True); posture_layout.addWidget(posture_intro)
+        self.posture_score = QLabel("—"); self.posture_score.setObjectName("sectionTitle")
+        score_font = self.posture_score.font(); score_font.setPointSize(28); score_font.setBold(True); self.posture_score.setFont(score_font); posture_layout.addWidget(self.posture_score)
+        self.posture_chart = NumericBarChart(); posture_layout.addWidget(self.posture_chart)
+        self.posture_findings = QTableWidget(0, 3); self.posture_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Finding"), self.tr("Details")]); self.posture_findings.horizontalHeader().setStretchLastSection(True); self.posture_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); posture_layout.addWidget(self.posture_findings)
+        posture_refresh = QPushButton(self.tr("Refresh security posture")); posture_refresh.clicked.connect(self.refresh_posture); posture_layout.addWidget(posture_refresh)
+        self.posture_tab_index = self.tabs.addTab(posture_page, self.tr("Security posture"))
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
-        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations()
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture()
 
     def _json(self, editor, fallback):
         try: return json.loads(editor.toPlainText() or fallback)
@@ -4336,6 +4345,28 @@ class OperationsDialog(QDialog):
             self.dashboard_events.setItem(row, 0, QTableWidgetItem(timestamp))
             self.dashboard_events.setItem(row, 1, QTableWidgetItem(event.get("action", "")))
             self.dashboard_events.setItem(row, 2, QTableWidgetItem("✓" if valid else "!"))
+
+    def refresh_posture(self):
+        posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
+        self.posture_score.setText(self.tr("Posture score: {score}/100").format(score=posture["score"]))
+        severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
+        labels = [(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()]
+        self.posture_chart.set_values(labels)
+        wording = {
+            "audit_integrity": (self.tr("Audit integrity needs review"), self.tr("The local audit chain did not verify.")),
+            "repeated_failures": (self.tr("Repeated API failures"), self.tr("{count} failed requests are in local history.")),
+            "api_failures": (self.tr("API failures observed"), self.tr("{count} request(s) need review.")),
+            "change_burst": (self.tr("Change activity burst"), self.tr("{count} write requests are in local history.")),
+            "slow_responses": (self.tr("Slow API responses"), self.tr("{count} request(s) took ten seconds or more.")),
+            "no_telemetry": (self.tr("No local telemetry yet"), self.tr("Send or import redacted requests to establish a local baseline.")),
+        }
+        findings = posture["findings"]
+        self.posture_findings.setRowCount(len(findings))
+        for row, finding in enumerate(findings):
+            title, detail = wording[finding["code"]]
+            self.posture_findings.setItem(row, 0, QTableWidgetItem(severity_labels[finding["severity"]]))
+            self.posture_findings.setItem(row, 1, QTableWidgetItem(title))
+            self.posture_findings.setItem(row, 2, QTableWidgetItem(detail.format(count=finding["count"])))
 
     def compare_policies(self):
         try:

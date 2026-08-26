@@ -335,6 +335,13 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(0, self.window.graphql_schema_tree.topLevelItemCount())
         self.assertEqual(0, self.window.ai_table.rowCount())
 
+    def test_operations_security_posture_is_visualized_from_local_history(self):
+        self.window.request_history = [{"method": "GET", "status": 500, "duration_ms": 11_000}] * 3
+        dialog = client.OperationsDialog(self.window)
+        self.assertIn("Posture score:", dialog.posture_score.text())
+        self.assertGreater(dialog.posture_findings.rowCount(), 0)
+        dialog.close()
+
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")
         self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")

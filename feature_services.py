@@ -204,3 +204,40 @@ def compliance_findings(policy: Any) -> list[dict[str, str]]:
         if rule.get("enabled") is False:
             findings.append({"severity": "info", "rule": str(rule.get("name", index)), "message": "Rule is disabled"})
     return findings
+
+
+def security_posture(history: Iterable[dict[str, Any]], audit_valid: bool) -> dict[str, Any]:
+    """Summarize local request history into transparent posture findings.
+
+    This deliberately relies on the client-side, already-redacted history.  It
+    is an operational signal for review, not a claim about tenant security.
+    """
+    events = list(history)
+    failed = [item for item in events if not str(item.get("status", "")).startswith("2")]
+    writes = [item for item in events if str(item.get("method", "")).upper() in {"POST", "PUT", "PATCH", "DELETE"}]
+    slow = [item for item in events if int(item.get("duration_ms") or 0) >= 10_000]
+    findings: list[dict[str, Any]] = []
+    if not audit_valid:
+        findings.append({"severity": "critical", "code": "audit_integrity", "count": 0})
+    if len(failed) >= 3:
+        findings.append({"severity": "high", "code": "repeated_failures", "count": len(failed)})
+    elif failed:
+        findings.append({"severity": "medium", "code": "api_failures", "count": len(failed)})
+    if len(writes) >= 5:
+        findings.append({"severity": "medium", "code": "change_burst", "count": len(writes)})
+    if slow:
+        findings.append({"severity": "low", "code": "slow_responses", "count": len(slow)})
+    if not events:
+        findings.append({"severity": "info", "code": "no_telemetry", "count": 0})
+    penalties = min(45, len(failed) * 10) + min(20, max(0, len(writes) - 4) * 4) + min(10, len(slow) * 2)
+    if not audit_valid:
+        penalties += 25
+    score = max(0, 100 - penalties)
+    severity_counts = {level: sum(1 for finding in findings if finding["severity"] == level)
+                       for level in ("critical", "high", "medium", "low", "info")}
+    return {
+        "score": score,
+        "findings": findings,
+        "severity_counts": severity_counts,
+        "metrics": {"requests": len(events), "failed": len(failed), "writes": len(writes), "slow": len(slow)},
+    }

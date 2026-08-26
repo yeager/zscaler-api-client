@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture
 
 
 class MemorySettings:
@@ -47,6 +47,19 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertEqual("PUT", update["requests"][0]["method"])
         self.assertEqual({"department": "Engineering"}, update["requests"][0]["body"])
         self.assertFalse(build_batch_plan("zia_update_users", [{"id": "user/a"}])["valid"])
+
+    def test_security_posture_is_local_and_flags_executable_anomalies(self):
+        posture = security_posture([
+            {"method": "GET", "status": 500, "duration_ms": 11_000},
+            {"method": "POST", "status": 401},
+            {"method": "DELETE", "status": 0},
+            {"method": "PATCH", "status": 200},
+            {"method": "PUT", "status": 200},
+            {"method": "POST", "status": 200},
+        ], audit_valid=False)
+        self.assertLess(posture["score"], 100)
+        self.assertEqual(1, posture["severity_counts"]["critical"])
+        self.assertTrue(any(item["code"] == "repeated_failures" for item in posture["findings"]))
 
     def test_audit_trail_is_hash_linked(self):
         settings = MemorySettings(); trail = AuditTrail(settings)
