@@ -4506,6 +4506,21 @@ class OperationsDialog(QDialog):
         self.report_preview = QPlainTextEdit(); self.report_preview.setReadOnly(True); reports_layout.addWidget(self.report_preview)
         report_actions = QHBoxLayout(); report_markdown = QPushButton(self.tr("Export report as Markdown")); report_markdown.clicked.connect(lambda: self.export_report("markdown")); report_actions.addWidget(report_markdown)
         report_json = QPushButton(self.tr("Export report as JSON")); report_json.clicked.connect(lambda: self.export_report("json")); report_actions.addWidget(report_json); report_actions.addStretch(); reports_layout.addLayout(report_actions)
+        reports_layout.addWidget(QLabel(self.tr("Scheduled reports")))
+        self.report_schedules = QTableWidget(0, 5)
+        self.report_schedules.setHorizontalHeaderLabels([self.tr("Name"), self.tr("Type"), self.tr("Cadence"), self.tr("Next run"), self.tr("Status")])
+        self.report_schedules.horizontalHeader().setStretchLastSection(True)
+        self.report_schedules.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.report_schedules.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.report_schedules.setMaximumHeight(155)
+        reports_layout.addWidget(self.report_schedules)
+        schedule_actions = QHBoxLayout()
+        create_schedule = QPushButton(self.tr("Schedule report")); create_schedule.clicked.connect(self.configure_schedule); schedule_actions.addWidget(create_schedule)
+        run_schedule = QPushButton(self.tr("Run selected now")); run_schedule.clicked.connect(self.run_selected_schedule); schedule_actions.addWidget(run_schedule)
+        toggle_schedule = QPushButton(self.tr("Enable or pause")); toggle_schedule.clicked.connect(self.toggle_selected_schedule); schedule_actions.addWidget(toggle_schedule)
+        remove_schedule = QPushButton(self.tr("Remove schedule")); remove_schedule.clicked.connect(self.remove_selected_schedule); schedule_actions.addWidget(remove_schedule)
+        refresh_schedules = QPushButton(self.tr("Refresh schedules")); refresh_schedules.clicked.connect(self.refresh_schedules); schedule_actions.addWidget(refresh_schedules)
+        schedule_actions.addStretch(); reports_layout.addLayout(schedule_actions)
         self.reports_tab_index = self.tabs.addTab(reports_page, self.tr("Reports"))
 
         chain_page = QWidget(); chain_layout = QVBoxLayout(chain_page)
@@ -4522,7 +4537,7 @@ class OperationsDialog(QDialog):
         self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
-        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report(); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report(); self.refresh_schedules(); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
 
     def _apply_operations_mode(self):
         """Keep basic mode focused on situational awareness and investigation."""
@@ -5008,6 +5023,71 @@ class OperationsDialog(QDialog):
             self.audit_timeline.setItem(row, 1, QTableWidgetItem(event.get("action", "")))
             self.audit_timeline.setItem(row, 2, QTableWidgetItem(json.dumps(event.get("details", {}), ensure_ascii=False)))
 
+    def refresh_schedules(self):
+        schedules = self.window._report_schedules()
+        type_labels = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}
+        cadence_labels = {3600: self.tr("Hourly"), 86400: self.tr("Daily"), 604800: self.tr("Weekly")}
+        self.report_schedules.setRowCount(len(schedules))
+        for row, schedule in enumerate(schedules):
+            try:
+                cadence = int(schedule.get("cadence_seconds", 86400))
+            except (TypeError, ValueError):
+                cadence = 86400
+            try:
+                next_run = int(schedule.get("next_run", 0))
+            except (TypeError, ValueError):
+                next_run = 0
+            values = (
+                str(schedule.get("name", "")), type_labels.get(str(schedule.get("kind", "ciso")), type_labels["ciso"]),
+                cadence_labels.get(cadence, f"{cadence // 3600} h"),
+                time.strftime("%Y-%m-%d %H:%M", time.localtime(next_run)) if next_run else "—",
+                self.tr("Enabled") if schedule.get("enabled", True) else self.tr("Paused"),
+            )
+            for column, value in enumerate(values):
+                self.report_schedules.setItem(row, column, QTableWidgetItem(value))
+
+    def _selected_schedule_row(self):
+        row = self.report_schedules.currentRow()
+        schedules = self.window._report_schedules()
+        if row < 0 or row >= len(schedules):
+            QMessageBox.information(self, self.tr("Scheduled report"), self.tr("Select a scheduled report first."))
+            return -1, schedules
+        return row, schedules
+
+    def run_selected_schedule(self):
+        row, schedules = self._selected_schedule_row()
+        if row < 0:
+            return
+        now = int(time.time())
+        schedules[row]["next_run"] = now
+        self.settings.setValue("automation/schedules", json.dumps(schedules))
+        generated = self.window._run_due_report_schedules(now, selected_index=row)
+        self.refresh_schedules(); self.refresh_audit()
+        if generated:
+            QMessageBox.information(self, self.tr("Scheduled report"), self.tr("The scheduled report was generated locally."))
+        else:
+            QMessageBox.warning(self, self.tr("Scheduled report"), self.tr("The scheduled report could not be generated. Check its output folder and the audit trail."))
+
+    def toggle_selected_schedule(self):
+        row, schedules = self._selected_schedule_row()
+        if row < 0:
+            return
+        schedules[row]["enabled"] = not schedules[row].get("enabled", True)
+        self.settings.setValue("automation/schedules", json.dumps(schedules))
+        AuditTrail(self.settings).append("scheduled_report_toggled", {"name": str(schedules[row].get("name", "")), "enabled": schedules[row]["enabled"]})
+        self.refresh_schedules(); self.refresh_audit()
+
+    def remove_selected_schedule(self):
+        row, schedules = self._selected_schedule_row()
+        if row < 0:
+            return
+        if QMessageBox.question(self, self.tr("Scheduled report"), self.tr("Remove the selected scheduled report?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
+            return
+        removed = schedules.pop(row)
+        self.settings.setValue("automation/schedules", json.dumps(schedules))
+        AuditTrail(self.settings).append("scheduled_report_removed", {"name": str(removed.get("name", ""))})
+        self.refresh_schedules(); self.refresh_audit()
+
     def configure_schedule(self):
         name, ok = QInputDialog.getText(self, self.tr("Scheduled report"), self.tr("Report name:"), text=self.tr("CISO security summary"))
         if not ok or not name.strip():
@@ -5030,7 +5110,7 @@ class OperationsDialog(QDialog):
         AuditTrail(self.settings).append("scheduled_report_created", {
             "name": name.strip(), "kind": self.report_type.currentData(), "cadence_seconds": cadence_seconds,
         })
-        self.refresh_dashboard(); self.refresh_audit()
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_schedules()
         QMessageBox.information(self, self.tr("Scheduled report"), self.tr("Scheduled report saved. Reports run locally while the application is open."))
 
     def create_support_bundle(self):
@@ -5634,7 +5714,7 @@ class MainWindow(QMainWindow):
                 continue
         raise FileExistsError("Could not allocate a unique scheduled report filename")
 
-    def _run_due_report_schedules(self, now=None):
+    def _run_due_report_schedules(self, now=None, selected_index=None):
         """Generate due redacted reports locally; never perform network activity."""
         now = int(time.time() if now is None else now)
         settings = QSettings("Zscaler", "APIClient")
@@ -5644,12 +5724,14 @@ class MainWindow(QMainWindow):
         trail = AuditTrail(settings)
         generated = []
         changed = False
-        for schedule in schedules:
+        for index, schedule in enumerate(schedules):
+            if selected_index is not None and index != selected_index:
+                continue
             try:
                 next_run = int(schedule.get("next_run", now + 1))
             except (TypeError, ValueError):
                 next_run = now
-            if not schedule.get("enabled", True) or next_run > now:
+            if (selected_index is None and not schedule.get("enabled", True)) or next_run > now:
                 continue
             try:
                 cadence = max(3600, int(schedule.get("cadence_seconds", 86400)))

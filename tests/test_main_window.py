@@ -572,6 +572,21 @@ class MainWindowTests(unittest.TestCase):
                 second = self.window._run_due_report_schedules(now)
                 self.assertNotEqual(first[0], second[0])
                 self.assertTrue(Path(first[0]).exists())
+                dialog = client.OperationsDialog(self.window)
+                self.assertEqual(1, dialog.report_schedules.rowCount())
+                dialog.report_schedules.setCurrentCell(0, 0)
+                dialog.toggle_selected_schedule()
+                self.assertFalse(self.window._report_schedules()[0]["enabled"])
+                dialog.report_schedules.setCurrentCell(0, 0)
+                with patch.object(self.window, "_run_due_report_schedules", return_value=[first[0]]) as run_due, \
+                     patch.object(client.QMessageBox, "information"):
+                    dialog.run_selected_schedule()
+                self.assertEqual(0, run_due.call_args.kwargs["selected_index"])
+                dialog.report_schedules.setCurrentCell(0, 0)
+                with patch.object(client.QMessageBox, "question", return_value=client.QMessageBox.StandardButton.Yes):
+                    dialog.remove_selected_schedule()
+                self.assertEqual([], self.window._report_schedules())
+                dialog.close()
         finally:
             if previous is None:
                 settings.remove("automation/schedules")
