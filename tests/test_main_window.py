@@ -98,6 +98,7 @@ class MainWindowTests(unittest.TestCase):
         with patch.object(worker, "_make_request", side_effect=client.ApiRequestError(429, "HTTP 429: Too Many Requests")):
             worker.run()
         self.assertEqual(429, results[0]["results"][0]["status_code"])
+        self.assertEqual({"Retry-After": "60"}, client.api_result_headers({"success": False, "response_headers": {"Retry-After": "60"}}))
         self.assertEqual(201, client.api_result_status({"success": True, "data": {"_status_code": 201}}))
 
     def test_api_worker_preserves_metadata_for_list_response(self):
@@ -119,6 +120,7 @@ class MainWindowTests(unittest.TestCase):
         self.assertIn("Ada", self.window.response_body.toPlainText())
         self.assertIn("X-Request-ID: abc", self.window.response_headers.toPlainText())
         self.assertEqual(206, self.window.request_history[-1]["status"])
+        self.assertEqual({"X-Request-ID": "abc"}, self.window.request_history[-1]["response_headers"])
 
     def test_failed_request_history_retains_http_status(self):
         self.window._pending_request = {"method": "GET", "url": "https://example.test", "headers": {}, "body": None, "start_time": 0}
@@ -129,6 +131,7 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(self.window.main_splitter.count(), 3)
         self.assertEqual(self.window.response_tabs.count(), 8)
         self.assertEqual(self.window.request_tabs.count(), 4)
+        self.assertIsNotNone(self.window.findChild(client.QFrame, "commandBar"))
 
     def test_operations_shortcuts_can_open_the_relevant_workspace(self):
         dialog = client.OperationsDialog(self.window, initial_tab=1)
@@ -451,11 +454,13 @@ class MainWindowTests(unittest.TestCase):
         dialog.close()
 
     def test_operations_incident_workspace_prepares_a_safe_chain(self):
-        self.window.request_history = [{"timestamp": "now", "method": "GET", "url": "https://example.test", "status": 500}]
+        self.window.request_history = [{"timestamp": "now", "method": "GET", "url": "https://example.test", "status": 500, "response_headers": {"Retry-After": "60", "Set-Cookie": "hidden"}}]
         dialog = client.OperationsDialog(self.window)
         dialog.prepare_incident_chain()
         self.assertIn("Review failed requests", dialog.incident_chain.toPlainText())
         self.assertGreaterEqual(dialog.incident_timeline.rowCount(), 1)
+        self.assertNotIn("hidden", json.dumps(dialog._incident_evidence()))
+        self.assertIn("Retry-After", json.dumps(dialog._incident_evidence()))
         dialog.close()
 
     def test_operations_change_control_prepares_a_local_review(self):

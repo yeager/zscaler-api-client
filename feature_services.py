@@ -341,7 +341,7 @@ def incident_evidence(history: Iterable[dict[str, Any]], audit_events: Iterable[
         timeline.append({
             "time": item.get("timestamp", ""), "source": "request", "severity": severity,
             "summary": f"{item.get('method', 'GET')} {safe_url(item.get('url', ''))} · {status or 'unknown'}",
-            "evidence": mask({key: item.get(key) for key in ("status", "duration_ms", "headers", "body")}),
+            "evidence": mask({key: item.get(key) for key in ("status", "duration_ms", "headers", "response_headers", "body")}),
         })
     for item in audit_events:
         timeline.append({

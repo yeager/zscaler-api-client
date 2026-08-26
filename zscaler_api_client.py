@@ -393,6 +393,33 @@ QLabel a {
 """
 
 WORKSPACE_STYLE = """
+QFrame#commandBar {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #172554, stop:0.52 #172554, stop:1 #0f766e);
+    border: 1px solid #334155;
+    border-radius: 10px;
+}
+QFrame#commandBar QLabel, QFrame#metricCard QLabel {
+    color: #f8fafc;
+}
+QFrame#commandBar QPushButton {
+    background: rgba(255, 255, 255, 28);
+    border: 1px solid rgba(255, 255, 255, 50);
+    border-radius: 7px;
+    padding: 5px 11px;
+}
+QFrame#commandBar QPushButton:hover {
+    background: rgba(255, 255, 255, 52);
+}
+QFrame#metricCard {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    min-width: 148px;
+    min-height: 70px;
+}
+QTableWidget {
+    gridline-color: #334155;
+}
 QLabel#sectionTitle {
     font-size: 18px;
     font-weight: 700;
@@ -2259,9 +2286,10 @@ class JsonHighlighter(QSyntaxHighlighter):
 
 class ApiRequestError(Exception):
     """An API failure that retains its HTTP status for safe local telemetry."""
-    def __init__(self, status_code: int, message: str):
+    def __init__(self, status_code: int, message: str, response_headers: Dict | None = None):
         super().__init__(message)
         self.status_code = status_code
+        self.response_headers = response_headers or {}
 
 
 def api_result_status(result: Dict) -> int:
@@ -2272,6 +2300,14 @@ def api_result_status(result: Dict) -> int:
     if isinstance(payload, dict):
         return int(payload.get("_status_code") or 200)
     return 200
+
+
+def api_result_headers(result: Dict) -> Dict:
+    """Return worker response headers for success and error results."""
+    if not result.get("success"):
+        return dict(result.get("response_headers") or {})
+    payload = result.get("data")
+    return dict(payload.get("_headers") or {}) if isinstance(payload, dict) else {}
 
 
 class ApiWorker(QThread):
@@ -2292,7 +2328,7 @@ class ApiWorker(QThread):
                 result = self._make_request(req)
                 results.append({"success": True, "data": result, "request": req})
             except ApiRequestError as error:
-                results.append({"success": False, "error": str(error), "status_code": error.status_code, "request": req})
+                results.append({"success": False, "error": str(error), "status_code": error.status_code, "response_headers": error.response_headers, "request": req})
             except Exception as error:
                 results.append({"success": False, "error": str(error), "status_code": 0, "request": req})
             
@@ -2379,7 +2415,7 @@ class ApiWorker(QThread):
                 error_body = e.read().decode("utf-8")
             except:
                 pass
-            raise ApiRequestError(e.code, f"HTTP {e.code}: {e.reason}\n{error_body}")
+            raise ApiRequestError(e.code, f"HTTP {e.code}: {e.reason}\n{error_body}", dict(e.headers.items()) if e.headers else {})
 
 
 class LlmWorker(QThread):
@@ -4256,16 +4292,16 @@ class OperationsDialog(QDialog):
         dashboard = QWidget(); dashboard_layout = QVBoxLayout(dashboard)
         cards = QGridLayout()
         self.dashboard_cards = {}
-        for index, (key, label) in enumerate((("requests", self.tr("Requests")), ("success", self.tr("Success rate")), ("audit", self.tr("Audit integrity")), ("environment", self.tr("Active environment")))):
+        for index, (key, label) in enumerate((("requests", self.tr("Requests")), ("success", self.tr("Success rate")), ("audit", self.tr("Audit integrity")), ("environment", self.tr("Active environment")), ("alerts", self.tr("Open alerts")))):
             card = QFrame(); card.setObjectName("metricCard")
             card_layout = QVBoxLayout(card)
             label_widget = QLabel(label); label_widget.setObjectName("mutedLabel"); card_layout.addWidget(label_widget)
             value = QLabel("—"); value.setObjectName("sectionTitle")
             value_font = value.font(); value_font.setPointSize(18); value_font.setBold(True); value.setFont(value_font)
             card_layout.addWidget(value); self.dashboard_cards[key] = value
-            cards.addWidget(card, 0, index)
+            cards.addWidget(card, index // 4, index % 4)
         dashboard_layout.addLayout(cards)
-        self.dashboard_chart = NumericBarChart(); self.dashboard_chart.set_style("bar")
+        self.dashboard_chart = NumericBarChart(); self.dashboard_chart.set_style("pie")
         dashboard_layout.addWidget(QLabel(self.tr("Recent request outcomes")))
         dashboard_layout.addWidget(self.dashboard_chart)
         self.dashboard_events = QTableWidget(0, 3); self.dashboard_events.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Activity"), self.tr("Status")]); self.dashboard_events.horizontalHeader().setStretchLastSection(True); self.dashboard_events.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
@@ -4416,6 +4452,14 @@ class OperationsDialog(QDialog):
         try: return json.loads(editor.toPlainText() or fallback)
         except ValueError as exc: raise ValueError(self.tr("Invalid JSON: ") + str(exc))
 
+    def _severity_item(self, text, severity):
+        """Create a color-coded, accessible severity cell for operations tables."""
+        colors = {"critical": "#ef4444", "high": "#f97316", "medium": "#facc15", "low": "#38bdf8", "info": "#a78bfa"}
+        item = QTableWidgetItem(text)
+        item.setForeground(QColor(colors.get(severity, "#94a3b8")))
+        font = item.font(); font.setBold(True); item.setFont(font)
+        return item
+
     def refresh_dashboard(self):
         history = getattr(self.window, "request_history", [])
         events = AuditTrail(self.settings).events()
@@ -4425,8 +4469,12 @@ class OperationsDialog(QDialog):
         self.dashboard_cards["success"].setText(f"{(successful / total * 100):.0f}%" if total else "—")
         valid = AuditTrail(self.settings).verify()
         self.dashboard_cards["audit"].setText("✓" if valid else "!")
+        self.dashboard_cards["audit"].setStyleSheet("color: #22c55e;" if valid else "color: #f97316;")
         self.dashboard_cards["audit"].setToolTip(self.tr("Audit chain is valid") if valid else self.tr("Audit chain needs review"))
         self.dashboard_cards["environment"].setText(str(self.settings.value("profiles/active", "default")))
+        alerts = self._alert_data()["alerts"]
+        self.dashboard_cards["alerts"].setText(str(len(alerts)))
+        self.dashboard_cards["alerts"].setStyleSheet("color: #ef4444;" if alerts else "color: #22c55e;")
         outcome = {self.tr("Success"): successful, self.tr("Other"): max(0, total - successful)}
         self.dashboard_chart.set_values([(label, float(value)) for label, value in outcome.items()])
         recent = list(reversed(events[-12:]))
@@ -4442,7 +4490,7 @@ class OperationsDialog(QDialog):
         self.posture_score.setText(self.tr("Posture score: {score}/100").format(score=posture["score"]))
         severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
         labels = [(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()]
-        self.posture_chart.set_values(labels)
+        self.posture_chart.set_style("pie"); self.posture_chart.set_values(labels)
         wording = {
             "audit_integrity": (self.tr("Audit integrity needs review"), self.tr("The local audit chain did not verify.")),
             "repeated_failures": (self.tr("Repeated API failures"), self.tr("{count} failed requests are in local history.")),
@@ -4455,7 +4503,7 @@ class OperationsDialog(QDialog):
         self.posture_findings.setRowCount(len(findings))
         for row, finding in enumerate(findings):
             title, detail = wording[finding["code"]]
-            self.posture_findings.setItem(row, 0, QTableWidgetItem(severity_labels[finding["severity"]]))
+            self.posture_findings.setItem(row, 0, self._severity_item(severity_labels[finding["severity"]], finding["severity"]))
             self.posture_findings.setItem(row, 1, QTableWidgetItem(title))
             self.posture_findings.setItem(row, 2, QTableWidgetItem(detail.format(count=finding["count"])))
 
@@ -4478,7 +4526,7 @@ class OperationsDialog(QDialog):
         }
         self.alert_table.setRowCount(len(alerts))
         for row, alert in enumerate(alerts):
-            self.alert_table.setItem(row, 0, QTableWidgetItem(labels[alert["severity"]]))
+            self.alert_table.setItem(row, 0, self._severity_item(labels[alert["severity"]], alert["severity"]))
             self.alert_table.setItem(row, 1, QTableWidgetItem(wording[alert["code"]]))
             self.alert_table.setItem(row, 2, QTableWidgetItem(str(alert["count"])))
             self.alert_table.setItem(row, 3, QTableWidgetItem(json.dumps(mask(alert["evidence"]), ensure_ascii=False)))
@@ -4499,7 +4547,7 @@ class OperationsDialog(QDialog):
         for row, item in enumerate(timeline):
             self.incident_timeline.setItem(row, 0, QTableWidgetItem(str(item["time"])))
             self.incident_timeline.setItem(row, 1, QTableWidgetItem(self.tr("Request") if item["source"] == "request" else self.tr("Audit")))
-            self.incident_timeline.setItem(row, 2, QTableWidgetItem(severity_labels[item["severity"]]))
+            self.incident_timeline.setItem(row, 2, self._severity_item(severity_labels[item["severity"]], item["severity"]))
             self.incident_timeline.setItem(row, 3, QTableWidgetItem(item["summary"]))
 
     def prepare_incident_chain(self):
@@ -4567,7 +4615,7 @@ class OperationsDialog(QDialog):
         data = self._report_data()
         posture, incidents = data["posture"], data["incident_summary"]
         severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
-        self.report_chart.set_values([(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()])
+        self.report_chart.set_style("pie"); self.report_chart.set_values([(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()])
         title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}[data["kind"]]
         lines = [f"# {title}", "", self.tr("Posture score: {score}/100").format(score=posture["score"]), self.tr("Local requests: {count}").format(count=posture["metrics"]["requests"]), self.tr("Failed requests: {count}").format(count=posture["metrics"]["failed"]), self.tr("Audit integrity: {status}").format(status=self.tr("Valid") if data["audit_valid"] else self.tr("Needs review")), "", self.tr("Incident signals"), f"- {self.tr('High')}: {incidents['high']}", f"- {self.tr('Medium')}: {incidents['medium']}"]
         if data["kind"] == "ciso":
@@ -4688,7 +4736,7 @@ class OperationsDialog(QDialog):
         self.api_chain_result.setPlainText(json.dumps(safe_results, indent=2, ensure_ascii=False))
         for item in results:
             request = item.get("request", {})
-            self.window._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=api_result_status(item))
+            self.window._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=api_result_status(item), response_headers=api_result_headers(item))
         AuditTrail(self.settings).append("api_chain_finished", {"successful": successful, "failed": failed})
         QMessageBox.information(self, self.tr("API chains"), self.tr("API chain completed: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed))
 
@@ -4703,7 +4751,7 @@ class OperationsDialog(QDialog):
 
     def _render_policy_overview(self, policy):
         overview = policy_overview(policy)
-        self.policy_chart.set_values([(action.title(), float(count)) for action, count in overview["actions"].items()])
+        self.policy_chart.set_style("pie"); self.policy_chart.set_values([(action.title(), float(count)) for action, count in overview["actions"].items()])
         self.policy_rules.setRowCount(len(overview["rules"]))
         for row, rule in enumerate(overview["rules"]):
             values = (rule["name"], rule["action"].title(), str(rule["conditions"]), self.tr("Enabled") if rule["enabled"] else self.tr("Disabled"))
@@ -6637,6 +6685,7 @@ class MainWindow(QMainWindow):
         if result["results"]:
             res = result["results"][0]
             status = api_result_status(res)
+            response_headers = api_result_headers(res)
             
             if res["success"]:
                 # Extract metadata from response
@@ -6761,6 +6810,11 @@ class MainWindow(QMainWindow):
                 )
                 safe_error = redact_sensitive(res["error"])
                 self.response_body.setPlainText(safe_error)
+                safe_response_headers = {
+                    key: "***" if is_sensitive_name(key) else redact_sensitive(value)
+                    for key, value in response_headers.items()
+                }
+                self.response_headers.setPlainText("\n".join(f"{key}: {value}" for key, value in safe_response_headers.items()))
                 self.status_bar.showMessage(self.tr("Request failed"))
                 self._log_output(f"Error: {safe_error[:50]}...", "error")
             
@@ -6772,7 +6826,8 @@ class MainWindow(QMainWindow):
                     self._pending_request["headers"],
                     self._pending_request["body"],
                     status=status,
-                    duration_ms=duration_ms
+                    duration_ms=duration_ms,
+                    response_headers=response_headers,
                 )
                 self._pending_request = None
     
@@ -6873,7 +6928,7 @@ class MainWindow(QMainWindow):
         failed = len(results) - successful
         for item in results:
             request = item.get("request", {})
-            self._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=api_result_status(item))
+            self._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=api_result_status(item), response_headers=api_result_headers(item))
         AuditTrail(QSettings("Zscaler", "APIClient")).append("batch_finished", {"successful": successful, "failed": failed})
         self.status_bar.showMessage(self.tr("Batch complete: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed))
         self._log_output(self.tr("Batch complete: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed), "success" if not failed else "warning")
@@ -6941,8 +6996,8 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
     
-    def _add_to_history(self, method: str, url: str, headers: Dict, body: Any, 
-                        status: int = None, duration_ms: int = None):
+    def _add_to_history(self, method: str, url: str, headers: Dict, body: Any,
+                        status: int = None, duration_ms: int = None, response_headers: Dict | None = None):
         """Add a request to history."""
         from datetime import datetime
         
@@ -6951,6 +7006,7 @@ class MainWindow(QMainWindow):
             "method": method,
             "url": redact_url(url),
             "headers": redact_sensitive(headers),
+            "response_headers": redact_sensitive(response_headers or {}),
             "body": redact_sensitive(body),
             "status": status,
             "duration_ms": duration_ms,
