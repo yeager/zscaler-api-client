@@ -285,6 +285,18 @@ class MainWindowTests(unittest.TestCase):
         self.assertNotIn("do-not-copy", copied)
         self.assertIn("***", copied)
 
+    def test_api_response_ui_masks_auth_data_headers_and_errors(self):
+        self.window._pending_request = {"method": "POST", "url": "https://example.test/login", "headers": {}, "body": {}, "start_time": 0}
+        self.window._on_request_finished({"results": [{"success": True, "data": {
+            "access_token": "never-display", "client_secret": "never-display", "_status_code": 200,
+            "_reason": "OK", "_size": 1, "_headers": {"Set-Cookie": "never-display"},
+        }}]})
+        self.assertNotIn("never-display", self.window.response_body.toPlainText())
+        self.assertNotIn("never-display", self.window.response_headers.toPlainText())
+        self.window._pending_request = {"method": "GET", "url": "https://example.test", "headers": {}, "body": None, "start_time": 0}
+        self.window._on_request_finished({"results": [{"success": False, "error": "access_token=never-display"}]})
+        self.assertNotIn("never-display", self.window.response_body.toPlainText())
+
     def test_zcc_authentication_uses_the_jwt_login_shape(self):
         settings = client.QSettings("Zscaler", "APIClient")
         settings.setValue("zcc/cloud", "api.zsapi.net")

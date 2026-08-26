@@ -6542,8 +6542,12 @@ class MainWindow(QMainWindow):
                 response_headers = res["data"].pop("_headers", {}) if isinstance(res["data"], dict) else {}
                 raw_text = res["data"].pop("_raw_text", None) if isinstance(res["data"], dict) else None
                 size_str = self._format_size(resp_size)
+                safe_response_headers = {
+                    key: "***" if any(fragment in key.lower() for fragment in ("authorization", "cookie", "token", "secret", "api-key")) else redact_sensitive(value)
+                    for key, value in response_headers.items()
+                }
                 self.response_headers.setPlainText(
-                    "\n".join(f"{key}: {value}" for key, value in response_headers.items())
+                    "\n".join(f"{key}: {value}" for key, value in safe_response_headers.items())
                 )
                 
                 # Color based on status code range
@@ -6567,19 +6571,23 @@ class MainWindow(QMainWindow):
                 indent = settings.value("display/json_indent", "2")
                 indent_val = None if indent == "Tab" else int(indent)
                 
+                # Keep response values available only in memory for the active
+                # request flow.  The UI, visualizations and later exports must
+                # never expose credential-like fields from auth or API replies.
+                display_data = redact_sensitive(res["data"])
                 if raw_text is not None:
-                    self.response_body.setPlainText(raw_text)
+                    self.response_body.setPlainText(redact_sensitive(raw_text))
                 elif self.pretty_print_enabled:
-                    self.response_body.setPlainText(json.dumps(res["data"], indent=indent_val))
+                    self.response_body.setPlainText(json.dumps(display_data, indent=indent_val))
                 else:
-                    self.response_body.setPlainText(json.dumps(res["data"], separators=(',', ':')))
-                self._show_ai_visualization(res["data"])
-                self._render_response_visualization(res["data"])
+                    self.response_body.setPlainText(json.dumps(display_data, separators=(',', ':')))
+                self._show_ai_visualization(display_data)
+                self._render_response_visualization(display_data)
                 if self.graphql_mode.isChecked() and isinstance(res["data"], dict):
-                    self._show_graphql_output(res["data"])
+                    self._show_graphql_output(display_data)
                     if getattr(self, "_graphql_introspection_pending", False):
-                        self._save_graphql_introspection(self.url_input.text().strip(), res["data"])
-                        self._populate_graphql_schema_tree(res["data"])
+                        self._save_graphql_introspection(self.url_input.text().strip(), display_data)
+                        self._populate_graphql_schema_tree(display_data)
                         self._graphql_introspection_pending = False
                 self.status_bar.showMessage(self.tr("Request successful") + f" ({duration_ms}ms · {size_str})")
                 
@@ -6645,9 +6653,10 @@ class MainWindow(QMainWindow):
                 self.response_info.setText(
                     f"<span style='color: red;'>✗ {self.tr('Error')} ({duration_ms}ms)</span>"
                 )
-                self.response_body.setPlainText(res["error"])
+                safe_error = redact_sensitive(res["error"])
+                self.response_body.setPlainText(safe_error)
                 self.status_bar.showMessage(self.tr("Request failed"))
-                self._log_output(f"Error: {res['error'][:50]}...", "error")
+                self._log_output(f"Error: {safe_error[:50]}...", "error")
             
             # Save to history
             if hasattr(self, "_pending_request") and self._pending_request:
