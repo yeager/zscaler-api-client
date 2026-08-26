@@ -59,7 +59,7 @@ try:
     import pyqtgraph as pg
 except (ImportError, OSError):  # Keep source checkouts usable with the minimal Qt stack.
     pg = None
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, PLAYBOOK_TEMPLATES, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, PLAYBOOK_TEMPLATES, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from evidence_signing import generate_private_key, public_key, sign_evidence, verify_evidence
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
@@ -6221,6 +6221,10 @@ class OperationsDialog(QDialog):
         local_automation = QPushButton(self.tr("Run reviewed local automation")); local_automation.clicked.connect(self.run_local_automation); integration_buttons.addWidget(local_automation, 1, 1)
         copy_preview = QPushButton(self.tr("Copy reviewed command")); copy_preview.clicked.connect(self.copy_integration_preview); integration_buttons.addWidget(copy_preview, 1, 2)
         webhook_alerts = QPushButton(self.tr("Send current masked alerts")); webhook_alerts.clicked.connect(self.send_webhook_alerts); integration_buttons.addWidget(webhook_alerts, 1, 3)
+        self.siem_format = QComboBox(); self.siem_format.addItem(self.tr("JSON Lines (SIEM/SOAR)"), "jsonl"); self.siem_format.addItem("CEF", "cef"); self.siem_format.addItem("LEEF", "leef"); integration_buttons.addWidget(self.siem_format, 2, 0)
+        export_siem = QPushButton(self.tr("Export masked security events")); export_siem.clicked.connect(self.export_security_events); integration_buttons.addWidget(export_siem, 2, 1)
+        export_mcp = QPushButton(self.tr("Export read-only MCP manifest")); export_mcp.clicked.connect(self.export_mcp_manifest); integration_buttons.addWidget(export_mcp, 2, 2)
+        export_terraform = QPushButton(self.tr("Export Terraform review handoff")); export_terraform.clicked.connect(self.export_terraform_handoff); integration_buttons.addWidget(export_terraform, 2, 3)
         for column in range(4): integration_buttons.setColumnStretch(column, 1)
         integrations_layout.addLayout(integration_buttons)
         integrations_layout.addWidget(QLabel(self.tr("Webhook delivery history")))
@@ -7612,6 +7616,29 @@ body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}
         QApplication.clipboard().setText(str(privacy_safe(preview, self.settings, "clipboard")))
         AuditTrail(self.settings).append("integration_command_copied", {})
         self.integration_preview.setToolTip(self.tr("Copied to clipboard"))
+
+    def export_security_events(self):
+        format_name = self.siem_format.currentData() or "jsonl"; extensions = {"jsonl": "jsonl", "cef": "cef", "leef": "leef"}
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export masked security events"), f"zs-security-events.{extensions[format_name]}", self.tr("All files (*)"))
+        if not path: return
+        safe_history = privacy_safe(self._scoped_history(), self.settings, "export"); content = security_event_export(safe_history, format_name); Path(path).write_text(content, encoding="utf-8")
+        self.integration_preview.setPlainText(self.tr("Exported {count} masked local event(s) as {format}. No data was sent automatically.").format(count=len(safe_history[-5000:]), format=format_name.upper())); self._scope_audit().append("security_events_exported", {"format": format_name, "events": len(safe_history[-5000:]), "file": os.path.basename(path)})
+
+    def export_mcp_manifest(self):
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export read-only MCP manifest"), "mcp-read-only-manifest.json", "JSON (*.json)")
+        if not path: return
+        manifest = privacy_safe(read_only_mcp_manifest(self._scope_metadata()), self.settings, "export"); Path(path).write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        self.integration_preview.setPlainText(json.dumps(manifest, indent=2, ensure_ascii=False)); self._scope_audit().append("mcp_manifest_exported", {"file": os.path.basename(path), "writes_enabled": False})
+
+    def export_terraform_handoff(self):
+        try: policy = self._json(self.after_policy, {})
+        except ValueError as exc: QMessageBox.warning(self, self.tr("Integrations"), str(exc)); return
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export Terraform review handoff"), "terraform-review-handoff.zip", "ZIP (*.zip)")
+        if not path: return
+        safe_policy = privacy_safe(policy, self.settings, "export"); files = terraform_review_handoff(safe_policy, privacy_safe(self._scope_metadata(), self.settings, "export"))
+        with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as archive:
+            for name, content in files.items(): archive.writestr(name, content)
+        self.integration_preview.setPlainText(self.tr("Created a non-executable Terraform review handoff. Run terraformer and terraform plan only after independent review; this client never applies it.")); self._scope_audit().append("terraform_handoff_exported", {"file": os.path.basename(path), "files": sorted(files)})
 
     def _webhook_payload(self):
         posture = security_posture(self._scoped_history(), AuditTrail(self.settings).verify())

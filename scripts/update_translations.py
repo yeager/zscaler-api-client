@@ -418,6 +418,12 @@ SWEDISH_REVIEW.update({
     "Validate the alert in authoritative security tooling": "Validera larmet i auktoritativa säkerhetsverktyg", "Identify users, devices and applications": "Identifiera användare, enheter och program", "Preserve masked evidence": "Bevara maskerat underlag", "Prepare containment changes for independent approval": "Förbered begränsningsändringar för oberoende godkännande", "Track recovery prerequisites": "Spåra förutsättningar för återställning", "Record lessons learned": "Registrera lärdomar",
 })
 
+SWEDISH_REVIEW.update({
+    "JSON Lines (SIEM/SOAR)": "JSON Lines (SIEM/SOAR)", "Export masked security events": "Exportera maskerade säkerhetshändelser", "Export read-only MCP manifest": "Exportera skrivskyddat MCP-manifest", "Export Terraform review handoff": "Exportera Terraform-underlag för granskning",
+    "Exported {count} masked local event(s) as {format}. No data was sent automatically.": "Exporterade {count} maskerade lokala händelser som {format}. Inga data skickades automatiskt.",
+    "Created a non-executable Terraform review handoff. Run terraformer and terraform plan only after independent review; this client never applies it.": "Skapade ett icke körbart Terraform-underlag för granskning. Kör terraformer och terraform plan först efter oberoende granskning; klienten tillämpar det aldrig.",
+})
+
 
 def protect(text: str) -> tuple[str, list[str]]:
     values: list[str] = []

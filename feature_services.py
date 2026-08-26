@@ -1410,6 +1410,50 @@ def smart_api_plan(goal: str, catalog: Iterable[dict[str, Any]], maximum_steps: 
             "disclaimer": "Deterministic catalog ranking only; it does not call an LLM, authenticate, execute an operation, or infer tenant-specific values."}
 
 
+def security_event_export(records: Iterable[dict[str, Any]], format_name: str = "jsonl") -> str:
+    """Serialize masked local evidence into portable SIEM handoff formats."""
+    supported = {"jsonl", "cef", "leef"}
+    if format_name not in supported: raise ValueError("Unsupported security event format")
+    events = []
+    for index, raw in enumerate(list(records)[-5000:], 1):
+        if not isinstance(raw, dict): continue
+        item = mask(raw); status = str(item.get("status", "")); severity = 8 if status == "0" or status.startswith("5") else 5 if status.startswith(("4", "429")) else 2
+        events.append({"event_id": index, "timestamp": item.get("timestamp", ""), "method": str(item.get("method", "GET")), "url": safe_url(item.get("url", "")),
+                       "status": status, "duration_ms": item.get("duration_ms", 0), "severity": severity, "environment_id": item.get("environment_id", "default"), "source": "ZS API Client"})
+    if format_name == "jsonl": return "".join(json.dumps(item, ensure_ascii=False, separators=(",", ":")) + "\n" for item in events)
+    def escaped(value: Any, chars: str) -> str:
+        text = str(value).replace("\\", "\\\\")
+        for character in chars: text = text.replace(character, "\\" + character)
+        return text.replace("\n", " ").replace("\r", " ")
+    lines = []
+    for item in events:
+        if format_name == "cef":
+            extension = f"requestMethod={escaped(item['method'], '=')} request={escaped(item['url'], '=')} outcome={escaped(item['status'], '=')} rt={escaped(item['timestamp'], '=')} cn1={item['duration_ms']} cn1Label=duration_ms cs1={escaped(item['environment_id'], '=')} cs1Label=environment_id"
+            lines.append(f"CEF:0|ZS API Client|Local evidence|1|api_request|API request|{item['severity']}|{extension}")
+        else:
+            lines.append("LEEF:2.0|ZS API Client|Local evidence|1|api_request|\t" + "\t".join(f"{key}={escaped(item[key], '=\t')}" for key in ("timestamp", "method", "url", "status", "duration_ms", "environment_id")))
+    return "\n".join(lines) + ("\n" if lines else "")
+
+
+def read_only_mcp_manifest(scope: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Describe a least-privilege local MCP handoff; never include credentials."""
+    return {"schema": "zs-api-client/mcp-read-only/v1", "name": "ZS API Client read-only", "scope": mask(scope or environment_scope_metadata("default", "Default")),
+            "writes_enabled": False, "network_execution_enabled": False, "tools": [
+                {"name": "catalog_search", "access": "local_read"}, {"name": "operation_details", "access": "local_read"},
+                {"name": "masked_response_inspect", "access": "local_read"}, {"name": "masked_evidence_export", "access": "local_write"}],
+            "guardrails": ["No credential access", "No tenant request execution", "No shell execution", "No automatic remediation", "External output must use privacy-safe data"],
+            "note": "Review the installed MCP server implementation and permissions separately; this manifest does not install or start a server."}
+
+
+def terraform_review_handoff(policy: Any, scope: dict[str, Any] | None = None) -> dict[str, str]:
+    """Prepare non-executable files for a reviewed terraformer workflow."""
+    safe_policy = mask(policy)
+    manifest = {"schema": "zs-api-client/terraform-review/v1", "scope": mask(scope or environment_scope_metadata("default", "Default")),
+                "policy_sha256": hashlib.sha256(canonical(safe_policy).encode("utf-8")).hexdigest(), "apply_enabled": False}
+    readme = "ZS API Client Terraform review handoff\n\nThis archive is non-executable. Use zscaler-terraformer to export an explicitly selected scope, compare it with source-policy.json, scan generated files for secrets, and require terraform plan review before any external apply.\n"
+    return {"README.txt": readme, "manifest.json": json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", "source-policy.json": json.dumps(safe_policy, indent=2, ensure_ascii=False) + "\n"}
+
+
 def validate_request_chain(steps: Any, maximum: int = 20) -> dict[str, Any]:
     """Validate an explicit API chain before the UI considers execution."""
     if not isinstance(steps, list) or not steps:

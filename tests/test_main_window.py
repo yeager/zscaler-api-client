@@ -1772,6 +1772,22 @@ class MainWindowTests(unittest.TestCase):
         self.assertIsNone(client.validate_webhook_endpoint("https://hooks.example.test/events?token=hidden")[0])
         dialog.close()
 
+    def test_integration_handoff_exports_are_masked_and_non_executable(self):
+        self.window.request_history = [{"timestamp": "now", "method": "GET", "url": "https://example.test/users?token=hidden", "status": 503, "duration_ms": 12}]
+        dialog = client.OperationsDialog(self.window); dialog.after_policy.setPlainText('{"client_secret":"hidden","rules":[]}')
+        with TemporaryDirectory() as output_dir:
+            event_path = str(Path(output_dir) / "events.cef"); dialog.siem_format.setCurrentIndex(dialog.siem_format.findData("cef"))
+            with patch.object(client.QFileDialog, "getSaveFileName", return_value=(event_path, "All files (*)")): dialog.export_security_events()
+            self.assertIn("CEF:0|", Path(event_path).read_text(encoding="utf-8")); self.assertNotIn("hidden", Path(event_path).read_text(encoding="utf-8"))
+            manifest_path = str(Path(output_dir) / "mcp.json")
+            with patch.object(client.QFileDialog, "getSaveFileName", return_value=(manifest_path, "JSON (*.json)")): dialog.export_mcp_manifest()
+            self.assertFalse(json.loads(Path(manifest_path).read_text(encoding="utf-8"))["writes_enabled"])
+            terraform_path = str(Path(output_dir) / "terraform.zip")
+            with patch.object(client.QFileDialog, "getSaveFileName", return_value=(terraform_path, "ZIP (*.zip)")): dialog.export_terraform_handoff()
+            with zipfile.ZipFile(terraform_path) as archive:
+                self.assertEqual({"README.txt", "manifest.json", "source-policy.json"}, set(archive.namelist())); self.assertFalse(json.loads(archive.read("manifest.json"))["apply_enabled"]); self.assertNotIn("hidden", archive.read("source-policy.json").decode())
+        dialog.close()
+
     def test_legacy_webhook_endpoint_migrates_out_of_plaintext_settings(self):
         settings = MagicMock()
         settings.value.return_value = "https://hooks.example.test/private-path"

@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff
 
 
 class MemorySettings:
@@ -76,6 +76,17 @@ class FeatureServicesTests(unittest.TestCase):
         plan = smart_api_plan("users", catalog)
         self.assertEqual("GET", plan["candidates"][0]["method"]); self.assertFalse(plan["ready_to_run"])
         self.assertEqual(plan, smart_api_plan("users", catalog))
+
+    def test_siem_formats_are_masked_and_line_oriented(self):
+        events = [{"timestamp": "now", "method": "GET", "url": "https://example.test/users?api_key=hidden", "status": 503, "duration_ms": 42, "authorization": "hidden"}]
+        for format_name, marker in (("jsonl", '"status":"503"'), ("cef", "CEF:0|"), ("leef", "LEEF:2.0|")):
+            rendered = security_event_export(events, format_name); self.assertIn(marker, rendered); self.assertNotIn("hidden", rendered); self.assertTrue(rendered.endswith("\n"))
+
+    def test_mcp_manifest_and_terraform_handoff_are_non_executable(self):
+        manifest = read_only_mcp_manifest({"environment_id": "tenant", "environment": "Tenant"})
+        self.assertFalse(manifest["writes_enabled"]); self.assertFalse(manifest["network_execution_enabled"])
+        handoff = terraform_review_handoff({"client_secret": "hidden", "rules": []})
+        self.assertEqual({"README.txt", "manifest.json", "source-policy.json"}, set(handoff)); self.assertNotIn("hidden", json.dumps(handoff)); self.assertFalse(json.loads(handoff["manifest.json"])["apply_enabled"])
 
     def test_policy_diff_masks_sensitive_values(self):
         changes = policy_diff({"client_secret": "secret"}, {"client_secret": "other"})
