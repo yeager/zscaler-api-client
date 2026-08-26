@@ -371,6 +371,34 @@ SWEDISH_REVIEW.update({
     "Executive assurance narrative": "Ledningens säkerhetssammanfattning", "Evidence coverage: {coverage}%": "Underlagstäckning: {coverage} %",
 })
 
+SWEDISH_REVIEW.update({
+    "No journey telemetry in the current response": "Ingen resetelemetri i det aktuella svaret",
+    "No observed data": "Inga observerade data",
+    "Trace observed digital experience from user and device through network and service edge to the application. The parser consumes the complete current REST or GraphQL response, marks missing stages explicitly, and never queries the tenant automatically.": "Spåra den observerade digitala upplevelsen från användare och enhet via nätverk och service edge till programmet. Parsern använder hela det aktuella REST- eller GraphQL-svaret, markerar saknade steg tydligt och frågar aldrig tenanten automatiskt.",
+    "Experience score": "Upplevelsepoäng", "Latency": "Latens", "Packet loss": "Paketförlust", "Journey issues": "Reseproblem",
+    "Observed user-to-application experience journey": "Observerad upplevelseresa från användare till program",
+    "Trend metric:": "Trendmätvärde:", "Observed value": "Observerat värde", "Stage": "Steg", "Metric": "Mätvärde",
+    "Analyze current experience response": "Analysera aktuellt upplevelsesvar", "Export masked journey": "Exportera maskerad resa", "Experience journey": "Upplevelseresa",
+    "Build and test explainable detections against retained local request history. Rules use a bounded declarative grammar—no Python, eval, tenant writes, network calls, or automatic remediation.": "Bygg och testa förklarbara detekteringar mot sparad lokal begärandehistorik. Regler använder en begränsad deklarativ grammatik – ingen Python, eval, tenantskrivning, nätverksanrop eller automatisk åtgärd.",
+    "Template:": "Mall:", "Server errors": "Serverfel", "Rate-limit responses": "Svar med hastighetsbegränsning", "High request latency": "Hög begärandelatens", "Write activity": "Skrivaktivitet", "Authentication failures": "Autentiseringsfel",
+    "Anomaly sensitivity:": "Avvikelsekänslighet:", "Relaxed": "Avslappnad", "Balanced": "Balanserad", "Sensitive": "Känslig",
+    "Declarative detection rule JSON": "JSON för deklarativ detekteringsregel", "Validate rule": "Validera regel", "Run local detection": "Kör lokal detektering", "Analyze adaptive anomalies": "Analysera adaptiva avvikelser", "Export masked detection evidence": "Exportera maskerat detekteringsunderlag",
+    "Duration": "Varaktighet", "Endpoint": "Slutpunkt", "Observed": "Observerat", "Detection lab": "Detekteringslabb",
+    "Device score": "Enhetspoäng", "Application score": "Programpoäng", "Service-edge score": "Service edge-poäng", "Jitter": "Jitter", "DNS time": "DNS-tid", "TCP connect time": "TCP-anslutningstid", "Page fetch time": "Sidhämtningstid", "Availability": "Tillgänglighet", "Memory": "Minne",
+    "Network": "Nätverk", "Service edge": "Service edge", "Application": "Program", "User": "Användare", "Device": "Enhet",
+    "No current API or GraphQL response is available. Run or import a ZDX/OneAPI query, then analyze again.": "Inget aktuellt API- eller GraphQL-svar är tillgängligt. Kör eller importera en ZDX-/OneAPI-fråga och analysera sedan igen.",
+    "Observed {stages} of 5 journey stages across {samples} metric sample(s). {disclaimer}": "Observerade {stages} av 5 resesteg i {samples} mätvärdesprov. {disclaimer}",
+    "Rule is valid and can be evaluated locally.": "Regeln är giltig och kan utvärderas lokalt.", "Rule validation failed: {errors}": "Regelvalideringen misslyckades: {errors}",
+    "Examined {examined} local event(s); {matched} matched. {explanation}": "Granskade {examined} lokala händelser; {matched} matchade. {explanation}",
+    "Endpoint {number} current": "Slutpunkt {number}, aktuell", "Endpoint {number} threshold": "Slutpunkt {number}, tröskelvärde",
+    "Adaptive analysis evaluated {endpoints} endpoint(s) and found {findings} explainable anomaly hint(s). Method: {method}": "Den adaptiva analysen utvärderade {endpoints} slutpunkter och hittade {findings} förklarbara avvikelseindikationer. Metod: {method}",
+    "Overall experience score is below 70": "Den övergripande upplevelsepoängen är under 70", "Device score is below 70": "Enhetspoängen är under 70", "Application score is below 70": "Programpoängen är under 70", "Service-edge score is below 70": "Service edge-poängen är under 70",
+    "Observed latency exceeds 250 ms": "Observerad latens överstiger 250 ms", "Observed packet loss exceeds 2%": "Observerad paketförlust överstiger 2 %", "Observed jitter exceeds 40 ms": "Observerat jitter överstiger 40 ms", "Observed availability is below 99%": "Observerad tillgänglighet är under 99 %",
+    "Schema-tolerant local interpretation of observed API fields. Thresholds are transparent operational hints, not Zscaler health verdicts or SLA determinations.": "Schematolerant lokal tolkning av observerade API-fält. Tröskelvärdena är transparenta driftindikationer, inte Zscaler-hälsobesked eller SLA-bedömningar.",
+    "Matched events where {mode} of {conditions} declarative condition(s) were true.": "Matchade händelser där {mode} av {conditions} deklarativa villkor var uppfyllda.", "All": "Alla", "Any": "Något",
+    "Median absolute deviation (MAD), scaled by 1.4826 with a 10%/10 ms noise floor": "Absolut medianavvikelse (MAD), skalad med 1,4826 och ett brusgolv på 10 %/10 ms",
+})
+
 
 def protect(text: str) -> tuple[str, list[str]]:
     values: list[str] = []

@@ -1390,6 +1390,56 @@ class MainWindowTests(unittest.TestCase):
         finally:
             self.window._last_response_exchange = previous_exchange
 
+    def test_experience_journey_uses_complete_graphql_response_and_is_basic_friendly(self):
+        settings = client.QSettings("Zscaler", "APIClient"); previous_mode = settings.value("ui/mode", None)
+        previous_exchange = getattr(self.window, "_last_response_exchange", None)
+        try:
+            settings.setValue("ui/mode", "basic")
+            self.window._last_response_exchange = {"response": {"body": {"data": {"zdx": {"devices": [{"samples": [
+                {"timestamp": "10:00", "zdxScore": 92, "deviceScore": 90, "latencyMs": 42, "cloudPathScore": 88, "applicationScore": 94},
+                {"timestamp": "10:05", "zdxScore": 62, "latencyMs": 350, "packetLossPercent": 4.1},
+            ]}]}}}}}
+            dialog = client.OperationsDialog(self.window)
+            self.assertTrue(dialog.tabs.isTabVisible(dialog.journey_tab_index))
+            self.assertFalse(dialog.tabs.isTabVisible(dialog.detection_tab_index))
+            self.assertEqual("62/100", dialog.journey_cards["overall_score"].text())
+            self.assertEqual(5, len(dialog.journey_graph.stages))
+            self.assertGreater(dialog.journey_issues.rowCount(), 1)
+            self.assertEqual(2, len(dialog.journey_trend.values))
+            with TemporaryDirectory() as output_dir:
+                destination = str(Path(output_dir) / "journey.csv")
+                with patch.object(client.QFileDialog, "getSaveFileName", return_value=(destination, "CSV metrics (*.csv)")):
+                    dialog.export_experience_journey()
+                self.assertIn("metric,label,value", Path(destination).read_text(encoding="utf-8"))
+            dialog.close()
+        finally:
+            self.window._last_response_exchange = previous_exchange
+            settings.remove("ui/mode") if previous_mode is None else settings.setValue("ui/mode", previous_mode)
+
+    def test_advanced_detection_lab_is_declarative_explainable_and_exportable(self):
+        settings = client.QSettings("Zscaler", "APIClient"); previous_mode = settings.value("ui/mode", None)
+        try:
+            settings.setValue("ui/mode", "advanced")
+            self.window.request_history = [{"timestamp": f"10:0{index}", "method": "GET", "url": "https://example.test/users", "status": 200, "duration_ms": value} for index, value in enumerate((100, 105, 95, 102, 98))]
+            self.window.request_history.append({"timestamp": "10:06", "method": "GET", "url": "https://example.test/users?token=hidden", "status": 503, "duration_ms": 1800})
+            dialog = client.OperationsDialog(self.window)
+            self.assertTrue(dialog.tabs.isTabVisible(dialog.detection_tab_index))
+            dialog.detection_template.setCurrentIndex(dialog.detection_template.findData("server_errors")); dialog.run_detection_lab()
+            self.assertEqual(1, dialog.detection_matches.rowCount())
+            dialog.refresh_adaptive_anomalies(record_audit=False)
+            self.assertGreaterEqual(dialog.anomaly_findings.rowCount(), 2)
+            self.assertIn("median", dialog.detection_status.text().casefold())
+            dialog.detection_rule.setPlainText('{"conditions":[{"field":"status","operator":"eval","value":"danger"}]}'); validation = dialog.validate_detection_lab()
+            self.assertFalse(validation["valid"])
+            with TemporaryDirectory() as output_dir:
+                destination = str(Path(output_dir) / "detection.json")
+                with patch.object(client.QFileDialog, "getSaveFileName", return_value=(destination, "JSON (*.json)")):
+                    dialog.export_detection_lab()
+                content = Path(destination).read_text(encoding="utf-8"); self.assertNotIn("hidden", content); self.assertIn("adaptive_anomalies", content)
+            dialog.close()
+        finally:
+            settings.remove("ui/mode") if previous_mode is None else settings.setValue("ui/mode", previous_mode)
+
     def test_operations_change_control_prepares_a_local_review(self):
         dialog = client.OperationsDialog(self.window)
         dialog.before_policy.setPlainText('{"rules": []}')

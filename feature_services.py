@@ -1099,6 +1099,228 @@ def executive_security_narrative(assessment: dict[str, Any], posture: dict[str, 
             "confidence": "Derived deterministically from retained local evidence; validate against authoritative tenant and governance records."}
 
 
+ZDX_METRICS = {
+    "overall_score": ("user", {"zdxscore", "overallexperiencescore", "experiencescore", "score"}),
+    "device_score": ("device", {"devicescore", "endpointscore"}),
+    "application_score": ("application", {"applicationscore", "appscore", "webprobescore"}),
+    "service_edge_score": ("service_edge", {"cloudpathscore", "serviceedgescore", "ziascore", "zpascore"}),
+    "latency_ms": ("network", {"latency", "latencyms", "roundtriptime", "rtt", "rttms"}),
+    "packet_loss_percent": ("network", {"packetloss", "packetlosspercent", "loss", "losspercent"}),
+    "jitter_ms": ("network", {"jitter", "jitterms"}),
+    "dns_ms": ("network", {"dnstime", "dnstimems", "dnsresponsetime"}),
+    "tcp_connect_ms": ("network", {"tcpconnecttime", "tcpconnecttimems", "connecttime"}),
+    "page_fetch_ms": ("application", {"pagefetchtime", "pagefetchtimems", "pageloadtime", "responsetime"}),
+    "availability_percent": ("application", {"availability", "availabilitypercent", "uptime"}),
+    "cpu_percent": ("device", {"cpu", "cpupercent", "cpuutilization"}),
+    "memory_percent": ("device", {"memory", "memorypercent", "memoryutilization"}),
+}
+
+
+def _field_token(value: Any) -> str:
+    return "".join(character for character in str(value).casefold() if character.isalnum())
+
+
+def _median(values: Iterable[float]) -> float:
+    ordered = sorted(float(item) for item in values)
+    if not ordered:
+        return 0.0
+    middle = len(ordered) // 2
+    return ordered[middle] if len(ordered) % 2 else (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def zdx_experience_journey(response: Any, maximum_records: int = 5000) -> dict[str, Any]:
+    """Extract an explainable user-to-application journey from complete API trees.
+
+    Field aliases are intentionally tolerant across REST and GraphQL envelopes.
+    Values are observations only; missing stages are never synthesized.
+    """
+    lookup = {alias: (name, stage) for name, (stage, aliases) in ZDX_METRICS.items() for alias in aliases}
+    timestamp_names = {"timestamp", "time", "datetime", "observedat", "createdat", "eventtime", "epochtime", "epochtimestamp"}
+    samples: list[dict[str, Any]] = []
+    counts: Counter[str] = Counter()
+    visited = 0
+    truncated = False
+
+    def walk(value: Any, path: tuple[str, ...] = ()) -> None:
+        nonlocal visited, truncated
+        if visited >= max(100, min(20000, int(maximum_records))) or len(path) > 12:
+            truncated = True
+            return
+        visited += 1
+        if isinstance(value, list):
+            for item in value[:2000]:
+                walk(item, path)
+            if len(value) > 2000: truncated = True
+            return
+        if not isinstance(value, dict):
+            return
+        safe_record = mask(value)
+        timestamp = next((item for key, item in safe_record.items() if _field_token(key) in timestamp_names and not isinstance(item, (dict, list))), "")
+        record_metrics: dict[str, float] = {}
+        record_stages: set[str] = set()
+        for key, item in safe_record.items():
+            matched = lookup.get(_field_token(key))
+            if matched and isinstance(item, (int, float)) and not isinstance(item, bool):
+                metric, stage = matched
+                number = float(item)
+                if abs(number) <= 10_000_000:
+                    record_metrics[metric] = number; record_stages.add(stage); counts[metric] += 1
+            if isinstance(item, (dict, list)):
+                walk(item, path + (str(key),))
+        if record_metrics:
+            samples.append({"timestamp": str(timestamp or len(samples) + 1), "path": "/".join(path[-4:]), "metrics": record_metrics, "stages": sorted(record_stages)})
+
+    walk(response, ("response",))
+    latest: dict[str, float] = {}
+    series: dict[str, list[dict[str, Any]]] = {}
+    for sample in samples:
+        for metric, value in sample["metrics"].items():
+            latest[metric] = value
+            series.setdefault(metric, []).append({"label": sample["timestamp"], "value": value})
+    stage_order = ("user", "device", "network", "service_edge", "application")
+    stage_labels = {"user": "User", "device": "Device", "network": "Network", "service_edge": "Service edge", "application": "Application"}
+    stage_metrics = {stage: sorted(metric for metric, (_, aliases) in ZDX_METRICS.items() if ZDX_METRICS[metric][0] == stage and metric in latest) for stage in stage_order}
+    stages = [{"id": stage, "label": stage_labels[stage], "status": "observed" if stage_metrics[stage] else "no_data",
+               "metrics": {metric: latest[metric] for metric in stage_metrics[stage]}} for stage in stage_order]
+    issues: list[dict[str, Any]] = []
+    thresholds = {
+        "overall_score": ("below", 70, "Overall experience score is below 70"),
+        "device_score": ("below", 70, "Device score is below 70"),
+        "application_score": ("below", 70, "Application score is below 70"),
+        "service_edge_score": ("below", 70, "Service-edge score is below 70"),
+        "latency_ms": ("above", 250, "Observed latency exceeds 250 ms"),
+        "packet_loss_percent": ("above", 2, "Observed packet loss exceeds 2%"),
+        "jitter_ms": ("above", 40, "Observed jitter exceeds 40 ms"),
+        "availability_percent": ("below", 99, "Observed availability is below 99%"),
+    }
+    for metric, (direction, threshold, explanation) in thresholds.items():
+        if metric not in latest: continue
+        breached = latest[metric] < threshold if direction == "below" else latest[metric] > threshold
+        if breached:
+            stage = ZDX_METRICS[metric][0]
+            issues.append({"stage": stage, "metric": metric, "value": latest[metric], "threshold": threshold, "severity": "high" if metric in {"overall_score", "packet_loss_percent", "availability_percent"} else "medium", "explanation": explanation})
+    return {
+        "summary": {"observed_stages": sum(1 for item in stages if item["status"] == "observed"), "samples": len(samples), "issues": len(issues),
+                    "overall_score": latest.get("overall_score"), "latency_ms": latest.get("latency_ms"), "packet_loss_percent": latest.get("packet_loss_percent")},
+        "stages": stages, "issues": issues, "latest": latest, "series": series,
+        "field_counts": dict(counts), "truncated": truncated,
+        "disclaimer": "Schema-tolerant local interpretation of observed API fields. Thresholds are transparent operational hints, not Zscaler health verdicts or SLA determinations.",
+    }
+
+
+def adaptive_anomalies(history: Iterable[dict[str, Any]], sensitivity: str = "balanced", minimum_samples: int = 5) -> dict[str, Any]:
+    """Detect endpoint regressions with transparent median/MAD thresholds."""
+    factors = {"relaxed": 8.0, "balanced": 5.0, "sensitive": 3.5}
+    selected = sensitivity if sensitivity in factors else "balanced"
+    required = max(3, min(50, int(minimum_samples)))
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for raw in list(history)[-5000:]:
+        if not isinstance(raw, dict): continue
+        event = mask(raw)
+        safe_endpoint = safe_url(event.get("url", ""))
+        endpoint_parts = urllib.parse.urlsplit(safe_endpoint)
+        endpoint = urllib.parse.urlunsplit((endpoint_parts.scheme, endpoint_parts.netloc, endpoint_parts.path, "", "")) or "unknown"
+        groups.setdefault(endpoint, []).append(event)
+    findings: list[dict[str, Any]] = []
+    baselines: list[dict[str, Any]] = []
+    for endpoint, events in groups.items():
+        durations = [float(item["duration_ms"]) for item in events if isinstance(item.get("duration_ms"), (int, float)) and not isinstance(item.get("duration_ms"), bool)]
+        if len(durations) < required: continue
+        baseline_values, current = durations[:-1], durations[-1]
+        if len(baseline_values) < required - 1: continue
+        median = _median(baseline_values)
+        mad = _median(abs(value - median) for value in baseline_values)
+        noise = max(mad * 1.4826, max(10.0, median * 0.10))
+        threshold = median + factors[selected] * noise
+        baselines.append({"endpoint": endpoint, "samples": len(durations), "median_ms": round(median, 2), "mad_ms": round(mad, 2), "threshold_ms": round(threshold, 2), "current_ms": round(current, 2)})
+        if current > threshold:
+            findings.append({"code": "adaptive_latency_regression", "severity": "high" if current > threshold * 1.5 else "medium", "endpoint": endpoint,
+                             "observed": round(current, 2), "threshold": round(threshold, 2), "explanation": f"Latest duration exceeds the {selected} median/MAD threshold."})
+        latest_status = str(events[-1].get("status", ""))
+        previous_failures = sum(1 for item in events[:-1] if str(item.get("status", "")).startswith(("4", "5")) or str(item.get("status", "")) == "0")
+        if (latest_status.startswith(("4", "5")) or latest_status == "0") and previous_failures / max(1, len(events) - 1) < 0.2:
+            findings.append({"code": "adaptive_status_regression", "severity": "high", "endpoint": endpoint, "observed": latest_status,
+                             "threshold": "historical failure rate <20%", "explanation": "Latest request failed although the retained endpoint baseline was predominantly successful."})
+    return {"sensitivity": selected, "method": "Median absolute deviation (MAD), scaled by 1.4826 with a 10%/10 ms noise floor",
+            "minimum_samples": required, "baselines": baselines, "findings": findings,
+            "summary": {"endpoints_evaluated": len(baselines), "findings": len(findings)},
+            "disclaimer": "Local explainable anomaly hints only; validate timing, sampling and tenant context before escalation."}
+
+
+DETECTION_TEMPLATES = {
+    "server_errors": {"name": "Server errors", "match": "all", "conditions": [{"field": "status", "operator": "gte", "value": 500}]},
+    "rate_limits": {"name": "Rate-limit responses", "match": "all", "conditions": [{"field": "status", "operator": "eq", "value": 429}]},
+    "high_latency": {"name": "High request latency", "match": "all", "conditions": [{"field": "duration_ms", "operator": "gt", "value": 2000}]},
+    "write_activity": {"name": "Write activity", "match": "all", "conditions": [{"field": "method", "operator": "in", "value": ["POST", "PUT", "PATCH", "DELETE"]}]},
+    "authentication_failures": {"name": "Authentication failures", "match": "all", "conditions": [{"field": "status", "operator": "in", "value": [401, 403]}]},
+}
+DETECTION_FIELDS = {"status", "duration_ms", "method", "url", "environment_id", "error", "timestamp"}
+DETECTION_OPERATORS = {"eq", "ne", "gt", "gte", "lt", "lte", "contains", "starts_with", "exists", "in"}
+
+
+def validate_detection_rule(rule: Any) -> dict[str, Any]:
+    """Validate a small declarative rule language; arbitrary code is impossible."""
+    errors: list[str] = []
+    if not isinstance(rule, dict):
+        return {"valid": False, "errors": ["Rule must be an object"], "rule": {}}
+    conditions = rule.get("conditions")
+    mode = str(rule.get("match", "all"))
+    if mode not in {"all", "any"}: errors.append("match must be all or any")
+    if not isinstance(conditions, list) or not conditions or len(conditions) > 20:
+        errors.append("conditions must contain between 1 and 20 items"); conditions = []
+    normalized = {"name": str(rule.get("name", "Custom detection"))[:120], "match": mode, "conditions": []}
+    for index, condition in enumerate(conditions, 1):
+        if not isinstance(condition, dict): errors.append(f"Condition {index} must be an object"); continue
+        field, operator = str(condition.get("field", "")), str(condition.get("operator", ""))
+        allowed_field = field in DETECTION_FIELDS or (field.startswith("response_headers.") and len(field) <= 100 and re.fullmatch(r"response_headers\.[A-Za-z0-9_-]+", field))
+        if not allowed_field: errors.append(f"Condition {index} has an unsupported field")
+        if operator not in DETECTION_OPERATORS: errors.append(f"Condition {index} has an unsupported operator")
+        value = condition.get("value")
+        if operator == "in" and (not isinstance(value, list) or len(value) > 100): errors.append(f"Condition {index} in value must be a list of at most 100 items")
+        if isinstance(value, (dict, list)) and operator != "in": errors.append(f"Condition {index} value must be scalar")
+        normalized["conditions"].append({"field": field, "operator": operator, "value": mask(value)})
+    return {"valid": not errors, "errors": errors, "rule": normalized}
+
+
+def evaluate_detection_rule(rule: Any, events: Iterable[dict[str, Any]]) -> dict[str, Any]:
+    """Evaluate a validated declarative detection against masked local events."""
+    validation = validate_detection_rule(rule)
+    if not validation["valid"]:
+        return {"valid": False, "errors": validation["errors"], "matches": [], "summary": {"examined": 0, "matched": 0}}
+    normalized = validation["rule"]
+
+    def field_value(event: dict[str, Any], field: str) -> Any:
+        if field.startswith("response_headers."):
+            name = field.split(".", 1)[1].casefold()
+            headers = event.get("response_headers", {})
+            return next((value for key, value in headers.items() if str(key).casefold() == name), None) if isinstance(headers, dict) else None
+        return event.get(field)
+
+    def condition_matches(actual: Any, condition: dict[str, Any]) -> bool:
+        operator, expected = condition["operator"], condition.get("value")
+        if operator == "exists": return (actual is not None) == bool(expected)
+        if operator == "in": return actual in expected or str(actual) in {str(item) for item in expected}
+        if operator == "contains": return str(expected).casefold() in str(actual or "").casefold()
+        if operator == "starts_with": return str(actual or "").casefold().startswith(str(expected).casefold())
+        if operator in {"gt", "gte", "lt", "lte"}:
+            try: first, second = float(actual), float(expected)
+            except (TypeError, ValueError): return False
+            return {"gt": first > second, "gte": first >= second, "lt": first < second, "lte": first <= second}[operator]
+        equal = actual == expected or str(actual) == str(expected)
+        return equal if operator == "eq" else not equal
+
+    source = [mask(item) for item in list(events)[-5000:] if isinstance(item, dict)]
+    matches = []
+    for event in source:
+        results = [condition_matches(field_value(event, item["field"]), item) for item in normalized["conditions"]]
+        if (all(results) if normalized["match"] == "all" else any(results)):
+            matches.append({key: event.get(key) for key in ("timestamp", "environment_id", "method", "url", "status", "duration_ms", "error") if key in event})
+    return {"valid": True, "errors": [], "rule": normalized, "matches": matches,
+            "summary": {"examined": len(source), "matched": len(matches)},
+            "explanation": f"Matched events where {normalized['match']} of {len(normalized['conditions'])} declarative conditions were true.",
+            "disclaimer": "Local retrospective detection only. It does not execute code, contact a tenant, or trigger remediation."}
+
+
 def validate_request_chain(steps: Any, maximum: int = 20) -> dict[str, Any]:
     """Validate an explicit API chain before the UI considers execution."""
     if not isinstance(steps, list) or not steps:

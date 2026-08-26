@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES
 
 
 class MemorySettings:
@@ -13,6 +13,47 @@ class MemorySettings:
 
 
 class FeatureServicesTests(unittest.TestCase):
+    def test_zdx_journey_consumes_nested_graphql_output(self):
+        response = {"data": {"devices": [{"name": "Workstation", "samples": [
+            {"timestamp": "10:00", "zdxScore": 91, "deviceScore": 87, "latencyMs": 42, "packetLossPercent": 0.1, "cloudPathScore": 88, "applicationScore": 94},
+            {"timestamp": "10:05", "zdxScore": 61, "latencyMs": 340, "packetLossPercent": 4.2},
+        ]}]}}
+        journey = zdx_experience_journey(response)
+        self.assertEqual(5, journey["summary"]["observed_stages"])
+        self.assertEqual(61, journey["summary"]["overall_score"])
+        self.assertEqual(2, len(journey["series"]["latency_ms"]))
+        self.assertTrue({"overall_score", "latency_ms", "packet_loss_percent"}.issubset({item["metric"] for item in journey["issues"]}))
+
+    def test_zdx_journey_does_not_invent_missing_stages(self):
+        journey = zdx_experience_journey({"data": {"latency": 80}})
+        self.assertEqual(1, journey["summary"]["observed_stages"])
+        self.assertEqual("observed", next(item for item in journey["stages"] if item["id"] == "network")["status"])
+        self.assertEqual("no_data", next(item for item in journey["stages"] if item["id"] == "device")["status"])
+
+    def test_adaptive_anomalies_explains_latency_and_status_regressions(self):
+        history = [{"url": "https://tenant.example/api/users", "status": 200, "duration_ms": value} for value in (100, 105, 95, 110, 98)]
+        history.append({"url": "https://tenant.example/api/users", "status": 503, "duration_ms": 1800})
+        result = adaptive_anomalies(history, "balanced", 5)
+        self.assertEqual(1, result["summary"]["endpoints_evaluated"])
+        self.assertEqual({"adaptive_latency_regression", "adaptive_status_regression"}, {item["code"] for item in result["findings"]})
+        self.assertIn("MAD", result["method"])
+
+    def test_detection_lab_is_declarative_bounded_and_masked(self):
+        invalid = validate_detection_rule({"conditions": [{"field": "__class__", "operator": "eval", "value": "danger"}]})
+        self.assertFalse(invalid["valid"])
+        result = evaluate_detection_rule(DETECTION_TEMPLATES["server_errors"], [
+            {"status": 200, "url": "https://example.test/ok", "duration_ms": 10},
+            {"status": 503, "url": "https://example.test/fail?api_key=hidden", "duration_ms": 20, "authorization": "hidden"},
+        ])
+        self.assertTrue(result["valid"]); self.assertEqual(1, result["summary"]["matched"])
+        rendered = json.dumps(result)
+        self.assertNotIn("hidden", rendered); self.assertNotIn("authorization", rendered)
+
+    def test_detection_lab_supports_header_lookup_without_code_execution(self):
+        rule = {"match": "all", "conditions": [{"field": "response_headers.Retry-After", "operator": "exists", "value": True}]}
+        result = evaluate_detection_rule(rule, [{"status": 429, "response_headers": {"retry-after": "60"}}])
+        self.assertEqual(1, result["summary"]["matched"])
+
     def test_policy_diff_masks_sensitive_values(self):
         changes = policy_diff({"client_secret": "secret"}, {"client_secret": "other"})
         self.assertEqual(1, len(changes))

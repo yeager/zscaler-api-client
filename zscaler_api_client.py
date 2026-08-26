@@ -59,7 +59,7 @@ try:
     import pyqtgraph as pg
 except (ImportError, OSError):  # Keep source checkouts usable with the minimal Qt stack.
     pg = None
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from evidence_signing import generate_private_key, public_key, sign_evidence, verify_evidence
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
@@ -3892,6 +3892,46 @@ class SocEntityGraph(QWidget):
         super().mousePressEvent(event)
 
 
+class ExperienceJourneyGraph(QWidget):
+    """Compact user-to-application journey with explicit missing-data states."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.stages: list[dict[str, Any]] = []
+        self.issues: list[dict[str, Any]] = []
+        self.setMinimumHeight(205)
+
+    def set_journey(self, stages, issues):
+        self.stages = list(stages)[:5]; self.issues = list(issues)
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self); painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        canvas = self.rect().adjusted(1, 1, -1, -1)
+        painter.setPen(QPen(QColor("#294564"), 1)); painter.setBrush(QColor("#0c192a")); painter.drawRoundedRect(canvas, 14, 14)
+        if not self.stages:
+            painter.setPen(QColor("#94a3b8")); painter.drawText(canvas, Qt.AlignmentFlag.AlignCenter, self.tr("No journey telemetry in the current response")); return
+        margin, gap = 22, 20
+        width = max(100, (canvas.width() - margin * 2 - gap * (len(self.stages) - 1)) // max(1, len(self.stages)))
+        height = min(112, canvas.height() - 62); top = canvas.center().y() - height // 2
+        issue_stages = {str(item.get("stage")) for item in self.issues}
+        boxes = []
+        for index, stage in enumerate(self.stages):
+            boxes.append((canvas.left() + margin + index * (width + gap), top, width, height))
+        for first, second in zip(boxes, boxes[1:]):
+            y = first[1] + first[3] // 2
+            painter.setPen(QPen(QColor("#38bdf8"), 3)); painter.drawLine(first[0] + first[2], y, second[0], y)
+            painter.drawLine(second[0], y, second[0] - 9, y - 6); painter.drawLine(second[0], y, second[0] - 9, y + 6)
+        for stage, box in zip(self.stages, boxes):
+            x, y, box_width, box_height = box; observed = stage.get("status") == "observed"; issue = stage.get("id") in issue_stages
+            painter.setPen(QPen(QColor("#fb7185" if issue else "#34d399" if observed else "#475569"), 3 if issue else 2))
+            painter.setBrush(QColor("#3b1625" if issue else "#123c35" if observed else "#1e293b")); painter.drawRoundedRect(x, y, box_width, box_height, 12, 12)
+            painter.setPen(QColor("#f8fafc")); font = painter.font(); font.setBold(True); painter.setFont(font)
+            painter.drawText(x + 8, y + 10, box_width - 16, 20, Qt.AlignmentFlag.AlignCenter, self.tr(str(stage.get("label", ""))))
+            font.setBold(False); painter.setFont(font); metrics = list(stage.get("metrics", {}).items())
+            detail = "\n".join(f"{key.replace('_', ' ')}: {value:g}" for key, value in metrics[:3]) if metrics else self.tr("No observed data")
+            painter.setPen(QColor("#cbd5e1" if observed else "#64748b")); painter.drawText(x + 8, y + 38, box_width - 16, box_height - 46, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, detail)
+
+
 class WelcomeDialog(QDialog):
     """Welcome dialog for new users with getting started guidance."""
     
@@ -6253,6 +6293,46 @@ class OperationsDialog(QDialog):
         graph_export = QPushButton(self.tr("Export entity graph")); graph_export.clicked.connect(self.export_soc_graph); incident_actions.insertWidget(2, graph_export)
         self.incident_tab_index = self.tabs.addTab(incident_page, self.tr("Incident investigation"))
 
+        journey_page = QWidget(); journey_layout = QVBoxLayout(journey_page)
+        journey_intro = QLabel(self.tr("Trace observed digital experience from user and device through network and service edge to the application. The parser consumes the complete current REST or GraphQL response, marks missing stages explicitly, and never queries the tenant automatically.")); journey_intro.setWordWrap(True); journey_layout.addWidget(journey_intro)
+        journey_cards = QGridLayout(); self.journey_cards = {}
+        for column, (key, label) in enumerate((("overall_score", self.tr("Experience score")), ("latency_ms", self.tr("Latency")), ("packet_loss_percent", self.tr("Packet loss")), ("issues", self.tr("Journey issues")))):
+            card = QFrame(); card.setObjectName("metricCard"); card_layout = QVBoxLayout(card); title = QLabel(label); title.setObjectName("mutedLabel"); card_layout.addWidget(title)
+            value = QLabel("—"); value.setObjectName("sectionTitle"); font = value.font(); font.setPointSize(18); font.setBold(True); value.setFont(font); card_layout.addWidget(value); self.journey_cards[key] = value; journey_cards.addWidget(card, 0, column)
+        journey_layout.addLayout(journey_cards)
+        self.journey_graph = ExperienceJourneyGraph(); self.journey_graph.setAccessibleName(self.tr("Observed user-to-application experience journey")); journey_layout.addWidget(self.journey_graph)
+        journey_split = QSplitter(Qt.Orientation.Horizontal)
+        journey_left = QWidget(); journey_left_layout = QVBoxLayout(journey_left); journey_left_layout.setContentsMargins(0, 0, 0, 0)
+        journey_metric_row = QHBoxLayout(); journey_metric_row.addWidget(QLabel(self.tr("Trend metric:"))); self.journey_metric = QComboBox(); self.journey_metric.currentIndexChanged.connect(self.render_journey_trend); journey_metric_row.addWidget(self.journey_metric, 1); journey_left_layout.addLayout(journey_metric_row)
+        self.journey_trend = HighPerformanceLineChart(axis_label=self.tr("Observed value")); journey_left_layout.addWidget(self.journey_trend); journey_split.addWidget(journey_left)
+        journey_right = QWidget(); journey_right_layout = QVBoxLayout(journey_right); journey_right_layout.setContentsMargins(0, 0, 0, 0)
+        self.journey_issues = QTableWidget(0, 4); self.journey_issues.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Stage"), self.tr("Metric"), self.tr("Explanation")]); self.journey_issues.horizontalHeader().setStretchLastSection(True); self.journey_issues.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); journey_right_layout.addWidget(self.journey_issues); journey_split.addWidget(journey_right); journey_split.setSizes([520, 560]); journey_layout.addWidget(journey_split)
+        self.journey_note = QLabel(); self.journey_note.setObjectName("mutedLabel"); self.journey_note.setWordWrap(True); journey_layout.addWidget(self.journey_note)
+        journey_actions = QHBoxLayout(); refresh_journey = QPushButton(self.tr("Analyze current experience response")); refresh_journey.clicked.connect(self.refresh_experience_journey); journey_actions.addWidget(refresh_journey)
+        export_journey = QPushButton(self.tr("Export masked journey")); export_journey.clicked.connect(self.export_experience_journey); journey_actions.addWidget(export_journey); journey_actions.addStretch(); journey_layout.addLayout(journey_actions)
+        self.journey_tab_index = self.tabs.addTab(journey_page, self.tr("Experience journey"))
+
+        detection_page = QWidget(); detection_layout = QVBoxLayout(detection_page)
+        detection_intro = QLabel(self.tr("Build and test explainable detections against retained local request history. Rules use a bounded declarative grammar—no Python, eval, tenant writes, network calls, or automatic remediation.")); detection_intro.setWordWrap(True); detection_layout.addWidget(detection_intro)
+        detection_controls = QHBoxLayout(); detection_controls.addWidget(QLabel(self.tr("Template:"))); self.detection_template = QComboBox()
+        template_labels = {"server_errors": self.tr("Server errors"), "rate_limits": self.tr("Rate-limit responses"), "high_latency": self.tr("High request latency"), "write_activity": self.tr("Write activity"), "authentication_failures": self.tr("Authentication failures")}
+        for key in DETECTION_TEMPLATES: self.detection_template.addItem(template_labels[key], key)
+        self.detection_template.currentIndexChanged.connect(self.load_detection_template); detection_controls.addWidget(self.detection_template)
+        detection_controls.addWidget(QLabel(self.tr("Anomaly sensitivity:"))); self.detection_sensitivity = QComboBox(); self.detection_sensitivity.addItem(self.tr("Relaxed"), "relaxed"); self.detection_sensitivity.addItem(self.tr("Balanced"), "balanced"); self.detection_sensitivity.addItem(self.tr("Sensitive"), "sensitive"); self.detection_sensitivity.setCurrentIndex(1); detection_controls.addWidget(self.detection_sensitivity); detection_controls.addStretch(); detection_layout.addLayout(detection_controls)
+        self.detection_rule = QPlainTextEdit(); self.detection_rule.setMaximumHeight(145); self.detection_rule.setPlaceholderText(self.tr("Declarative detection rule JSON")); detection_layout.addWidget(self.detection_rule)
+        detection_actions = QHBoxLayout(); validate_detection = QPushButton(self.tr("Validate rule")); validate_detection.clicked.connect(self.validate_detection_lab); detection_actions.addWidget(validate_detection)
+        run_detection = QPushButton(self.tr("Run local detection")); run_detection.clicked.connect(self.run_detection_lab); detection_actions.addWidget(run_detection)
+        run_anomaly = QPushButton(self.tr("Analyze adaptive anomalies")); run_anomaly.clicked.connect(self.refresh_adaptive_anomalies); detection_actions.addWidget(run_anomaly)
+        export_detection = QPushButton(self.tr("Export masked detection evidence")); export_detection.clicked.connect(self.export_detection_lab); detection_actions.addWidget(export_detection); detection_actions.addStretch(); detection_layout.addLayout(detection_actions)
+        self.detection_status = QLabel(); self.detection_status.setWordWrap(True); self.detection_status.setObjectName("mutedLabel"); detection_layout.addWidget(self.detection_status)
+        detection_split = QSplitter(Qt.Orientation.Horizontal)
+        self.detection_matches = QTableWidget(0, 6); self.detection_matches.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Method"), self.tr("URL"), self.tr("Status"), self.tr("Duration"), self.tr("Environment")]); self.detection_matches.horizontalHeader().setStretchLastSection(True); self.detection_matches.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); detection_split.addWidget(self.detection_matches)
+        anomaly_panel = QWidget(); anomaly_layout = QVBoxLayout(anomaly_panel); anomaly_layout.setContentsMargins(0, 0, 0, 0)
+        self.anomaly_chart = NumericBarChart(); self.anomaly_chart.setMaximumHeight(160); anomaly_layout.addWidget(self.anomaly_chart)
+        self.anomaly_findings = QTableWidget(0, 4); self.anomaly_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Endpoint"), self.tr("Observed"), self.tr("Explanation")]); self.anomaly_findings.horizontalHeader().setStretchLastSection(True); self.anomaly_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); anomaly_layout.addWidget(self.anomaly_findings); detection_split.addWidget(anomaly_panel); detection_split.setSizes([600, 480]); detection_layout.addWidget(detection_split)
+        self.detection_tab_index = self.tabs.addTab(detection_page, self.tr("Detection lab"))
+        self._last_detection_result = {}; self._last_adaptive_result = {}; self.load_detection_template(); self.refresh_adaptive_anomalies(record_audit=False)
+
         change_page = QWidget(); change_layout = QVBoxLayout(change_page)
         change_intro = QLabel(self.tr("Create a local review from Policy diff. Approval records intent only; no policy, Terraform, or Git change is applied automatically.")); change_intro.setWordWrap(True); change_layout.addWidget(change_intro)
         change_form = QFormLayout(); self.change_ticket = QLineEdit(); self.change_ticket.setPlaceholderText(self.tr("Change ticket or reference")); self.change_reviewer = QLineEdit(); self.change_reviewer.setPlaceholderText(self.tr("Reviewer name")); change_form.addRow(self.tr("Reference:"), self.change_ticket); change_form.addRow(self.tr("Reviewer:"), self.change_reviewer); change_layout.addLayout(change_form)
@@ -6362,12 +6442,12 @@ class OperationsDialog(QDialog):
         self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
-        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_webhook_history(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.refresh_assurance_baselines(); self.refresh_assurance(record_audit=False); self.generate_report(); self.refresh_schedules(); self.refresh_policy_snapshots(); self.analyze_policy_twin(record_audit=False); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_webhook_history(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.refresh_experience_journey(record_audit=False); self.refresh_assurance_baselines(); self.refresh_assurance(record_audit=False); self.generate_report(); self.refresh_schedules(); self.refresh_policy_snapshots(); self.analyze_policy_twin(record_audit=False); self.configure_local_monitor(self.local_monitor_enabled.isChecked(), record_audit=False)
 
     def _apply_operations_mode(self):
         """Keep basic mode focused on situational awareness and investigation."""
         basic = self.settings.value("ui/mode", "basic") == "basic"
-        advanced_tabs = (1, 2, 3, 4, 5, 6, self.change_tab_index, self.chain_tab_index)
+        advanced_tabs = (1, 2, 3, 4, 5, 6, self.change_tab_index, self.chain_tab_index, self.detection_tab_index)
         for index in advanced_tabs:
             self.tabs.setTabVisible(index, not basic)
         self.twin_snapshot_group.setVisible(not basic)
@@ -6390,7 +6470,7 @@ class OperationsDialog(QDialog):
 
     def refresh_local_signals(self):
         """Update visualizations from retained local data only."""
-        self.refresh_dashboard(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.refresh_assurance(record_audit=False); self.generate_report()
+        self.refresh_dashboard(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.refresh_experience_journey(record_audit=False); self.refresh_adaptive_anomalies(record_audit=False); self.refresh_assurance(record_audit=False); self.generate_report()
 
     def _scope_id(self) -> str:
         return str(self.data_scope.currentData() or self.active_profile["id"])
@@ -6673,6 +6753,122 @@ class OperationsDialog(QDialog):
         else:
             Path(path).write_text(json.dumps(safe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"); format_name = "json"
         self._scope_audit().append("soc_entity_graph_exported", {"format": format_name, "file": os.path.basename(path), "entities": safe["summary"]["entities"]})
+
+    def _current_response_body(self):
+        exchange = getattr(self.window, "_last_response_exchange", None) or {}
+        response = exchange.get("response", {}) if isinstance(exchange, dict) else {}
+        return response.get("body") if isinstance(response, dict) else None
+
+    def refresh_experience_journey(self, _checked=False, record_audit=True):
+        raw = zdx_experience_journey(self._current_response_body())
+        self._last_experience_journey = raw
+        data = privacy_safe(raw, self.settings, "display"); summary = data["summary"]
+        values = {
+            "overall_score": "—" if summary["overall_score"] is None else f"{summary['overall_score']:g}/100",
+            "latency_ms": "—" if summary["latency_ms"] is None else self.tr("{value:g} ms").format(value=summary["latency_ms"]),
+            "packet_loss_percent": "—" if summary["packet_loss_percent"] is None else f"{summary['packet_loss_percent']:g}%",
+            "issues": str(summary["issues"]),
+        }
+        for key, value in values.items(): self.journey_cards[key].setText(value)
+        self.journey_cards["issues"].setStyleSheet("color: #fb7185;" if summary["issues"] else "color: #34d399;")
+        stage_names = {"user": self.tr("User"), "device": self.tr("Device"), "network": self.tr("Network"), "service_edge": self.tr("Service edge"), "application": self.tr("Application")}
+        visual_stages = [{**stage, "label": stage_names.get(stage["id"], stage["label"])} for stage in data["stages"]]
+        self.journey_graph.set_journey(visual_stages, data["issues"])
+        selected = self.journey_metric.currentData(); self.journey_metric.blockSignals(True); self.journey_metric.clear()
+        metric_names = {"overall_score": self.tr("Experience score"), "device_score": self.tr("Device score"), "application_score": self.tr("Application score"), "service_edge_score": self.tr("Service-edge score"), "latency_ms": self.tr("Latency"), "packet_loss_percent": self.tr("Packet loss"), "jitter_ms": self.tr("Jitter"), "dns_ms": self.tr("DNS time"), "tcp_connect_ms": self.tr("TCP connect time"), "page_fetch_ms": self.tr("Page fetch time"), "availability_percent": self.tr("Availability"), "cpu_percent": self.tr("CPU"), "memory_percent": self.tr("Memory")}
+        for metric in data["series"]: self.journey_metric.addItem(metric_names.get(metric, metric.replace("_", " ").title()), metric)
+        index = self.journey_metric.findData(selected); self.journey_metric.setCurrentIndex(index if index >= 0 else 0); self.journey_metric.blockSignals(False); self.render_journey_trend()
+        self.journey_issues.setRowCount(len(data["issues"]))
+        issue_explanations = {"overall_score": self.tr("Overall experience score is below 70"), "device_score": self.tr("Device score is below 70"), "application_score": self.tr("Application score is below 70"), "service_edge_score": self.tr("Service-edge score is below 70"), "latency_ms": self.tr("Observed latency exceeds 250 ms"), "packet_loss_percent": self.tr("Observed packet loss exceeds 2%"), "jitter_ms": self.tr("Observed jitter exceeds 40 ms"), "availability_percent": self.tr("Observed availability is below 99%")}
+        for row, issue in enumerate(data["issues"]):
+            values = (self.tr(issue["severity"].title()), stage_names.get(issue["stage"], issue["stage"]), metric_names.get(issue["metric"], issue["metric"]), issue_explanations.get(issue["metric"], issue["explanation"]))
+            for column, value in enumerate(values): self.journey_issues.setItem(row, column, self._severity_item(str(value), issue["severity"]) if column == 0 else QTableWidgetItem(str(value)))
+        self.journey_issues.resizeColumnsToContents()
+        no_response = self._current_response_body() is None
+        disclaimer = self.tr("Schema-tolerant local interpretation of observed API fields. Thresholds are transparent operational hints, not Zscaler health verdicts or SLA determinations.")
+        self.journey_note.setText(self.tr("No current API or GraphQL response is available. Run or import a ZDX/OneAPI query, then analyze again.") if no_response else self.tr("Observed {stages} of 5 journey stages across {samples} metric sample(s). {disclaimer}").format(stages=summary["observed_stages"], samples=summary["samples"], disclaimer=disclaimer))
+        if record_audit: self._scope_audit().append("experience_journey_analyzed", {"samples": summary["samples"], "observed_stages": summary["observed_stages"], "issues": summary["issues"]})
+
+    def render_journey_trend(self, _index=0):
+        data = getattr(self, "_last_experience_journey", {})
+        metric = self.journey_metric.currentData()
+        values = [(str(item["label"])[-24:], float(item["value"])) for item in data.get("series", {}).get(metric, [])]
+        self.journey_trend.set_values(values)
+
+    def export_experience_journey(self):
+        if not getattr(self, "_last_experience_journey", None): self.refresh_experience_journey(record_audit=False)
+        path, selected = QFileDialog.getSaveFileName(self, self.tr("Export masked journey"), "experience-journey.json", "JSON (*.json);;CSV metrics (*.csv);;PNG journey (*.png)")
+        if not path: return
+        safe = privacy_safe(self._last_experience_journey, self.settings, "export"); suffix = Path(path).suffix.lower()
+        if suffix == ".png" or "PNG" in selected:
+            display = privacy_safe(self._last_experience_journey, self.settings, "display"); self.journey_graph.set_journey(safe["stages"], safe["issues"]); self.journey_graph.grab().save(path, "PNG"); self.journey_graph.set_journey(display["stages"], display["issues"]); format_name = "png"
+        elif suffix == ".csv" or "CSV" in selected:
+            output = io.StringIO(); writer = csv.writer(output); writer.writerow(["metric", "label", "value"])
+            for metric, samples in safe["series"].items():
+                for sample in samples: writer.writerow([metric, sample["label"], sample["value"]])
+            Path(path).write_text(output.getvalue(), encoding="utf-8"); format_name = "csv"
+        else:
+            Path(path).write_text(json.dumps(safe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"); format_name = "json"
+        self._scope_audit().append("experience_journey_exported", {"format": format_name, "file": os.path.basename(path), "samples": safe["summary"]["samples"]})
+
+    def load_detection_template(self, _index=0):
+        key = self.detection_template.currentData()
+        if key in DETECTION_TEMPLATES: self.detection_rule.setPlainText(json.dumps(DETECTION_TEMPLATES[key], indent=2, ensure_ascii=False))
+
+    def _detection_rule_data(self):
+        try: return json.loads(self.detection_rule.toPlainText())
+        except ValueError as exc: return {"_parse_error": self.tr("Invalid JSON: ") + str(exc)}
+
+    def validate_detection_lab(self):
+        rule = self._detection_rule_data()
+        if "_parse_error" in rule:
+            result = {"valid": False, "errors": [rule["_parse_error"]]}
+        else:
+            result = validate_detection_rule(rule)
+        self.detection_status.setText(self.tr("Rule is valid and can be evaluated locally.") if result["valid"] else self.tr("Rule validation failed: {errors}").format(errors="; ".join(result["errors"])))
+        self.detection_status.setStyleSheet("color: #34d399;" if result["valid"] else "color: #fb7185;")
+        return result
+
+    def run_detection_lab(self):
+        validation = self.validate_detection_lab()
+        if not validation["valid"]: return
+        raw = evaluate_detection_rule(validation["rule"], self._scoped_history()); self._last_detection_result = raw
+        data = privacy_safe(raw, self.settings, "display"); matches = data["matches"]
+        self.detection_matches.setRowCount(len(matches))
+        for row, event in enumerate(matches):
+            values = (event.get("timestamp", ""), event.get("method", ""), event.get("url", ""), event.get("status", ""), self.tr("{duration} ms").format(duration=event.get("duration_ms", "—")), event.get("environment_id", ""))
+            for column, value in enumerate(values): self.detection_matches.setItem(row, column, QTableWidgetItem(str(value)))
+        explanation = self.tr("Matched events where {mode} of {conditions} declarative condition(s) were true.").format(mode=self.tr(data["rule"]["match"].title()), conditions=len(data["rule"]["conditions"]))
+        self.detection_matches.resizeColumnsToContents(); self.detection_status.setText(self.tr("Examined {examined} local event(s); {matched} matched. {explanation}").format(examined=data["summary"]["examined"], matched=data["summary"]["matched"], explanation=explanation))
+        self._scope_audit().append("local_detection_evaluated", {"rule": data["rule"]["name"], **data["summary"]})
+
+    def refresh_adaptive_anomalies(self, _checked=False, record_audit=True):
+        raw = adaptive_anomalies(self._scoped_history(), self.detection_sensitivity.currentData() or "balanced"); self._last_adaptive_result = raw
+        data = privacy_safe(raw, self.settings, "display"); findings = data["findings"]
+        self.anomaly_findings.setRowCount(len(findings))
+        for row, finding in enumerate(findings):
+            values = (self.tr(finding["severity"].title()), finding["endpoint"], finding["observed"], finding["explanation"])
+            for column, value in enumerate(values): self.anomaly_findings.setItem(row, column, self._severity_item(str(value), finding["severity"]) if column == 0 else QTableWidgetItem(str(value)))
+        self.anomaly_findings.resizeColumnsToContents()
+        values = []
+        for index, baseline in enumerate(data["baselines"][:8], 1):
+            values.extend([(self.tr("Endpoint {number} current").format(number=index), float(baseline["current_ms"])), (self.tr("Endpoint {number} threshold").format(number=index), float(baseline["threshold_ms"]))])
+        method = self.tr("Median absolute deviation (MAD), scaled by 1.4826 with a 10%/10 ms noise floor")
+        self.anomaly_chart.set_values(values); self.detection_status.setText(self.tr("Adaptive analysis evaluated {endpoints} endpoint(s) and found {findings} explainable anomaly hint(s). Method: {method}").format(endpoints=data["summary"]["endpoints_evaluated"], findings=data["summary"]["findings"], method=method))
+        if record_audit: self._scope_audit().append("adaptive_anomalies_evaluated", {"sensitivity": data["sensitivity"], **data["summary"]})
+
+    def export_detection_lab(self):
+        evidence = {"scope": self._scope_metadata(), "detection": self._last_detection_result, "adaptive_anomalies": self._last_adaptive_result}
+        path, selected = QFileDialog.getSaveFileName(self, self.tr("Export masked detection evidence"), "detection-evidence.json", "JSON (*.json);;CSV matches (*.csv)")
+        if not path: return
+        safe = privacy_safe(evidence, self.settings, "export")
+        if Path(path).suffix.lower() == ".csv" or "CSV" in selected:
+            output = io.StringIO(); writer = csv.writer(output); writer.writerow(["timestamp", "method", "url", "status", "duration_ms", "environment_id"])
+            for event in safe.get("detection", {}).get("matches", []): writer.writerow([event.get(key, "") for key in ("timestamp", "method", "url", "status", "duration_ms", "environment_id")])
+            Path(path).write_text(output.getvalue(), encoding="utf-8"); format_name = "csv"
+        else:
+            Path(path).write_text(json.dumps(safe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"); format_name = "json"
+        self._scope_audit().append("detection_evidence_exported", {"format": format_name, "file": os.path.basename(path)})
 
     def _change_plan(self):
         return change_control_plan(self._json(self.before_policy, {}), self._json(self.after_policy, {}))
