@@ -128,6 +128,32 @@ def redact_url(url: str) -> str:
         for key, value in query
     ])
     return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, parts.fragment))
+
+
+def build_network_opener(settings: QSettings | None = None, ssl_context=None):
+    """Create the shared network transport for API, AI, and update traffic."""
+    settings = settings or QSettings("Zscaler", "APIClient")
+    handlers = [urllib.request.HTTPSHandler(context=ssl_context)] if ssl_context else []
+    proxy_mode = str(settings.value("advanced/proxy_mode", "0"))
+    if proxy_mode == "0":
+        handlers.append(urllib.request.ProxyHandler({}))
+    elif proxy_mode == "2":
+        host = str(settings.value("advanced/proxy_host", "")).strip()
+        port = str(settings.value("advanced/proxy_port", "")).strip()
+        if not host or not port:
+            raise ValueError("Manual proxy requires both host and port")
+        username = str(settings.value("advanced/proxy_username", "")).strip()
+        password = secure_get("proxy_password")
+        credentials = ""
+        if username:
+            credentials = urllib.parse.quote(username, safe="")
+            if password:
+                credentials += ":" + urllib.parse.quote(password, safe="")
+            credentials += "@"
+        proxy_url = f"http://{credentials}{host}:{port}"
+        handlers.append(urllib.request.ProxyHandler({"http": proxy_url, "https": proxy_url}))
+    return urllib.request.build_opener(*handlers)
+
 _credentials_loaded = False
 
 def _load_all_credentials():
@@ -2292,27 +2318,7 @@ class ApiWorker(QThread):
             except (ImportError, Exception):
                 ssl_context = ssl.create_default_context()
         
-        proxy_mode = str(settings.value("advanced/proxy_mode", "0"))
-        handlers = [urllib.request.HTTPSHandler(context=ssl_context)]
-        if proxy_mode == "0":
-            # Explicitly disable inherited environment proxies when requested.
-            handlers.append(urllib.request.ProxyHandler({}))
-        elif proxy_mode == "2":
-            host = str(settings.value("advanced/proxy_host", "")).strip()
-            port = str(settings.value("advanced/proxy_port", "")).strip()
-            if not host or not port:
-                raise ValueError("Manual proxy requires both host and port")
-            username = str(settings.value("advanced/proxy_username", "")).strip()
-            password = secure_get("proxy_password")
-            credentials = ""
-            if username:
-                credentials = urllib.parse.quote(username, safe="")
-                if password:
-                    credentials += ":" + urllib.parse.quote(password, safe="")
-                credentials += "@"
-            proxy_url = f"http://{credentials}{host}:{port}"
-            handlers.append(urllib.request.ProxyHandler({"http": proxy_url, "https": proxy_url}))
-        opener = urllib.request.build_opener(*handlers)
+        opener = build_network_opener(settings, ssl_context)
 
         try:
             with opener.open(request, timeout=timeout) as response:
@@ -3672,7 +3678,7 @@ class SettingsDialog(QDialog):
             return
         def check_connection():
             request = urllib.request.Request(f"{endpoint}/models", headers={"Authorization": f"Bearer {secure_get('ai_api_key')}"} if secure_get("ai_api_key") else {})
-            with urllib.request.urlopen(request, timeout=10) as response:
+            with build_network_opener(QSettings("Zscaler", "APIClient")).open(request, timeout=10) as response:
                 response.read(1)
             return self.tr("AI connection succeeded.")
         self.ai_test_worker = LlmWorker(check_connection)
@@ -5624,7 +5630,7 @@ class MainWindow(QMainWindow):
             headers["Authorization"] = f"Bearer {key}"
         payload = json.dumps({"model": model, "messages": [{"role": "user", "content": prompt}], "temperature": 0.1}).encode("utf-8")
         request = urllib.request.Request(url, data=payload, headers=headers, method="POST")
-        with urllib.request.urlopen(request, timeout=30) as response:
+        with build_network_opener(QSettings("Zscaler", "APIClient")).open(request, timeout=30) as response:
             result = json.loads(response.read().decode("utf-8"))
         return str(result["choices"][0]["message"]["content"]).strip()
 
@@ -6747,7 +6753,7 @@ class MainWindow(QMainWindow):
                 headers={"User-Agent": "ZscalerAPIClient", "Accept": "application/vnd.github.v3+json"}
             )
             
-            with urllib.request.urlopen(request, timeout=10, context=ssl_context) as response:
+            with build_network_opener(QSettings("Zscaler", "APIClient"), ssl_context).open(request, timeout=10) as response:
                 data = json.loads(response.read().decode("utf-8"))
             
             # Security verification

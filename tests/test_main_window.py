@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 from io import BytesIO
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -242,10 +242,31 @@ class MainWindowTests(unittest.TestCase):
         settings.setValue("advanced/proxy_mode", "0")
 
     def test_update_check_never_retries_with_unverified_tls(self):
-        with patch.object(client.urllib.request, "urlopen", side_effect=client.urllib.error.URLError("tls")) as urlopen, \
+        with patch.object(client, "build_network_opener") as build_opener, \
              patch.object(client.QMessageBox, "warning"):
+            build_opener.return_value.open.side_effect = client.urllib.error.URLError("tls")
             self.window._check_for_updates()
-        self.assertEqual(1, urlopen.call_count)
+        self.assertEqual(1, build_opener.return_value.open.call_count)
+
+    def test_configured_llm_uses_shared_network_transport(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = {key: settings.value(key, None) for key in ("ai/endpoint", "ai/model")}
+        response = MagicMock()
+        response.read.return_value = b'{"choices":[{"message":{"content":"Use GET /users"}}]}'
+        try:
+            settings.setValue("ai/endpoint", "http://localhost:11434/v1")
+            settings.setValue("ai/model", "local-test")
+            with patch.object(client, "build_network_opener") as build_opener:
+                build_opener.return_value.open.return_value.__enter__.return_value = response
+                answer = self.window._ask_configured_llm("list users", [])
+            self.assertEqual("Use GET /users", answer)
+            build_opener.assert_called()
+        finally:
+            for key, value in previous.items():
+                if value is None:
+                    settings.remove(key)
+                else:
+                    settings.setValue(key, value)
 
     def test_logout_clears_every_in_memory_api_session(self):
         for attribute in ("zia_session", "zpa_token", "zdx_token", "zcc_token", "zidentity_token",
