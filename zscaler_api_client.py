@@ -2249,6 +2249,23 @@ class JsonHighlighter(QSyntaxHighlighter):
             self.setFormat(match.start(), match.end() - match.start(), self.formats["keyword"])
 
 
+class ApiRequestError(Exception):
+    """An API failure that retains its HTTP status for safe local telemetry."""
+    def __init__(self, status_code: int, message: str):
+        super().__init__(message)
+        self.status_code = status_code
+
+
+def api_result_status(result: Dict) -> int:
+    """Return the real HTTP status retained by a worker result when available."""
+    if not result.get("success"):
+        return int(result.get("status_code") or 0)
+    payload = result.get("data")
+    if isinstance(payload, dict):
+        return int(payload.get("_status_code") or 200)
+    return 200
+
+
 class ApiWorker(QThread):
     """Worker thread for API requests."""
     finished = Signal(dict)
@@ -2266,8 +2283,10 @@ class ApiWorker(QThread):
             try:
                 result = self._make_request(req)
                 results.append({"success": True, "data": result, "request": req})
-            except Exception as e:
-                results.append({"success": False, "error": str(e), "request": req})
+            except ApiRequestError as error:
+                results.append({"success": False, "error": str(error), "status_code": error.status_code, "request": req})
+            except Exception as error:
+                results.append({"success": False, "error": str(error), "status_code": 0, "request": req})
             
             self.progress.emit(i + 1, total)
             time.sleep(0.1)  # Rate limiting
@@ -2348,7 +2367,7 @@ class ApiWorker(QThread):
                 error_body = e.read().decode("utf-8")
             except:
                 pass
-            raise Exception(f"HTTP {e.code}: {e.reason}\n{error_body}")
+            raise ApiRequestError(e.code, f"HTTP {e.code}: {e.reason}\n{error_body}")
 
 
 class LlmWorker(QThread):
@@ -4651,7 +4670,7 @@ class OperationsDialog(QDialog):
         self.api_chain_result.setPlainText(json.dumps(safe_results, indent=2, ensure_ascii=False))
         for item in results:
             request = item.get("request", {})
-            self.window._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=200 if item.get("success") else 0)
+            self.window._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=api_result_status(item))
         AuditTrail(self.settings).append("api_chain_finished", {"successful": successful, "failed": failed})
         QMessageBox.information(self, self.tr("API chains"), self.tr("API chain completed: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed))
 
@@ -6567,7 +6586,7 @@ class MainWindow(QMainWindow):
         
         if result["results"]:
             res = result["results"][0]
-            status = 200 if res["success"] else 0
+            status = api_result_status(res)
             
             if res["success"]:
                 # Extract metadata from response
@@ -6802,7 +6821,7 @@ class MainWindow(QMainWindow):
         failed = len(results) - successful
         for item in results:
             request = item.get("request", {})
-            self._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=200 if item.get("success") else 0)
+            self._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=api_result_status(item))
         AuditTrail(QSettings("Zscaler", "APIClient")).append("batch_finished", {"successful": successful, "failed": failed})
         self.status_bar.showMessage(self.tr("Batch complete: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed))
         self._log_output(self.tr("Batch complete: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed), "success" if not failed else "warning")

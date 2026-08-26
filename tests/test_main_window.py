@@ -91,6 +91,20 @@ class MainWindowTests(unittest.TestCase):
                 else:
                     settings.setValue(key, value)
 
+    def test_api_worker_retains_http_error_status_for_alerts(self):
+        worker = client.ApiWorker([{"url": "https://example.test", "method": "GET"}])
+        results = []
+        worker.finished.connect(results.append)
+        with patch.object(worker, "_make_request", side_effect=client.ApiRequestError(429, "HTTP 429: Too Many Requests")):
+            worker.run()
+        self.assertEqual(429, results[0]["results"][0]["status_code"])
+        self.assertEqual(201, client.api_result_status({"success": True, "data": {"_status_code": 201}}))
+
+    def test_failed_request_history_retains_http_status(self):
+        self.window._pending_request = {"method": "GET", "url": "https://example.test", "headers": {}, "body": None, "start_time": 0}
+        self.window._on_request_finished({"results": [{"success": False, "status_code": 429, "error": "HTTP 429: throttled"}]})
+        self.assertEqual(429, self.window.request_history[-1]["status"])
+
     def test_workspace_has_explorer_editor_and_inspector(self):
         self.assertEqual(self.window.main_splitter.count(), 3)
         self.assertEqual(self.window.response_tabs.count(), 8)
