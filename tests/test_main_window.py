@@ -211,6 +211,12 @@ class MainWindowTests(unittest.TestCase):
         self.assertNotIn("do-not-export", str(collection))
         self.assertIn("***", curl)
 
+    def test_request_exports_mask_sensitive_http_header_variants(self):
+        self.window.url_input.setText("https://example.test")
+        self.window.headers_table.setItem(0, 0, client.QTableWidgetItem("Set-Cookie"))
+        self.window.headers_table.setItem(0, 1, client.QTableWidgetItem("session=do-not-export"))
+        self.assertNotIn("do-not-export", self.window._masked_curl_command())
+
     def test_svg_chart_export_uses_current_chart_data(self):
         self.window._show_ai_visualization([{"name": "A", "count": 3}])
         self.window.ai_chart.set_style("line")

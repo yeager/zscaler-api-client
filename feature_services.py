@@ -26,18 +26,25 @@ SENSITIVE_NAMES = {
 }
 
 
+def is_sensitive_name(value: Any) -> bool:
+    """Recognise credential-like JSON keys, query parameters, and HTTP headers."""
+    normalized = "".join(character for character in str(value).lower() if character.isalnum())
+    return normalized in {"authorization", "proxyauthorization", "cookie", "setcookie", "password", "secret",
+                          "token", "apikey", "clientsecret", "keysecret", "accesstoken", "refreshtoken"} or normalized.startswith(("xapikey", "xauthtoken"))
+
+
 def safe_url(value: Any) -> str:
     """Mask sensitive URL query values before including an endpoint in evidence."""
     parts = urllib.parse.urlsplit(str(value or ""))
     query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
-    safe_query = urllib.parse.urlencode([(key, "***" if key.lower() in SENSITIVE_NAMES else item) for key, item in query])
+    safe_query = urllib.parse.urlencode([(key, "***" if is_sensitive_name(key) else item) for key, item in query])
     return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, parts.fragment))
 
 
 def mask(value: Any) -> Any:
     """Return a deep copy suitable for local history, exports and support files."""
     if isinstance(value, dict):
-        return {k: "***" if k.lower() in SENSITIVE_NAMES else mask(v) for k, v in value.items()}
+        return {k: "***" if is_sensitive_name(k) else mask(v) for k, v in value.items()}
     if isinstance(value, list):
         return [mask(item) for item in value]
     return value
@@ -49,7 +56,7 @@ def canonical(value: Any) -> str:
 
 def policy_diff(before: Any, after: Any, path: str = "$") -> list[dict[str, Any]]:
     """Produce a compact structural diff usable for policy previews."""
-    sensitive_value = path.rsplit(".", 1)[-1].lower() in SENSITIVE_NAMES
+    sensitive_value = is_sensitive_name(path.rsplit(".", 1)[-1])
     safe_before = "***" if sensitive_value else mask(before)
     safe_after = "***" if sensitive_value else mask(after)
     if type(before) is not type(after):
@@ -59,9 +66,9 @@ def policy_diff(before: Any, after: Any, path: str = "$") -> list[dict[str, Any]
         for key in sorted(set(before) | set(after)):
             child = f"{path}.{key}"
             if key not in before:
-                changes.append({"path": child, "change": "added", "before": None, "after": "***" if key.lower() in SENSITIVE_NAMES else mask(after[key])})
+                changes.append({"path": child, "change": "added", "before": None, "after": "***" if is_sensitive_name(key) else mask(after[key])})
             elif key not in after:
-                changes.append({"path": child, "change": "removed", "before": "***" if key.lower() in SENSITIVE_NAMES else mask(before[key]), "after": None})
+                changes.append({"path": child, "change": "removed", "before": "***" if is_sensitive_name(key) else mask(before[key]), "after": None})
             else:
                 changes.extend(policy_diff(before[key], after[key], child))
         return changes

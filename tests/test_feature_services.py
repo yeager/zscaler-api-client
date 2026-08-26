@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain
 
 
 class MemorySettings:
@@ -20,6 +20,13 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertIn("***", serialized)
         self.assertNotIn('"secret"', serialized)
         self.assertNotIn('"other"', serialized)
+
+    def test_mask_handles_sensitive_http_header_variants(self):
+        safe = mask({"Set-Cookie": "session=hidden", "X-API-Key": "hidden", "Proxy-Authorization": "hidden", "name": "Ada"})
+        self.assertEqual("***", safe["Set-Cookie"])
+        self.assertEqual("***", safe["X-API-Key"])
+        self.assertEqual("***", safe["Proxy-Authorization"])
+        self.assertEqual("Ada", safe["name"])
 
     def test_simulator_uses_first_matching_rule(self):
         result = simulate_policy([

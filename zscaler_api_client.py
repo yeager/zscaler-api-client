@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -86,17 +86,11 @@ def resolve_language(language: str | None, system_locale: str | None = None) -> 
 # Secure credential storage using system keychain
 SERVICE_NAME = "ZscalerAPIClient"
 _credential_cache: dict = {}  # Cache to avoid multiple Keychain prompts
-SENSITIVE_FIELDS = {
-    "authorization", "cookie", "password", "secret", "client_secret",
-    "key_secret", "api_key", "apikey", "access_token", "refresh_token", "token",
-}
-
-
 def redact_sensitive(value: Any) -> Any:
     """Return a history-safe copy of JSON or form-urlencoded request data."""
     if isinstance(value, dict):
         return {
-            key: "***" if key.lower() in SENSITIVE_FIELDS else redact_sensitive(item)
+            key: "***" if is_sensitive_name(key) else redact_sensitive(item)
             for key, item in value.items()
         }
     if isinstance(value, list):
@@ -113,7 +107,7 @@ def redact_sensitive(value: Any) -> Any:
         pairs = urllib.parse.parse_qsl(value, keep_blank_values=True)
         if pairs:
             return urllib.parse.urlencode([
-                (key, "***" if key.lower() in SENSITIVE_FIELDS else item)
+                (key, "***" if is_sensitive_name(key) else item)
                 for key, item in pairs
             ])
     return value
@@ -124,7 +118,7 @@ def redact_url(url: str) -> str:
     parts = urllib.parse.urlsplit(url)
     query = urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
     safe_query = urllib.parse.urlencode([
-        (key, "***" if key.lower() in SENSITIVE_FIELDS else value)
+        (key, "***" if is_sensitive_name(key) else value)
         for key, value in query
     ])
     return urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, safe_query, parts.fragment))
@@ -6175,7 +6169,7 @@ class MainWindow(QMainWindow):
             key_item, value_item = self.headers_table.item(row, 0), self.headers_table.item(row, 1)
             if key_item and value_item and key_item.text().strip():
                 key = key_item.text().strip()
-                headers[key] = "***" if key.lower() in SENSITIVE_FIELDS else str(redact_sensitive(value_item.text()))
+                headers[key] = "***" if is_sensitive_name(key) else str(redact_sensitive(value_item.text()))
         raw_body = self.body_input.toPlainText().strip()
         try:
             body = json.dumps(redact_sensitive(json.loads(raw_body)), indent=2) if raw_body else ""
@@ -6580,7 +6574,7 @@ class MainWindow(QMainWindow):
                 raw_text = res["data"].pop("_raw_text", None) if isinstance(res["data"], dict) else None
                 size_str = self._format_size(resp_size)
                 safe_response_headers = {
-                    key: "***" if any(fragment in key.lower() for fragment in ("authorization", "cookie", "token", "secret", "api-key")) else redact_sensitive(value)
+                    key: "***" if is_sensitive_name(key) else redact_sensitive(value)
                     for key, value in response_headers.items()
                 }
                 self.response_headers.setPlainText(
