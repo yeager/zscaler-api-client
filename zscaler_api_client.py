@@ -4671,17 +4671,17 @@ class MainWindow(QMainWindow):
         environment_shortcut.setToolTip(self.tr("Select or create a tenant environment profile"))
         environment_shortcut.clicked.connect(self._manage_profiles)
         command_layout.addWidget(environment_shortcut)
-        insight_shortcut = QPushButton(self.tr("2 · Analyze"))
-        insight_shortcut.setToolTip(self.tr("Open dashboards, audits, policy diffs, and response analysis"))
-        insight_shortcut.clicked.connect(lambda: self._show_operations(0))
-        command_layout.addWidget(insight_shortcut)
-        change_shortcut = QPushButton(self.tr("3 · Change"))
-        change_shortcut.setToolTip(self.tr("Open policy diff and policy-as-code export"))
-        change_shortcut.clicked.connect(lambda: self._show_operations(1))
-        command_layout.addWidget(change_shortcut)
-        operations_shortcut = QPushButton(self.tr("Operations Center"))
-        operations_shortcut.clicked.connect(self._show_operations)
-        command_layout.addWidget(operations_shortcut)
+        self.insight_shortcut = QPushButton(self.tr("2 · Analyze"))
+        self.insight_shortcut.setToolTip(self.tr("Open dashboards, audits, policy diffs, and response analysis"))
+        self.insight_shortcut.clicked.connect(lambda: self._show_operations(0))
+        command_layout.addWidget(self.insight_shortcut)
+        self.change_shortcut = QPushButton(self.tr("3 · Change"))
+        self.change_shortcut.setToolTip(self.tr("Open policy diff and policy-as-code export"))
+        self.change_shortcut.clicked.connect(lambda: self._show_operations(1))
+        command_layout.addWidget(self.change_shortcut)
+        self.operations_shortcut = QPushButton(self.tr("Operations Center"))
+        self.operations_shortcut.clicked.connect(self._show_operations)
+        command_layout.addWidget(self.operations_shortcut)
         settings_shortcut = QPushButton(self.tr("Settings"))
         settings_shortcut.clicked.connect(self._show_settings)
         command_layout.addWidget(settings_shortcut)
@@ -5157,6 +5157,7 @@ class MainWindow(QMainWindow):
         # Refresh it here so the persisted default is actually honored.
         self._update_api_list()
         self._update_endpoint_tree(self.api_type.currentText())
+        self._apply_main_mode()
     
     def _save_settings(self):
         settings = QSettings("Zscaler", "APIClient")
@@ -6519,6 +6520,12 @@ class MainWindow(QMainWindow):
             self._apply_settings()
             self._update_api_list()  # Refresh API dropdown based on enabled APIs
             self._update_endpoint_tree(self.api_type.currentText())
+            self._apply_main_mode()
+
+    def _apply_main_mode(self):
+        """Keep the primary command bar aligned with basic/advanced mode."""
+        basic = QSettings("Zscaler", "APIClient").value("ui/mode", "basic") == "basic"
+        self.change_shortcut.setVisible(not basic)
     
     def _apply_settings(self):
         """Apply settings that can be changed without restart."""

@@ -363,6 +363,8 @@ class MainWindowTests(unittest.TestCase):
         previous = settings.value("ui/mode", None)
         try:
             settings.setValue("ui/mode", "basic")
+            self.window._apply_main_mode()
+            self.assertTrue(self.window.change_shortcut.isHidden())
             dialog = client.OperationsDialog(self.window)
             self.assertFalse(dialog.tabs.isTabVisible(1))
             self.assertIn("# CISO", dialog.report_preview.toPlainText())
