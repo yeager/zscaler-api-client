@@ -101,6 +101,15 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual({"Retry-After": "60"}, client.api_result_headers({"success": False, "response_headers": {"Retry-After": "60"}}))
         self.assertEqual(201, client.api_result_status({"success": True, "data": {"_status_code": 201}}))
 
+    def test_api_worker_can_stop_a_chain_after_first_failure(self):
+        worker = client.ApiWorker([{"url": "https://first.test"}, {"url": "https://second.test"}], stop_on_failure=True)
+        result = []
+        worker.finished.connect(result.append)
+        with patch.object(worker, "_make_request", side_effect=client.ApiRequestError(500, "failed")):
+            worker.run()
+        self.assertTrue(result[0]["stopped_early"])
+        self.assertEqual(1, len(result[0]["results"]))
+
     def test_api_worker_preserves_metadata_for_list_response(self):
         response = MagicMock(); response.read.return_value = b'[{"name":"Ada"}]'; response.status = 206; response.reason = "Partial Content"; response.headers.items.return_value = [("X-Request-ID", "abc")]
         with patch.object(client, "build_network_opener") as opener:

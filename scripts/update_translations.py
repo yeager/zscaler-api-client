@@ -87,6 +87,7 @@ SWEDISH_REVIEW.update({
     "The latest request failed after successful requests to the same endpoint.": "Den senaste begäran misslyckades efter lyckade begäranden till samma slutpunkt.", "The latest endpoint response was much slower than its local baseline.": "Det senaste svaret från slutpunkten var mycket långsammare än den lokala baslinjen.",
     "Auto-refresh local signals": "Uppdatera lokala signaler automatiskt", "Every 30 seconds": "Var 30:e sekund", "Every minute": "Varje minut", "Every 5 minutes": "Var femte minut",
     "Export alerts as JSON": "Exportera larm som JSON", "Export alerts as Markdown": "Exportera larm som Markdown", "Local alert summary": "Lokal larmsammanfattning", "Error threshold: {threshold}": "Feltröskel: {threshold}", "No local alerts.": "Inga lokala larm.", "Count: {count}": "Antal: {count}", "Export local alerts": "Exportera lokala larm",
+    "Stop after the first failed step": "Stoppa efter första misslyckade steget", "The chain stopped after the first failed step.": "Kedjan stoppades efter första misslyckade steget.",
     "Guided example loaded. Find the API request, review the preview, then choose whether to run it.": "Guidat exempel inläst. Hitta API-begäran, granska förhandsvisningen och välj sedan om du vill köra den.",
     "ZIA · List users": "ZIA · Lista användare",
     "ZIA · List URL categories": "ZIA · Lista URL-kategorier",

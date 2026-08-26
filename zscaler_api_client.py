@@ -2315,14 +2315,16 @@ class ApiWorker(QThread):
     finished = Signal(dict)
     progress = Signal(int, int)
     
-    def __init__(self, requests: List[Dict]):
+    def __init__(self, requests: List[Dict], stop_on_failure: bool = False):
         super().__init__()
         self.requests = requests
+        self.stop_on_failure = stop_on_failure
     
     def run(self):
         results = []
         total = len(self.requests)
         
+        stopped_early = False
         for i, req in enumerate(self.requests):
             try:
                 result = self._make_request(req)
@@ -2333,9 +2335,12 @@ class ApiWorker(QThread):
                 results.append({"success": False, "error": str(error), "status_code": 0, "request": req})
             
             self.progress.emit(i + 1, total)
+            if not results[-1]["success"] and self.stop_on_failure:
+                stopped_early = i + 1 < total
+                break
             time.sleep(0.1)  # Rate limiting
         
-        self.finished.emit({"results": results})
+        self.finished.emit({"results": results, "stopped_early": stopped_early})
     
     def _make_request(self, req: Dict) -> Dict:
         url = req["url"]
@@ -4471,6 +4476,7 @@ class OperationsDialog(QDialog):
         self.api_chain_input.setPlaceholderText(self.tr("A JSON list of API requests. Relative paths use the active product host.")); chain_layout.addWidget(self.api_chain_input)
         self.api_chain_preview = QPlainTextEdit(); self.api_chain_preview.setReadOnly(True); self.api_chain_preview.setMaximumHeight(130); chain_layout.addWidget(self.api_chain_preview)
         self.api_chain_result = QPlainTextEdit(); self.api_chain_result.setReadOnly(True); chain_layout.addWidget(self.api_chain_result)
+        self.api_chain_stop_on_error = QCheckBox(self.tr("Stop after the first failed step")); self.api_chain_stop_on_error.setChecked(True); chain_layout.addWidget(self.api_chain_stop_on_error)
         chain_actions = QHBoxLayout(); validate_chain = QPushButton(self.tr("Validate chain")); validate_chain.clicked.connect(self.validate_api_chain); chain_actions.addWidget(validate_chain)
         run_chain = QPushButton(self.tr("Run approved chain")); run_chain.clicked.connect(self.run_api_chain); chain_actions.addWidget(run_chain); chain_actions.addStretch(); chain_layout.addLayout(chain_actions)
         self.chain_tab_index = self.tabs.addTab(chain_page, self.tr("API chains"))
@@ -4798,11 +4804,11 @@ class OperationsDialog(QDialog):
         headers = self._chain_headers()
         requests = [{"url": step["resolved_url"], "method": step["method"], "headers": dict(headers), "body": step.get("body")} for step in steps]
         self.api_chain_result.clear()
-        self.api_chain_worker = ApiWorker(requests)
+        self.api_chain_worker = ApiWorker(requests, stop_on_failure=self.api_chain_stop_on_error.isChecked())
         self.api_chain_worker.progress.connect(self._on_api_chain_progress)
         self.api_chain_worker.finished.connect(self._on_api_chain_finished)
         self.api_chain_worker.start()
-        AuditTrail(self.settings).append("api_chain_started", {"count": len(steps), "api": self.window._current_api_type(), "write_steps": len(writes)})
+        AuditTrail(self.settings).append("api_chain_started", {"count": len(steps), "api": self.window._current_api_type(), "write_steps": len(writes), "stop_on_failure": self.api_chain_stop_on_error.isChecked()})
 
     def _on_api_chain_progress(self, completed, total):
         self.api_chain_result.setPlainText(self.tr("Running API chain step {completed} of {total}...").format(completed=completed, total=total))
@@ -4819,8 +4825,12 @@ class OperationsDialog(QDialog):
         for item in results:
             request = item.get("request", {})
             self.window._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=api_result_status(item), response_headers=api_result_headers(item))
-        AuditTrail(self.settings).append("api_chain_finished", {"successful": successful, "failed": failed})
-        QMessageBox.information(self, self.tr("API chains"), self.tr("API chain completed: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed))
+        stopped_early = bool(result.get("stopped_early"))
+        AuditTrail(self.settings).append("api_chain_finished", {"successful": successful, "failed": failed, "stopped_early": stopped_early})
+        message = self.tr("API chain completed: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed)
+        if stopped_early:
+            message += "\n\n" + self.tr("The chain stopped after the first failed step.")
+        QMessageBox.information(self, self.tr("API chains"), message)
 
     def compare_policies(self):
         try:
