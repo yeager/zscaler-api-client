@@ -2292,8 +2292,30 @@ class ApiWorker(QThread):
             except (ImportError, Exception):
                 ssl_context = ssl.create_default_context()
         
+        proxy_mode = str(settings.value("advanced/proxy_mode", "0"))
+        handlers = [urllib.request.HTTPSHandler(context=ssl_context)]
+        if proxy_mode == "0":
+            # Explicitly disable inherited environment proxies when requested.
+            handlers.append(urllib.request.ProxyHandler({}))
+        elif proxy_mode == "2":
+            host = str(settings.value("advanced/proxy_host", "")).strip()
+            port = str(settings.value("advanced/proxy_port", "")).strip()
+            if not host or not port:
+                raise ValueError("Manual proxy requires both host and port")
+            username = str(settings.value("advanced/proxy_username", "")).strip()
+            password = secure_get("proxy_password")
+            credentials = ""
+            if username:
+                credentials = urllib.parse.quote(username, safe="")
+                if password:
+                    credentials += ":" + urllib.parse.quote(password, safe="")
+                credentials += "@"
+            proxy_url = f"http://{credentials}{host}:{port}"
+            handlers.append(urllib.request.ProxyHandler({"http": proxy_url, "https": proxy_url}))
+        opener = urllib.request.build_opener(*handlers)
+
         try:
-            with urllib.request.urlopen(request, timeout=timeout, context=ssl_context) as response:
+            with opener.open(request, timeout=timeout) as response:
                 response_data = response.read()
                 response_size = len(response_data)
                 status_code = response.status
@@ -6638,9 +6660,8 @@ class MainWindow(QMainWindow):
         try:
             import ssl
             
-            # Try multiple SSL strategies for bundled app compatibility
+            # Keep certificate verification on for every update request.
             ssl_context = None
-            ssl_errors = []
             
             # Strategy 1: Try certifi (most reliable for bundled apps)
             try:
@@ -6648,8 +6669,8 @@ class MainWindow(QMainWindow):
                 ssl_context = ssl.create_default_context(cafile=certifi.where())
                 ssl_context.check_hostname = True
                 ssl_context.verify_mode = ssl.CERT_REQUIRED
-            except Exception as e:
-                ssl_errors.append(f"certifi: {e}")
+            except Exception:
+                pass
             
             # Strategy 2: Fall back to system certificates
             if ssl_context is None:
@@ -6657,34 +6678,18 @@ class MainWindow(QMainWindow):
                     ssl_context = ssl.create_default_context()
                     ssl_context.check_hostname = True
                     ssl_context.verify_mode = ssl.CERT_REQUIRED
-                except Exception as e:
-                    ssl_errors.append(f"system: {e}")
-            
-            # Strategy 3: Last resort - unverified but only for GitHub API
-            # This is acceptable because we still verify the response data
+                except Exception:
+                    pass
             if ssl_context is None:
-                ssl_context = ssl.create_default_context()
-                ssl_context.check_hostname = False
-                ssl_context.verify_mode = ssl.CERT_NONE
+                raise RuntimeError("No verified TLS context is available for update checking")
             
             request = urllib.request.Request(
                 GITHUB_API_URL, 
                 headers={"User-Agent": "ZscalerAPIClient", "Accept": "application/vnd.github.v3+json"}
             )
             
-            # Try with current context, fall back to unverified if needed
-            try:
-                with urllib.request.urlopen(request, timeout=10, context=ssl_context) as response:
-                    data = json.loads(response.read().decode("utf-8"))
-            except (ssl.SSLError, ssl.SSLCertVerificationError, urllib.error.URLError) as ssl_err:
-                # SSL verification failed (e.g. corporate SSL inspection with
-                # non-critical Basic Constraints CA cert) - use unverified
-                # context for GitHub API only. Release data is still verified.
-                ssl_context = ssl.create_default_context()
-                ssl_context.check_hostname = False
-                ssl_context.verify_mode = ssl.CERT_NONE
-                with urllib.request.urlopen(request, timeout=10, context=ssl_context) as response:
-                    data = json.loads(response.read().decode("utf-8"))
+            with urllib.request.urlopen(request, timeout=10, context=ssl_context) as response:
+                data = json.loads(response.read().decode("utf-8"))
             
             # Security verification
             html_url = data.get("html_url", "")

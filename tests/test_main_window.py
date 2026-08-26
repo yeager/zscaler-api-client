@@ -224,6 +224,28 @@ class MainWindowTests(unittest.TestCase):
         with self.assertRaises(PermissionError):
             self.window._ask_configured_llm("list users", [])
 
+    def test_manual_proxy_is_attached_to_api_requests(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        settings.setValue("advanced/proxy_mode", "2")
+        settings.setValue("advanced/proxy_host", "proxy.example.test")
+        settings.setValue("advanced/proxy_port", "8443")
+        settings.setValue("advanced/proxy_username", "admin")
+        with patch.object(client, "secure_get", return_value="password"), \
+             patch.object(client.urllib.request, "build_opener") as build_opener:
+            build_opener.return_value.open.side_effect = OSError("test stop")
+            with self.assertRaises(OSError):
+                client.ApiWorker([])._make_request({"url": "https://example.test", "method": "GET"})
+        handlers = build_opener.call_args.args
+        proxy_handler = next(handler for handler in handlers if isinstance(handler, client.urllib.request.ProxyHandler))
+        self.assertEqual("http://admin:password@proxy.example.test:8443", proxy_handler.proxies["https"])
+        settings.setValue("advanced/proxy_mode", "0")
+
+    def test_update_check_never_retries_with_unverified_tls(self):
+        with patch.object(client.urllib.request, "urlopen", side_effect=client.urllib.error.URLError("tls")) as urlopen, \
+             patch.object(client.QMessageBox, "warning"):
+            self.window._check_for_updates()
+        self.assertEqual(1, urlopen.call_count)
+
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")
         self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")
