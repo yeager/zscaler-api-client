@@ -480,6 +480,15 @@ class MainWindowTests(unittest.TestCase):
                 else:
                     settings.setValue(key, value)
 
+    def test_alert_exports_are_masked_and_portable(self):
+        self.window.request_history = [{"status": 500, "url": "https://example.test?token=hidden"}]
+        dialog = client.OperationsDialog(self.window)
+        json_export = dialog._alert_export_content("json")
+        markdown_export = dialog._alert_export_content("markdown")
+        self.assertNotIn("hidden", json_export)
+        self.assertIn("# Local alert summary", markdown_export)
+        dialog.close()
+
     def test_operations_incident_workspace_prepares_a_safe_chain(self):
         self.window.request_history = [{"timestamp": "now", "method": "GET", "url": "https://example.test", "status": 500, "response_headers": {"Retry-After": "60", "Set-Cookie": "hidden"}}]
         dialog = client.OperationsDialog(self.window)

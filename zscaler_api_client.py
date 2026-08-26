@@ -4428,6 +4428,8 @@ class OperationsDialog(QDialog):
         self.alert_table = QTableWidget(0, 4); self.alert_table.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Alert"), self.tr("Count"), self.tr("Evidence")]); self.alert_table.horizontalHeader().setStretchLastSection(True); self.alert_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); alerts_layout.addWidget(self.alert_table)
         alert_actions = QHBoxLayout(); refresh_alerts = QPushButton(self.tr("Refresh local alerts")); refresh_alerts.clicked.connect(self.refresh_alerts); alert_actions.addWidget(refresh_alerts)
         copy_alerts = QPushButton(self.tr("Copy masked alert summary")); copy_alerts.clicked.connect(self.copy_alert_summary); alert_actions.addWidget(copy_alerts); alert_actions.addStretch(); alerts_layout.addLayout(alert_actions)
+        export_alert_json = QPushButton(self.tr("Export alerts as JSON")); export_alert_json.clicked.connect(lambda: self.export_alerts("json")); alert_actions.addWidget(export_alert_json)
+        export_alert_markdown = QPushButton(self.tr("Export alerts as Markdown")); export_alert_markdown.clicked.connect(lambda: self.export_alerts("markdown")); alert_actions.addWidget(export_alert_markdown)
         self.alert_tab_index = self.tabs.addTab(alerts_page, self.tr("Alert Center"))
 
         incident_page = QWidget(); incident_layout = QVBoxLayout(incident_page)
@@ -4596,6 +4598,25 @@ class OperationsDialog(QDialog):
         QApplication.clipboard().setText(json.dumps(mask(self._alert_data()), indent=2, ensure_ascii=False))
         AuditTrail(self.settings).append("local_alert_summary_copied", {})
         self.alert_summary.setToolTip(self.tr("Copied to clipboard"))
+
+    def _alert_export_content(self, format_name):
+        data = mask(self._alert_data())
+        if format_name == "json":
+            return json.dumps(data, indent=2, ensure_ascii=False)
+        lines = ["# " + self.tr("Local alert summary"), "", self.tr("Error threshold: {threshold}").format(threshold=data["threshold"]), self.tr("Local requests: {count}").format(count=data["requests"]), self.tr("Failed requests: {count}").format(count=data["failed"]), ""]
+        if not data["alerts"]:
+            lines.append(self.tr("No local alerts."))
+        for alert in data["alerts"]:
+            lines.extend([f"## {alert['severity'].title()} · {alert['code']}", self.tr("Count: {count}").format(count=alert["count"]), "```json", json.dumps(alert["evidence"], indent=2, ensure_ascii=False), "```", ""])
+        return "\n".join(lines)
+
+    def export_alerts(self, format_name):
+        suffix, filter_name = ("json", "JSON (*.json)") if format_name == "json" else ("md", "Markdown (*.md)")
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export local alerts"), f"local-alerts.{suffix}", filter_name)
+        if not path:
+            return
+        Path(path).write_text(self._alert_export_content(format_name), encoding="utf-8")
+        AuditTrail(self.settings).append("local_alerts_exported", {"format": format_name, "file": os.path.basename(path)})
 
     def _incident_evidence(self):
         return incident_evidence(getattr(self.window, "request_history", []), AuditTrail(self.settings).events())
