@@ -20,10 +20,10 @@ def translation_coverage(catalog: Path) -> float:
     """Measure real translations, excluding English source-text fallbacks."""
     translated = total = 0
     for message in ET.parse(catalog).findall(".//message"):
-        if message.get("type") in {"obsolete", "vanished"}:
-            continue
         source = "".join(message.find("source").itertext()).strip() if message.find("source") is not None else ""
         translation = message.find("translation")
+        if translation is not None and translation.get("type") in {"obsolete", "vanished"}:
+            continue
         value = "".join(translation.itertext()).strip() if translation is not None else ""
         if not source:
             continue

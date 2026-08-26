@@ -194,6 +194,7 @@ class ApiCatalogTests(unittest.TestCase):
         <message><source>Three</source><translation></translation></message>
         <message><source>Four</source><translation></translation></message>
         <message><source>Five</source><translation></translation></message>
+        <message><source>Retired</source><translation type="vanished">Pensionerad</translation></message>
         </context></TS>"""
         with tempfile.TemporaryDirectory() as directory:
             catalog = Path(directory) / "test.ts"

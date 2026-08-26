@@ -241,7 +241,7 @@ Release **v2.8.0** has the following localization status:
 | Status | Languages |
 |--------|-----------|
 | Complete source language | English |
-| Shipped translation (87.5% genuine coverage) | Swedish (`sv`) |
+| Complete reviewed catalog (97.6% measured coverage; remaining identical text is invariant product names and technical terminology) | Swedish (`sv`) |
 | Translation catalogs in progress | Arabic, Czech, Danish, Dutch, Finnish, French, German, Hungarian, Italian, Japanese, Korean, Norwegian Bokmål, Persian, Polish, Portuguese (Brazil), Simplified Chinese, Spanish, Turkish |
 
 The application exposes all 20 language profiles, but untranslated text safely
