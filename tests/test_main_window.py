@@ -450,6 +450,7 @@ class MainWindowTests(unittest.TestCase):
         self.window.request_history = [{"method": "GET", "status": 500, "duration_ms": 11_000}] * 3
         dialog = client.OperationsDialog(self.window)
         self.assertIn("Posture score:", dialog.posture_score.text())
+        self.assertLess(dialog.posture_gauge.score, 100)
         self.assertGreater(dialog.posture_findings.rowCount(), 0)
         dialog.close()
 

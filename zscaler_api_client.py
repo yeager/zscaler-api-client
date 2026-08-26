@@ -44,7 +44,7 @@ from PySide6.QtWidgets import (
     , QInputDialog
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
-from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
+from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
 from feature_services import AuditTrail, policy_diff, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
@@ -2905,6 +2905,33 @@ def create_splash_pixmap() -> QPixmap:
     return pixmap
 
 
+class PostureGauge(QWidget):
+    """A compact native gauge for local posture, requiring no external assets."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.score = 0
+        self.setMinimumSize(190, 150)
+
+    def set_score(self, score: int):
+        self.score = max(0, min(100, int(score)))
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        diameter = min(self.width() - 24, self.height() - 24)
+        rect = self.rect().adjusted((self.width() - diameter) // 2 + 12, 12, -((self.width() - diameter) // 2 + 12), -12)
+        painter.setPen(QPen(QColor("#334155"), 13))
+        painter.drawArc(rect, 225 * 16, -270 * 16)
+        color = QColor("#22c55e" if self.score >= 80 else "#facc15" if self.score >= 60 else "#f97316" if self.score >= 35 else "#ef4444")
+        painter.setPen(QPen(color, 13))
+        painter.drawArc(rect, 225 * 16, -round(270 * self.score / 100) * 16)
+        painter.setPen(QColor("#e2e8f0"))
+        font = painter.font(); font.setPointSize(24); font.setBold(True); painter.setFont(font)
+        painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, str(self.score))
+        painter.end()
+
+
 class AboutDialog(QDialog):
     """About dialog with copyright and disclaimer."""
     
@@ -4380,7 +4407,8 @@ class OperationsDialog(QDialog):
         posture_page = QWidget(); posture_layout = QVBoxLayout(posture_page)
         posture_intro = QLabel(self.tr("Local security posture uses redacted request history and audit integrity. It is an operational signal, not a tenant security assessment.")); posture_intro.setWordWrap(True); posture_layout.addWidget(posture_intro)
         self.posture_score = QLabel("—"); self.posture_score.setObjectName("sectionTitle")
-        score_font = self.posture_score.font(); score_font.setPointSize(28); score_font.setBold(True); self.posture_score.setFont(score_font); posture_layout.addWidget(self.posture_score)
+        score_font = self.posture_score.font(); score_font.setPointSize(28); score_font.setBold(True); self.posture_score.setFont(score_font)
+        posture_visual = QHBoxLayout(); self.posture_gauge = PostureGauge(); posture_visual.addWidget(self.posture_gauge); posture_visual.addWidget(self.posture_score); posture_visual.addStretch(); posture_layout.addLayout(posture_visual)
         self.posture_chart = NumericBarChart(); posture_layout.addWidget(self.posture_chart)
         self.posture_findings = QTableWidget(0, 3); self.posture_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Finding"), self.tr("Details")]); self.posture_findings.horizontalHeader().setStretchLastSection(True); self.posture_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); posture_layout.addWidget(self.posture_findings)
         posture_refresh = QPushButton(self.tr("Refresh security posture")); posture_refresh.clicked.connect(self.refresh_posture); posture_layout.addWidget(posture_refresh)
@@ -4488,6 +4516,7 @@ class OperationsDialog(QDialog):
     def refresh_posture(self):
         posture = security_posture(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify())
         self.posture_score.setText(self.tr("Posture score: {score}/100").format(score=posture["score"]))
+        self.posture_gauge.set_score(posture["score"])
         severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
         labels = [(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()]
         self.posture_chart.set_style("pie"); self.posture_chart.set_values(labels)
