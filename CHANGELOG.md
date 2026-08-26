@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Added
+- User-approved background report schedules for Windows Task Scheduler, macOS LaunchAgents, and Linux systemd user timers.
+- Headless, network-free report execution with stable schedule IDs and automatic cleanup when schedules are paused or removed.
+
+### Security
+- Background reports reuse redacted local history, run without administrator privileges, and never receive API credentials.
+
 ## [2.7.1] - 2026-08-26
 
 ### Added

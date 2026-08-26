@@ -656,6 +656,33 @@ class MainWindowTests(unittest.TestCase):
             else:
                 settings.setValue("automation/schedules", previous)
 
+    def test_background_schedule_runs_only_through_its_headless_id(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("automation/schedules", None)
+        try:
+            with TemporaryDirectory() as output_dir:
+                now = 1_800_000_000
+                settings.setValue("automation/schedules", json.dumps([{
+                    "id": "background_report", "name": "Background SOC", "kind": "soc", "cadence_seconds": 3600,
+                    "output_dir": output_dir, "enabled": True, "background": True, "next_run": now - 1,
+                }]))
+                self.assertEqual([], self.window._run_due_report_schedules(now))
+                generated = client.run_report_schedules(settings, [], now=now, selected_id="background_report")
+                self.assertEqual(1, len(generated))
+                self.assertTrue(Path(generated[0]).exists())
+                dialog = client.OperationsDialog(self.window); dialog.report_schedules.setCurrentCell(0, 0)
+                with patch.object(client, "unregister_background_schedule", side_effect=OSError("scheduler unavailable")), \
+                     patch.object(client.QMessageBox, "warning") as warning:
+                    dialog.toggle_selected_schedule()
+                self.assertFalse(client.stored_report_schedules(settings)[0]["enabled"])
+                warning.assert_called_once(); dialog.close()
+                self.assertEqual([], client.run_report_schedules(settings, [], now=now, selected_id="background_report"))
+        finally:
+            if previous is None:
+                settings.remove("automation/schedules")
+            else:
+                settings.setValue("automation/schedules", previous)
+
     def test_alert_center_uses_saved_error_threshold_and_is_available_in_basic_mode(self):
         settings = client.QSettings("Zscaler", "APIClient")
         old_mode, old_threshold = settings.value("ui/mode", None), settings.value("monitoring/error_threshold", None)

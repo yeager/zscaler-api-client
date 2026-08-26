@@ -60,6 +60,7 @@ ZS API Client is built with security as a top priority:
 ### Productivity
 - **Batch Operations** – Import CSV files for bulk create/delete/update operations
 - **Operations Center** – Local policy diffs and simulations, CSV validation, environment profiles, dashboards, report schedules, and a hash-linked audit trail
+- **Background reports** – Optionally register user-level Windows Task Scheduler, macOS LaunchAgent, or Linux systemd jobs so redacted reports run while the GUI is closed; no administrator privileges are required
 - **Local governance controls** – Administrator, analyst, and read-only roles; the latter blocks mutating API requests before they leave the client
 - **Redacted support bundles** – Create diagnostics archives without API credentials or sensitive request values
 - **Multi-language UI** – 20 language profiles, including Swedish, European languages, Arabic, Persian, Japanese, Korean, and Simplified Chinese

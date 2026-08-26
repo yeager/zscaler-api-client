@@ -21,8 +21,10 @@ import os
 import re
 import shlex
 import shutil
+import subprocess
 import sys
 import time
+import uuid
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -46,6 +48,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
 from feature_services import AuditTrail, policy_diff, simulate_policy_trace, policy_overview, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
+from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -335,6 +338,117 @@ def secure_webhook_endpoint(settings: QSettings, migrate_legacy: bool = True) ->
         # Never keep a rejected endpoint (which may contain credentials) in plaintext.
         settings.remove("automation/webhook_url")
     return ""
+
+
+def application_invocation() -> list[str]:
+    """Return a stable argv prefix for this source or packaged application."""
+    if getattr(sys, "frozen", False):
+        return [str(Path(sys.executable).resolve())]
+    return [str(Path(sys.executable).resolve()), str(Path(__file__).resolve())]
+
+
+def persisted_request_history() -> list[dict[str, Any]]:
+    """Load the already-redacted local history for headless report generation."""
+    path = Path.home() / ".zscaler-api-client" / "history.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, TypeError, ValueError):
+        return []
+    if not isinstance(data, list):
+        return []
+    return [redact_sensitive(item) for item in data if isinstance(item, dict)]
+
+
+def stored_report_schedules(settings: QSettings) -> list[dict[str, Any]]:
+    """Return only persisted report schedule objects."""
+    try:
+        schedules = json.loads(str(settings.value("automation/schedules", "[]")))
+    except (TypeError, ValueError):
+        return []
+    valid = [item for item in schedules if isinstance(item, dict)] if isinstance(schedules, list) else []
+    changed = False
+    for item in valid:
+        if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", str(item.get("id", ""))):
+            item["id"] = uuid.uuid4().hex; changed = True
+    if changed:
+        settings.setValue("automation/schedules", json.dumps(valid))
+    return valid
+
+
+def scheduled_report_filename(name: str, timestamp: int) -> str:
+    """Create a traversal-safe, portable report filename."""
+    stem = re.sub(r"[^A-Za-z0-9._-]+", "-", str(name).strip()).strip(".-") or "security-report"
+    return f"{stem[:80]}-{time.strftime('%Y%m%d-%H%M%S', time.gmtime(timestamp))}.json"
+
+
+def write_new_report(directory: Path, filename: str, content: str) -> Path:
+    """Create a report without overwriting an existing file."""
+    target = Path(directory) / filename
+    for suffix in range(100):
+        candidate = target if suffix == 0 else target.with_name(f"{target.stem}-{suffix}{target.suffix}")
+        try:
+            with candidate.open("x", encoding="utf-8") as handle:
+                handle.write(content)
+            return candidate
+        except FileExistsError:
+            continue
+    raise FileExistsError("Could not allocate a unique scheduled report filename")
+
+
+def run_report_schedules(
+    settings: QSettings,
+    history: list[dict[str, Any]],
+    *,
+    now: int | None = None,
+    selected_index: int | None = None,
+    selected_id: str | None = None,
+) -> list[str]:
+    """Generate due local reports; background jobs can target one stable ID."""
+    now = int(time.time() if now is None else now)
+    schedules = stored_report_schedules(settings)
+    if not schedules:
+        return []
+    trail = AuditTrail(settings); generated: list[str] = []; changed = False
+    for index, schedule in enumerate(schedules):
+        by_index = selected_index is not None and index == selected_index
+        by_id = selected_id is not None and str(schedule.get("id", "")) == selected_id
+        if selected_index is not None and not by_index:
+            continue
+        if selected_id is not None and not by_id:
+            continue
+        if selected_id is not None and not schedule.get("enabled", True):
+            continue
+        if selected_index is None and selected_id is None and schedule.get("background", False):
+            continue
+        try:
+            next_run = int(schedule.get("next_run", now + 1))
+        except (TypeError, ValueError):
+            next_run = now
+        if not by_index and not by_id and (not schedule.get("enabled", True) or next_run > now):
+            continue
+        try:
+            cadence = max(3600, int(schedule.get("cadence_seconds", 86400)))
+        except (TypeError, ValueError):
+            cadence = 86400
+        schedule["next_run"] = now + cadence; schedule["last_run"] = now; changed = True
+        raw_output_dir = str(schedule.get("output_dir", "")).strip(); output_dir = Path(raw_output_dir).expanduser()
+        if not raw_output_dir or not output_dir.is_absolute() or not output_dir.is_dir():
+            trail.append("scheduled_report_failed", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "reason": "output_directory_unavailable"})
+            continue
+        try:
+            kind = str(schedule.get("kind", "ciso"))
+            if kind not in {"ciso", "soc", "operations"}:
+                kind = "ciso"
+            data = security_report_data(kind, history, trail.events(), trail.verify())
+            content = json.dumps(redact_sensitive(data), indent=2, ensure_ascii=False) + "\n"
+            destination = write_new_report(output_dir, scheduled_report_filename(schedule.get("name", "security-report"), now), content)
+            generated.append(str(destination))
+            trail.append("scheduled_report_generated", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "kind": kind, "file": destination.name, "background": bool(selected_id)})
+        except (OSError, TypeError, ValueError) as error:
+            trail.append("scheduled_report_failed", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "reason": type(error).__name__})
+    if changed:
+        settings.setValue("automation/schedules", json.dumps(schedules))
+    return generated
 
 # Stylesheets for theming
 DARK_STYLE = """
@@ -4644,8 +4758,8 @@ class OperationsDialog(QDialog):
         report_actions = QHBoxLayout(); report_markdown = QPushButton(self.tr("Export report as Markdown")); report_markdown.clicked.connect(lambda: self.export_report("markdown")); report_actions.addWidget(report_markdown)
         report_json = QPushButton(self.tr("Export report as JSON")); report_json.clicked.connect(lambda: self.export_report("json")); report_actions.addWidget(report_json); report_actions.addStretch(); reports_layout.addLayout(report_actions)
         reports_layout.addWidget(QLabel(self.tr("Scheduled reports")))
-        self.report_schedules = QTableWidget(0, 5)
-        self.report_schedules.setHorizontalHeaderLabels([self.tr("Name"), self.tr("Type"), self.tr("Cadence"), self.tr("Next run"), self.tr("Status")])
+        self.report_schedules = QTableWidget(0, 6)
+        self.report_schedules.setHorizontalHeaderLabels([self.tr("Name"), self.tr("Type"), self.tr("Cadence"), self.tr("Next run"), self.tr("Mode"), self.tr("Status")])
         self.report_schedules.horizontalHeader().setStretchLastSection(True)
         self.report_schedules.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.report_schedules.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
@@ -5292,6 +5406,7 @@ class OperationsDialog(QDialog):
                 str(schedule.get("name", "")), type_labels.get(str(schedule.get("kind", "ciso")), type_labels["ciso"]),
                 cadence_labels.get(cadence, f"{cadence // 3600} h"),
                 time.strftime("%Y-%m-%d %H:%M", time.localtime(next_run)) if next_run else "—",
+                self.tr("Background") if schedule.get("background", False) else self.tr("App only"),
                 self.tr("Enabled") if schedule.get("enabled", True) else self.tr("Paused"),
             )
             for column, value in enumerate(values):
@@ -5323,10 +5438,31 @@ class OperationsDialog(QDialog):
         row, schedules = self._selected_schedule_row()
         if row < 0:
             return
-        schedules[row]["enabled"] = not schedules[row].get("enabled", True)
+        schedule = schedules[row]; enable = not schedule.get("enabled", True)
+        scheduler_error = None
+        if schedule.get("background", False):
+            if enable:
+                try:
+                    schedule["scheduler_backend"] = register_background_schedule(schedule, application_invocation())
+                except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
+                    AuditTrail(self.settings).append("scheduled_report_scheduler_failed", {"id": str(schedule.get("id", "")), "operation": "enable", "reason": type(error).__name__})
+                    QMessageBox.warning(self, self.tr("Scheduled report"), self.tr("The operating-system schedule could not be updated. No state was changed.")); return
+            else:
+                # Persist the pause first: even a stale OS job will see the
+                # disabled flag and refuse to generate a report.
+                schedule["enabled"] = False
+                self.settings.setValue("automation/schedules", json.dumps(schedules))
+                try:
+                    unregister_background_schedule(str(schedule.get("id", "")))
+                except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
+                    scheduler_error = type(error).__name__
+                    AuditTrail(self.settings).append("scheduled_report_scheduler_failed", {"id": str(schedule.get("id", "")), "operation": "pause", "reason": scheduler_error})
+        schedule["enabled"] = enable
         self.settings.setValue("automation/schedules", json.dumps(schedules))
-        AuditTrail(self.settings).append("scheduled_report_toggled", {"name": str(schedules[row].get("name", "")), "enabled": schedules[row]["enabled"]})
+        AuditTrail(self.settings).append("scheduled_report_toggled", {"id": str(schedule.get("id", "")), "name": str(schedule.get("name", "")), "enabled": schedule["enabled"], "background": bool(schedule.get("background", False))})
         self.refresh_schedules(); self.refresh_audit()
+        if scheduler_error:
+            QMessageBox.warning(self, self.tr("Scheduled report"), self.tr("The report is paused and cannot generate output, but the operating-system job cleanup needs manual review."))
 
     def remove_selected_schedule(self):
         row, schedules = self._selected_schedule_row()
@@ -5335,9 +5471,17 @@ class OperationsDialog(QDialog):
         if QMessageBox.question(self, self.tr("Scheduled report"), self.tr("Remove the selected scheduled report?"), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
             return
         removed = schedules.pop(row)
+        scheduler_error = None
+        if removed.get("background", False):
+            try:
+                unregister_background_schedule(str(removed.get("id", "")))
+            except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
+                scheduler_error = type(error).__name__
         self.settings.setValue("automation/schedules", json.dumps(schedules))
-        AuditTrail(self.settings).append("scheduled_report_removed", {"name": str(removed.get("name", ""))})
+        AuditTrail(self.settings).append("scheduled_report_removed", {"id": str(removed.get("id", "")), "name": str(removed.get("name", "")), "scheduler_error": scheduler_error})
         self.refresh_schedules(); self.refresh_audit()
+        if scheduler_error:
+            QMessageBox.warning(self, self.tr("Scheduled report"), self.tr("The report was removed, but the operating-system job could not be removed. It can no longer generate a report because its schedule ID is no longer active."))
 
     def configure_schedule(self):
         name, ok = QInputDialog.getText(self, self.tr("Scheduled report"), self.tr("Report name:"), text=self.tr("CISO security summary"))
@@ -5352,17 +5496,29 @@ class OperationsDialog(QDialog):
             return
         cadence_seconds = {cadence_labels[0]: 3600, cadence_labels[1]: 86400, cadence_labels[2]: 604800}[cadence_label]
         now = int(time.time())
+        background = QMessageBox.question(
+            self, self.tr("Scheduled report"), self.tr("Run this report even when ZS API Client is closed? This creates a user-level operating-system schedule and requires no administrator privileges."),
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No,
+        ) == QMessageBox.StandardButton.Yes
+        schedule = {
+            "id": uuid.uuid4().hex, "name": name.strip(), "kind": self.report_type.currentData(), "cadence_seconds": cadence_seconds,
+            "output_dir": output_dir, "enabled": True, "background": background, "created": now, "next_run": now + cadence_seconds,
+        }
+        if background:
+            try:
+                schedule["scheduler_backend"] = register_background_schedule(schedule, application_invocation())
+            except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
+                AuditTrail(self.settings).append("scheduled_report_scheduler_failed", {"id": schedule["id"], "operation": "create", "reason": type(error).__name__})
+                QMessageBox.warning(self, self.tr("Scheduled report"), self.tr("The operating-system schedule could not be created. The report was not scheduled.")); return
         schedules = self.window._report_schedules()
-        schedules.append({
-            "name": name.strip(), "kind": self.report_type.currentData(), "cadence_seconds": cadence_seconds,
-            "output_dir": output_dir, "enabled": True, "created": now, "next_run": now + cadence_seconds,
-        })
+        schedules.append(schedule)
         self.settings.setValue("automation/schedules", json.dumps(schedules))
         AuditTrail(self.settings).append("scheduled_report_created", {
-            "name": name.strip(), "kind": self.report_type.currentData(), "cadence_seconds": cadence_seconds,
+            "id": schedule["id"], "name": name.strip(), "kind": self.report_type.currentData(), "cadence_seconds": cadence_seconds, "background": background, "scheduler_backend": schedule.get("scheduler_backend", "application"),
         })
         self.refresh_dashboard(); self.refresh_audit(); self.refresh_schedules()
-        QMessageBox.information(self, self.tr("Scheduled report"), self.tr("Scheduled report saved. Reports run locally while the application is open."))
+        message = self.tr("Scheduled report saved. It will run in the background even when the application is closed.") if background else self.tr("Scheduled report saved. It will run locally while the application is open.")
+        QMessageBox.information(self, self.tr("Scheduled report"), message)
 
     def create_support_bundle(self):
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Save support bundle"), "zs-api-client-support.zip", "ZIP (*.zip)")
@@ -5412,8 +5568,8 @@ class MainWindow(QMainWindow):
         self._setup_menu()
         self._load_settings()
         self._load_history()
-        # Scheduled reports are local application jobs. Nothing is uploaded,
-        # and jobs only run while the desktop client is open.
+        # App-only schedules are checked here. OS-backed schedules invoke the
+        # same report engine in headless mode and are skipped by this timer.
         self.report_schedule_timer = QTimer(self)
         self.report_schedule_timer.timeout.connect(self._run_due_report_schedules)
         self.report_schedule_timer.start(60_000)
@@ -5961,78 +6117,21 @@ class MainWindow(QMainWindow):
 
     def _report_schedules(self):
         """Return only valid persisted report schedule objects."""
-        settings = QSettings("Zscaler", "APIClient")
-        try:
-            schedules = json.loads(str(settings.value("automation/schedules", "[]")))
-        except (TypeError, ValueError):
-            return []
-        return [item for item in schedules if isinstance(item, dict)] if isinstance(schedules, list) else []
+        return stored_report_schedules(QSettings("Zscaler", "APIClient"))
 
     @staticmethod
     def _scheduled_report_filename(name, timestamp):
         """Create a traversal-safe, portable filename for a scheduled report."""
-        stem = re.sub(r"[^A-Za-z0-9._-]+", "-", str(name).strip()).strip(".-") or "security-report"
-        return f"{stem[:80]}-{time.strftime('%Y%m%d-%H%M%S', time.gmtime(timestamp))}.json"
+        return scheduled_report_filename(name, timestamp)
 
     @staticmethod
     def _write_new_report(directory, filename, content):
         """Write a new report atomically enough to avoid overwriting or following a collision."""
-        target = Path(directory) / filename
-        for suffix in range(100):
-            candidate = target if suffix == 0 else target.with_name(f"{target.stem}-{suffix}{target.suffix}")
-            try:
-                with candidate.open("x", encoding="utf-8") as handle:
-                    handle.write(content)
-                return candidate
-            except FileExistsError:
-                continue
-        raise FileExistsError("Could not allocate a unique scheduled report filename")
+        return write_new_report(Path(directory), filename, content)
 
     def _run_due_report_schedules(self, now=None, selected_index=None):
         """Generate due redacted reports locally; never perform network activity."""
-        now = int(time.time() if now is None else now)
-        settings = QSettings("Zscaler", "APIClient")
-        schedules = self._report_schedules()
-        if not schedules:
-            return []
-        trail = AuditTrail(settings)
-        generated = []
-        changed = False
-        for index, schedule in enumerate(schedules):
-            if selected_index is not None and index != selected_index:
-                continue
-            try:
-                next_run = int(schedule.get("next_run", now + 1))
-            except (TypeError, ValueError):
-                next_run = now
-            if (selected_index is None and not schedule.get("enabled", True)) or next_run > now:
-                continue
-            try:
-                cadence = max(3600, int(schedule.get("cadence_seconds", 86400)))
-            except (TypeError, ValueError):
-                cadence = 86400
-            schedule["next_run"] = now + cadence
-            changed = True
-            raw_output_dir = str(schedule.get("output_dir", "")).strip()
-            output_dir = Path(raw_output_dir).expanduser()
-            if not raw_output_dir or not output_dir.is_absolute() or not output_dir.is_dir():
-                trail.append("scheduled_report_failed", {"name": str(schedule.get("name", "")), "reason": "output_directory_unavailable"})
-                continue
-            try:
-                kind = str(schedule.get("kind", "ciso"))
-                if kind not in {"ciso", "soc", "operations"}:
-                    kind = "ciso"
-                data = security_report_data(kind, self.request_history, trail.events(), trail.verify())
-                content = json.dumps(redact_sensitive(data), indent=2, ensure_ascii=False) + "\n"
-                filename = self._scheduled_report_filename(schedule.get("name", "security-report"), now)
-                destination = self._write_new_report(output_dir, filename, content)
-                generated.append(str(destination))
-                trail.append("scheduled_report_generated", {"name": str(schedule.get("name", "")), "kind": kind, "file": destination.name})
-            except (OSError, TypeError, ValueError) as error:
-                trail.append("scheduled_report_failed", {"name": str(schedule.get("name", "")), "reason": type(error).__name__})
-        if changed:
-            settings.setValue("automation/schedules", json.dumps(schedules))
-        return generated
+        return run_report_schedules(QSettings("Zscaler", "APIClient"), self.request_history, now=now, selected_index=selected_index)
     
     def _save_settings(self):
         settings = QSettings("Zscaler", "APIClient")
@@ -8026,6 +8125,18 @@ def apply_theme(app: QApplication, theme: int):
 
 
 def main():
+    if "--run-scheduled-report" in sys.argv:
+        try:
+            index = sys.argv.index("--run-scheduled-report")
+            schedule_id = sys.argv[index + 1]
+        except (ValueError, IndexError):
+            raise SystemExit(2)
+        if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", schedule_id):
+            raise SystemExit(2)
+        settings = QSettings("Zscaler", "APIClient")
+        generated = run_report_schedules(settings, persisted_request_history(), selected_id=schedule_id)
+        raise SystemExit(0 if generated else 1)
+
     # Fix for bundled macOS apps (PyInstaller/py2app)
     # Must be done BEFORE QApplication is created
     if getattr(sys, 'frozen', False):
