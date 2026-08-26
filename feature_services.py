@@ -342,6 +342,9 @@ def operational_alerts(history: Iterable[dict[str, Any]], audit_valid: bool, err
     if len(slow) >= 3:
         alerts.append({"severity": "low", "code": "slow_requests", "count": len(slow),
                        "evidence": {"recent_endpoints": [safe_url(item.get("url", "")) for item in slow[-5:]]}})
+    for anomaly in endpoint_anomalies(events):
+        alerts.append({"severity": anomaly["severity"], "code": anomaly["code"], "count": anomaly["count"],
+                       "evidence": {"endpoint": anomaly["endpoint"], **anomaly["evidence"]}})
     severity_rank = {"critical": 0, "high": 1, "medium": 2, "low": 3}
     alerts.sort(key=lambda alert: severity_rank[alert["severity"]])
     return {"alerts": alerts, "threshold": threshold, "requests": len(events), "failed": len(failures)}
@@ -360,6 +363,40 @@ def request_latency_trend(history: Iterable[dict[str, Any]], limit: int = 12) ->
             duration = 0.0
         trend.append((label, duration))
     return trend
+
+
+def endpoint_anomalies(history: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Detect explainable local regressions using only retained request history."""
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for event in history:
+        endpoint = safe_url(event.get("url", ""))
+        grouped.setdefault(endpoint, []).append(event)
+    anomalies: list[dict[str, Any]] = []
+    for endpoint, events in grouped.items():
+        if len(events) < 3:
+            continue
+        latest, baseline = events[-1], events[:-1]
+        latest_failed = not str(latest.get("status", "")).startswith("2")
+        baseline_successful = any(str(event.get("status", "")).startswith("2") for event in baseline)
+        if latest_failed and baseline_successful:
+            anomalies.append({"severity": "high", "code": "endpoint_failure_regression", "endpoint": endpoint,
+                              "count": len(events), "evidence": {"latest_status": latest.get("status"), "baseline_requests": len(baseline)}})
+        durations = []
+        for event in baseline:
+            try:
+                duration = float(event.get("duration_ms") or 0)
+                if duration > 0:
+                    durations.append(duration)
+            except (TypeError, ValueError):
+                continue
+        try:
+            latest_duration = float(latest.get("duration_ms") or 0)
+        except (TypeError, ValueError):
+            latest_duration = 0
+        if len(durations) >= 2 and latest_duration >= max(2000, sum(durations) / len(durations) * 3):
+            anomalies.append({"severity": "medium", "code": "endpoint_latency_anomaly", "endpoint": endpoint,
+                              "count": len(events), "evidence": {"latest_ms": latest_duration, "baseline_ms": round(sum(durations) / len(durations), 1)}})
+    return anomalies
 
 
 def incident_evidence(history: Iterable[dict[str, Any]], audit_events: Iterable[dict[str, Any]]) -> dict[str, Any]:

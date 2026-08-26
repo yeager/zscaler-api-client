@@ -4560,6 +4560,8 @@ class OperationsDialog(QDialog):
             "error_threshold": self.tr("Local failed requests reached the configured threshold."),
             "rate_limited": self.tr("API rate limiting was observed in local history."),
             "rate_limit_exhausted": self.tr("A response reported no remaining API rate-limit capacity."),
+            "endpoint_failure_regression": self.tr("The latest request failed after successful requests to the same endpoint."),
+            "endpoint_latency_anomaly": self.tr("The latest endpoint response was much slower than its local baseline."),
             "slow_requests": self.tr("Three or more local requests took ten seconds or more."),
         }
         self.alert_table.setRowCount(len(alerts))
