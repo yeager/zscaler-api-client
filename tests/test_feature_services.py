@@ -116,6 +116,8 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertEqual(2, alerts["threshold"])
         self.assertTrue(any(alert["code"] == "error_threshold" for alert in alerts["alerts"]))
         self.assertNotIn("hidden", json.dumps(alerts))
+        proactive = operational_alerts([{"status": 200, "url": "https://example.test", "response_headers": {"X-RateLimit-Remaining": "0"}}], True)
+        self.assertTrue(any(alert["code"] == "rate_limit_exhausted" for alert in proactive["alerts"]))
 
     def test_audit_trail_is_hash_linked(self):
         settings = MemorySettings(); trail = AuditTrail(settings)

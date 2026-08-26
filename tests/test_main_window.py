@@ -517,6 +517,7 @@ class MainWindowTests(unittest.TestCase):
             self.assertTrue(dialog.tabs.isTabVisible(dialog.alert_tab_index))
             self.assertIn("1 local alert", dialog.alert_summary.text())
             self.assertGreaterEqual(dialog.alert_table.rowCount(), 1)
+            self.assertTrue(dialog.alert_chart.values)
             dialog.close()
         finally:
             for key, value in (("ui/mode", old_mode), ("monitoring/error_threshold", old_threshold)):

@@ -4417,6 +4417,7 @@ class OperationsDialog(QDialog):
         alerts_page = QWidget(); alerts_layout = QVBoxLayout(alerts_page)
         alerts_intro = QLabel(self.tr("Local alerts evaluate retained, redacted request history only. They do not monitor the tenant in real time or send data externally.")); alerts_intro.setWordWrap(True); alerts_layout.addWidget(alerts_intro)
         self.alert_summary = QLabel(); self.alert_summary.setObjectName("sectionTitle"); alerts_layout.addWidget(self.alert_summary)
+        self.alert_chart = NumericBarChart(); self.alert_chart.setStyleSheet("background: transparent;"); self.alert_chart.setMaximumHeight(145); alerts_layout.addWidget(self.alert_chart)
         self.alert_table = QTableWidget(0, 4); self.alert_table.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Alert"), self.tr("Count"), self.tr("Evidence")]); self.alert_table.horizontalHeader().setStretchLastSection(True); self.alert_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); alerts_layout.addWidget(self.alert_table)
         alert_actions = QHBoxLayout(); refresh_alerts = QPushButton(self.tr("Refresh local alerts")); refresh_alerts.clicked.connect(self.refresh_alerts); alert_actions.addWidget(refresh_alerts)
         copy_alerts = QPushButton(self.tr("Copy masked alert summary")); copy_alerts.clicked.connect(self.copy_alert_summary); alert_actions.addWidget(copy_alerts); alert_actions.addStretch(); alerts_layout.addLayout(alert_actions)
@@ -4547,10 +4548,14 @@ class OperationsDialog(QDialog):
         data = self._alert_data(); alerts = data["alerts"]
         self.alert_summary.setText(self.tr("{count} local alert(s) · error threshold: {threshold}").format(count=len(alerts), threshold=data["threshold"]))
         labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low")}
+        self.alert_chart.set_style("pie")
+        chart_values = [(labels[level], float(sum(1 for alert in alerts if alert["severity"] == level))) for level in ("critical", "high", "medium", "low")]
+        self.alert_chart.set_values([(label, count) for label, count in chart_values if count])
         wording = {
             "audit_integrity": self.tr("The local audit chain needs review."),
             "error_threshold": self.tr("Local failed requests reached the configured threshold."),
             "rate_limited": self.tr("API rate limiting was observed in local history."),
+            "rate_limit_exhausted": self.tr("A response reported no remaining API rate-limit capacity."),
             "slow_requests": self.tr("Three or more local requests took ten seconds or more."),
         }
         self.alert_table.setRowCount(len(alerts))

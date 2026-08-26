@@ -314,6 +314,18 @@ def operational_alerts(history: Iterable[dict[str, Any]], audit_valid: bool, err
     failures = [item for item in events if not str(item.get("status", "")).startswith("2")]
     throttled = [item for item in events if str(item.get("status", "")) == "429"]
     slow = [item for item in events if int(item.get("duration_ms") or 0) >= 10_000]
+    exhausted = []
+    for item in events:
+        headers = item.get("response_headers", {})
+        if not isinstance(headers, dict):
+            continue
+        normalized = {"".join(char for char in str(key).lower() if char.isalnum()): value for key, value in headers.items()}
+        remaining = normalized.get("xratelimitremaining") or normalized.get("ratelimitremaining")
+        try:
+            if remaining is not None and int(str(remaining)) <= 0:
+                exhausted.append(item)
+        except ValueError:
+            continue
     alerts: list[dict[str, Any]] = []
     if not audit_valid:
         alerts.append({"severity": "critical", "code": "audit_integrity", "count": 1,
@@ -324,6 +336,9 @@ def operational_alerts(history: Iterable[dict[str, Any]], audit_valid: bool, err
     if throttled:
         alerts.append({"severity": "medium", "code": "rate_limited", "count": len(throttled),
                        "evidence": {"recent_endpoints": [safe_url(item.get("url", "")) for item in throttled[-5:]]}})
+    if exhausted:
+        alerts.append({"severity": "medium", "code": "rate_limit_exhausted", "count": len(exhausted),
+                       "evidence": {"recent_endpoints": [safe_url(item.get("url", "")) for item in exhausted[-5:]], "signal": "remaining=0"}})
     if len(slow) >= 3:
         alerts.append({"severity": "low", "code": "slow_requests", "count": len(slow),
                        "evidence": {"recent_endpoints": [safe_url(item.get("url", "")) for item in slow[-5:]]}})
