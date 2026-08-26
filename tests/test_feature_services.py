@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture, incident_evidence, change_control_plan, security_report_data, validate_request_chain
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain
 
 
 class MemorySettings:
@@ -88,6 +88,16 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertEqual({"name": "Ada"}, plan["steps"][0]["body"])
         self.assertFalse(validate_request_chain([{"method": "GET", "url": "http://example.test"}])["valid"])
         self.assertFalse(validate_request_chain([])["valid"])
+
+    def test_operational_alerts_use_local_history_and_configured_threshold(self):
+        alerts = operational_alerts([
+            {"status": 500, "url": "https://example.test/a?token=hidden"},
+            {"status": 429, "url": "https://example.test/b?token=hidden"},
+            {"status": 0, "url": "https://example.test/c?token=hidden", "duration_ms": 12_000},
+        ], audit_valid=True, error_threshold=2)
+        self.assertEqual(2, alerts["threshold"])
+        self.assertTrue(any(alert["code"] == "error_threshold" for alert in alerts["alerts"]))
+        self.assertNotIn("hidden", json.dumps(alerts))
 
     def test_audit_trail_is_hash_linked(self):
         settings = MemorySettings(); trail = AuditTrail(settings)

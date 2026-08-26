@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, operational_alerts, incident_evidence, change_control_plan, security_report_data, validate_request_chain, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -4319,6 +4319,14 @@ class OperationsDialog(QDialog):
         posture_refresh = QPushButton(self.tr("Refresh security posture")); posture_refresh.clicked.connect(self.refresh_posture); posture_layout.addWidget(posture_refresh)
         self.posture_tab_index = self.tabs.addTab(posture_page, self.tr("Security posture"))
 
+        alerts_page = QWidget(); alerts_layout = QVBoxLayout(alerts_page)
+        alerts_intro = QLabel(self.tr("Local alerts evaluate retained, redacted request history only. They do not monitor the tenant in real time or send data externally.")); alerts_intro.setWordWrap(True); alerts_layout.addWidget(alerts_intro)
+        self.alert_summary = QLabel(); self.alert_summary.setObjectName("sectionTitle"); alerts_layout.addWidget(self.alert_summary)
+        self.alert_table = QTableWidget(0, 4); self.alert_table.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Alert"), self.tr("Count"), self.tr("Evidence")]); self.alert_table.horizontalHeader().setStretchLastSection(True); self.alert_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); alerts_layout.addWidget(self.alert_table)
+        alert_actions = QHBoxLayout(); refresh_alerts = QPushButton(self.tr("Refresh local alerts")); refresh_alerts.clicked.connect(self.refresh_alerts); alert_actions.addWidget(refresh_alerts)
+        copy_alerts = QPushButton(self.tr("Copy masked alert summary")); copy_alerts.clicked.connect(self.copy_alert_summary); alert_actions.addWidget(copy_alerts); alert_actions.addStretch(); alerts_layout.addLayout(alert_actions)
+        self.alert_tab_index = self.tabs.addTab(alerts_page, self.tr("Alert Center"))
+
         incident_page = QWidget(); incident_layout = QVBoxLayout(incident_page)
         incident_intro = QLabel(self.tr("Build a redacted local investigation timeline. Prepared chains never send API requests automatically.")); incident_intro.setWordWrap(True); incident_layout.addWidget(incident_intro)
         chain_controls = QHBoxLayout(); chain_controls.addWidget(QLabel(self.tr("Investigation:")))
@@ -4364,7 +4372,7 @@ class OperationsDialog(QDialog):
         self._apply_operations_mode()
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
-        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_incident(); self.generate_report()
+        self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_alerts(); self.refresh_incident(); self.generate_report()
 
     def _apply_operations_mode(self):
         """Keep basic mode focused on situational awareness and investigation."""
@@ -4419,6 +4427,35 @@ class OperationsDialog(QDialog):
             self.posture_findings.setItem(row, 0, QTableWidgetItem(severity_labels[finding["severity"]]))
             self.posture_findings.setItem(row, 1, QTableWidgetItem(title))
             self.posture_findings.setItem(row, 2, QTableWidgetItem(detail.format(count=finding["count"])))
+
+    def _alert_data(self):
+        try:
+            threshold = max(1, int(self.settings.value("monitoring/error_threshold", "10")))
+        except (TypeError, ValueError):
+            threshold = 10
+        return operational_alerts(getattr(self.window, "request_history", []), AuditTrail(self.settings).verify(), threshold)
+
+    def refresh_alerts(self):
+        data = self._alert_data(); alerts = data["alerts"]
+        self.alert_summary.setText(self.tr("{count} local alert(s) · error threshold: {threshold}").format(count=len(alerts), threshold=data["threshold"]))
+        labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low")}
+        wording = {
+            "audit_integrity": self.tr("The local audit chain needs review."),
+            "error_threshold": self.tr("Local failed requests reached the configured threshold."),
+            "rate_limited": self.tr("API rate limiting was observed in local history."),
+            "slow_requests": self.tr("Three or more local requests took ten seconds or more."),
+        }
+        self.alert_table.setRowCount(len(alerts))
+        for row, alert in enumerate(alerts):
+            self.alert_table.setItem(row, 0, QTableWidgetItem(labels[alert["severity"]]))
+            self.alert_table.setItem(row, 1, QTableWidgetItem(wording[alert["code"]]))
+            self.alert_table.setItem(row, 2, QTableWidgetItem(str(alert["count"])))
+            self.alert_table.setItem(row, 3, QTableWidgetItem(json.dumps(mask(alert["evidence"]), ensure_ascii=False)))
+
+    def copy_alert_summary(self):
+        QApplication.clipboard().setText(json.dumps(mask(self._alert_data()), indent=2, ensure_ascii=False))
+        AuditTrail(self.settings).append("local_alert_summary_copied", {})
+        self.alert_summary.setToolTip(self.tr("Copied to clipboard"))
 
     def _incident_evidence(self):
         return incident_evidence(getattr(self.window, "request_history", []), AuditTrail(self.settings).events())

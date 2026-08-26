@@ -387,6 +387,25 @@ class MainWindowTests(unittest.TestCase):
             else:
                 settings.setValue("ui/mode", previous)
 
+    def test_alert_center_uses_saved_error_threshold_and_is_available_in_basic_mode(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        old_mode, old_threshold = settings.value("ui/mode", None), settings.value("monitoring/error_threshold", None)
+        try:
+            settings.setValue("ui/mode", "basic")
+            settings.setValue("monitoring/error_threshold", "2")
+            self.window.request_history = [{"status": 500, "url": "https://example.test"}] * 2
+            dialog = client.OperationsDialog(self.window)
+            self.assertTrue(dialog.tabs.isTabVisible(dialog.alert_tab_index))
+            self.assertIn("1 local alert", dialog.alert_summary.text())
+            self.assertGreaterEqual(dialog.alert_table.rowCount(), 1)
+            dialog.close()
+        finally:
+            for key, value in (("ui/mode", old_mode), ("monitoring/error_threshold", old_threshold)):
+                if value is None:
+                    settings.remove(key)
+                else:
+                    settings.setValue(key, value)
+
     def test_webhook_test_payload_is_local_and_masked(self):
         self.window.request_history = [{"method": "GET", "status": 500, "headers": {"Authorization": "hidden"}}]
         dialog = client.OperationsDialog(self.window)

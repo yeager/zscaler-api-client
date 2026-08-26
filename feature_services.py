@@ -251,6 +251,36 @@ def security_posture(history: Iterable[dict[str, Any]], audit_valid: bool) -> di
     }
 
 
+def operational_alerts(history: Iterable[dict[str, Any]], audit_valid: bool, error_threshold: int = 10) -> dict[str, Any]:
+    """Create transparent, local-only alerts from already-redacted activity.
+
+    The threshold is evaluated against the retained local request history.  It
+    deliberately does not claim real-time tenant monitoring or send anything
+    to a webhook/SIEM.
+    """
+    events = list(history)
+    threshold = max(1, int(error_threshold))
+    failures = [item for item in events if not str(item.get("status", "")).startswith("2")]
+    throttled = [item for item in events if str(item.get("status", "")) == "429"]
+    slow = [item for item in events if int(item.get("duration_ms") or 0) >= 10_000]
+    alerts: list[dict[str, Any]] = []
+    if not audit_valid:
+        alerts.append({"severity": "critical", "code": "audit_integrity", "count": 1,
+                       "evidence": {"audit_integrity": "needs_review"}})
+    if len(failures) >= threshold:
+        alerts.append({"severity": "high", "code": "error_threshold", "count": len(failures),
+                       "evidence": {"threshold": threshold, "recent_endpoints": [safe_url(item.get("url", "")) for item in failures[-5:]]}})
+    if throttled:
+        alerts.append({"severity": "medium", "code": "rate_limited", "count": len(throttled),
+                       "evidence": {"recent_endpoints": [safe_url(item.get("url", "")) for item in throttled[-5:]]}})
+    if len(slow) >= 3:
+        alerts.append({"severity": "low", "code": "slow_requests", "count": len(slow),
+                       "evidence": {"recent_endpoints": [safe_url(item.get("url", "")) for item in slow[-5:]]}})
+    severity_rank = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+    alerts.sort(key=lambda alert: severity_rank[alert["severity"]])
+    return {"alerts": alerts, "threshold": threshold, "requests": len(events), "failed": len(failures)}
+
+
 def incident_evidence(history: Iterable[dict[str, Any]], audit_events: Iterable[dict[str, Any]]) -> dict[str, Any]:
     """Build a portable, redacted local incident timeline for human review."""
     timeline: list[dict[str, Any]] = []
