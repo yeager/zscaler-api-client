@@ -5009,14 +5009,29 @@ class OperationsDialog(QDialog):
             self.audit_timeline.setItem(row, 2, QTableWidgetItem(json.dumps(event.get("details", {}), ensure_ascii=False)))
 
     def configure_schedule(self):
-        name, ok = QInputDialog.getText(self, self.tr("Scheduled report"), self.tr("Report name and cadence:"), text="Security dashboard — daily")
-        if ok and name.strip():
-            try: schedules = json.loads(self.settings.value("automation/schedules", "[]"))
-            except ValueError: schedules = []
-            schedules.append({"name": name.strip(), "enabled": True, "created": int(time.time())})
-            self.settings.setValue("automation/schedules", json.dumps(schedules))
-            AuditTrail(self.settings).append("scheduled_report_created", {"name": name.strip()})
-            self.refresh_dashboard(); self.refresh_audit()
+        name, ok = QInputDialog.getText(self, self.tr("Scheduled report"), self.tr("Report name:"), text=self.tr("CISO security summary"))
+        if not ok or not name.strip():
+            return
+        cadence_labels = (self.tr("Hourly"), self.tr("Daily"), self.tr("Weekly"))
+        cadence_label, ok = QInputDialog.getItem(self, self.tr("Scheduled report"), self.tr("Report cadence:"), cadence_labels, 1, False)
+        if not ok:
+            return
+        output_dir = QFileDialog.getExistingDirectory(self, self.tr("Choose report output folder"), str(Path.home()))
+        if not output_dir:
+            return
+        cadence_seconds = {cadence_labels[0]: 3600, cadence_labels[1]: 86400, cadence_labels[2]: 604800}[cadence_label]
+        now = int(time.time())
+        schedules = self.window._report_schedules()
+        schedules.append({
+            "name": name.strip(), "kind": self.report_type.currentData(), "cadence_seconds": cadence_seconds,
+            "output_dir": output_dir, "enabled": True, "created": now, "next_run": now + cadence_seconds,
+        })
+        self.settings.setValue("automation/schedules", json.dumps(schedules))
+        AuditTrail(self.settings).append("scheduled_report_created", {
+            "name": name.strip(), "kind": self.report_type.currentData(), "cadence_seconds": cadence_seconds,
+        })
+        self.refresh_dashboard(); self.refresh_audit()
+        QMessageBox.information(self, self.tr("Scheduled report"), self.tr("Scheduled report saved. Reports run locally while the application is open."))
 
     def create_support_bundle(self):
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Save support bundle"), "zs-api-client-support.zip", "ZIP (*.zip)")
@@ -5066,6 +5081,11 @@ class MainWindow(QMainWindow):
         self._setup_menu()
         self._load_settings()
         self._load_history()
+        # Scheduled reports are local application jobs. Nothing is uploaded,
+        # and jobs only run while the desktop client is open.
+        self.report_schedule_timer = QTimer(self)
+        self.report_schedule_timer.timeout.connect(self._run_due_report_schedules)
+        self.report_schedule_timer.start(60_000)
     
     def _setup_ui(self):
         central = QWidget()
@@ -5584,6 +5604,79 @@ class MainWindow(QMainWindow):
         self._update_api_list()
         self._update_endpoint_tree(self.api_type.currentText())
         self._apply_main_mode()
+
+    def _report_schedules(self):
+        """Return only valid persisted report schedule objects."""
+        settings = QSettings("Zscaler", "APIClient")
+        try:
+            schedules = json.loads(str(settings.value("automation/schedules", "[]")))
+        except (TypeError, ValueError):
+            return []
+        return [item for item in schedules if isinstance(item, dict)] if isinstance(schedules, list) else []
+
+    @staticmethod
+    def _scheduled_report_filename(name, timestamp):
+        """Create a traversal-safe, portable filename for a scheduled report."""
+        stem = re.sub(r"[^A-Za-z0-9._-]+", "-", str(name).strip()).strip(".-") or "security-report"
+        return f"{stem[:80]}-{time.strftime('%Y%m%d-%H%M%S', time.gmtime(timestamp))}.json"
+
+    @staticmethod
+    def _write_new_report(directory, filename, content):
+        """Write a new report atomically enough to avoid overwriting or following a collision."""
+        target = Path(directory) / filename
+        for suffix in range(100):
+            candidate = target if suffix == 0 else target.with_name(f"{target.stem}-{suffix}{target.suffix}")
+            try:
+                with candidate.open("x", encoding="utf-8") as handle:
+                    handle.write(content)
+                return candidate
+            except FileExistsError:
+                continue
+        raise FileExistsError("Could not allocate a unique scheduled report filename")
+
+    def _run_due_report_schedules(self, now=None):
+        """Generate due redacted reports locally; never perform network activity."""
+        now = int(time.time() if now is None else now)
+        settings = QSettings("Zscaler", "APIClient")
+        schedules = self._report_schedules()
+        if not schedules:
+            return []
+        trail = AuditTrail(settings)
+        generated = []
+        changed = False
+        for schedule in schedules:
+            try:
+                next_run = int(schedule.get("next_run", now + 1))
+            except (TypeError, ValueError):
+                next_run = now
+            if not schedule.get("enabled", True) or next_run > now:
+                continue
+            try:
+                cadence = max(3600, int(schedule.get("cadence_seconds", 86400)))
+            except (TypeError, ValueError):
+                cadence = 86400
+            schedule["next_run"] = now + cadence
+            changed = True
+            raw_output_dir = str(schedule.get("output_dir", "")).strip()
+            output_dir = Path(raw_output_dir).expanduser()
+            if not raw_output_dir or not output_dir.is_absolute() or not output_dir.is_dir():
+                trail.append("scheduled_report_failed", {"name": str(schedule.get("name", "")), "reason": "output_directory_unavailable"})
+                continue
+            try:
+                kind = str(schedule.get("kind", "ciso"))
+                if kind not in {"ciso", "soc", "operations"}:
+                    kind = "ciso"
+                data = security_report_data(kind, self.request_history, trail.events(), trail.verify())
+                content = json.dumps(redact_sensitive(data), indent=2, ensure_ascii=False) + "\n"
+                filename = self._scheduled_report_filename(schedule.get("name", "security-report"), now)
+                destination = self._write_new_report(output_dir, filename, content)
+                generated.append(str(destination))
+                trail.append("scheduled_report_generated", {"name": str(schedule.get("name", "")), "kind": kind, "file": destination.name})
+            except (OSError, TypeError, ValueError) as error:
+                trail.append("scheduled_report_failed", {"name": str(schedule.get("name", "")), "reason": type(error).__name__})
+        if changed:
+            settings.setValue("automation/schedules", json.dumps(schedules))
+        return generated
     
     def _save_settings(self):
         settings = QSettings("Zscaler", "APIClient")

@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 from io import BytesIO
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import MagicMock, patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -549,6 +550,33 @@ class MainWindowTests(unittest.TestCase):
                 settings.remove("ui/mode")
             else:
                 settings.setValue("ui/mode", previous)
+
+    def test_due_scheduled_report_runs_locally_without_overwriting(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("automation/schedules", None)
+        try:
+            with TemporaryDirectory() as output_dir:
+                now = 1_800_000_000
+                settings.setValue("automation/schedules", json.dumps([{
+                    "name": "SOC / daily", "kind": "soc", "cadence_seconds": 3600,
+                    "output_dir": output_dir, "enabled": True, "next_run": now - 1,
+                }]))
+                first = self.window._run_due_report_schedules(now)
+                self.assertEqual(1, len(first))
+                self.assertEqual("soc", json.loads(Path(first[0]).read_text(encoding="utf-8"))["kind"])
+                self.assertNotIn("/", Path(first[0]).name)
+                schedules = self.window._report_schedules()
+                self.assertEqual(now + 3600, schedules[0]["next_run"])
+                schedules[0]["next_run"] = now
+                settings.setValue("automation/schedules", json.dumps(schedules))
+                second = self.window._run_due_report_schedules(now)
+                self.assertNotEqual(first[0], second[0])
+                self.assertTrue(Path(first[0]).exists())
+        finally:
+            if previous is None:
+                settings.remove("automation/schedules")
+            else:
+                settings.setValue("automation/schedules", previous)
 
     def test_alert_center_uses_saved_error_threshold_and_is_available_in_basic_mode(self):
         settings = client.QSettings("Zscaler", "APIClient")
