@@ -59,7 +59,7 @@ try:
     import pyqtgraph as pg
 except (ImportError, OSError):  # Keep source checkouts usable with the minimal Qt stack.
     pg = None
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, PLAYBOOK_TEMPLATES, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from evidence_signing import generate_private_key, public_key, sign_evidence, verify_evidence
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
@@ -6333,14 +6333,37 @@ class OperationsDialog(QDialog):
         self.detection_tab_index = self.tabs.addTab(detection_page, self.tr("Detection lab"))
         self._last_detection_result = {}; self._last_adaptive_result = {}; self.load_detection_template(); self.refresh_adaptive_anomalies(record_audit=False)
 
+        playbook_page = QWidget(); playbook_layout = QVBoxLayout(playbook_page)
+        playbook_intro = QLabel(self.tr("Use guided, locally tracked response and recovery checklists. A completed step records only operator intent in the local audit trail; it never changes a tenant or closes an authoritative incident.")); playbook_intro.setWordWrap(True); playbook_layout.addWidget(playbook_intro)
+        playbook_controls = QHBoxLayout(); playbook_controls.addWidget(QLabel(self.tr("Playbook:"))); self.playbook_choice = QComboBox()
+        playbook_labels = {"api_outage": self.tr("API/service disruption"), "policy_change": self.tr("High-risk policy change"), "experience_degradation": self.tr("Digital experience degradation"), "credential_exposure": self.tr("Possible credential exposure"), "ransomware_containment": self.tr("Ransomware containment support")}
+        for key in PLAYBOOK_TEMPLATES: self.playbook_choice.addItem(playbook_labels[key], key)
+        self.playbook_choice.currentIndexChanged.connect(self.refresh_playbook); playbook_controls.addWidget(self.playbook_choice, 1)
+        complete_step = QPushButton(self.tr("Mark selected step complete")); complete_step.clicked.connect(self.complete_playbook_step); playbook_controls.addWidget(complete_step)
+        export_playbook = QPushButton(self.tr("Export masked playbook evidence")); export_playbook.clicked.connect(self.export_playbook); playbook_controls.addWidget(export_playbook); playbook_layout.addLayout(playbook_controls)
+        self.playbook_progress = QProgressBar(); self.playbook_progress.setRange(0, 100); playbook_layout.addWidget(self.playbook_progress)
+        self.playbook_steps = QTableWidget(0, 4); self.playbook_steps.setHorizontalHeaderLabels([self.tr("Step"), self.tr("Status"), self.tr("Guidance"), self.tr("Local evidence")]); self.playbook_steps.horizontalHeader().setStretchLastSection(True); self.playbook_steps.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.playbook_steps.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows); playbook_layout.addWidget(self.playbook_steps)
+        self.api_planner_group = QGroupBox(self.tr("Smart API planner (review only)")); planner_layout = QVBoxLayout(self.api_planner_group)
+        planner_intro = QLabel(self.tr("Describe a goal to rank documented Automation Hub operations deterministically. Read operations are preferred; tenant values are never guessed and nothing runs automatically.")); planner_intro.setWordWrap(True); planner_layout.addWidget(planner_intro)
+        planner_controls = QHBoxLayout(); self.api_plan_goal = QLineEdit(); self.api_plan_goal.setPlaceholderText(self.tr("Example: investigate slow ZDX application experience")); planner_controls.addWidget(self.api_plan_goal, 1)
+        plan_api = QPushButton(self.tr("Plan documented operations")); plan_api.clicked.connect(self.build_smart_api_plan); planner_controls.addWidget(plan_api)
+        copy_plan = QPushButton(self.tr("Copy safe reads to API Chains")); copy_plan.clicked.connect(self.copy_api_plan_to_chain); planner_controls.addWidget(copy_plan); planner_layout.addLayout(planner_controls)
+        self.api_plan_summary = QLabel(); self.api_plan_summary.setWordWrap(True); self.api_plan_summary.setObjectName("mutedLabel"); planner_layout.addWidget(self.api_plan_summary)
+        self.api_plan_table = QTableWidget(0, 5); self.api_plan_table.setHorizontalHeaderLabels([self.tr("Score"), self.tr("Product"), self.tr("Operation"), self.tr("Method"), self.tr("URL")]); self.api_plan_table.horizontalHeader().setStretchLastSection(True); self.api_plan_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.api_plan_table.setMaximumHeight(190); planner_layout.addWidget(self.api_plan_table); playbook_layout.addWidget(self.api_planner_group)
+        self.playbook_tab_index = self.tabs.addTab(playbook_page, self.tr("Response playbooks")); self._last_playbook = {}; self._last_api_plan = {}; self.refresh_playbook(record_audit=False)
+
         change_page = QWidget(); change_layout = QVBoxLayout(change_page)
         change_intro = QLabel(self.tr("Create a local review from Policy diff. Approval records intent only; no policy, Terraform, or Git change is applied automatically.")); change_intro.setWordWrap(True); change_layout.addWidget(change_intro)
-        change_form = QFormLayout(); self.change_ticket = QLineEdit(); self.change_ticket.setPlaceholderText(self.tr("Change ticket or reference")); self.change_reviewer = QLineEdit(); self.change_reviewer.setPlaceholderText(self.tr("Reviewer name")); change_form.addRow(self.tr("Reference:"), self.change_ticket); change_form.addRow(self.tr("Reviewer:"), self.change_reviewer); change_layout.addLayout(change_form)
+        change_form = QFormLayout(); self.change_ticket = QLineEdit(); self.change_ticket.setPlaceholderText(self.tr("Change ticket or reference")); self.change_owner = QLineEdit(); self.change_owner.setPlaceholderText(self.tr("Change owner")); self.change_reviewer = QLineEdit(); self.change_reviewer.setPlaceholderText(self.tr("Independent reviewer")); change_form.addRow(self.tr("Reference:"), self.change_ticket); change_form.addRow(self.tr("Owner:"), self.change_owner); change_form.addRow(self.tr("Reviewer:"), self.change_reviewer); change_layout.addLayout(change_form)
+        safety_checks = QHBoxLayout(); self.change_maintenance = QCheckBox(self.tr("Maintenance window confirmed")); safety_checks.addWidget(self.change_maintenance); self.change_simulated = QCheckBox(self.tr("Local simulation reviewed")); safety_checks.addWidget(self.change_simulated); self.change_rollback_ready = QCheckBox(self.tr("Rollback prepared")); safety_checks.addWidget(self.change_rollback_ready); safety_checks.addStretch(); change_layout.addLayout(safety_checks); self._change_approved = False
+        self.change_risk = QLabel(); self.change_risk.setObjectName("sectionTitle"); change_layout.addWidget(self.change_risk)
+        self.change_gates = QTableWidget(0, 3); self.change_gates.setHorizontalHeaderLabels([self.tr("Gate"), self.tr("Required"), self.tr("Status")]); self.change_gates.horizontalHeader().setStretchLastSection(True); self.change_gates.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.change_gates.setMaximumHeight(175); change_layout.addWidget(self.change_gates)
         self.change_review = QPlainTextEdit(); self.change_review.setReadOnly(True); change_layout.addWidget(self.change_review)
         change_controls = QHBoxLayout(); prepare_change = QPushButton(self.tr("Prepare change review")); prepare_change.clicked.connect(self.prepare_change_review); change_controls.addWidget(prepare_change)
         approve_change = QPushButton(self.tr("Record local approval")); approve_change.clicked.connect(self.approve_change_review); change_controls.addWidget(approve_change)
         git_export = QPushButton(self.tr("Export Git review")); git_export.clicked.connect(lambda: self.export_change_review("git")); change_controls.addWidget(git_export)
         rollback_export = QPushButton(self.tr("Export rollback plan")); rollback_export.clicked.connect(lambda: self.export_change_review("rollback")); change_controls.addWidget(rollback_export); change_controls.addStretch(); change_layout.addLayout(change_controls)
+        rollback_verify = QPushButton(self.tr("Verify rollback artifact")); rollback_verify.clicked.connect(self.verify_rollback_artifact); change_controls.insertWidget(4, rollback_verify)
         self.change_tab_index = self.tabs.addTab(change_page, self.tr("Change control"))
 
         assurance_page = QWidget(); assurance_layout = QVBoxLayout(assurance_page)
@@ -6454,6 +6477,7 @@ class OperationsDialog(QDialog):
         self.twin_load_proposed.setVisible(not basic)
         self.investigation_views.setTabVisible(self.soc_signals_tab_index, not basic)
         self.assurance_save_baseline.setVisible(not basic); self.assurance_sign.setVisible(not basic); self.assurance_verify.setVisible(not basic)
+        self.api_planner_group.setVisible(not basic)
 
     def configure_local_monitor(self, enabled=None, record_audit=True):
         """Refresh local views on a user-approved timer; it never sends API calls."""
@@ -6870,20 +6894,94 @@ class OperationsDialog(QDialog):
             Path(path).write_text(json.dumps(safe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"); format_name = "json"
         self._scope_audit().append("detection_evidence_exported", {"format": format_name, "file": os.path.basename(path)})
 
+    def refresh_playbook(self, _index=0, record_audit=True):
+        raw = guided_playbook(self.playbook_choice.currentData() or "api_outage", self._scoped_events()); self._last_playbook = raw
+        data = privacy_safe(raw, self.settings, "display"); self.playbook_steps.setRowCount(len(data["steps"]))
+        wording = {
+            "Confirm scope from retained failures": self.tr("Confirm scope from retained failures"), "Check rate-limit and service-health evidence": self.tr("Check rate-limit and service-health evidence"), "Collect read-only product status": self.tr("Collect read-only product status"), "Correlate affected entities": self.tr("Correlate affected entities"), "Export masked incident evidence": self.tr("Export masked incident evidence"), "Record closure decision": self.tr("Record closure decision"),
+            "Capture current policy baseline": self.tr("Capture current policy baseline"), "Run policy diff and best-practice checks": self.tr("Run policy diff and best-practice checks"), "Run Policy Twin and decision simulation": self.tr("Run Policy Twin and decision simulation"), "Prepare rollback artifact": self.tr("Prepare rollback artifact"), "Record independent review": self.tr("Record independent review"), "Export change package": self.tr("Export change package"),
+            "Identify affected user and application scope": self.tr("Identify affected user and application scope"), "Inspect device metrics": self.tr("Inspect device metrics"), "Inspect network latency, loss and jitter": self.tr("Inspect network latency, loss and jitter"), "Inspect service-edge path": self.tr("Inspect service-edge path"), "Compare application response": self.tr("Compare application response"), "Export masked journey evidence": self.tr("Export masked journey evidence"),
+            "Stop copying or exporting raw material": self.tr("Stop copying or exporting raw material"), "Rotate the affected credential outside this client": self.tr("Rotate the affected credential outside this client"), "Clear in-memory sessions": self.tr("Clear in-memory sessions"), "Review masked audit evidence": self.tr("Review masked audit evidence"), "Validate least-privilege access": self.tr("Validate least-privilege access"), "Record containment and recovery": self.tr("Record containment and recovery"),
+            "Validate the alert in authoritative security tooling": self.tr("Validate the alert in authoritative security tooling"), "Identify users, devices and applications": self.tr("Identify users, devices and applications"), "Preserve masked evidence": self.tr("Preserve masked evidence"), "Prepare containment changes for independent approval": self.tr("Prepare containment changes for independent approval"), "Track recovery prerequisites": self.tr("Track recovery prerequisites"), "Record lessons learned": self.tr("Record lessons learned"),
+        }
+        for row, step in enumerate(data["steps"]):
+            status = self.tr("Complete") if step["status"] == "complete" else self.tr("Pending")
+            values = (step["order"], status, wording.get(step["title"], step["title"]), self.tr("Recorded in local audit trail") if step["status"] == "complete" else self.tr("No completion evidence"))
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(str(value)); item.setData(Qt.ItemDataRole.UserRole, step["id"])
+                if column == 1: item.setForeground(QColor("#34d399" if step["status"] == "complete" else "#fbbf24"))
+                self.playbook_steps.setItem(row, column, item)
+        self.playbook_steps.resizeColumnsToContents(); summary = data["summary"]; self.playbook_progress.setValue(round(100 * summary["complete"] / max(1, summary["total"])))
+        if record_audit: self._scope_audit().append("playbook_opened", {"kind": data["kind"]})
+
+    def complete_playbook_step(self):
+        row = self.playbook_steps.currentRow()
+        if row < 0:
+            QMessageBox.information(self, self.tr("Response playbooks"), self.tr("Select a playbook step first.")); return
+        step_id = str(self.playbook_steps.item(row, 0).data(Qt.ItemDataRole.UserRole))
+        playbook = getattr(self, "_last_playbook", {}); step = next((item for item in playbook.get("steps", []) if item["id"] == step_id), None)
+        if not step or step["status"] == "complete": return
+        if QMessageBox.question(self, self.tr("Mark step complete"), self.tr("Record this step as completed in the local audit trail? This does not perform the action or update an authoritative incident."), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel, QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes: return
+        self._scope_audit().append("playbook_step_completed", {"kind": playbook["kind"], "step_id": step_id, "order": step["order"], "title": step["title"]}); self.refresh_playbook(record_audit=False)
+
+    def export_playbook(self):
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Export masked playbook evidence"), "response-playbook.json", "JSON (*.json)")
+        if not path: return
+        data = privacy_safe({**self._last_playbook, "scope": self._scope_metadata()}, self.settings, "export"); Path(path).write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"); self._scope_audit().append("playbook_evidence_exported", {"kind": data["kind"], "file": os.path.basename(path)})
+
+    def build_smart_api_plan(self):
+        goal = self.api_plan_goal.text().strip()
+        if not goal:
+            self.api_plan_summary.setText(self.tr("Describe an administrative or investigation goal first.")); return
+        raw = smart_api_plan(goal, AUTOMATION_HUB_CATALOG); self._last_api_plan = raw; data = privacy_safe(raw, self.settings, "display")
+        self.api_plan_table.setRowCount(len(data["candidates"]))
+        for row, item in enumerate(data["candidates"]):
+            values = (item["score"], str(item["product"]).upper(), item["name"], item["method"], item["url"])
+            for column, value in enumerate(values):
+                cell = QTableWidgetItem(str(value));
+                if column == 3: cell.setForeground(QColor("#34d399" if item["method"] == "GET" else "#fb7185"))
+                self.api_plan_table.setItem(row, column, cell)
+        self.api_plan_table.resizeColumnsToContents(); self.api_plan_summary.setText(self.tr("Found {matches} documented match(es); proposed {proposed}, including {writes} write operation(s). Review parameters and documentation before creating a chain.").format(matches=data["summary"]["matches"], proposed=data["summary"]["proposed"], writes=data["summary"]["write_operations"]))
+        self._scope_audit().append("smart_api_plan_created", {"matches": data["summary"]["matches"], "proposed": data["summary"]["proposed"], "write_operations": data["summary"]["write_operations"]})
+
+    def copy_api_plan_to_chain(self):
+        candidates = [item for item in getattr(self, "_last_api_plan", {}).get("candidates", []) if item.get("method") == "GET"]
+        if not candidates:
+            QMessageBox.information(self, self.tr("Smart API planner"), self.tr("Create a plan with at least one read operation first.")); return
+        steps = [{"id": f"read{index}", "method": "GET", "url": item["url"]} for index, item in enumerate(candidates, 1)]
+        self.api_chain_input.setPlainText(json.dumps(steps, indent=2, ensure_ascii=False)); self.api_chain_preview.setPlainText(self.tr("Planner output copied for review. Validate the chain, supply required path values, and approve it separately before execution.")); self.tabs.setCurrentIndex(self.chain_tab_index)
+        self._scope_audit().append("smart_api_plan_copied_to_chain", {"read_steps": len(steps)})
+
     def _change_plan(self):
         return change_control_plan(self._json(self.before_policy, {}), self._json(self.after_policy, {}))
 
+    def _change_safety(self):
+        return change_safety_assessment(self._json(self.before_policy, {}), self._json(self.after_policy, {}), {
+            "reference": self.change_ticket.text().strip(), "owner": self.change_owner.text().strip(), "reviewer": self.change_reviewer.text().strip(),
+            "maintenance_window": self.change_maintenance.isChecked(), "simulation": self.change_simulated.isChecked(), "rollback": self.change_rollback_ready.isChecked(), "approval": self._change_approved,
+        })
+
     def prepare_change_review(self):
         try:
-            plan = self._change_plan()
+            plan = self._change_plan(); safety = self._change_safety()
         except ValueError as exc:
             QMessageBox.warning(self, self.tr("Change control"), str(exc)); return
         self.change_review.setPlainText(json.dumps({
-            "risk": plan["risk"], "change_counts": plan["change_counts"],
+            "risk": plan["risk"], "risk_score": safety["risk_score"], "ready_for_external_review": safety["ready_for_external_review"], "change_counts": plan["change_counts"],
             "compliance_findings": plan["compliance_findings"], "rollback_ready": True,
             "next_steps": [self.tr("Review policy diff"), self.tr("Run local simulation"), self.tr("Record reviewer approval"), self.tr("Export Git/Terraform review"), self.tr("Apply outside this client only after approval")],
         }, indent=2, ensure_ascii=False))
-        AuditTrail(self.settings).append("change_review_prepared", {"risk": plan["risk"], "changes": len(plan["changes"])})
+        self.change_risk.setText(self.tr("Change risk: {risk} · {score}/100 · {blocking} blocking gate(s)").format(risk=self.tr(safety["risk"].title()), score=safety["risk_score"], blocking=len(safety["blocking_gates"])))
+        self.change_risk.setStyleSheet("color: #fb7185;" if safety["risk"] in {"critical", "high"} else "color: #fbbf24;" if safety["risk"] == "medium" else "color: #34d399;")
+        self.change_gates.setRowCount(len(safety["gates"]))
+        gate_names = {"reference": self.tr("Change reference recorded"), "owner": self.tr("Change owner recorded"), "reviewer": self.tr("Independent reviewer recorded"), "maintenance_window": self.tr("Maintenance window confirmed"), "simulation": self.tr("Local policy simulation reviewed"), "rollback": self.tr("Rollback artifact prepared"), "approval": self.tr("Local approval recorded")}
+        for row, gate in enumerate(safety["gates"]):
+            values = (gate_names.get(gate["id"], gate["title"]), self.tr("Yes") if gate["required"] else self.tr("No"), self.tr("Passed") if gate["passed"] else self.tr("Blocked") if gate["required"] else self.tr("Optional"))
+            for column, value in enumerate(values):
+                item = QTableWidgetItem(str(value));
+                if column == 2: item.setForeground(QColor("#34d399" if gate["passed"] else "#fb7185" if gate["required"] else "#94a3b8"))
+                self.change_gates.setItem(row, column, item)
+        self.change_gates.resizeColumnsToContents(); AuditTrail(self.settings).append("change_review_prepared", {"risk": safety["risk"], "risk_score": safety["risk_score"], "changes": len(plan["changes"]), "blocking_gates": len(safety["blocking_gates"])})
 
     def approve_change_review(self):
         try:
@@ -6893,8 +6991,9 @@ class OperationsDialog(QDialog):
         reviewer = self.change_reviewer.text().strip()
         if not reviewer:
             QMessageBox.warning(self, self.tr("Change control"), self.tr("Enter a reviewer before recording approval.")); return
-        AuditTrail(self.settings).append("change_review_approved", {"reference": self.change_ticket.text().strip(), "reviewer": reviewer, "risk": plan["risk"], "changes": len(plan["changes"])})
+        self._change_approved = True; AuditTrail(self.settings).append("change_review_approved", {"reference": self.change_ticket.text().strip(), "reviewer": reviewer, "risk": plan["risk"], "changes": len(plan["changes"])})
         self.change_review.appendPlainText("\n" + self.tr("Local approval recorded. External apply remains disabled."))
+        self.prepare_change_review()
 
     def export_change_review(self, kind):
         try:
@@ -6903,13 +7002,23 @@ class OperationsDialog(QDialog):
             QMessageBox.warning(self, self.tr("Change control"), str(exc)); return
         if kind == "rollback":
             path, _ = QFileDialog.getSaveFileName(self, self.tr("Export rollback plan"), "rollback-policy.json", "JSON (*.json)")
-            content = json.dumps(privacy_safe({"rollback_policy": plan["rollback_policy"], "reference": self.change_ticket.text().strip()}, self.settings, "export"), indent=2, ensure_ascii=False)
+            safe_reference = privacy_safe({"reference": self.change_ticket.text().strip()}, self.settings, "export")["reference"]
+            content = json.dumps(rollback_package(plan["rollback_policy"], plan["proposed_policy"], safe_reference), indent=2, ensure_ascii=False)
         else:
             path, _ = QFileDialog.getSaveFileName(self, self.tr("Export Git review"), "policy-review.md", "Markdown (*.md)")
             content = "# Policy change review\n\n" + json.dumps({"risk": plan["risk"], "change_counts": plan["change_counts"], "compliance_findings": plan["compliance_findings"]}, indent=2, ensure_ascii=False) + "\n\n## Proposed policy (redacted)\n```json\n" + policy_as_code(plan["proposed_policy"], "json") + "```\n\n## Rollback\nUse the separately exported rollback plan after change approval.\n"
         if path:
             Path(path).write_text(content, encoding="utf-8")
             AuditTrail(self.settings).append("change_review_exported", {"kind": kind, "file": os.path.basename(path), "risk": plan["risk"]})
+
+    def verify_rollback_artifact(self):
+        path, _ = QFileDialog.getOpenFileName(self, self.tr("Verify rollback artifact"), "", "JSON (*.json)")
+        if not path: return
+        try: package = json.loads(Path(path).read_text(encoding="utf-8")); result = verify_rollback_package(package)
+        except (OSError, ValueError) as exc: result = {"valid": False, "reason": str(exc)}
+        if result["valid"]: QMessageBox.information(self, self.tr("Verify rollback artifact"), self.tr("Rollback artifact integrity verified. This does not authorize applying it."))
+        else: QMessageBox.warning(self, self.tr("Verify rollback artifact"), self.tr("Rollback verification failed: {reason}").format(reason=result["reason"]))
+        self._scope_audit().append("rollback_artifact_verified", {"valid": result["valid"], "file": os.path.basename(path), "reason": result["reason"]})
 
     def _assurance_history(self):
         try: values = json.loads(str(self.settings.value("assurance/history", "[]") or "[]"))

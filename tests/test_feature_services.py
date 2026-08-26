@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan
 
 
 class MemorySettings:
@@ -53,6 +53,29 @@ class FeatureServicesTests(unittest.TestCase):
         rule = {"match": "all", "conditions": [{"field": "response_headers.Retry-After", "operator": "exists", "value": True}]}
         result = evaluate_detection_rule(rule, [{"status": 429, "response_headers": {"retry-after": "60"}}])
         self.assertEqual(1, result["summary"]["matched"])
+
+    def test_change_safety_has_explicit_gates_and_tamper_evident_rollback(self):
+        before = {"rules": [{"name": "Staff", "action": "allow", "conditions": {"group": "staff"}}]}
+        after = {"rules": [{"name": "Open", "action": "allow", "conditions": {}}]}
+        assessment = change_safety_assessment(before, after, {"reference": "CHG-1", "owner": "Operator", "rollback": True})
+        self.assertGreaterEqual(assessment["risk_score"], 25); self.assertFalse(assessment["ready_for_external_review"])
+        self.assertIn("reviewer", {item["id"] for item in assessment["blocking_gates"]})
+        package = rollback_package(before, after, "CHG-1"); self.assertTrue(verify_rollback_package(package)["valid"])
+        package["payload"]["rollback_policy"] = {}; self.assertFalse(verify_rollback_package(package)["valid"])
+
+    def test_guided_playbook_tracks_only_explicit_completed_steps(self):
+        playbook = guided_playbook("api_outage", [{"action": "playbook_step_completed", "details": {"step_id": "api_outage-1"}}])
+        self.assertEqual(1, playbook["summary"]["complete"]); self.assertEqual(6, playbook["summary"]["total"])
+        self.assertEqual("pending", playbook["steps"][1]["status"])
+
+    def test_smart_api_plan_is_deterministic_read_first_and_never_ready_to_run(self):
+        catalog = [
+            {"product": "zia", "name": "List users", "description": "Get users", "method": "GET", "url": "https://api.zsapi.net/users"},
+            {"product": "zia", "name": "Delete user", "description": "Delete users", "method": "DELETE", "url": "https://api.zsapi.net/users/{id}"},
+        ]
+        plan = smart_api_plan("users", catalog)
+        self.assertEqual("GET", plan["candidates"][0]["method"]); self.assertFalse(plan["ready_to_run"])
+        self.assertEqual(plan, smart_api_plan("users", catalog))
 
     def test_policy_diff_masks_sensitive_values(self):
         changes = policy_diff({"client_secret": "secret"}, {"client_secret": "other"})

@@ -1321,6 +1321,95 @@ def evaluate_detection_rule(rule: Any, events: Iterable[dict[str, Any]]) -> dict
             "disclaimer": "Local retrospective detection only. It does not execute code, contact a tenant, or trigger remediation."}
 
 
+def change_safety_assessment(before: Any, after: Any, context: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Score local change risk and make every pre-change gate explicit."""
+    context = context if isinstance(context, dict) else {}
+    plan = change_control_plan(before, after)
+    twin = policy_twin(after, before)
+    change_total = len(plan["changes"])
+    score = min(35, change_total * 2)
+    score += min(20, plan["change_counts"]["removed"] * 5)
+    score += min(30, sum(20 if item.get("severity") == "high" else 8 for item in plan["compliance_findings"]))
+    score += min(20, int(twin["summary"].get("conflicts", 0)) * 5 + int(twin["summary"].get("shadowed", 0)) * 2)
+    score = min(100, score)
+    gates = [
+        {"id": "reference", "title": "Change reference recorded", "required": True, "passed": bool(str(context.get("reference", "")).strip())},
+        {"id": "owner", "title": "Change owner recorded", "required": True, "passed": bool(str(context.get("owner", "")).strip())},
+        {"id": "reviewer", "title": "Independent reviewer recorded", "required": score >= 25, "passed": bool(str(context.get("reviewer", "")).strip())},
+        {"id": "maintenance_window", "title": "Maintenance window confirmed", "required": score >= 50, "passed": bool(context.get("maintenance_window"))},
+        {"id": "simulation", "title": "Local policy simulation reviewed", "required": True, "passed": bool(context.get("simulation"))},
+        {"id": "rollback", "title": "Rollback artifact prepared", "required": True, "passed": bool(context.get("rollback"))},
+        {"id": "approval", "title": "Local approval recorded", "required": score >= 25, "passed": bool(context.get("approval"))},
+    ]
+    blocking = [item for item in gates if item["required"] and not item["passed"]]
+    level = "critical" if score >= 80 else "high" if score >= 55 else "medium" if score >= 25 else "low"
+    return {"risk_score": score, "risk": level, "ready_for_external_review": not blocking, "gates": gates, "blocking_gates": blocking,
+            "change_counts": plan["change_counts"], "findings": plan["compliance_findings"], "twin_summary": twin["summary"],
+            "explanation": "Transparent local score: change count, removals, policy findings, conflicts and shadowing. It never authorizes or applies a tenant change."}
+
+
+def rollback_package(before: Any, after: Any, reference: str = "") -> dict[str, Any]:
+    """Create a portable, integrity-checkable rollback artifact without secrets."""
+    payload = {"schema": "zs-api-client/rollback/v1", "reference": str(reference)[:160], "rollback_policy": mask(before),
+               "proposed_sha256": hashlib.sha256(canonical(mask(after)).encode("utf-8")).hexdigest()}
+    return {"payload": payload, "payload_sha256": hashlib.sha256(canonical(payload).encode("utf-8")).hexdigest(),
+            "warning": "Integrity hash detects accidental modification; it is not a signature or authorization to apply the rollback."}
+
+
+def verify_rollback_package(package: Any) -> dict[str, Any]:
+    """Strictly verify the rollback artifact schema and payload digest offline."""
+    if not isinstance(package, dict) or set(package) != {"payload", "payload_sha256", "warning"}:
+        return {"valid": False, "reason": "Unexpected rollback package fields"}
+    payload = package.get("payload")
+    if not isinstance(payload, dict) or set(payload) != {"schema", "reference", "rollback_policy", "proposed_sha256"} or payload.get("schema") != "zs-api-client/rollback/v1":
+        return {"valid": False, "reason": "Invalid rollback payload schema"}
+    expected = hashlib.sha256(canonical(payload).encode("utf-8")).hexdigest()
+    valid = hmac.compare_digest(str(package.get("payload_sha256", "")), expected)
+    return {"valid": valid, "reason": "Rollback artifact integrity verified" if valid else "Rollback artifact digest mismatch"}
+
+
+PLAYBOOK_TEMPLATES = {
+    "api_outage": ("API/service disruption", ("Confirm scope from retained failures", "Check rate-limit and service-health evidence", "Collect read-only product status", "Correlate affected entities", "Export masked incident evidence", "Record closure decision")),
+    "policy_change": ("High-risk policy change", ("Capture current policy baseline", "Run policy diff and best-practice checks", "Run Policy Twin and decision simulation", "Prepare rollback artifact", "Record independent review", "Export change package")),
+    "experience_degradation": ("Digital experience degradation", ("Identify affected user and application scope", "Inspect device metrics", "Inspect network latency, loss and jitter", "Inspect service-edge path", "Compare application response", "Export masked journey evidence")),
+    "credential_exposure": ("Possible credential exposure", ("Stop copying or exporting raw material", "Rotate the affected credential outside this client", "Clear in-memory sessions", "Review masked audit evidence", "Validate least-privilege access", "Record containment and recovery")),
+    "ransomware_containment": ("Ransomware containment support", ("Validate the alert in authoritative security tooling", "Identify users, devices and applications", "Preserve masked evidence", "Prepare containment changes for independent approval", "Track recovery prerequisites", "Record lessons learned")),
+}
+
+
+def guided_playbook(kind: str, audit_events: Iterable[dict[str, Any]] = ()) -> dict[str, Any]:
+    """Build a local checklist; infer completion only from explicit audit actions."""
+    selected = kind if kind in PLAYBOOK_TEMPLATES else "api_outage"
+    title, instructions = PLAYBOOK_TEMPLATES[selected]
+    actions = {str(item.get("action", "")) for item in audit_events if isinstance(item, dict)}
+    completed = {str(item.get("details", {}).get("step_id", "")) for item in audit_events if item.get("action") == "playbook_step_completed" and isinstance(item.get("details"), dict)}
+    steps = [{"id": f"{selected}-{index}", "order": index, "title": instruction, "status": "complete" if f"{selected}-{index}" in completed else "pending"} for index, instruction in enumerate(instructions, 1)]
+    return {"kind": selected, "title": title, "steps": steps, "summary": {"complete": sum(1 for item in steps if item["status"] == "complete"), "total": len(steps)},
+            "audit_available": bool(actions), "disclaimer": "Guidance and local tracking only; validate decisions in authoritative product, incident and governance systems."}
+
+
+def smart_api_plan(goal: str, catalog: Iterable[dict[str, Any]], maximum_steps: int = 5) -> dict[str, Any]:
+    """Rank documented operations deterministically and propose a read-first plan."""
+    words = {word for word in re.findall(r"[a-z0-9]+", str(goal).casefold()) if len(word) > 2}
+    limit = max(1, min(10, int(maximum_steps)))
+    ranked = []
+    for entry in list(catalog)[:20000]:
+        if not isinstance(entry, dict): continue
+        haystack = " ".join(str(entry.get(key, "")) for key in ("product", "category", "name", "description", "url")).casefold()
+        score = sum(3 if word in str(entry.get("name", "")).casefold() else 1 for word in words if word in haystack)
+        method = str(entry.get("method", "GET")).upper()
+        if method == "GET": score += 2
+        if score: ranked.append((score, method != "GET", str(entry.get("product", "")), str(entry.get("name", "")), entry))
+    ranked.sort(key=lambda item: (-item[0], item[1], item[2], item[3]))
+    candidates = []
+    for score, _, _, _, entry in ranked[:limit]:
+        candidates.append({"score": score, "product": entry.get("product", ""), "name": entry.get("name", ""), "method": str(entry.get("method", "GET")).upper(),
+                           "url": safe_url(entry.get("url", "")), "description": str(entry.get("description", ""))[:500], "parameters": mask(entry.get("parameters", [])), "doc_url": safe_url(entry.get("doc_url", ""))})
+    return {"goal": mask(str(goal)[:500]), "candidates": candidates, "summary": {"matches": len(ranked), "proposed": len(candidates), "write_operations": sum(1 for item in candidates if item["method"] != "GET")},
+            "ready_to_run": False, "next_step": "Review parameter requirements, select operations, validate the API chain and approve execution separately.",
+            "disclaimer": "Deterministic catalog ranking only; it does not call an LLM, authenticate, execute an operation, or infer tenant-specific values."}
+
+
 def validate_request_chain(steps: Any, maximum: int = 20) -> dict[str, Any]:
     """Validate an explicit API chain before the UI considers execution."""
     if not isinstance(steps, list) or not steps:

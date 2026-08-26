@@ -1448,6 +1448,38 @@ class MainWindowTests(unittest.TestCase):
         self.assertIn('"risk": "high"', dialog.change_review.toPlainText())
         dialog.close()
 
+    def test_change_safety_gates_and_rollback_artifact_are_visible_and_verifiable(self):
+        settings = client.QSettings("Zscaler", "APIClient"); previous_mode = settings.value("ui/mode", None)
+        try:
+            settings.setValue("ui/mode", "advanced"); dialog = client.OperationsDialog(self.window)
+            dialog.before_policy.setPlainText('{"rules":[{"name":"Staff","action":"allow","conditions":{"group":"staff"}}]}')
+            dialog.after_policy.setPlainText('{"rules":[{"name":"Open","action":"allow","conditions":{}}]}')
+            dialog.change_ticket.setText("CHG-7"); dialog.change_owner.setText("Owner"); dialog.change_reviewer.setText("Reviewer"); dialog.change_simulated.setChecked(True); dialog.change_rollback_ready.setChecked(True); dialog.change_maintenance.setChecked(True)
+            dialog.prepare_change_review(); self.assertGreater(dialog.change_gates.rowCount(), 5); self.assertIn("/100", dialog.change_risk.text())
+            with TemporaryDirectory() as output_dir:
+                destination = str(Path(output_dir) / "rollback.json")
+                with patch.object(client.QFileDialog, "getSaveFileName", return_value=(destination, "JSON (*.json)")): dialog.export_change_review("rollback")
+                package = json.loads(Path(destination).read_text(encoding="utf-8")); self.assertTrue(client.verify_rollback_package(package)["valid"])
+                with patch.object(client.QFileDialog, "getOpenFileName", return_value=(destination, "JSON (*.json)")), patch.object(client.QMessageBox, "information") as information: dialog.verify_rollback_artifact()
+                information.assert_called_once()
+            dialog.close()
+        finally:
+            settings.remove("ui/mode") if previous_mode is None else settings.setValue("ui/mode", previous_mode)
+
+    def test_playbooks_are_basic_friendly_and_smart_planner_is_advanced_review_only(self):
+        settings = client.QSettings("Zscaler", "APIClient"); previous_mode = settings.value("ui/mode", None)
+        try:
+            settings.setValue("ui/mode", "basic"); dialog = client.OperationsDialog(self.window)
+            self.assertTrue(dialog.tabs.isTabVisible(dialog.playbook_tab_index)); self.assertTrue(dialog.api_planner_group.isHidden()); self.assertEqual(6, dialog.playbook_steps.rowCount()); dialog.close()
+            settings.setValue("ui/mode", "advanced"); dialog = client.OperationsDialog(self.window); self.assertFalse(dialog.api_planner_group.isHidden())
+            catalog = [{"product": "zdx", "name": "List application score", "description": "application experience", "method": "GET", "url": "https://api.zsapi.net/zdx/apps"}, {"product": "zdx", "name": "Update application", "description": "application", "method": "PATCH", "url": "https://api.zsapi.net/zdx/apps/{id}"}]
+            dialog.api_plan_goal.setText("ZDX application experience")
+            with patch.object(client, "AUTOMATION_HUB_CATALOG", catalog): dialog.build_smart_api_plan()
+            self.assertEqual(2, dialog.api_plan_table.rowCount()); self.assertFalse(dialog._last_api_plan["ready_to_run"]); dialog.copy_api_plan_to_chain(); self.assertIn('"method": "GET"', dialog.api_chain_input.toPlainText()); self.assertNotIn("PATCH", dialog.api_chain_input.toPlainText())
+            dialog.close()
+        finally:
+            settings.remove("ui/mode") if previous_mode is None else settings.setValue("ui/mode", previous_mode)
+
     def test_soc_evidence_export_obfuscates_correlated_response_entities(self):
         settings = client.QSettings("Zscaler", "APIClient")
         previous_exchange = getattr(self.window, "_last_response_exchange", None)
