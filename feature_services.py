@@ -90,6 +90,7 @@ def validate_bulk_csv(payload: str, required: Iterable[str]) -> dict[str, Any]:
 
 BATCH_OPERATIONS: dict[str, dict[str, Any]] = {
     "zia_create_users": {"api": "ZIA", "method": "POST", "path": "/api/v1/users", "required": ("name", "email")},
+    "zia_update_users": {"api": "ZIA", "method": "PUT", "path": "/api/v1/users/{id}", "required": ("id",), "require_body": True},
     "zia_delete_users": {"api": "ZIA", "method": "DELETE", "path": "/api/v1/users/{id}", "required": ("id",)},
     "zia_url_lookup": {"api": "ZIA", "method": "GET", "path": "/api/v1/urlLookup", "required": ("url",)},
     "zia_create_locations": {"api": "ZIA", "method": "POST", "path": "/api/v1/locations", "required": ("name",)},
@@ -113,6 +114,9 @@ def build_batch_plan(operation: str, rows: Iterable[dict[str, Any]]) -> dict[str
         for field in ("id", "customerId"):
             path = path.replace("{" + field + "}", urllib.parse.quote(row.get(field, ""), safe=""))
         body = {key: value for key, value in row.items() if key not in {"id", "customerId", "url"}}
+        if spec.get("require_body") and not body:
+            errors.append({"row": number, "missing": ["update data"]})
+            continue
         if operation == "zia_url_lookup":
             path += "?" + urllib.parse.urlencode({"url": row["url"]})
         plan.append({"row": number, "method": spec["method"], "path": path,

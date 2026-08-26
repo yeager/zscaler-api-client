@@ -42,6 +42,11 @@ class FeatureServicesTests(unittest.TestCase):
         self.assertTrue(plan["valid"])
         self.assertEqual("DELETE", plan["requests"][0]["method"])
         self.assertEqual("/api/v1/users/user%2Fa", plan["requests"][0]["path"])
+        update = build_batch_plan("zia_update_users", [{"id": "user/a", "department": "Engineering"}])
+        self.assertTrue(update["valid"])
+        self.assertEqual("PUT", update["requests"][0]["method"])
+        self.assertEqual({"department": "Engineering"}, update["requests"][0]["body"])
+        self.assertFalse(build_batch_plan("zia_update_users", [{"id": "user/a"}])["valid"])
 
     def test_audit_trail_is_hash_linked(self):
         settings = MemorySettings(); trail = AuditTrail(settings)

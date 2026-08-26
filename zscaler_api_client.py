@@ -4022,6 +4022,7 @@ class BatchDialog(QDialog):
         self.operation_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.operation_combo.setMinimumContentsLength(10)
         self.operation_combo.addItem(self.tr("Create Users (ZIA)"), "zia_create_users")
+        self.operation_combo.addItem(self.tr("Update Users (ZIA)"), "zia_update_users")
         self.operation_combo.addItem(self.tr("Delete Users (ZIA)"), "zia_delete_users")
         self.operation_combo.addItem(self.tr("Create Locations (ZIA)"), "zia_create_locations")
         self.operation_combo.addItem(self.tr("URL Lookup (ZIA)"), "zia_url_lookup")
