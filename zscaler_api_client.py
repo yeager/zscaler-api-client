@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -3999,13 +3999,11 @@ class BatchDialog(QDialog):
         self.operation_combo = QComboBox()
         self.operation_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.operation_combo.setMinimumContentsLength(10)
-        self.operation_combo.addItems([
-            self.tr("Create Users (ZIA)"),
-            self.tr("Delete Users (ZIA)"),
-            self.tr("Create Locations (ZIA)"),
-            self.tr("URL Lookup (ZIA)"),
-            self.tr("Create App Segments (ZPA)"),
-        ])
+        self.operation_combo.addItem(self.tr("Create Users (ZIA)"), "zia_create_users")
+        self.operation_combo.addItem(self.tr("Delete Users (ZIA)"), "zia_delete_users")
+        self.operation_combo.addItem(self.tr("Create Locations (ZIA)"), "zia_create_locations")
+        self.operation_combo.addItem(self.tr("URL Lookup (ZIA)"), "zia_url_lookup")
+        self.operation_combo.addItem(self.tr("Create App Segments (ZPA)"), "zpa_create_app_segments")
         op_layout.addWidget(self.operation_combo)
         op_layout.addStretch()
         layout.addLayout(op_layout)
@@ -4024,6 +4022,10 @@ class BatchDialog(QDialog):
         layout.addWidget(buttons)
         
         self.csv_data = []
+        self.validation_label = QLabel()
+        self.validation_label.setWordWrap(True)
+        layout.insertWidget(layout.count() - 2, self.validation_label)
+        self.operation_combo.currentIndexChanged.connect(self._update_validation)
     
     def _browse_file(self):
         file_path, _ = QFileDialog.getOpenFileName(
@@ -4054,9 +4056,21 @@ class BatchDialog(QDialog):
                     self.preview_table.setItem(row_idx, col_idx, item)
             
             self.preview_table.resizeColumnsToContents()
+            self._update_validation()
             
         except Exception as e:
             QMessageBox.critical(self, self.tr("Error"), str(e))
+
+    def _update_validation(self):
+        if not self.csv_data:
+            self.validation_label.setText("")
+            return
+        plan = build_batch_plan(self.operation_combo.currentData(), self.csv_data)
+        required = ", ".join(BATCH_OPERATIONS[self.operation_combo.currentData()]["required"])
+        if plan["valid"]:
+            self.validation_label.setText(self.tr("Validated: {count} requests are ready for review.").format(count=len(plan["requests"])))
+        else:
+            self.validation_label.setText(self.tr("Batch validation failed. Required CSV columns: {columns}").format(columns=required))
 
 
 class HistoryDialog(QDialog):
@@ -6296,15 +6310,71 @@ class MainWindow(QMainWindow):
     def _show_batch(self):
         dialog = BatchDialog(self)
         if dialog.exec() and dialog.csv_data:
-            self._run_batch(dialog.csv_data, dialog.operation_combo.currentText())
+            self._run_batch(dialog.csv_data, dialog.operation_combo.currentData())
     
     def _run_batch(self, data: List[Dict], operation: str):
-        # TODO: Implement batch operations
-        QMessageBox.information(
-            self, 
-            self.tr("Batch"), 
-            self.tr("Processing {count} items...").format(count=len(data))
-        )
+        """Run only a validated, user-confirmed plan; each row remains auditable."""
+        plan = build_batch_plan(operation, data)
+        if not plan["valid"]:
+            details = "; ".join(f"{item['row']}: {', '.join(item['missing'])}" for item in plan["errors"])
+            QMessageBox.warning(self, self.tr("Batch"), self.tr("Batch validation failed: ") + details)
+            return
+        if self._current_api_type() != plan["api"]:
+            QMessageBox.warning(self, self.tr("Batch"), self.tr("Select {api} before running this batch.").format(api=plan["api"]))
+            return
+        method = BATCH_OPERATIONS[operation]["method"]
+        if (QSettings("Zscaler", "APIClient").value("access/role", "admin") == "readonly"
+                and method in {"POST", "PUT", "PATCH", "DELETE"}):
+            QMessageBox.warning(self, self.tr("Read only"), self.tr("Read-only mode blocks write requests. Change the local role in Operations Center to continue."))
+            return
+        count = len(plan["requests"])
+        prompt = self.tr("Review complete. Send {count} request(s) to the active environment?").format(count=count)
+        if QMessageBox.question(self, self.tr("Confirm batch"), prompt,
+                                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
+                                QMessageBox.StandardButton.Cancel) != QMessageBox.StandardButton.Yes:
+            AuditTrail(QSettings("Zscaler", "APIClient")).append("batch_cancelled", {"operation": operation, "count": count})
+            return
+        settings = QSettings("Zscaler", "APIClient")
+        api = plan["api"]
+        base = {
+            "ZIA": f"https://{settings.value('zia/cloud', 'zsapi.zscaler.net')}",
+            "ZPA": f"https://{settings.value('zpa/cloud', 'config.private.zscaler.com')}",
+        }[api]
+        headers = self._batch_headers(api)
+        requests = [{"url": base + item["path"], "method": item["method"],
+                     "headers": dict(headers), "body": item["body"], "batch_row": item["row"]}
+                    for item in plan["requests"]]
+        self.status_bar.showMessage(self.tr("Sending batch request 0 of {count}...").format(count=count))
+        self._log_output(self.tr("Batch execution started: {count} request(s)").format(count=count))
+        AuditTrail(settings).append("batch_started", {"operation": operation, "count": count, "api": api})
+        self.batch_worker = ApiWorker(requests)
+        self.batch_worker.progress.connect(self._on_batch_progress)
+        self.batch_worker.finished.connect(self._on_batch_finished)
+        self.batch_worker.start()
+
+    def _batch_headers(self, api: str) -> Dict[str, str]:
+        """Use the active authenticated session without exposing it in the batch plan."""
+        headers = {"Content-Type": "application/json"}
+        if api == "ZIA" and self.zia_session:
+            headers["Cookie"] = f"JSESSIONID={self.zia_session}"
+        elif api == "ZPA" and self.zpa_token:
+            headers["Authorization"] = f"Bearer {self.zpa_token}"
+        return headers
+
+    def _on_batch_progress(self, completed: int, total: int):
+        self.status_bar.showMessage(self.tr("Sending batch request {completed} of {total}...").format(completed=completed, total=total))
+
+    def _on_batch_finished(self, result: Dict):
+        results = result.get("results", [])
+        successful = sum(1 for item in results if item.get("success"))
+        failed = len(results) - successful
+        for item in results:
+            request = item.get("request", {})
+            self._add_to_history(request.get("method", ""), request.get("url", ""), request.get("headers", {}), request.get("body"), status=200 if item.get("success") else 0)
+        AuditTrail(QSettings("Zscaler", "APIClient")).append("batch_finished", {"successful": successful, "failed": failed})
+        self.status_bar.showMessage(self.tr("Batch complete: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed))
+        self._log_output(self.tr("Batch complete: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed), "success" if not failed else "warning")
+        QMessageBox.information(self, self.tr("Batch"), self.tr("Batch complete: {successful} succeeded, {failed} failed.").format(successful=successful, failed=failed))
     
     def _show_history(self):
         dialog = HistoryDialog(self.request_history, self)

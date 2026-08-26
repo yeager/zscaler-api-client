@@ -14,12 +14,16 @@ import hashlib
 import io
 import json
 import time
+import urllib.parse
 import zipfile
 from dataclasses import dataclass, asdict
 from typing import Any, Iterable
 
 
-SENSITIVE_NAMES = {"authorization", "cookie", "password", "secret", "token", "api_key", "apikey"}
+SENSITIVE_NAMES = {
+    "authorization", "cookie", "password", "secret", "token", "api_key", "apikey",
+    "client_secret", "key_secret", "access_token", "refresh_token",
+}
 
 
 def mask(value: Any) -> Any:
@@ -82,6 +86,39 @@ def validate_bulk_csv(payload: str, required: Iterable[str]) -> dict[str, Any]:
             errors.append({"row": index, "missing": blank})
     return {"headers": headers, "rows": len(rows), "missing_headers": missing, "errors": errors,
             "valid": not missing and not errors}
+
+
+BATCH_OPERATIONS: dict[str, dict[str, Any]] = {
+    "zia_create_users": {"api": "ZIA", "method": "POST", "path": "/api/v1/users", "required": ("name", "email")},
+    "zia_delete_users": {"api": "ZIA", "method": "DELETE", "path": "/api/v1/users/{id}", "required": ("id",)},
+    "zia_url_lookup": {"api": "ZIA", "method": "GET", "path": "/api/v1/urlLookup", "required": ("url",)},
+    "zia_create_locations": {"api": "ZIA", "method": "POST", "path": "/api/v1/locations", "required": ("name",)},
+    "zpa_create_app_segments": {"api": "ZPA", "method": "POST", "path": "/mgmtconfig/v1/admin/customers/{customerId}/applicationSegments", "required": ("customerId", "name")},
+}
+
+
+def build_batch_plan(operation: str, rows: Iterable[dict[str, Any]]) -> dict[str, Any]:
+    """Build a validated, credential-free batch request plan without sending it."""
+    if operation not in BATCH_OPERATIONS:
+        raise ValueError("Unknown batch operation")
+    spec = BATCH_OPERATIONS[operation]
+    plan, errors = [], []
+    for number, raw_row in enumerate(rows, 2):
+        row = {str(key): str(value).strip() for key, value in raw_row.items() if key is not None}
+        missing = [field for field in spec["required"] if not row.get(field)]
+        if missing:
+            errors.append({"row": number, "missing": missing})
+            continue
+        path = spec["path"]
+        for field in ("id", "customerId"):
+            path = path.replace("{" + field + "}", urllib.parse.quote(row.get(field, ""), safe=""))
+        body = {key: value for key, value in row.items() if key not in {"id", "customerId", "url"}}
+        if operation == "zia_url_lookup":
+            path += "?" + urllib.parse.urlencode({"url": row["url"]})
+        plan.append({"row": number, "method": spec["method"], "path": path,
+                     "body": body or None})
+    return {"api": spec["api"], "operation": operation, "requests": plan,
+            "errors": errors, "valid": bool(plan) and not errors}
 
 
 @dataclass

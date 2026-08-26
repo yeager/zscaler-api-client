@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan
 
 
 class MemorySettings:
@@ -14,7 +14,7 @@ class MemorySettings:
 
 class FeatureServicesTests(unittest.TestCase):
     def test_policy_diff_masks_sensitive_values(self):
-        changes = policy_diff({"token": "secret"}, {"token": "other"})
+        changes = policy_diff({"client_secret": "secret"}, {"client_secret": "other"})
         self.assertEqual(1, len(changes))
         serialized = json.dumps(changes)
         self.assertIn("***", serialized)
@@ -33,6 +33,15 @@ class FeatureServicesTests(unittest.TestCase):
         result = validate_bulk_csv("name,email\nAda,\n", ["name", "email"])
         self.assertFalse(result["valid"])
         self.assertEqual(2, result["errors"][0]["row"])
+
+    def test_batch_plan_is_validated_and_keeps_sensitive_values_out_of_paths(self):
+        invalid = build_batch_plan("zia_create_users", [{"name": "Ada"}])
+        self.assertFalse(invalid["valid"])
+        self.assertEqual(["email"], invalid["errors"][0]["missing"])
+        plan = build_batch_plan("zia_delete_users", [{"id": "user/a"}])
+        self.assertTrue(plan["valid"])
+        self.assertEqual("DELETE", plan["requests"][0]["method"])
+        self.assertEqual("/api/v1/users/user%2Fa", plan["requests"][0]["path"])
 
     def test_audit_trail_is_hash_linked(self):
         settings = MemorySettings(); trail = AuditTrail(settings)
