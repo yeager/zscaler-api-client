@@ -350,6 +350,14 @@ class MainWindowTests(unittest.TestCase):
         self.assertGreaterEqual(dialog.incident_timeline.rowCount(), 1)
         dialog.close()
 
+    def test_operations_change_control_prepares_a_local_review(self):
+        dialog = client.OperationsDialog(self.window)
+        dialog.before_policy.setPlainText('{"rules": []}')
+        dialog.after_policy.setPlainText('{"rules": [{"name": "Open", "action": "allow", "conditions": {}}]}')
+        dialog.prepare_change_review()
+        self.assertIn('"risk": "high"', dialog.change_review.toPlainText())
+        dialog.close()
+
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")
         self.window._on_llm_failed("HTTP 401 client_secret=do-not-show")

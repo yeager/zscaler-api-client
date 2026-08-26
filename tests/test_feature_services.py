@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture, incident_evidence
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, policy_as_code, compliance_findings, build_batch_plan, security_posture, incident_evidence, change_control_plan
 
 
 class MemorySettings:
@@ -69,6 +69,12 @@ class FeatureServicesTests(unittest.TestCase):
         serialized = json.dumps(evidence)
         self.assertNotIn("hidden", serialized)
         self.assertEqual("high", evidence["timeline"][0]["severity"])
+
+    def test_change_control_plan_is_redacted_and_has_rollback(self):
+        plan = change_control_plan({"rules": [], "client_secret": "old"}, {"rules": [{"name": "Open", "action": "allow", "conditions": {}}], "client_secret": "new"})
+        self.assertEqual("high", plan["risk"])
+        self.assertTrue(plan["rollback_policy"])
+        self.assertNotIn("new", json.dumps(plan))
 
     def test_audit_trail_is_hash_linked(self):
         settings = MemorySettings(); trail = AuditTrail(settings)

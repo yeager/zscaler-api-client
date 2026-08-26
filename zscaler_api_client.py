@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter
-from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, incident_evidence, BATCH_OPERATIONS, build_batch_plan
+from feature_services import AuditTrail, policy_diff, simulate_policy, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, security_posture, incident_evidence, change_control_plan, BATCH_OPERATIONS, build_batch_plan
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.7.1"
@@ -4328,6 +4328,16 @@ class OperationsDialog(QDialog):
         incident_actions = QHBoxLayout(); incident_refresh = QPushButton(self.tr("Refresh investigation")); incident_refresh.clicked.connect(self.refresh_incident); incident_actions.addWidget(incident_refresh)
         incident_export = QPushButton(self.tr("Export incident evidence")); incident_export.clicked.connect(self.export_incident_evidence); incident_actions.addWidget(incident_export); incident_actions.addStretch(); incident_layout.addLayout(incident_actions)
         self.incident_tab_index = self.tabs.addTab(incident_page, self.tr("Incident investigation"))
+
+        change_page = QWidget(); change_layout = QVBoxLayout(change_page)
+        change_intro = QLabel(self.tr("Create a local review from Policy diff. Approval records intent only; no policy, Terraform, or Git change is applied automatically.")); change_intro.setWordWrap(True); change_layout.addWidget(change_intro)
+        change_form = QFormLayout(); self.change_ticket = QLineEdit(); self.change_ticket.setPlaceholderText(self.tr("Change ticket or reference")); self.change_reviewer = QLineEdit(); self.change_reviewer.setPlaceholderText(self.tr("Reviewer name")); change_form.addRow(self.tr("Reference:"), self.change_ticket); change_form.addRow(self.tr("Reviewer:"), self.change_reviewer); change_layout.addLayout(change_form)
+        self.change_review = QPlainTextEdit(); self.change_review.setReadOnly(True); change_layout.addWidget(self.change_review)
+        change_controls = QHBoxLayout(); prepare_change = QPushButton(self.tr("Prepare change review")); prepare_change.clicked.connect(self.prepare_change_review); change_controls.addWidget(prepare_change)
+        approve_change = QPushButton(self.tr("Record local approval")); approve_change.clicked.connect(self.approve_change_review); change_controls.addWidget(approve_change)
+        git_export = QPushButton(self.tr("Export Git review")); git_export.clicked.connect(lambda: self.export_change_review("git")); change_controls.addWidget(git_export)
+        rollback_export = QPushButton(self.tr("Export rollback plan")); rollback_export.clicked.connect(lambda: self.export_change_review("rollback")); change_controls.addWidget(rollback_export); change_controls.addStretch(); change_layout.addLayout(change_controls)
+        self.change_tab_index = self.tabs.addTab(change_page, self.tr("Change control"))
         close = QDialogButtonBox(QDialogButtonBox.StandardButton.Close); close.rejected.connect(self.reject); layout.addWidget(close)
         self.tabs.setCurrentIndex(max(0, min(initial_tab, self.tabs.count() - 1)))
         self.refresh_dashboard(); self.refresh_audit(); self.refresh_integrations(); self.refresh_posture(); self.refresh_incident()
@@ -4409,6 +4419,47 @@ class OperationsDialog(QDialog):
             return
         Path(path).write_text(json.dumps(self._incident_evidence(), indent=2, ensure_ascii=False), encoding="utf-8")
         AuditTrail(self.settings).append("incident_evidence_exported", {"file": os.path.basename(path)})
+
+    def _change_plan(self):
+        return change_control_plan(self._json(self.before_policy, {}), self._json(self.after_policy, {}))
+
+    def prepare_change_review(self):
+        try:
+            plan = self._change_plan()
+        except ValueError as exc:
+            QMessageBox.warning(self, self.tr("Change control"), str(exc)); return
+        self.change_review.setPlainText(json.dumps({
+            "risk": plan["risk"], "change_counts": plan["change_counts"],
+            "compliance_findings": plan["compliance_findings"], "rollback_ready": True,
+            "next_steps": [self.tr("Review policy diff"), self.tr("Run local simulation"), self.tr("Record reviewer approval"), self.tr("Export Git/Terraform review"), self.tr("Apply outside this client only after approval")],
+        }, indent=2, ensure_ascii=False))
+        AuditTrail(self.settings).append("change_review_prepared", {"risk": plan["risk"], "changes": len(plan["changes"])})
+
+    def approve_change_review(self):
+        try:
+            plan = self._change_plan()
+        except ValueError as exc:
+            QMessageBox.warning(self, self.tr("Change control"), str(exc)); return
+        reviewer = self.change_reviewer.text().strip()
+        if not reviewer:
+            QMessageBox.warning(self, self.tr("Change control"), self.tr("Enter a reviewer before recording approval.")); return
+        AuditTrail(self.settings).append("change_review_approved", {"reference": self.change_ticket.text().strip(), "reviewer": reviewer, "risk": plan["risk"], "changes": len(plan["changes"])})
+        self.change_review.appendPlainText("\n" + self.tr("Local approval recorded. External apply remains disabled."))
+
+    def export_change_review(self, kind):
+        try:
+            plan = self._change_plan()
+        except ValueError as exc:
+            QMessageBox.warning(self, self.tr("Change control"), str(exc)); return
+        if kind == "rollback":
+            path, _ = QFileDialog.getSaveFileName(self, self.tr("Export rollback plan"), "rollback-policy.json", "JSON (*.json)")
+            content = json.dumps({"rollback_policy": plan["rollback_policy"], "reference": self.change_ticket.text().strip()}, indent=2, ensure_ascii=False)
+        else:
+            path, _ = QFileDialog.getSaveFileName(self, self.tr("Export Git review"), "policy-review.md", "Markdown (*.md)")
+            content = "# Policy change review\n\n" + json.dumps({"risk": plan["risk"], "change_counts": plan["change_counts"], "compliance_findings": plan["compliance_findings"]}, indent=2, ensure_ascii=False) + "\n\n## Proposed policy (redacted)\n```json\n" + policy_as_code(plan["proposed_policy"], "json") + "```\n\n## Rollback\nUse the separately exported rollback plan after change approval.\n"
+        if path:
+            Path(path).write_text(content, encoding="utf-8")
+            AuditTrail(self.settings).append("change_review_exported", {"kind": kind, "file": os.path.basename(path), "risk": plan["risk"]})
 
     def compare_policies(self):
         try:

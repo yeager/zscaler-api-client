@@ -276,3 +276,21 @@ def incident_evidence(history: Iterable[dict[str, Any]], audit_events: Iterable[
             "medium": sum(1 for item in timeline if item["severity"] == "medium"),
         },
     }
+
+
+def change_control_plan(before: Any, after: Any) -> dict[str, Any]:
+    """Prepare a local policy change review and rollback artifact; never apply it."""
+    changes = policy_diff(before, after)
+    findings = compliance_findings(after)
+    severity_rank = {"info": 0, "low": 1, "medium": 2, "high": 3, "critical": 4}
+    highest = max((severity_rank.get(item.get("severity", "info"), 0) for item in findings), default=0)
+    risk = "high" if highest >= 3 or len(changes) >= 20 else "medium" if findings or len(changes) >= 5 else "low"
+    counts = {kind: sum(1 for item in changes if item["change"] == kind) for kind in ("added", "removed", "changed")}
+    return {
+        "risk": risk,
+        "changes": changes,
+        "change_counts": counts,
+        "compliance_findings": findings,
+        "proposed_policy": mask(after),
+        "rollback_policy": mask(before),
+    }
