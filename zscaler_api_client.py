@@ -4255,6 +4255,7 @@ class OperationsDialog(QDialog):
         terraform_preview = QPushButton(self.tr("Prepare Terraform import")); terraform_preview.clicked.connect(lambda: self.prepare_integration("terraform")); integration_buttons.addWidget(terraform_preview)
         mcp_preview = QPushButton(self.tr("Prepare MCP connection")); mcp_preview.clicked.connect(lambda: self.prepare_integration("mcp")); integration_buttons.addWidget(mcp_preview)
         sdk_preview = QPushButton(self.tr("Prepare SDK configuration")); sdk_preview.clicked.connect(lambda: self.prepare_integration("sdk")); integration_buttons.addWidget(sdk_preview)
+        copy_preview = QPushButton(self.tr("Copy reviewed command")); copy_preview.clicked.connect(self.copy_integration_preview); integration_buttons.addWidget(copy_preview)
         integrations_layout.addLayout(integration_buttons); tabs.addTab(integrations_page, self.tr("Integrations"))
 
         audit_page = QWidget(); audit_layout = QVBoxLayout(audit_page)
@@ -4340,12 +4341,20 @@ class OperationsDialog(QDialog):
 
     def prepare_integration(self, kind):
         commands = {
-            "sdk": "pip install zscaler-sdk-python\n# Configure OneAPI credentials in Settings; they are never written to this command.",
-            "mcp": "pip install zscaler-mcp-server\n# Add a locally scoped MCP server only after reviewing its tool permissions.",
-            "terraform": "zscaler-terraformer --help\n# Review the generated Terraform and policy diff before applying anything.",
+            "sdk": "pip install zscaler-sdk-python\n# Configure OneAPI credentials in Settings; they are never written to this command.\n# Use the SDK only after reviewing product coverage and tenant scope.",
+            "mcp": "pip install zscaler-mcp-server\n# Add a locally scoped MCP server only after reviewing its tool permissions.\n# Start in read-only exploration mode; require approval for every write operation.",
+            "terraform": "zscaler-terraformer --help\n# Export a selected ZIA/ZPA scope to a new local directory.\n# Review generated Terraform, policy diff, and secrets scan before any terraform plan/apply.",
         }
         self.integration_preview.setPlainText(commands[kind])
         AuditTrail(self.settings).append("integration_previewed", {"integration": kind})
+
+    def copy_integration_preview(self):
+        preview = self.integration_preview.toPlainText()
+        if not preview:
+            QMessageBox.information(self, self.tr("Integrations"), self.tr("Prepare an integration first.")); return
+        QApplication.clipboard().setText(preview)
+        AuditTrail(self.settings).append("integration_command_copied", {})
+        self.integration_preview.setToolTip(self.tr("Copied to clipboard"))
 
     def refresh_audit(self):
         trail = AuditTrail(self.settings)
