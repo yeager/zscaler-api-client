@@ -19,7 +19,7 @@ import re
 import time
 import urllib.parse
 import zipfile
-from collections import Counter
+from collections import Counter, deque
 from dataclasses import dataclass, asdict
 from typing import Any, Iterable
 
@@ -69,7 +69,7 @@ def obfuscate_identifiers(value: Any, salt: str, categories: dict[str, bool] | N
             return _identifier_token("user", value, salt) if enabled["users"] else value
         if label_field and value is not None:
             return _identifier_token("label", value, salt) if enabled["labels"] else value
-        if enabled["ids"] and normalized.endswith(("id", "uuid", "guid", "identifier")) and value is not None:
+        if enabled["ids"] and normalized.endswith(("id", "ids", "uuid", "uuids", "guid", "guids", "identifier", "identifiers")) and value is not None:
             return _identifier_token("id", value, salt)
         return value
     text = value
@@ -86,7 +86,7 @@ def obfuscate_identifiers(value: Any, salt: str, categories: dict[str, bool] | N
         return _identifier_token("user", text, salt) if enabled["users"] else text
     if label_field:
         return _identifier_token("label", text, salt) if enabled["labels"] else text
-    if enabled["ids"] and (normalized.endswith(("id", "uuid", "guid", "identifier")) or normalized in {"keyid", "resourcekey"}):
+    if enabled["ids"] and (normalized.endswith(("id", "ids", "uuid", "uuids", "guid", "guids", "identifier", "identifiers")) or normalized in {"keyid", "resourcekey"}):
         return _identifier_token("id", text, salt)
     if host_field and enabled["hosts"]:
         parsed = urllib.parse.urlsplit(text)
@@ -773,6 +773,226 @@ def incident_evidence(history: Iterable[dict[str, Any]], audit_events: Iterable[
             "high": sum(1 for item in timeline if item["severity"] == "high"),
             "medium": sum(1 for item in timeline if item["severity"] == "medium"),
         },
+    }
+
+
+def soc_investigation_graph(
+    history: Iterable[dict[str, Any]],
+    audit_events: Iterable[dict[str, Any]],
+    response: Any = None,
+    scope: dict[str, str] | None = None,
+    maximum_nodes: int = 120,
+) -> dict[str, Any]:
+    """Correlate local evidence into an explainable entity and path graph.
+
+    This is deliberately schema-tolerant so REST and complete GraphQL response
+    trees can be inspected without product-specific assumptions. Relationships
+    represent observed co-occurrence, not verified exploitability.
+    """
+    limit = max(20, min(500, int(maximum_nodes)))
+    rank = {"normal": 0, "low": 1, "medium": 2, "high": 3, "critical": 4}
+    nodes: dict[str, dict[str, Any]] = {}
+    edges: dict[tuple[str, str, str], dict[str, Any]] = {}
+    truncated = False
+
+    def node_id(kind: str, label: Any) -> str:
+        digest = hashlib.sha256(f"{kind}\0{str(label).casefold()}".encode("utf-8")).hexdigest()[:16]
+        return f"{kind}-{digest}"
+
+    def add_node(kind: str, label: Any, risk: str = "normal", source: str = "response") -> str:
+        nonlocal truncated
+        text = str(label or "").strip()
+        if not text:
+            return ""
+        identifier = node_id(kind, text)
+        if identifier not in nodes:
+            if len(nodes) >= limit:
+                truncated = True
+                return ""
+            nodes[identifier] = {"id": identifier, "type": kind, "label": text[:160], "risk": risk, "evidence_count": 0, "sources": []}
+        item = nodes[identifier]
+        item["evidence_count"] += 1
+        if source not in item["sources"]:
+            item["sources"].append(source)
+        if rank.get(risk, 0) > rank.get(item["risk"], 0):
+            item["risk"] = risk
+        return identifier
+
+    def add_edge(source: str, target: str, relation: str, evidence: str) -> None:
+        if not source or not target or source == target:
+            return
+        key = (source, target, relation)
+        item = edges.setdefault(key, {"source_id": source, "target_id": target, "relation": relation, "evidence_count": 0, "evidence": []})
+        item["evidence_count"] += 1
+        if evidence not in item["evidence"] and len(item["evidence"]) < 5:
+            item["evidence"].append(evidence)
+
+    scope_data = mask(scope or environment_scope_metadata("default", "Default"))
+    environment = add_node("environment", scope_data.get("environment", "Default"), source="scope")
+    history_list, audit_list = list(history), list(audit_events)
+    failed_endpoints: set[str] = set()
+    request_payloads: list[tuple[Any, str]] = []
+    audit_payloads: list[tuple[Any, str, str]] = []
+    for event in history_list[-1000:]:
+        safe_event = mask(event)
+        endpoint_label = safe_url(safe_event.get("url", ""))
+        status = str(safe_event.get("status", ""))
+        risk = "high" if status == "0" or status.startswith("5") else "medium" if status.startswith(("4", "429")) else "normal"
+        endpoint = add_node("endpoint", endpoint_label, risk, "request_history")
+        add_edge(environment, endpoint, "requested", f"{safe_event.get('method', 'GET')} · {status or 'unknown'}")
+        if isinstance(safe_event.get("body"), (dict, list)):
+            request_payloads.append((safe_event["body"], endpoint or environment))
+        if risk in {"high", "critical"} and endpoint:
+            failed_endpoints.add(endpoint)
+    for event in audit_list[-1000:]:
+        safe_event = mask(event)
+        action = str(safe_event.get("action", "audit event"))
+        risk = "medium" if any(word in action.casefold() for word in ("change", "policy", "delete", "approval", "webhook")) else "normal"
+        activity = add_node("activity", action, risk, "audit")
+        add_edge(environment, activity, "recorded", "audit")
+        if isinstance(safe_event.get("details"), (dict, list)):
+            audit_payloads.append((safe_event["details"], activity or environment, action))
+
+    path_kinds = {
+        "user": "identity", "users": "identity", "identity": "identity", "identities": "identity",
+        "device": "device", "devices": "device", "endpointdevices": "device",
+        "application": "application", "applications": "application", "apps": "application", "segments": "application", "applicationsegments": "application",
+        "policy": "policy", "policies": "policy", "rules": "policy",
+        "location": "location", "locations": "location", "sites": "location",
+        "connector": "infrastructure", "connectors": "infrastructure", "serviceedges": "infrastructure", "servers": "infrastructure",
+        "threat": "indicator", "threats": "indicator", "malware": "indicator", "indicators": "indicator", "vulnerabilities": "indicator", "exposures": "indicator",
+    }
+    scalar_kinds = {
+        "email": "identity", "mail": "identity", "upn": "identity", "username": "identity", "userprincipalname": "identity", "actor": "identity", "principal": "identity",
+        "sourceip": "address", "srcip": "address", "destinationip": "address", "dstip": "address", "clientip": "address", "ipaddress": "address",
+        "hostname": "device", "devicename": "device", "computername": "device",
+        "applicationname": "application", "appname": "application", "segmentname": "application",
+        "policyname": "policy", "rulename": "policy", "locationname": "location",
+        "connectorname": "infrastructure", "serviceedgename": "infrastructure",
+        "url": "service", "domain": "service", "fqdn": "service",
+        "threatname": "indicator", "malwarename": "indicator", "indicator": "indicator",
+    }
+
+    def normalized(value: Any) -> str:
+        return "".join(character for character in str(value).casefold() if character.isalnum())
+
+    def scalar_kind_for(token: str) -> str | None:
+        return scalar_kinds.get(token) or ("address" if token.endswith("ip") else None)
+
+    def inferred_kind(path: tuple[str, ...], record: dict[str, Any]) -> str:
+        for part in reversed(path):
+            token = normalized(part)
+            if token in path_kinds:
+                return path_kinds[token]
+        keys = {normalized(key) for key in record}
+        if keys & {"email", "upn", "username", "userprincipalname"}: return "identity"
+        if keys & {"deviceid", "devicename", "hostname"}: return "device"
+        if keys & {"applicationid", "applicationname", "appid", "appname", "segmentid"}: return "application"
+        if keys & {"policyid", "policyname", "ruleid", "rulename"}: return "policy"
+        if keys & {"threatid", "threatname", "malware", "cve", "severity"}: return "indicator"
+        return "resource"
+
+    visited = 0
+    def walk(value: Any, path: tuple[str, ...] = (), parent: str = "") -> None:
+        nonlocal visited, truncated
+        if visited >= 5000 or len(path) > 10:
+            truncated = True
+            return
+        visited += 1
+        if isinstance(value, list):
+            for item in value[:1000]:
+                walk(item, path, parent)
+            if len(value) > 1000:
+                truncated = True
+            return
+        if not isinstance(value, dict):
+            token = normalized(path[-1]) if path else ""
+            scalar_kind = scalar_kind_for(token)
+            if scalar_kind and value not in (None, ""):
+                scalar_label = safe_url(value) if scalar_kind == "service" and token == "url" else value
+                related = add_node(scalar_kind, scalar_label, "high" if scalar_kind == "indicator" else "normal", "api_response")
+                add_edge(parent or environment, related, f"has_{scalar_kind}", path[-1] if path else "value")
+            return
+        safe_record = mask(value)
+        kind = inferred_kind(path, safe_record)
+        lookup = {normalized(key): item for key, item in safe_record.items()}
+        label = next((lookup[key] for key in ("displayname", "name", "email", "username", "hostname", "url", "fqdn", "id", "uuid") if key in lookup and not isinstance(lookup[key], (dict, list))), "")
+        severity = str(lookup.get("severity", lookup.get("risk", ""))).casefold()
+        risk = "critical" if severity == "critical" else "high" if kind == "indicator" or severity == "high" else "medium" if severity in {"medium", "warning"} else "normal"
+        primary = add_node(kind, label, risk, "api_response") if label else parent
+        if primary and parent and primary != parent:
+            add_edge(parent, primary, "contains", "/".join(path[-3:]) or "response")
+        if primary and primary != environment and parent == environment:
+            add_edge(environment, primary, "observed", "API/GraphQL response")
+        for key, item in safe_record.items():
+            token = normalized(key)
+            if isinstance(item, (dict, list)):
+                walk(item, path + (str(key),), primary or parent)
+                continue
+            scalar_kind = scalar_kind_for(token)
+            if scalar_kind is None or item in (None, ""):
+                continue
+            scalar_label = safe_url(item) if scalar_kind == "service" and token == "url" else item
+            related = add_node(scalar_kind, scalar_label, "high" if scalar_kind == "indicator" else "normal", "api_response")
+            add_edge(primary or environment, related, f"has_{scalar_kind}", str(key))
+
+    if response is not None:
+        walk(mask(response), ("response",), environment)
+    for payload, parent in request_payloads:
+        walk(payload, ("request", "body"), parent)
+    for payload, parent, action in audit_payloads:
+        walk(payload, ("audit", action, "details"), parent)
+
+    edge_list = list(edges.values())
+    adjacency: dict[str, set[str]] = {identifier: set() for identifier in nodes}
+    for edge in edge_list:
+        adjacency.setdefault(edge["source_id"], set()).add(edge["target_id"])
+        adjacency.setdefault(edge["target_id"], set()).add(edge["source_id"])
+    degree = {identifier: len(neighbors) for identifier, neighbors in adjacency.items()}
+    origins = [identifier for identifier, item in nodes.items() if item["type"] in {"identity", "address", "device"}]
+    target_types = {"indicator", "application", "policy", "service", "infrastructure", "endpoint"}
+    paths: list[dict[str, Any]] = []
+    seen_pairs: set[tuple[str, str]] = set()
+    for origin in origins[:30]:
+        queue = deque([(origin, [origin])]); visited_nodes = {origin}
+        origin_paths = 0
+        while queue and len(paths) < 20:
+            current, route = queue.popleft()
+            if len(route) > 5:
+                continue
+            if current != origin and nodes[current]["type"] in target_types:
+                pair = (origin, current)
+                if pair not in seen_pairs:
+                    seen_pairs.add(pair)
+                    route_risk = max((rank.get(nodes[item]["risk"], 0) for item in route), default=0)
+                    severity_name = "high" if nodes[current]["type"] == "indicator" or route_risk >= 3 else "medium"
+                    paths.append({"severity": severity_name, "source_id": origin, "target_id": current, "node_ids": route,
+                                  "explanation": "Observed relationship chain across local evidence; validate before treating it as an exploitable attack path."})
+                    origin_paths += 1
+                if origin_paths >= 5:
+                    break
+            for neighbor in sorted(adjacency.get(current, ())):
+                if neighbor not in visited_nodes and nodes[neighbor]["type"] != "environment":
+                    visited_nodes.add(neighbor); queue.append((neighbor, route + [neighbor]))
+    anomalies = []
+    for identifier in failed_endpoints:
+        anomalies.append({"severity": "high", "code": "endpoint_failure_evidence", "entity_id": identifier,
+                          "explanation": "The endpoint has locally retained server or network failure evidence."})
+    for identifier, item in nodes.items():
+        if item["type"] in {"identity", "device"} and degree.get(identifier, 0) >= 4:
+            anomalies.append({"severity": "medium", "code": "relationship_concentration", "entity_id": identifier,
+                              "explanation": "The entity is connected to an unusually broad set of locally observed relationships."})
+        if item["type"] == "indicator":
+            anomalies.append({"severity": item["risk"], "code": "security_indicator_observed", "entity_id": identifier,
+                              "explanation": "A threat, exposure, vulnerability, or indicator-like object was present in the response."})
+    ordered_nodes = sorted(nodes.values(), key=lambda item: (-rank.get(item["risk"], 0), -degree.get(item["id"], 0), item["label"].casefold()))
+    return {
+        "nodes": ordered_nodes, "edges": edge_list, "paths": paths, "anomalies": anomalies,
+        "summary": {"entities": len(nodes), "relationships": len(edge_list), "attack_paths": len(paths),
+                    "high_risk": sum(1 for item in nodes.values() if rank.get(item["risk"], 0) >= 3),
+                    "response_included": response is not None, "truncated": truncated},
+        "scope": scope_data,
+        "disclaimer": "Relationships are local correlations and potential investigation paths, not proof of compromise or exploitability.",
     }
 
 

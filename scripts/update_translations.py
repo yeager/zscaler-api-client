@@ -302,6 +302,36 @@ SWEDISH_REVIEW.update({
     "Cross-tenant overview is active. Exports and integrations will include all local environments.": "Översikt över flera tenanter är aktiv. Exporter och integrationer kommer att omfatta alla lokala miljöer.",
 })
 
+SWEDISH_REVIEW.update({
+    "Identity": "Identitet", "Address": "Adress", "Device": "Enhet", "Application": "Applikation", "Policy": "Policy",
+    "Service": "Tjänst", "Endpoint": "Slutpunkt", "Infrastructure": "Infrastruktur", "Indicator": "Indikator",
+    "Activity": "Aktivitet", "Resource": "Resurs", "Normal": "Normal",
+    "Correlate retained local activity with every object in the current masked REST or GraphQL response. Paths are investigation hypotheses, never proof of compromise, and prepared chains never run automatically.": "Korrelera bevarad lokal aktivitet med varje objekt i det aktuella maskerade REST- eller GraphQL-svaret. Vägar är undersökningshypoteser, aldrig bevis på intrång, och förberedda kedjor körs aldrig automatiskt.",
+    "Include current API/GraphQL response": "Inkludera aktuellt API-/GraphQL-svar",
+    "Correlate entities": "Korrelera entiteter",
+    "Export entity graph": "Exportera entitetsgraf",
+    "Evidence timeline": "Tidslinje för underlag",
+    "Entities": "Entiteter", "Relationships": "Relationer", "Potential paths": "Potentiella vägar", "High-risk entities": "Högriskentiteter",
+    "Filter entities:": "Filtrera entiteter:",
+    "Name, type, risk, or evidence source": "Namn, typ, risk eller underlagskälla",
+    "SOC entity and potential attack-path graph": "SOC-graf över entiteter och potentiella attackvägar",
+    "Select an entity to inspect its local evidence.": "Välj en entitet för att granska dess lokala underlag.",
+    "Target": "Mål", "Hops": "Hopp",
+    "Observed relationship chain across local evidence; validate before treating it as an exploitable attack path.": "Observerad relationskedja i lokalt underlag; validera innan den behandlas som en exploaterbar attackväg.",
+    "Entity graph": "Entitetsgraf",
+    "Explainable signals are derived only from retained local evidence and the selected response. Validate them against authoritative product telemetry.": "Förklarbara signaler härleds endast från bevarat lokalt underlag och det valda svaret. Validera dem mot auktoritativ produkttelemetri.",
+    "Signal": "Signal", "Entity": "Entitet", "Correlated signals": "Korrelerade signaler",
+    "Endpoint failure evidence": "Underlag för slutpunktsfel",
+    "Relationship concentration": "Relationskoncentration",
+    "Security indicator observed": "Säkerhetsindikator observerad",
+    "The endpoint has locally retained server or network failure evidence.": "Slutpunkten har lokalt bevarat underlag för server- eller nätverksfel.",
+    "The entity is connected to an unusually broad set of locally observed relationships.": "Entiteten är ansluten till en ovanligt bred uppsättning lokalt observerade relationer.",
+    "A threat, exposure, vulnerability, or indicator-like object was present in the response.": "Ett hot, en exponering, en sårbarhet eller ett indikatorliknande objekt fanns i svaret.",
+    "The graph reached its local safety limit; use the filter or export the evidence for complete review.": "Grafen nådde sin lokala säkerhetsgräns; använd filtret eller exportera underlaget för fullständig granskning.",
+    "No correlatable entities are available in the selected local scope.": "Det finns inga korrelerbara entiteter i det valda lokala omfånget.",
+    "{type}: {label} · risk {risk} · {evidence} evidence item(s) · {relationships} relationship(s) · sources: {sources}": "{type}: {label} · risk {risk} · {evidence} underlagspost(er) · {relationships} relation(er) · källor: {sources}",
+})
+
 
 def protect(text: str) -> tuple[str, list[str]]:
     values: list[str] = []

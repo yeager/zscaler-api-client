@@ -1359,14 +1359,27 @@ class MainWindowTests(unittest.TestCase):
         dialog.close()
 
     def test_operations_incident_workspace_prepares_a_safe_chain(self):
-        self.window.request_history = [{"timestamp": "now", "method": "GET", "url": "https://example.test", "status": 500, "response_headers": {"Retry-After": "60", "Set-Cookie": "hidden"}}]
-        dialog = client.OperationsDialog(self.window)
-        dialog.prepare_incident_chain()
-        self.assertIn("Review failed requests", dialog.incident_chain.toPlainText())
-        self.assertGreaterEqual(dialog.incident_timeline.rowCount(), 1)
-        self.assertNotIn("hidden", json.dumps(dialog._incident_evidence()))
-        self.assertIn("Retry-After", json.dumps(dialog._incident_evidence()))
-        dialog.close()
+        previous_exchange = getattr(self.window, "_last_response_exchange", None)
+        try:
+            self.window.request_history = [{"timestamp": "now", "method": "GET", "url": "https://example.test", "status": 500, "response_headers": {"Retry-After": "60", "Set-Cookie": "hidden"}}]
+            self.window._last_response_exchange = {"response": {"body": {"data": {"users": [{"email": "soc@example.test", "devices": [{"deviceName": "workstation", "applications": [{"name": "Finance"}]}]}]}}}}
+            dialog = client.OperationsDialog(self.window)
+            dialog.prepare_incident_chain()
+            self.assertIn("Review failed requests", dialog.incident_chain.toPlainText())
+            self.assertGreaterEqual(dialog.incident_timeline.rowCount(), 1)
+            self.assertTrue(dialog.soc_include_response.isChecked())
+            self.assertGreater(int(dialog.soc_cards["entities"].text()), 3)
+            self.assertGreater(dialog.soc_paths.rowCount(), 0)
+            self.assertTrue({"identity", "device", "application"}.issubset({node["type"] for node in dialog._last_soc_graph["nodes"]}))
+            dialog.soc_entity_filter.setText("device")
+            self.assertTrue(all(node["type"] == "device" for node in dialog.soc_graph.nodes))
+            dialog.highlight_soc_path(0)
+            self.assertTrue(dialog.soc_graph.highlighted)
+            self.assertNotIn("hidden", json.dumps(dialog._incident_evidence()))
+            self.assertIn("Retry-After", json.dumps(dialog._incident_evidence()))
+            dialog.close()
+        finally:
+            self.window._last_response_exchange = previous_exchange
 
     def test_operations_change_control_prepares_a_local_review(self):
         dialog = client.OperationsDialog(self.window)
@@ -1375,6 +1388,41 @@ class MainWindowTests(unittest.TestCase):
         dialog.prepare_change_review()
         self.assertIn('"risk": "high"', dialog.change_review.toPlainText())
         dialog.close()
+
+    def test_soc_evidence_export_obfuscates_correlated_response_entities(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous_exchange = getattr(self.window, "_last_response_exchange", None)
+        previous = {key: settings.value(key, None) for key in ("privacy/mode", "privacy/obfuscate_users", "privacy/obfuscate_labels", "privacy/obfuscate_ids")}
+        try:
+            settings.setValue("privacy/mode", "external")
+            for key in ("privacy/obfuscate_users", "privacy/obfuscate_labels", "privacy/obfuscate_ids"): settings.setValue(key, "true")
+            self.window._last_response_exchange = {"response": {"body": {"data": {"users": [{"email": "private@example.test", "devices": [{"deviceName": "secret-workstation", "applications": [{"name": "Sensitive Finance App"}]}]}]}}}}
+            dialog = client.OperationsDialog(self.window)
+            with TemporaryDirectory() as output_dir:
+                destination = str(Path(output_dir) / "soc-evidence.json")
+                with patch.object(client.QFileDialog, "getSaveFileName", return_value=(destination, "JSON (*.json)")):
+                    dialog.export_incident_evidence()
+                content = Path(destination).read_text(encoding="utf-8")
+                for sensitive in ("private@example.test", "secret-workstation", "Sensitive Finance App"):
+                    self.assertNotIn(sensitive, content)
+                self.assertIn("label-", content); self.assertIn("id-", content)
+                graphml = str(Path(output_dir) / "soc.graphml")
+                with patch.object(client.QFileDialog, "getSaveFileName", return_value=(graphml, "GraphML (*.graphml)")):
+                    dialog.export_soc_graph()
+                ET.parse(graphml)
+                self.assertNotIn("private@example.test", Path(graphml).read_text(encoding="utf-8"))
+                csv_path = str(Path(output_dir) / "soc.csv")
+                with patch.object(client.QFileDialog, "getSaveFileName", return_value=(csv_path, "CSV edge list (*.csv)")):
+                    dialog.export_soc_graph()
+                self.assertTrue(Path(csv_path).read_text(encoding="utf-8").startswith("source_id,target_id,relation,evidence_count"))
+                png_path = str(Path(output_dir) / "soc.png")
+                with patch.object(client.QFileDialog, "getSaveFileName", return_value=(png_path, "PNG graph (*.png)")):
+                    dialog.export_soc_graph()
+                self.assertEqual(b"\x89PNG\r\n\x1a\n", Path(png_path).read_bytes()[:8])
+            dialog.close()
+        finally:
+            self.window._last_response_exchange = previous_exchange
+            for key, value in previous.items(): settings.remove(key) if value is None else settings.setValue(key, value)
 
     def test_policy_workspace_visualizes_rules_best_practices_and_decision_path(self):
         dialog = client.OperationsDialog(self.window)
@@ -1403,6 +1451,8 @@ class MainWindowTests(unittest.TestCase):
             dialog = client.OperationsDialog(self.window)
             self.assertFalse(dialog.tabs.isTabVisible(1))
             self.assertEqual(-1, dialog.data_scope.findData("*"))
+            self.assertTrue(dialog.tabs.isTabVisible(dialog.incident_tab_index))
+            self.assertFalse(dialog.investigation_views.isTabVisible(dialog.soc_signals_tab_index))
             self.assertIn("# CISO", dialog.report_preview.toPlainText())
             for name in ("zero-trust-hero.png", "security-report-banner.png", "investigation-empty-state.png"):
                 self.assertFalse(client.QPixmap(str(client._resource_path(f"assets/visuals/{name}"))).isNull())

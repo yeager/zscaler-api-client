@@ -43,10 +43,15 @@ tenant or the bundled catalog-only mode.
    mode, save a synthetic snapshot, change one rule, select the snapshot as the
    baseline, and verify the changed-rule count. Export JSON and PNG and confirm
    synthetic rule/resource names are pseudonymized.
-10. Create a local scheduled report for one environment and confirm its JSON
+10. Open a synthetic REST or GraphQL response containing users, devices,
+    applications, and indicators. In Incident investigation, include the current
+    response and confirm the entity graph, filters, potential-path highlighting,
+    and correlated signals agree with the source tree. Export incident evidence
+    and confirm all labels, identities, addresses, hosts, and IDs are pseudonymized.
+11. Create a local scheduled report for one environment and confirm its JSON
    contains only that environment's retained history and a stable pseudonymized
    scope ID.
-11. Close and reopen the app without a crash.
+12. Close and reopen the app without a crash.
 
 ## macOS
 

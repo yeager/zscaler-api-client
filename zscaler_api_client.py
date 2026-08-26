@@ -58,7 +58,7 @@ try:
     import pyqtgraph as pg
 except (ImportError, OSError):  # Keep source checkouts usable with the minimal Qt stack.
     pg = None
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
@@ -3810,6 +3810,84 @@ class PolicyTwinGraph(QWidget):
             painter.setPen(QColor("#cbd5e1")); painter.drawText(x + 10, y + 50, width - 20, 16, Qt.AlignmentFlag.AlignLeft, self.tr("{count} condition(s)").format(count=node.get("conditions", 0)))
 
 
+class SocEntityGraph(QWidget):
+    """Accessible local entity relationship map for investigation evidence."""
+    nodeSelected = Signal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.nodes: list[dict[str, Any]] = []
+        self.edges: list[dict[str, Any]] = []
+        self.highlighted: set[str] = set()
+        self._hit_boxes: dict[str, tuple[int, int, int, int]] = {}
+        self.setMinimumHeight(330)
+
+    def set_graph(self, nodes, edges):
+        grouped: dict[str, list[dict[str, Any]]] = {}
+        for node in nodes:
+            grouped.setdefault(str(node.get("type", "resource")), []).append(node)
+        preferred = ("identity", "address", "device", "application", "policy", "service", "endpoint", "infrastructure", "indicator", "activity", "environment", "resource")
+        risk_rank = {"normal": 0, "low": 1, "medium": 2, "high": 3, "critical": 4}
+        type_rank = {kind: index for index, kind in enumerate(preferred)}
+        chosen = set(sorted(grouped, key=lambda kind: (-max(risk_rank.get(item.get("risk"), 0) for item in grouped[kind]), type_rank.get(kind, 99)))[:8])
+        visible_types = [kind for kind in preferred if kind in chosen] + sorted(chosen - set(preferred))
+        self.nodes = [node for kind in visible_types for node in grouped[kind][:8]][:64]
+        known = {str(node.get("id", "")) for node in self.nodes}
+        self.edges = [edge for edge in edges if str(edge.get("source_id", "")) in known and str(edge.get("target_id", "")) in known][:240]
+        self.highlighted &= known
+        self.setVisible(bool(self.nodes)); self.update()
+
+    def highlight_path(self, node_ids):
+        self.highlighted = {str(item) for item in node_ids}; self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self); painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        canvas = self.rect().adjusted(1, 1, -1, -1)
+        painter.setPen(QPen(QColor("#294564"), 1)); painter.setBrush(QColor("#0c192a")); painter.drawRoundedRect(canvas, 14, 14)
+        if not self.nodes:
+            return
+        types = []
+        for node in self.nodes:
+            if node.get("type") not in types: types.append(node.get("type"))
+        columns = max(1, len(types)); gap, margin, heading = 10, 14, 24
+        column_width = max(84, (canvas.width() - margin * 2 - gap * (columns - 1)) // columns)
+        groups = {kind: [node for node in self.nodes if node.get("type") == kind] for kind in types}
+        type_labels = {"identity": self.tr("Identity"), "address": self.tr("Address"), "device": self.tr("Device"), "application": self.tr("Application"), "policy": self.tr("Policy"), "service": self.tr("Service"), "endpoint": self.tr("Endpoint"), "infrastructure": self.tr("Infrastructure"), "indicator": self.tr("Indicator"), "activity": self.tr("Activity"), "environment": self.tr("Environment"), "resource": self.tr("Resource")}
+        positions = {}; self._hit_boxes = {}
+        for column, kind in enumerate(types):
+            x = canvas.left() + margin + column * (column_width + gap)
+            painter.setPen(QColor("#94a3b8")); painter.drawText(x, canvas.top() + 8, column_width, 16, Qt.AlignmentFlag.AlignCenter, type_labels.get(kind, str(kind).title()))
+            items = groups[kind]; available = canvas.height() - margin * 2 - heading
+            node_height = max(32, min(54, (available - gap * max(0, len(items) - 1)) // max(1, len(items))))
+            for row, node in enumerate(items):
+                y = canvas.top() + margin + heading + row * (node_height + gap)
+                box = (x, y, column_width, node_height); positions[str(node["id"])] = box; self._hit_boxes[str(node["id"])] = box
+        for edge in self.edges:
+            source, target = str(edge["source_id"]), str(edge["target_id"])
+            if source not in positions or target not in positions: continue
+            first, second = positions[source], positions[target]
+            on_path = source in self.highlighted and target in self.highlighted
+            color = QColor("#fbbf24" if on_path else "#3b82a6"); color.setAlpha(240 if on_path else 165)
+            painter.setPen(QPen(color, 3 if on_path else 1))
+            painter.drawLine(first[0] + first[2] // 2, first[1] + first[3] // 2, second[0] + second[2] // 2, second[1] + second[3] // 2)
+        fill = {"identity": "#164e63", "address": "#075985", "device": "#1e3a8a", "application": "#4c1d95", "policy": "#5b21b6", "service": "#134e4a", "endpoint": "#134e4a", "infrastructure": "#3f3f46", "indicator": "#7f1d1d", "activity": "#334155", "environment": "#0f766e", "resource": "#1e293b"}
+        border = {"critical": "#ef4444", "high": "#fb7185", "medium": "#fbbf24", "low": "#38bdf8", "normal": "#64748b"}
+        for node in self.nodes:
+            x, y, width, height = positions[str(node["id"])]
+            selected = str(node["id"]) in self.highlighted
+            painter.setPen(QPen(QColor("#f8fafc" if selected else border.get(node.get("risk"), "#64748b")), 3 if selected else 2))
+            painter.setBrush(QColor(fill.get(node.get("type"), "#1e293b"))); painter.drawRoundedRect(x, y, width, height, 8, 8)
+            painter.setPen(QColor("#f8fafc")); label = str(node.get("label", "")); maximum = max(7, width // 7)
+            painter.drawText(x + 6, y + 5, width - 12, height - 10, Qt.AlignmentFlag.AlignCenter | Qt.TextFlag.TextWordWrap, label[:maximum * 2])
+
+    def mousePressEvent(self, event):
+        point = event.position().toPoint()
+        for identifier, (x, y, width, height) in self._hit_boxes.items():
+            if x <= point.x() <= x + width and y <= point.y() <= y + height:
+                self.highlighted = {identifier}; self.nodeSelected.emit(identifier); self.update(); return
+        super().mousePressEvent(event)
+
+
 class WelcomeDialog(QDialog):
     """Welcome dialog for new users with getting started guidance."""
     
@@ -5977,7 +6055,7 @@ class OperationsDialog(QDialog):
         self.window = window
         self.settings = QSettings("Zscaler", "APIClient")
         self.setWindowTitle(self.tr("Operations Center"))
-        self.resize(900, 620)
+        self.resize(1120, 760)
         layout = QVBoxLayout(self)
         self.active_profile = active_environment_profile(self.settings)
         scope_bar = QHBoxLayout()
@@ -6123,16 +6201,40 @@ class OperationsDialog(QDialog):
         self.alert_tab_index = self.tabs.addTab(alerts_page, self.tr("Alert Center"))
 
         incident_page = QWidget(); incident_layout = QVBoxLayout(incident_page)
-        incident_intro = QLabel(self.tr("Build a redacted local investigation timeline. Prepared chains never send API requests automatically.")); incident_intro.setWordWrap(True); incident_layout.addWidget(incident_intro)
+        incident_intro = QLabel(self.tr("Correlate retained local activity with every object in the current masked REST or GraphQL response. Paths are investigation hypotheses, never proof of compromise, and prepared chains never run automatically.")); incident_intro.setWordWrap(True); incident_layout.addWidget(incident_intro)
         chain_controls = QHBoxLayout(); chain_controls.addWidget(QLabel(self.tr("Investigation:")))
         self.incident_type = QComboBox(); self.incident_type.addItem(self.tr("API failure investigation"), "failures"); self.incident_type.addItem(self.tr("Change activity review"), "changes"); self.incident_type.addItem(self.tr("Slow response investigation"), "performance"); chain_controls.addWidget(self.incident_type)
-        chain_prepare = QPushButton(self.tr("Prepare investigation chain")); chain_prepare.clicked.connect(self.prepare_incident_chain); chain_controls.addWidget(chain_prepare); chain_controls.addStretch(); incident_layout.addLayout(chain_controls)
-        self.incident_chain = QPlainTextEdit(); self.incident_chain.setReadOnly(True); self.incident_chain.setMaximumHeight(120); incident_layout.addWidget(self.incident_chain)
+        chain_prepare = QPushButton(self.tr("Prepare investigation chain")); chain_prepare.clicked.connect(self.prepare_incident_chain); chain_controls.addWidget(chain_prepare)
+        self.soc_include_response = QCheckBox(self.tr("Include current API/GraphQL response")); self.soc_include_response.setChecked(bool(getattr(self.window, "_last_response_exchange", None))); self.soc_include_response.setEnabled(bool(getattr(self.window, "_last_response_exchange", None))); chain_controls.addWidget(self.soc_include_response)
+        correlate = QPushButton(self.tr("Correlate entities")); correlate.clicked.connect(self.refresh_soc_graph); chain_controls.addWidget(correlate); chain_controls.addStretch(); incident_layout.addLayout(chain_controls)
+        self.incident_chain = QPlainTextEdit(); self.incident_chain.setReadOnly(True); self.incident_chain.setMaximumHeight(120); self.incident_chain.setVisible(False); incident_layout.addWidget(self.incident_chain)
+        self.investigation_views = QTabWidget(); incident_layout.addWidget(self.investigation_views)
+        timeline_page = QWidget(); timeline_layout = QVBoxLayout(timeline_page)
         self.incident_empty_art = VisualAssetLabel("assets/visuals/investigation-empty-state.png", 165)
-        self.incident_empty_art.setAccessibleName(self.tr("Security investigation evidence map")); incident_layout.addWidget(self.incident_empty_art)
-        self.incident_timeline = QTableWidget(0, 4); self.incident_timeline.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Source"), self.tr("Severity"), self.tr("Evidence")]); self.incident_timeline.horizontalHeader().setStretchLastSection(True); self.incident_timeline.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); incident_layout.addWidget(self.incident_timeline)
+        self.incident_empty_art.setAccessibleName(self.tr("Security investigation evidence map")); timeline_layout.addWidget(self.incident_empty_art)
+        self.incident_timeline = QTableWidget(0, 4); self.incident_timeline.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Source"), self.tr("Severity"), self.tr("Evidence")]); self.incident_timeline.horizontalHeader().setStretchLastSection(True); self.incident_timeline.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); timeline_layout.addWidget(self.incident_timeline)
+        self.investigation_views.addTab(timeline_page, self.tr("Evidence timeline"))
+
+        graph_page = QWidget(); graph_layout = QVBoxLayout(graph_page)
+        graph_cards = QGridLayout(); self.soc_cards = {}
+        for column, (key, label) in enumerate((("entities", self.tr("Entities")), ("relationships", self.tr("Relationships")), ("attack_paths", self.tr("Potential paths")), ("high_risk", self.tr("High-risk entities")))):
+            card = QFrame(); card.setObjectName("metricCard"); card_layout = QVBoxLayout(card); title = QLabel(label); title.setObjectName("mutedLabel"); card_layout.addWidget(title)
+            value = QLabel("—"); value.setObjectName("sectionTitle"); font = value.font(); font.setPointSize(18); font.setBold(True); value.setFont(font); card_layout.addWidget(value); self.soc_cards[key] = value; graph_cards.addWidget(card, 0, column)
+        graph_layout.addLayout(graph_cards)
+        filter_row = QHBoxLayout(); filter_row.addWidget(QLabel(self.tr("Filter entities:"))); self.soc_entity_filter = QLineEdit(); self.soc_entity_filter.setPlaceholderText(self.tr("Name, type, risk, or evidence source")); self.soc_entity_filter.textChanged.connect(self.filter_soc_entities); filter_row.addWidget(self.soc_entity_filter, 1); graph_layout.addLayout(filter_row)
+        self.soc_graph = SocEntityGraph(); self.soc_graph.setAccessibleName(self.tr("SOC entity and potential attack-path graph")); self.soc_graph.nodeSelected.connect(self.show_soc_entity); graph_layout.addWidget(self.soc_graph)
+        self.soc_entity_detail = QLabel(self.tr("Select an entity to inspect its local evidence.")); self.soc_entity_detail.setWordWrap(True); self.soc_entity_detail.setObjectName("mutedLabel"); graph_layout.addWidget(self.soc_entity_detail)
+        self.soc_paths = QTableWidget(0, 5); self.soc_paths.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Source"), self.tr("Target"), self.tr("Hops"), self.tr("Explanation")]); self.soc_paths.horizontalHeader().setStretchLastSection(True); self.soc_paths.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.soc_paths.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows); self.soc_paths.setMaximumHeight(170); self.soc_paths.cellClicked.connect(self.highlight_soc_path); graph_layout.addWidget(self.soc_paths)
+        self.investigation_views.addTab(graph_page, self.tr("Entity graph"))
+
+        signals_page = QWidget(); signals_layout = QVBoxLayout(signals_page)
+        signal_note = QLabel(self.tr("Explainable signals are derived only from retained local evidence and the selected response. Validate them against authoritative product telemetry.")); signal_note.setWordWrap(True); signals_layout.addWidget(signal_note)
+        self.soc_signals = QTableWidget(0, 4); self.soc_signals.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Signal"), self.tr("Entity"), self.tr("Explanation")]); self.soc_signals.horizontalHeader().setStretchLastSection(True); self.soc_signals.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); signals_layout.addWidget(self.soc_signals)
+        self.soc_signals_tab_index = self.investigation_views.addTab(signals_page, self.tr("Correlated signals"))
+        self.soc_include_response.toggled.connect(lambda _checked: self.refresh_soc_graph(record_audit=False))
         incident_actions = QHBoxLayout(); incident_refresh = QPushButton(self.tr("Refresh investigation")); incident_refresh.clicked.connect(self.refresh_incident); incident_actions.addWidget(incident_refresh)
         incident_export = QPushButton(self.tr("Export incident evidence")); incident_export.clicked.connect(self.export_incident_evidence); incident_actions.addWidget(incident_export); incident_actions.addStretch(); incident_layout.addLayout(incident_actions)
+        graph_export = QPushButton(self.tr("Export entity graph")); graph_export.clicked.connect(self.export_soc_graph); incident_actions.insertWidget(2, graph_export)
         self.incident_tab_index = self.tabs.addTab(incident_page, self.tr("Incident investigation"))
 
         change_page = QWidget(); change_layout = QVBoxLayout(change_page)
@@ -6230,6 +6332,7 @@ class OperationsDialog(QDialog):
             self.tabs.setTabVisible(index, not basic)
         self.twin_snapshot_group.setVisible(not basic)
         self.twin_load_proposed.setVisible(not basic)
+        self.investigation_views.setTabVisible(self.soc_signals_tab_index, not basic)
 
     def configure_local_monitor(self, enabled=None, record_audit=True):
         """Refresh local views on a user-approved timer; it never sends API calls."""
@@ -6397,9 +6500,85 @@ class OperationsDialog(QDialog):
     def _incident_evidence(self):
         evidence = incident_evidence(self._scoped_history(), self._scoped_events())
         evidence["scope"] = self._scope_metadata()
+        evidence["entity_graph"] = getattr(self, "_last_soc_graph", None) or self._soc_graph_data()
         return evidence
 
-    def refresh_incident(self):
+    def _soc_graph_data(self):
+        response = None
+        if getattr(self, "soc_include_response", None) is not None and self.soc_include_response.isChecked():
+            exchange = getattr(self.window, "_last_response_exchange", None) or {}
+            response_section = exchange.get("response", {}) if isinstance(exchange, dict) else {}
+            response = response_section.get("body") if isinstance(response_section, dict) else None
+        return soc_investigation_graph(self._scoped_history(), self._scoped_events(), response, self._scope_metadata())
+
+    def refresh_soc_graph(self, _checked=False, record_audit=True):
+        raw = self._soc_graph_data(); self._last_soc_graph = raw
+        display = privacy_safe(raw, self.settings, "display"); self._last_soc_graph_display = display
+        summary = display["summary"]
+        for key, widget in self.soc_cards.items(): widget.setText(str(summary[key]))
+        self.soc_cards["high_risk"].setStyleSheet("color: #fb7185;" if summary["high_risk"] else "color: #34d399;")
+        self.soc_cards["attack_paths"].setStyleSheet("color: #fbbf24;" if summary["attack_paths"] else "color: #34d399;")
+        self.filter_soc_entities()
+        node_lookup = {node["id"]: node for node in display["nodes"]}
+        severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "normal": self.tr("Normal")}
+        self.soc_paths.setRowCount(len(display["paths"]))
+        for row, path in enumerate(display["paths"]):
+            source = node_lookup.get(path["source_id"], {}).get("label", path["source_id"])
+            target = node_lookup.get(path["target_id"], {}).get("label", path["target_id"])
+            values = (severity_labels.get(path["severity"], path["severity"]), source, target, str(max(0, len(path["node_ids"]) - 1)), self.tr("Observed relationship chain across local evidence; validate before treating it as an exploitable attack path."))
+            for column, value in enumerate(values):
+                item = self._severity_item(str(value), path["severity"]) if column == 0 else QTableWidgetItem(str(value))
+                if column == 0: item.setData(Qt.ItemDataRole.UserRole, row)
+                self.soc_paths.setItem(row, column, item)
+        self.soc_paths.resizeColumnsToContents()
+        signal_names = {"endpoint_failure_evidence": self.tr("Endpoint failure evidence"), "relationship_concentration": self.tr("Relationship concentration"), "security_indicator_observed": self.tr("Security indicator observed")}
+        signal_explanations = {
+            "endpoint_failure_evidence": self.tr("The endpoint has locally retained server or network failure evidence."),
+            "relationship_concentration": self.tr("The entity is connected to an unusually broad set of locally observed relationships."),
+            "security_indicator_observed": self.tr("A threat, exposure, vulnerability, or indicator-like object was present in the response."),
+        }
+        self.soc_signals.setRowCount(len(display["anomalies"]))
+        for row, signal in enumerate(display["anomalies"]):
+            entity = node_lookup.get(signal["entity_id"], {}).get("label", signal["entity_id"])
+            values = (severity_labels.get(signal["severity"], signal["severity"]), signal_names.get(signal["code"], signal["code"]), entity, signal_explanations.get(signal["code"], signal["explanation"]))
+            for column, value in enumerate(values): self.soc_signals.setItem(row, column, self._severity_item(str(value), signal["severity"]) if column == 0 else QTableWidgetItem(str(value)))
+        self.soc_signals.resizeColumnsToContents()
+        if summary["truncated"]:
+            self.soc_entity_detail.setText(self.tr("The graph reached its local safety limit; use the filter or export the evidence for complete review."))
+        elif not display["nodes"]:
+            self.soc_entity_detail.setText(self.tr("No correlatable entities are available in the selected local scope."))
+        else:
+            self.soc_entity_detail.setText(self.tr("Select an entity to inspect its local evidence."))
+        if record_audit:
+            self._scope_audit().append("soc_entities_correlated", {"entities": summary["entities"], "relationships": summary["relationships"], "paths": summary["attack_paths"], "response_included": summary["response_included"]})
+
+    def filter_soc_entities(self, _text=""):
+        graph = getattr(self, "_last_soc_graph_display", None)
+        if not graph: return
+        query = self.soc_entity_filter.text().strip().casefold()
+        nodes = graph["nodes"]
+        if query:
+            nodes = [node for node in nodes if query in " ".join((str(node.get("label", "")), str(node.get("type", "")), str(node.get("risk", "")), " ".join(node.get("sources", [])))).casefold()]
+        known = {node["id"] for node in nodes}
+        edges = [edge for edge in graph["edges"] if edge["source_id"] in known and edge["target_id"] in known]
+        self.soc_graph.set_graph(nodes, edges)
+
+    def show_soc_entity(self, identifier):
+        graph = getattr(self, "_last_soc_graph_display", {})
+        node = next((item for item in graph.get("nodes", []) if item.get("id") == identifier), None)
+        if not node: return
+        relationships = sum(1 for edge in graph.get("edges", []) if identifier in {edge.get("source_id"), edge.get("target_id")})
+        self.soc_entity_detail.setText(self.tr("{type}: {label} · risk {risk} · {evidence} evidence item(s) · {relationships} relationship(s) · sources: {sources}").format(type=str(node["type"]).title(), label=node["label"], risk=node["risk"], evidence=node["evidence_count"], relationships=relationships, sources=", ".join(node["sources"])))
+
+    def highlight_soc_path(self, row, _column=0):
+        graph = getattr(self, "_last_soc_graph_display", {})
+        paths = graph.get("paths", [])
+        if 0 <= row < len(paths):
+            if self.soc_entity_filter.text(): self.soc_entity_filter.clear()
+            self.soc_graph.highlight_path(paths[row]["node_ids"])
+
+    def refresh_incident(self, _checked=False):
+        self.refresh_soc_graph(record_audit=False)
         evidence = privacy_safe(self._incident_evidence(), self.settings, "display")
         timeline = evidence["timeline"]
         self.incident_empty_art.setVisible(not timeline and not self.incident_empty_art._source.isNull())
@@ -6419,15 +6598,40 @@ class OperationsDialog(QDialog):
             "performance": self.tr("1. Identify slow requests in the local timeline.\n2. Review response status, duration, and rate-limit headers.\n3. Query the relevant ZDX or product status endpoint.\n4. Compare against recent requests.\n5. Export the masked incident evidence for escalation."),
         }
         kind = self.incident_type.currentData()
-        self.incident_chain.setPlainText(chains[kind])
+        self.incident_chain.setPlainText(chains[kind]); self.incident_chain.setVisible(True)
         self._scope_audit().append("incident_chain_prepared", {"kind": kind})
 
     def export_incident_evidence(self):
         path, _ = QFileDialog.getSaveFileName(self, self.tr("Export incident evidence"), "incident-evidence.json", "JSON (*.json)")
         if not path:
             return
+        self.refresh_soc_graph(record_audit=False)
         Path(path).write_text(json.dumps(privacy_safe(self._incident_evidence(), self.settings, "export"), indent=2, ensure_ascii=False), encoding="utf-8")
         self._scope_audit().append("incident_evidence_exported", {"file": os.path.basename(path)})
+
+    def export_soc_graph(self):
+        self.refresh_soc_graph(record_audit=False)
+        path, selected = QFileDialog.getSaveFileName(self, self.tr("Export entity graph"), "soc-entity-graph.json", "JSON (*.json);;GraphML (*.graphml);;CSV edge list (*.csv);;PNG graph (*.png)")
+        if not path: return
+        safe = privacy_safe(self._last_soc_graph, self.settings, "export"); suffix = Path(path).suffix.casefold()
+        if suffix == ".png" or "PNG" in selected:
+            display = getattr(self, "_last_soc_graph_display", safe)
+            self.soc_graph.set_graph(safe["nodes"], safe["edges"]); self.soc_graph.highlight_path([]); self.soc_graph.grab().save(path, "PNG")
+            self._last_soc_graph_display = display; self.filter_soc_entities(); format_name = "png"
+        elif suffix == ".graphml" or "GraphML" in selected:
+            lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<graphml xmlns="http://graphml.graphdrawing.org/xmlns">', '<key id="type" for="node" attr.name="type" attr.type="string"/>', '<key id="label" for="node" attr.name="label" attr.type="string"/>', '<key id="risk" for="node" attr.name="risk" attr.type="string"/>', '<key id="relation" for="edge" attr.name="relation" attr.type="string"/>', '<graph id="soc" edgedefault="directed">']
+            for node in safe["nodes"]:
+                lines.append(f'<node id="{xml_escape(str(node["id"]))}"><data key="type">{xml_escape(str(node["type"]))}</data><data key="label">{xml_escape(str(node["label"]))}</data><data key="risk">{xml_escape(str(node["risk"]))}</data></node>')
+            for index, edge in enumerate(safe["edges"]):
+                lines.append(f'<edge id="e{index}" source="{xml_escape(str(edge["source_id"]))}" target="{xml_escape(str(edge["target_id"]))}"><data key="relation">{xml_escape(str(edge["relation"]))}</data></edge>')
+            lines.extend(["</graph>", "</graphml>"]); Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8"); format_name = "graphml"
+        elif suffix == ".csv" or "CSV" in selected:
+            output = io.StringIO(); writer = csv.writer(output); writer.writerow(["source_id", "target_id", "relation", "evidence_count"])
+            for edge in safe["edges"]: writer.writerow([edge["source_id"], edge["target_id"], edge["relation"], edge["evidence_count"]])
+            Path(path).write_text(output.getvalue(), encoding="utf-8"); format_name = "csv"
+        else:
+            Path(path).write_text(json.dumps(safe, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"); format_name = "json"
+        self._scope_audit().append("soc_entity_graph_exported", {"format": format_name, "file": os.path.basename(path), "entities": safe["summary"]["entities"]})
 
     def _change_plan(self):
         return change_control_plan(self._json(self.before_policy, {}), self._json(self.after_policy, {}))

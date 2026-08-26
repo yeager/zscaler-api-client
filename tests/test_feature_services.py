@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, change_control_plan, security_report_data, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers
 
 
 class MemorySettings:
@@ -160,6 +160,29 @@ class FeatureServicesTests(unittest.TestCase):
         serialized = json.dumps(evidence)
         self.assertNotIn("hidden", serialized)
         self.assertEqual("high", evidence["timeline"][0]["severity"])
+
+    def test_soc_graph_correlates_complete_graphql_tree_and_flags_paths(self):
+        response = {"data": {"users": [{
+            "email": "analyst@example.test", "client_secret": "never-show",
+            "devices": [{"deviceName": "laptop-7", "applications": [{"name": "Payroll", "severity": "high"}]}],
+        }], "threats": [{"name": "Suspicious destination", "severity": "critical"}]}}
+        graph = soc_investigation_graph(
+            [{"method": "GET", "url": "https://api.example.test/users?token=hidden", "status": 500}],
+            [{"action": "policy_change_reviewed", "details": {"token": "hidden"}}],
+            response,
+            {"environment_id": "tenant-a", "environment": "Tenant A"},
+        )
+        rendered = json.dumps(graph)
+        self.assertNotIn("never-show", rendered); self.assertNotIn("token=hidden", rendered)
+        self.assertTrue({"identity", "device", "application", "indicator"}.issubset({node["type"] for node in graph["nodes"]}))
+        self.assertGreater(graph["summary"]["relationships"], 0)
+        self.assertGreater(graph["summary"]["attack_paths"], 0)
+        self.assertTrue(any(item["code"] == "security_indicator_observed" for item in graph["anomalies"]))
+        self.assertIn("not proof", graph["disclaimer"])
+        external = obfuscate_identifiers(graph, "d" * 64)
+        external_ids = {node["id"] for node in external["nodes"]}
+        self.assertTrue(all(edge["source_id"] in external_ids and edge["target_id"] in external_ids for edge in external["edges"]))
+        self.assertTrue(all(identifier in external_ids for path in external["paths"] for identifier in path["node_ids"]))
 
     def test_change_control_plan_is_redacted_and_has_rollback(self):
         plan = change_control_plan({"rules": [], "client_secret": "old"}, {"rules": [{"name": "Open", "action": "allow", "conditions": {}}], "client_secret": "new"})
