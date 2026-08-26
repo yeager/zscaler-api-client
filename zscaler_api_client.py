@@ -83,6 +83,17 @@ QT_LANGUAGE_CODES = {
     "pt_BR": "pt_BR",
     "zh_CN": "zh_CN",
 }
+RTL_LANGUAGE_CODES = frozenset({"ar", "fa"})
+
+
+def language_layout_direction(language: str) -> Qt.LayoutDirection:
+    """Return the application layout direction for a resolved locale."""
+    app_language = str(language).split("_", 1)[0]
+    return (
+        Qt.LayoutDirection.RightToLeft
+        if app_language in RTL_LANGUAGE_CODES
+        else Qt.LayoutDirection.LeftToRight
+    )
 
 
 def resolve_language(language: str | None, system_locale: str | None = None) -> str:
@@ -11548,6 +11559,7 @@ def main():
     qt_translator = QTranslator()
     app_lang = "zh" if str(lang).startswith("zh") else str(lang).split("_", 1)[0]
     qt_lang = QT_LANGUAGE_CODES.get(str(lang), app_lang)
+    app.setLayoutDirection(language_layout_direction(app_lang))
     # The application's catalogs are bundled beside the executable. Qt's own
     # catalogs are normally supplied by the installed/bundled Qt runtime, so
     # they do not need to be versioned in this project.

@@ -476,6 +476,11 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(client.resolve_language("system", "pt_PT"), "pt_BR")
         self.assertEqual(client.resolve_language("system", "unrecognized_LOCALE"), "en")
 
+    def test_arabic_and_persian_use_right_to_left_layout(self):
+        self.assertEqual(client.language_layout_direction("ar"), client.Qt.LayoutDirection.RightToLeft)
+        self.assertEqual(client.language_layout_direction("fa_IR"), client.Qt.LayoutDirection.RightToLeft)
+        self.assertEqual(client.language_layout_direction("sv"), client.Qt.LayoutDirection.LeftToRight)
+
     def test_settings_has_language_override(self):
         dialog = client.SettingsDialog(self.window)
         self.assertGreaterEqual(dialog.language_choice.findData("system"), 0)

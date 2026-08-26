@@ -90,7 +90,7 @@ ZS API Client is built with security as a top priority:
 - **Self-contained visual reports** – Export an offline HTML leadership/SOC report with embedded artwork, responsive metric cards, severity styling, findings, evidence, and configured identifier obfuscation
 - **Local governance controls** – Administrator, analyst, and read-only roles; the latter blocks mutating API requests before they leave the client
 - **Redacted support bundles** – Create diagnostics archives without API credentials or sensitive request values
-- **Localization-ready UI** – Automatic system-language detection and a manual language selector covering 20 language profiles; English is the source language and Swedish is the currently shipped translation
+- **Localization-ready UI** – Automatic system-language detection and a manual language selector covering 20 language profiles; English is the source language, with reviewed Arabic and Swedish catalogs compiled at build time
 - **Light/Dark Themes** – Full theme support with system auto-detection
 - **Keyboard Shortcuts** – Efficient workflow with customizable shortcuts
 - **What's New Dialog** – See changes after each update
@@ -236,13 +236,14 @@ On first launch, **System default** follows the operating-system locale. A speci
 language can be selected later in **Settings → Language**; restart the application
 after changing it.
 
-Release **v2.8.0** has the following localization status:
+The current `main` branch has the following localization status:
 
 | Status | Languages |
 |--------|-----------|
 | Complete source language | English |
+| Complete manually reviewed catalog (98.9% measured coverage; remaining identical text is invariant product names and technical terminology) | Arabic (`ar`) |
 | Complete reviewed catalog (97.6% measured coverage; remaining identical text is invariant product names and technical terminology) | Swedish (`sv`) |
-| Translation catalogs in progress | Arabic, Czech, Danish, Dutch, Finnish, French, German, Hungarian, Italian, Japanese, Korean, Norwegian Bokmål, Persian, Polish, Portuguese (Brazil), Simplified Chinese, Spanish, Turkish |
+| Translation catalogs in progress | Czech, Danish, Dutch, Finnish, French, German, Hungarian, Italian, Japanese, Korean, Norwegian Bokmål, Persian, Polish, Portuguese (Brazil), Simplified Chinese, Spanish, Turkish |
 
 The application exposes all 20 language profiles, but untranslated text safely
 falls back to English. A catalog is compiled into a `.qm` file only when more than
