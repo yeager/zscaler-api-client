@@ -1,3 +1,4 @@
+import json
 import os
 import unittest
 import xml.etree.ElementTree as ET
@@ -262,6 +263,21 @@ class MainWindowTests(unittest.TestCase):
         copied = client.QApplication.clipboard().text()
         self.assertNotIn("do-not-copy", copied)
         self.assertIn("***", copied)
+
+    def test_zcc_authentication_uses_the_jwt_login_shape(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        settings.setValue("zcc/cloud", "api.zsapi.net")
+        settings.setValue("zcc/client_id", "key-id")
+        if self.window.api_type.findText("ZCC") < 0:
+            self.window.api_type.addItem("ZCC")
+        self.window.api_type.setCurrentText("ZCC")
+        with patch.object(client, "secure_get", return_value="secret-key"), \
+             patch.object(self.window, "_send_request") as send:
+            self.window._authenticate_api()
+        self.assertEqual("https://api.zsapi.net/zcc/papi/auth/v1/login", self.window.url_input.text())
+        self.assertEqual("application/json", self.window.headers_table.item(0, 1).text())
+        self.assertEqual({"apiKey": "key-id", "secretKey": "secret-key"}, json.loads(self.window.body_input.toPlainText()))
+        send.assert_called_once()
 
     def test_llm_failure_masks_secret_like_text(self):
         self.window.ai_summary.setText("Asking configured LLM…")

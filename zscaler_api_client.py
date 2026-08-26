@@ -3154,18 +3154,18 @@ class SettingsDialog(QDialog):
         self.zcc_enabled = QCheckBox(self.tr("Enabled"))
         zcc_row1.addWidget(self.zcc_enabled)
         self.zcc_cloud = QLineEdit()
-        self.zcc_cloud.setPlaceholderText("Cloud (api.zscaler.com)")
+        self.zcc_cloud.setPlaceholderText("Cloud (api.zsapi.net)")
         zcc_row1.addWidget(self.zcc_cloud, 1)
         zcc_layout.addLayout(zcc_row1)
         
-        # Row 2: Client ID + Secret
+        # Row 2: API key + secret key.  ZCC's JWT login does not use OAuth.
         zcc_row2 = QHBoxLayout()
         self.zcc_client_id = QLineEdit()
-        self.zcc_client_id.setPlaceholderText("Client ID")
+        self.zcc_client_id.setPlaceholderText("API Key")
         zcc_row2.addWidget(self.zcc_client_id, 1)
         self.zcc_client_secret = QLineEdit()
         self.zcc_client_secret.setEchoMode(QLineEdit.EchoMode.Password)
-        self.zcc_client_secret.setPlaceholderText("Client Secret")
+        self.zcc_client_secret.setPlaceholderText("API Secret")
         zcc_row2.addWidget(self.zcc_client_secret, 1)
         zcc_layout.addLayout(zcc_row2)
         
@@ -5388,7 +5388,22 @@ class MainWindow(QMainWindow):
             self.body_input.setPlainText(json.dumps(body, indent=2))
             self._send_request()
             
-        elif api_type in ["ZPA", "ZDX", "ZCC", "ZIdentity", "ZTW", "ZWA", "EASM"]:
+        elif api_type == "ZCC":
+            cloud = settings.value("zcc/cloud", "api.zsapi.net")
+            api_key = settings.value("zcc/client_id", "")
+            api_secret = secure_get("zcc_client_secret")
+            if not all([cloud, api_key, api_secret]):
+                self._log_output("ZCC credentials not configured. Go to Settings.", "error")
+                QMessageBox.warning(self, self.tr("Error"), self.tr("ZCC credentials not configured. Please go to Settings."))
+                return
+            self.url_input.setText(f"https://{cloud}/zcc/papi/auth/v1/login")
+            self.method_combo.setCurrentText("● POST")
+            self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
+            self.headers_table.setItem(0, 1, QTableWidgetItem("application/json"))
+            self.body_input.setPlainText(json.dumps({"apiKey": api_key, "secretKey": api_secret}, indent=2))
+            self._send_request()
+
+        elif api_type in ["ZPA", "ZDX", "ZIdentity", "ZTW", "ZWA", "EASM"]:
             # OAuth-based APIs
             api_lower = api_type.lower()
             cloud = settings.value(f"{api_lower}/cloud", "")
@@ -5424,7 +5439,7 @@ class MainWindow(QMainWindow):
             elif api_type == "ZDX":
                 # ZDX uses /v1/oauth/token with JSON body
                 url = f"https://{cloud}/v1/oauth/token"
-            elif api_type in ("ZCC", "ZTW", "ZWA", "EASM"):
+            elif api_type in ("ZTW", "ZWA", "EASM"):
                 # These APIs use /oauth/token
                 url = f"https://{cloud}/oauth/token"
             else:
