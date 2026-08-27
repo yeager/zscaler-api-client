@@ -72,6 +72,7 @@ ZS API Client is built with security as a top priority:
 
 ### Productivity
 - **Batch Operations** – Import CSV files for bulk create/delete/update operations
+- **PAC Workspace** – Author hosted PAC files locally with reusable `${VARIABLE}` values, static syntax and performance checks, explainable URL-decision previews, and load/save drafts. Prepare (never auto-send) ZIA validation, custom-PAC upload, listing, and version lifecycle actions, or safely patch a retrieved ZCC forwarding profile for Client Connector/Mobile Portal PAC settings.
 - **Operations Center** – Local policy diffs and simulations, CSV validation, isolated environment profiles, dashboards, report schedules, and a hash-linked audit trail
 - **Digital Policy Twin** – Visualize first-match rule order, explain local decisions, detect overlapping actions, conflicts, redundant or fully shadowed rules, estimate change blast radius, and compare tenant-scoped time-travel snapshots without applying configuration
 - **Accelerated SOC telemetry** – Render longer live latency series with pyqtgraph downsampling and clipping, with a Qt-native fallback for minimal or offline source installations
@@ -157,6 +158,11 @@ Select an API → Choose an **Authenticate** endpoint → Click **Send**
 
 ### 3. Explore & Test
 Browse endpoints in the tree, modify parameters, and send requests!
+
+### PAC files
+Open **Operations → PAC Workspace** to create or update a PAC workflow. The verifier is deliberately static: it checks the required `FindProxyForURL(url, host)` entry point, quoted return values, braces, default ZIA size limit, risky DNS helpers, gateway fallback, and unresolved variables without executing JavaScript. A preview explains common `shExpMatch(host, pattern)` results.
+
+For ZIA, use **Prepare ZIA validation** before upload. Uploading creates a PAC file but does not deploy it; lifecycle actions such as `STAGE`, `DEPLOY`, and `LKG` must be prepared and explicitly sent separately. For ZCC, first prepare the forwarding-profile list, paste one returned profile JSON object, then prepare its update. This preserves unrelated profile fields and avoids guessing tenant configuration. See Zscaler's [PAC overview](https://help.zscaler.com/zia/understanding-pac-file), [PAC authoring guidance](https://help.zscaler.com/zia/writing-pac-file), and [Client Connector PAC practices](https://help.zscaler.com/zscaler-client-connector/best-practices-using-pac-files-zscaler-client-connector).
 
 ## 📋 Supported APIs
 

@@ -76,6 +76,7 @@ except (ImportError, OSError):  # Keep source checkouts usable with the minimal 
     pg = None
 from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, exposure_access_analysis, investigation_note, PLAYBOOK_TEMPLATES, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from evidence_signing import generate_private_key, public_key, sign_evidence, verify_evidence
+from pac_services import PAC_TEMPLATE, PAC_VARIABLES, lint_pac, pac_variables, preview_pac_decision, substitute_pac_variables, zia_pac_payload, zcc_pac_patch
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
@@ -8028,6 +8029,206 @@ body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}
             QMessageBox.information(self, self.tr("Support bundle"), self.tr("A redacted support bundle was created."))
 
 
+class PacWorkspaceDialog(QDialog):
+    """Create, validate and safely prepare ZIA/ZCC PAC updates."""
+
+    ZIA_VALIDATE_URL = "https://api.zsapi.net/zia/api/v1/pacFiles/validate"
+    ZIA_PAC_URL = "https://api.zsapi.net/zia/api/v1/pacFiles"
+    ZCC_LIST_URL = "https://api.zsapi.net/zcc/papi/public/v1/webForwardingProfile/listByCompany"
+    ZCC_EDIT_URL = "https://api.zsapi.net/zcc/papi/public/v1/webForwardingProfile/edit"
+
+    def __init__(self, window: "MainWindow"):
+        super().__init__(window)
+        self.window = window
+        self.settings = QSettings("Zscaler", "APIClient")
+        self.setWindowTitle(self.tr("PAC Workspace"))
+        self.resize(1120, 760)
+
+        layout = QVBoxLayout(self)
+        intro = QLabel(self.tr("Create and verify PAC files locally. API operations are prepared in the request editor and are never sent or deployed automatically."))
+        intro.setWordWrap(True)
+        layout.addWidget(intro)
+
+        metadata = QFormLayout()
+        self.name_input = QLineEdit(self.settings.value("pac/workspace/name", "custom-pac"))
+        self.commit_input = QLineEdit(self.settings.value("pac/workspace/commit", ""))
+        self.hosted_url_input = QLineEdit(self.settings.value("pac/workspace/hosted_url", ""))
+        self.zia_pac_id_input = QLineEdit(self.settings.value("pac/workspace/zia_pac_id", ""))
+        self.zia_version_input = QLineEdit(self.settings.value("pac/workspace/zia_version", ""))
+        self.zia_action_combo = QComboBox()
+        for action in ("DEPLOY", "STAGE", "UNSTAGE", "LKG", "REMOVE_LKG"):
+            self.zia_action_combo.addItem(action)
+        self.hosted_url_input.setPlaceholderText("https://example.zscaler.net/custom.pac")
+        metadata.addRow(self.tr("PAC name:"), self.name_input)
+        metadata.addRow(self.tr("Change note:"), self.commit_input)
+        metadata.addRow(self.tr("Hosted PAC URL (optional for ZCC):"), self.hosted_url_input)
+        metadata.addRow(self.tr("Existing ZIA PAC ID (for lifecycle actions):"), self.zia_pac_id_input)
+        metadata.addRow(self.tr("ZIA PAC version:"), self.zia_version_input)
+        metadata.addRow(self.tr("ZIA version action:"), self.zia_action_combo)
+        layout.addLayout(metadata)
+
+        tabs = QTabWidget()
+        layout.addWidget(tabs, 1)
+        author_tab = QWidget(); author_layout = QVBoxLayout(author_tab)
+        author_layout.addWidget(QLabel(self.tr("PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.")))
+        self.pac_editor = QPlainTextEdit(self.settings.value("pac/workspace/draft", PAC_TEMPLATE))
+        pac_font = QFont("Monospace"); pac_font.setStyleHint(QFont.StyleHint.Monospace); self.pac_editor.setFont(pac_font)
+        author_layout.addWidget(self.pac_editor, 1)
+        author_buttons = QHBoxLayout()
+        load_button = QPushButton(self.tr("Load PAC…")); load_button.clicked.connect(self._load_pac)
+        save_button = QPushButton(self.tr("Save PAC…")); save_button.clicked.connect(self._save_pac)
+        draft_button = QPushButton(self.tr("Save local draft")); draft_button.clicked.connect(self._save_draft)
+        author_buttons.addWidget(load_button); author_buttons.addWidget(save_button); author_buttons.addWidget(draft_button); author_buttons.addStretch()
+        author_layout.addLayout(author_buttons)
+        tabs.addTab(author_tab, self.tr("Author"))
+
+        verify_tab = QWidget(); verify_layout = QVBoxLayout(verify_tab)
+        verify_layout.addWidget(QLabel(self.tr("Variables (JSON). Standard Zscaler names: ") + ", ".join(PAC_VARIABLES)))
+        self.variables_editor = QPlainTextEdit(self.settings.value("pac/workspace/variables", json.dumps({"GATEWAY": "gateway.<cloud>.net", "SECONDARY_GATEWAY": "secondary-gateway.<cloud>.net"}, indent=2)))
+        self.variables_editor.setFont(pac_font); verify_layout.addWidget(self.variables_editor, 1)
+        self.preview_url_input = QLineEdit("https://example.com")
+        preview_form = QFormLayout(); preview_form.addRow(self.tr("Test URL:"), self.preview_url_input); verify_layout.addLayout(preview_form)
+        verify_buttons = QHBoxLayout()
+        apply_button = QPushButton(self.tr("Apply variables")); apply_button.clicked.connect(self._apply_variables)
+        check_button = QPushButton(self.tr("Run static verification")); check_button.clicked.connect(self._verify)
+        preview_button = QPushButton(self.tr("Preview decision")); preview_button.clicked.connect(self._preview)
+        verify_buttons.addWidget(apply_button); verify_buttons.addWidget(check_button); verify_buttons.addWidget(preview_button); verify_buttons.addStretch(); verify_layout.addLayout(verify_buttons)
+        self.result_output = QPlainTextEdit(); self.result_output.setReadOnly(True); self.result_output.setMinimumHeight(160); verify_layout.addWidget(self.result_output)
+        tabs.addTab(verify_tab, self.tr("Verify"))
+
+        zcc_tab = QWidget(); zcc_layout = QVBoxLayout(zcc_tab)
+        zcc_layout.addWidget(QLabel(self.tr("Paste a forwarding profile returned by ZCC, or first prepare the profile-list request. Existing profile fields are preserved when PAC fields are updated.")))
+        self.zcc_profile_editor = QPlainTextEdit(self.settings.value("pac/workspace/zcc_profile", "{}")); self.zcc_profile_editor.setFont(pac_font); zcc_layout.addWidget(self.zcc_profile_editor, 1)
+        zcc_buttons = QHBoxLayout()
+        zcc_list = QPushButton(self.tr("Prepare ZCC profile list")); zcc_list.clicked.connect(self._prepare_zcc_list)
+        zcc_update = QPushButton(self.tr("Prepare ZCC update")); zcc_update.clicked.connect(self._prepare_zcc_update)
+        zcc_buttons.addWidget(zcc_list); zcc_buttons.addWidget(zcc_update); zcc_buttons.addStretch(); zcc_layout.addLayout(zcc_buttons)
+        tabs.addTab(zcc_tab, self.tr("ZCC / Mobile Portal"))
+
+        actions = QHBoxLayout()
+        zia_validate = QPushButton(self.tr("Prepare ZIA validation")); zia_validate.clicked.connect(self._prepare_zia_validate)
+        zia_upload = QPushButton(self.tr("Prepare ZIA hosted PAC upload")); zia_upload.clicked.connect(self._prepare_zia_upload)
+        zia_list = QPushButton(self.tr("Prepare ZIA PAC list")); zia_list.clicked.connect(self._prepare_zia_list)
+        zia_action = QPushButton(self.tr("Prepare ZIA version action")); zia_action.clicked.connect(self._prepare_zia_action)
+        close = QPushButton(self.tr("Close")); close.clicked.connect(self.accept)
+        actions.addWidget(zia_validate); actions.addWidget(zia_upload); actions.addWidget(zia_list); actions.addWidget(zia_action); actions.addStretch(); actions.addWidget(close)
+        layout.addLayout(actions)
+        self._verify()
+
+    def _content(self) -> str:
+        return self.pac_editor.toPlainText()
+
+    def _values(self) -> dict[str, str] | None:
+        try:
+            values = json.loads(self.variables_editor.toPlainText() or "{}")
+        except ValueError as error:
+            QMessageBox.warning(self, self.tr("PAC variables"), self.tr("Variables must be valid JSON: ") + str(error)); return None
+        if not isinstance(values, dict) or not all(isinstance(key, str) and isinstance(value, (str, int, float)) for key, value in values.items()):
+            QMessageBox.warning(self, self.tr("PAC variables"), self.tr("Variables must be a JSON object with text or numeric values.")); return None
+        return {key: str(value) for key, value in values.items()}
+
+    def _findings(self) -> list:
+        return lint_pac(self._content())
+
+    def _verify(self) -> bool:
+        findings = self._findings()
+        variables = ", ".join(sorted(pac_variables(self._content()))) or self.tr("none")
+        lines = [self.tr("Detected variables: ") + variables, ""]
+        for finding in findings:
+            location = f" [line {finding.line}]" if finding.line else ""
+            lines.append(f"{finding.severity.upper()}{location}: {finding.message}")
+        self.result_output.setPlainText("\n".join(lines))
+        return not any(finding.severity == "error" for finding in findings)
+
+    def _apply_variables(self):
+        values = self._values()
+        if values is None:
+            return
+        content, missing = substitute_pac_variables(self._content(), values)
+        self.pac_editor.setPlainText(content)
+        self._verify()
+        message = self.tr("Variables applied.") if not missing else self.tr("Variables applied; missing values were retained: ") + ", ".join(missing)
+        QMessageBox.information(self, self.tr("PAC variables"), message)
+
+    def _preview(self):
+        result = preview_pac_decision(self._content(), self.preview_url_input.text().strip())
+        self.result_output.appendPlainText("\n" + self.tr("Preview") + f": {result['host']} → {result['decision']}\n{result['reason']}")
+
+    def _save_draft(self):
+        self.settings.setValue("pac/workspace/name", self.name_input.text().strip())
+        self.settings.setValue("pac/workspace/commit", self.commit_input.text().strip())
+        self.settings.setValue("pac/workspace/hosted_url", self.hosted_url_input.text().strip())
+        self.settings.setValue("pac/workspace/zia_pac_id", self.zia_pac_id_input.text().strip())
+        self.settings.setValue("pac/workspace/zia_version", self.zia_version_input.text().strip())
+        self.settings.setValue("pac/workspace/draft", self._content())
+        self.settings.setValue("pac/workspace/variables", self.variables_editor.toPlainText())
+        self.settings.setValue("pac/workspace/zcc_profile", self.zcc_profile_editor.toPlainText())
+        QMessageBox.information(self, self.tr("PAC Workspace"), self.tr("PAC draft saved locally."))
+
+    def _load_pac(self):
+        path, _ = QFileDialog.getOpenFileName(self, self.tr("Load PAC"), "", "PAC files (*.pac);;All files (*)")
+        if path:
+            try:
+                self.pac_editor.setPlainText(Path(path).read_text(encoding="utf-8")); self._verify()
+            except OSError as error:
+                QMessageBox.warning(self, self.tr("Load PAC"), str(error))
+
+    def _save_pac(self):
+        path, _ = QFileDialog.getSaveFileName(self, self.tr("Save PAC"), f"{self.name_input.text().strip() or 'custom-pac'}.pac", "PAC files (*.pac)")
+        if path:
+            try:
+                Path(path).write_text(self._content(), encoding="utf-8")
+            except OSError as error:
+                QMessageBox.warning(self, self.tr("Save PAC"), str(error))
+
+    def _prepare_request(self, method: str, url: str, payload: dict | None, label: str):
+        self.window.body_mode.setCurrentIndex(0)
+        self.window.method_combo.setCurrentText(f"● {method}")
+        self.window.url_input.setText(url)
+        self.window.body_input.setPlainText(json.dumps(payload, indent=2, ensure_ascii=False) if payload is not None else "")
+        self.window._log_output(f"PAC Workspace prepared {label}; review and send it explicitly.", "info")
+        QMessageBox.information(self, self.tr("PAC request prepared"), self.tr("The request was placed in the main editor. Review it and explicitly select Send Request; no deployment action has been performed."))
+
+    def _ensure_valid(self) -> bool:
+        if self._verify():
+            return True
+        QMessageBox.warning(self, self.tr("PAC verification"), self.tr("Resolve PAC errors before preparing an API write.")); return False
+
+    def _prepare_zia_validate(self):
+        if self._ensure_valid():
+            self._prepare_request("POST", self.ZIA_VALIDATE_URL, zia_pac_payload(self.name_input.text(), self._content(), self.commit_input.text()), "ZIA PAC validation")
+
+    def _prepare_zia_upload(self):
+        if self._ensure_valid():
+            self._prepare_request("POST", self.ZIA_PAC_URL, zia_pac_payload(self.name_input.text(), self._content(), self.commit_input.text()), "ZIA hosted PAC upload")
+
+    def _prepare_zia_list(self):
+        self._prepare_request("GET", self.ZIA_PAC_URL, None, "ZIA PAC list")
+
+    def _prepare_zia_action(self):
+        pac_id, version = self.zia_pac_id_input.text().strip(), self.zia_version_input.text().strip()
+        if not pac_id.isdigit() or not version.isdigit():
+            QMessageBox.warning(self, self.tr("ZIA PAC lifecycle"), self.tr("Enter a numeric PAC ID and version before preparing a lifecycle action.")); return
+        action = self.zia_action_combo.currentText()
+        url = f"{self.ZIA_PAC_URL}/{pac_id}/version/{version}/action/{action}"
+        self._prepare_request("PUT", url, None, f"ZIA PAC version {action}")
+
+    def _prepare_zcc_list(self):
+        self._prepare_request("GET", self.ZCC_LIST_URL, None, "ZCC forwarding-profile list")
+
+    def _prepare_zcc_update(self):
+        if not self._ensure_valid():
+            return
+        try:
+            profile = json.loads(self.zcc_profile_editor.toPlainText() or "{}")
+        except ValueError as error:
+            QMessageBox.warning(self, self.tr("ZCC forwarding profile"), self.tr("Profile must be valid JSON: ") + str(error)); return
+        if not isinstance(profile, dict) or not profile.get("id"):
+            QMessageBox.warning(self, self.tr("ZCC forwarding profile"), self.tr("Paste one ZCC forwarding profile object with its id before preparing an update.")); return
+        payload = zcc_pac_patch(profile, self._content(), self.hosted_url_input.text().strip())
+        self._prepare_request("POST", self.ZCC_EDIT_URL, payload, "ZCC forwarding-profile update")
+
+
 class MainWindow(QMainWindow):
     """Main application window."""
 
@@ -8632,6 +8833,10 @@ class MainWindow(QMainWindow):
         operations_action.setShortcut("Ctrl+Shift+O")
         operations_action.triggered.connect(self._show_operations)
         operations_menu.addAction(operations_action)
+        pac_action = QAction(self.tr("PAC &Workspace..."), self)
+        pac_action.setShortcut("Ctrl+Shift+P")
+        pac_action.triggered.connect(self._show_pac_workspace)
+        operations_menu.addAction(pac_action)
         profiles_action = QAction(self.tr("Environment &Profiles..."), self)
         profiles_action.triggered.connect(self._manage_profiles)
         operations_menu.addAction(profiles_action)
@@ -9066,6 +9271,10 @@ class MainWindow(QMainWindow):
     def _show_operations(self, initial_tab=0):
         """Open the relevant Operations Center workspace for the chosen task."""
         OperationsDialog(self, initial_tab=initial_tab).exec()
+
+    def _show_pac_workspace(self):
+        """Open local PAC authoring with explicit, reviewable API preparation."""
+        PacWorkspaceDialog(self).exec()
 
     def _manage_profiles(self):
         """Open the isolated environment manager and apply an explicit selection."""

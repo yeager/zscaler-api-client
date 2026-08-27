@@ -6845,4 +6845,59 @@ Ada,ada@example.com</translation>
             <translation>&lt;p&gt;Vill du automatiskt söka efter uppdateringar när appen startar?&lt;/p&gt;&lt;p&gt;Detta ansluter till GitHub för att söka efter nya versioner.&lt;/p&gt;</translation>
         </message>
     </context>
+    <context>
+        <name>PacWorkspaceDialog</name>
+        <message><source>PAC Workspace</source><translation>PAC-arbetsyta</translation></message>
+        <message><source>Create and verify PAC files locally. API operations are prepared in the request editor and are never sent or deployed automatically.</source><translation>Skapa och verifiera PAC-filer lokalt. API-åtgärder förbereds i begäranderedigeraren och skickas eller driftsätts aldrig automatiskt.</translation></message>
+        <message><source>PAC name:</source><translation>PAC-namn:</translation></message>
+        <message><source>Change note:</source><translation>Ändringsanteckning:</translation></message>
+        <message><source>Hosted PAC URL (optional for ZCC):</source><translation>URL för hostad PAC (valfri för ZCC):</translation></message>
+        <message><source>Existing ZIA PAC ID (for lifecycle actions):</source><translation>Befintligt ZIA PAC-ID (för livscykelåtgärder):</translation></message>
+        <message><source>ZIA PAC version:</source><translation>ZIA PAC-version:</translation></message>
+        <message><source>ZIA version action:</source><translation>ZIA-versionsåtgärd:</translation></message>
+        <message><source>PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.</source><translation>PAC-JavaScript — inkludera FindProxyForURL(url, host). Variabler använder ${NAME}.</translation></message>
+        <message><source>Load PAC…</source><translation>Läs in PAC…</translation></message>
+        <message><source>Save PAC…</source><translation>Spara PAC…</translation></message>
+        <message><source>Save local draft</source><translation>Spara lokalt utkast</translation></message>
+        <message><source>Author</source><translation>Redigera</translation></message>
+        <message><source>Variables (JSON). Standard Zscaler names: </source><translation>Variabler (JSON). Standardnamn för Zscaler: </translation></message>
+        <message><source>Test URL:</source><translation>Test-URL:</translation></message>
+        <message><source>Apply variables</source><translation>Använd variabler</translation></message>
+        <message><source>Run static verification</source><translation>Kör statisk verifiering</translation></message>
+        <message><source>Preview decision</source><translation>Förhandsgranska beslut</translation></message>
+        <message><source>Verify</source><translation>Verifiera</translation></message>
+        <message><source>Paste a forwarding profile returned by ZCC, or first prepare the profile-list request. Existing profile fields are preserved when PAC fields are updated.</source><translation>Klistra in en vidarebefordringsprofil från ZCC eller förbered först begäran om profillistan. Befintliga profilfält bevaras när PAC-fält uppdateras.</translation></message>
+        <message><source>Prepare ZCC profile list</source><translation>Förbered ZCC-profillista</translation></message>
+        <message><source>Prepare ZCC update</source><translation>Förbered ZCC-uppdatering</translation></message>
+        <message><source>ZCC / Mobile Portal</source><translation>ZCC / mobilportal</translation></message>
+        <message><source>Prepare ZIA validation</source><translation>Förbered ZIA-validering</translation></message>
+        <message><source>Prepare ZIA hosted PAC upload</source><translation>Förbered uppladdning av ZIA-hostad PAC</translation></message>
+        <message><source>Prepare ZIA PAC list</source><translation>Förbered ZIA PAC-lista</translation></message>
+        <message><source>Prepare ZIA version action</source><translation>Förbered ZIA-versionsåtgärd</translation></message>
+        <message><source>Close</source><translation>Stäng</translation></message>
+        <message><source>PAC variables</source><translation>PAC-variabler</translation></message>
+        <message><source>Variables must be valid JSON: </source><translation>Variabler måste vara giltig JSON: </translation></message>
+        <message><source>Variables must be a JSON object with text or numeric values.</source><translation>Variabler måste vara ett JSON-objekt med text- eller talvärden.</translation></message>
+        <message><source>none</source><translation>inga</translation></message>
+        <message><source>Detected variables: </source><translation>Identifierade variabler: </translation></message>
+        <message><source>Variables applied.</source><translation>Variabler tillämpade.</translation></message>
+        <message><source>Variables applied; missing values were retained: </source><translation>Variabler tillämpade; saknade värden behölls: </translation></message>
+        <message><source>Preview</source><translation>Förhandsgranskning</translation></message>
+        <message><source>PAC draft saved locally.</source><translation>PAC-utkastet har sparats lokalt.</translation></message>
+        <message><source>Load PAC</source><translation>Läs in PAC</translation></message>
+        <message><source>Save PAC</source><translation>Spara PAC</translation></message>
+        <message><source>PAC request prepared</source><translation>PAC-begäran förberedd</translation></message>
+        <message><source>The request was placed in the main editor. Review it and explicitly select Send Request; no deployment action has been performed.</source><translation>Begäran placerades i huvudredigeraren. Granska den och välj uttryckligen Skicka begäran; ingen driftsättningsåtgärd har utförts.</translation></message>
+        <message><source>PAC verification</source><translation>PAC-verifiering</translation></message>
+        <message><source>Resolve PAC errors before preparing an API write.</source><translation>Åtgärda PAC-fel innan en skrivande API-begäran förbereds.</translation></message>
+        <message><source>ZCC forwarding profile</source><translation>ZCC-vidarebefordringsprofil</translation></message>
+        <message><source>Profile must be valid JSON: </source><translation>Profilen måste vara giltig JSON: </translation></message>
+        <message><source>Paste one ZCC forwarding profile object with its id before preparing an update.</source><translation>Klistra in ett ZCC-vidarebefordringsprofilobjekt med dess id innan du förbereder en uppdatering.</translation></message>
+        <message><source>ZIA PAC lifecycle</source><translation>ZIA PAC-livscykel</translation></message>
+        <message><source>Enter a numeric PAC ID and version before preparing a lifecycle action.</source><translation>Ange ett numeriskt PAC-ID och en version innan du förbereder en livscykelåtgärd.</translation></message>
+    </context>
+    <context>
+        <name>MainWindow</name>
+        <message><source>PAC &amp;Workspace...</source><translation>PAC-&amp;arbetsyta...</translation></message>
+    </context>
 </TS>
