@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.8] - 2026-08-27
+
+### Fixed
+- Stabilized the Operations Center Reports view by preventing recursive responsive-artwork resize updates that could destabilize the dialog layout.
+
+### Changed
+- Added a PAC Workspace shortcut beside Operations Center, a live full-file Guided PAC preview, and per-line explanatory balloons in both PAC views.
+- Made PAC variable and function guidance translatable, including safe guided input defaults and preview updates.
+
 ## [2.8.7] - 2026-08-27
 
 ### Changed
