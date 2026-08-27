@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.5] - 2026-08-27
+
+### Added
+- Guided and advanced PAC Workspace for authoring, static verification, URL decision preview, ZIA hosted PAC workflows, ZCC/Mobile Portal forwarding-profile updates, and ZIA-to-ZCC PAC mappings.
+- PAC reference for supported variables and functions, plus explainable performance and simplification guidance.
+
+### Fixed
+- Explicitly package the PAC service module in Linux, Windows, and macOS PyInstaller builds.
+
 ## [2.8.4] - 2026-08-27
 
 ### Fixed

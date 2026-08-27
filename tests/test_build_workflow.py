@@ -14,7 +14,7 @@ class BuildWorkflowTests(unittest.TestCase):
             workflow.split("  build-windows:", 1)[1].split("  build-macos:", 1)[0],
             workflow.split("  build-macos:", 1)[1].split("  release:", 1)[0],
         )
-        for module in ("feature_services", "evidence_signing", "schedule_services"):
+        for module in ("feature_services", "evidence_signing", "schedule_services", "pac_services"):
             marker = f"--hidden-import {module}"
             data_marker = f'--add-data "{module}.py'
             for section in build_sections:

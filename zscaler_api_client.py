@@ -80,7 +80,7 @@ from pac_services import PAC_TEMPLATE, PAC_VARIABLES, PAC_FUNCTIONS, build_guide
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.8.4"
+__version__ = "2.8.5"
 RESPONSE_EXCHANGE_SCHEMA = "https://github.com/yeager/zscaler-api-client/schemas/response-exchange/v1"
 
 # Locale registry. App translations are loaded from translations/ at startup;
