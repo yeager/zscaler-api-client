@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.3] - 2026-08-27
+
+### Fixed
+- Add a resource-backed fallback for project-local service modules in frozen applications, addressing a macOS PyInstaller packaging regression that persisted in 2.8.2.
+
 ## [2.8.2] - 2026-08-27
 
 ### Fixed

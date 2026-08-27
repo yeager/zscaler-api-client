@@ -16,8 +16,10 @@ class BuildWorkflowTests(unittest.TestCase):
         )
         for module in ("feature_services", "evidence_signing", "schedule_services"):
             marker = f"--hidden-import {module}"
+            data_marker = f'--add-data "{module}.py'
             for section in build_sections:
                 self.assertIn(marker, section)
+                self.assertIn(data_marker, section)
 
 
 if __name__ == "__main__":

@@ -41,6 +41,21 @@ from pathlib import Path
 from typing import Optional, Dict, List, Any
 from xml.sax.saxutils import escape as xml_escape
 
+# PyInstaller's import analysis can miss project-local modules on some macOS
+# runners. The build copies these modules into the bundle as a defensive
+# fallback; make both normal one-folder and macOS app resource locations
+# importable before importing them.
+if getattr(sys, "frozen", False):
+    executable_dir = Path(sys.executable).resolve().parent
+    bundle_paths = (
+        getattr(sys, "_MEIPASS", ""),
+        str(executable_dir),
+        str(executable_dir.parent / "Resources"),
+    )
+    for bundle_path in bundle_paths:
+        if bundle_path and bundle_path not in sys.path:
+            sys.path.insert(0, bundle_path)
+
 # Use PySide6 for Qt bindings
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -64,7 +79,7 @@ from evidence_signing import generate_private_key, public_key, sign_evidence, ve
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.8.2"
+__version__ = "2.8.3"
 RESPONSE_EXCHANGE_SCHEMA = "https://github.com/yeager/zscaler-api-client/schemas/response-exchange/v1"
 
 # Locale registry. App translations are loaded from translations/ at startup;
