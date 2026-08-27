@@ -112,6 +112,20 @@ def resolve_language(language: str | None, system_locale: str | None = None) -> 
     return base if base in LANGUAGE_CODES else "en"
 
 
+def resolve_startup_language(
+    language_preference: str | None, system_locale: str | None = None,
+) -> str:
+    """Resolve the language preference afresh for each application launch.
+
+    A ``system`` preference deliberately reads the OS locale at startup. This
+    keeps a bundled macOS app aligned with a language changed in macOS System
+    Settings between launches, while an explicit application language remains
+    an override.
+    """
+    locale_name = QLocale.system().name() if system_locale is None else system_locale
+    return resolve_language(language_preference, locale_name)
+
+
 def graphql_request_is_read_only(body_text: str) -> bool:
     """Conservatively recognize a GraphQL query carried in the JSON request body."""
     try:
@@ -11542,7 +11556,9 @@ def main():
     settings = QSettings("Zscaler", "APIClient")
     
     # Load translation BEFORE splash screen (so "Loading..." is translated)
-    lang = resolve_language(settings.value("language", "system"))
+    # Resolve System default on every launch, including a bundled macOS app.
+    # An explicit language selected in Settings remains an intentional override.
+    lang = resolve_startup_language(settings.value("language", "system"))
     
     # Handle both frozen (bundled) and script modes
     if getattr(sys, 'frozen', False):

@@ -476,6 +476,11 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual(client.resolve_language("system", "pt_PT"), "pt_BR")
         self.assertEqual(client.resolve_language("system", "unrecognized_LOCALE"), "en")
 
+    def test_system_language_is_checked_at_each_startup(self):
+        self.assertEqual(client.resolve_startup_language("system", "sv_SE"), "sv")
+        self.assertEqual(client.resolve_startup_language("system", "de_DE"), "de")
+        self.assertEqual(client.resolve_startup_language("sv", "de_DE"), "sv")
+
     def test_arabic_and_persian_use_right_to_left_layout(self):
         self.assertEqual(client.language_layout_direction("ar"), client.Qt.LayoutDirection.RightToLeft)
         self.assertEqual(client.language_layout_direction("fa_IR"), client.Qt.LayoutDirection.RightToLeft)

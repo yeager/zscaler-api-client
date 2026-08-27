@@ -68,29 +68,50 @@ jobs:
         run: |
           python scripts/compile_translations.py
           pyinstaller --noconfirm --name "ZS API Client" --add-data "translations;translations" --add-data "data;data" --add-data "assets;assets" --add-data "CHANGELOG.md;." --hidden-import keyring.backends.Windows zscaler_api_client.py
-      
-      - name: Create ZIP
-        run: Compress-Archive -Path "dist\ZS API Client" -DestinationPath dist\ZS-API-Client-windows-x64.zip
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress --yes
+
+      - name: Create Windows installer
+        shell: pwsh
+        run: |
+          $version = if ("${{ github.ref_type }}" -eq "tag") { "${{ github.ref_name }}".TrimStart("v") } else { "0.0.0-dev" }
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$version" "packaging\windows\ZS-API-Client.iss"
 
       - name: Generate Windows SBOM
-        run: python scripts/generate_spdx_sbom.py --artifact dist/ZS-API-Client-windows-x64.zip --output dist/ZS-API-Client-windows-x64.spdx.json
+        run: python scripts/generate_spdx_sbom.py --artifact dist/ZS-API-Client-windows-x64-setup.exe --output dist/ZS-API-Client-windows-x64-setup.spdx.json
 
       - name: Attest Windows package and SBOM
         uses: actions/attest@v4
         with:
-          subject-path: dist/ZS-API-Client-windows-x64.zip
-          sbom-path: dist/ZS-API-Client-windows-x64.spdx.json
+          subject-path: dist/ZS-API-Client-windows-x64-setup.exe
+          sbom-path: dist/ZS-API-Client-windows-x64-setup.spdx.json
       
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
           name: windows-build
           path: |
-            dist/ZS-API-Client-windows-x64.zip
-            dist/ZS-API-Client-windows-x64.spdx.json
+            dist/ZS-API-Client-windows-x64-setup.exe
+            dist/ZS-API-Client-windows-x64-setup.spdx.json
 
   build-macos:
-    runs-on: macos-latest
+    name: macOS (${{ matrix.label }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: Intel
+            runner: macos-15-intel
+            architecture: x86_64
+            python_architecture: x64
+            artifact_suffix: intel-x64
+          - label: Apple Silicon
+            runner: macos-15
+            architecture: arm64
+            python_architecture: arm64
+            artifact_suffix: arm64
     steps:
       - uses: actions/checkout@v6
       
@@ -98,32 +119,35 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
+          architecture: ${{ matrix.python_architecture }}
       
       - name: Install dependencies
         run: pip install -r requirements.txt
       
-      - name: Build
+      - name: Build native macOS application
         run: |
+          test "$(uname -m)" = "${{ matrix.architecture }}"
           python scripts/compile_translations.py
-          pyinstaller --noconfirm --windowed --name "ZS API Client" --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" --add-data "CHANGELOG.md:." --hidden-import keyring.backends.macOS zscaler_api_client.py
+          pyinstaller --noconfirm --windowed --name "ZS API Client" --osx-bundle-identifier com.yeager.zscaler-api-client --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" --add-data "CHANGELOG.md:." --hidden-import keyring.backends.macOS zscaler_api_client.py
+          test "$(lipo -archs 'dist/ZS API Client.app/Contents/MacOS/ZS API Client')" = "${{ matrix.architecture }}"
           cd dist
-          zip -ry ZS-API-Client-macos-x64.zip "ZS API Client.app"
+          zip -ry "ZS-API-Client-macos-${{ matrix.artifact_suffix }}.zip" "ZS API Client.app"
           cd ..
-          python scripts/generate_spdx_sbom.py --artifact dist/ZS-API-Client-macos-x64.zip --output dist/ZS-API-Client-macos-x64.spdx.json
+          python scripts/generate_spdx_sbom.py --artifact "dist/ZS-API-Client-macos-${{ matrix.artifact_suffix }}.zip" --output "dist/ZS-API-Client-macos-${{ matrix.artifact_suffix }}.spdx.json"
 
       - name: Attest macOS package and SBOM
         uses: actions/attest@v4
         with:
-          subject-path: dist/ZS-API-Client-macos-x64.zip
-          sbom-path: dist/ZS-API-Client-macos-x64.spdx.json
+          subject-path: dist/ZS-API-Client-macos-${{ matrix.artifact_suffix }}.zip
+          sbom-path: dist/ZS-API-Client-macos-${{ matrix.artifact_suffix }}.spdx.json
       
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: macos-build
+          name: macos-${{ matrix.artifact_suffix }}-build
           path: |
-            dist/ZS-API-Client-macos-x64.zip
-            dist/ZS-API-Client-macos-x64.spdx.json
+            dist/ZS-API-Client-macos-${{ matrix.artifact_suffix }}.zip
+            dist/ZS-API-Client-macos-${{ matrix.artifact_suffix }}.spdx.json
 
   release:
     needs: [build-linux, build-windows, build-macos]
@@ -150,10 +174,12 @@ jobs:
           files: |
             artifacts/linux-build/ZS-API-Client-linux-x64.tar.gz
             artifacts/linux-build/ZS-API-Client-linux-x64.spdx.json
-            artifacts/windows-build/ZS-API-Client-windows-x64.zip
-            artifacts/windows-build/ZS-API-Client-windows-x64.spdx.json
-            artifacts/macos-build/ZS-API-Client-macos-x64.zip
-            artifacts/macos-build/ZS-API-Client-macos-x64.spdx.json
+            artifacts/windows-build/ZS-API-Client-windows-x64-setup.exe
+            artifacts/windows-build/ZS-API-Client-windows-x64-setup.spdx.json
+            artifacts/macos-intel-x64-build/ZS-API-Client-macos-intel-x64.zip
+            artifacts/macos-intel-x64-build/ZS-API-Client-macos-intel-x64.spdx.json
+            artifacts/macos-arm64-build/ZS-API-Client-macos-arm64.zip
+            artifacts/macos-arm64-build/ZS-API-Client-macos-arm64.spdx.json
             SHA256SUMS
           body: |
             ## ZS API Client ${{ github.ref_name }}
@@ -163,8 +189,9 @@ jobs:
             | Platform | File |
             |----------|------|
             | 🐧 Linux (x64) | `ZS-API-Client-linux-x64.tar.gz` |
-            | 🪟 Windows (x64) | `ZS-API-Client-windows-x64.zip` |
-            | 🍎 macOS (x64) | `ZS-API-Client-macos-x64.zip` |
+            | 🪟 Windows (x64) | `ZS-API-Client-windows-x64-setup.exe` |
+            | 🍎 macOS Intel | `ZS-API-Client-macos-intel-x64.zip` |
+            | 🍎 macOS Apple Silicon | `ZS-API-Client-macos-arm64.zip` |
             
             ### Installation
             
@@ -176,7 +203,9 @@ jobs:
             ```
             
             **Windows:**
-            Extract ZIP and run `ZS API Client\ZS API Client.exe`
+            Run `ZS-API-Client-windows-x64-setup.exe` and follow the installer.
             
             **macOS:**
-            Extract ZIP and move `ZS API Client.app` to Applications
+            Download the archive matching your Mac: `intel-x64` for Intel, or
+            `arm64` for Apple Silicon. Extract it and move `ZS API Client.app`
+            to Applications.

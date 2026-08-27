@@ -99,16 +99,21 @@ ZS API Client is built with security as a top priority:
 - **Cross-Platform** – Native builds for macOS, Windows, and Linux
 - **Verifiable releases** – SHA-256 checksums, SPDX SBOMs, and GitHub build attestations are generated for each release archive
 - **Offline Capable** – Works without internet (except for API calls)
-- **No Installation Required** – Portable app, just download and run
+- **Simple installation** – Windows installer plus native macOS and Linux packages
 - **Open Source** – Full source code available for security audits
 
 ## 📦 Installation
 
 ### Download
 Get the latest release for your platform:
-- **macOS:** `ZS-API-Client-macos-x64.zip`
-- **Windows:** `ZS-API-Client-windows-x64.zip`
+- **macOS (Intel):** `ZS-API-Client-macos-intel-x64.zip`
+- **macOS (Apple Silicon):** `ZS-API-Client-macos-arm64.zip`
+- **Windows:** `ZS-API-Client-windows-x64-setup.exe`
 - **Linux:** `ZS-API-Client-linux-x64.tar.gz`
+
+On Windows, run the installer. On macOS, download the archive matching your
+processor, then move `ZS API Client.app` to Applications. When **System default**
+is selected in Settings, the app checks the current system language at every start.
 
 👉 [Download Latest Release](https://github.com/yeager/zscaler-api-client/releases/latest)
 
