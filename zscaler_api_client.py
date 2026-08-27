@@ -3007,6 +3007,8 @@ class VisualAssetLabel(QLabel):
         super().__init__(parent)
         self._source = QPixmap(str(_resource_path(relative_path)))
         self._crop = crop
+        self._render_size = None
+        self._rendering = False
         self.setFixedHeight(height)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -3015,15 +3017,21 @@ class VisualAssetLabel(QLabel):
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        if self._source.isNull() or self.width() <= 0 or self.height() <= 0:
+        size = self.size()
+        if self._rendering or self._source.isNull() or size.width() <= 0 or size.height() <= 0 or size == self._render_size:
             return
-        mode = Qt.AspectRatioMode.KeepAspectRatioByExpanding if self._crop else Qt.AspectRatioMode.KeepAspectRatio
-        scaled = self._source.scaled(self.size(), mode, Qt.TransformationMode.SmoothTransformation)
-        if self._crop and (scaled.width() > self.width() or scaled.height() > self.height()):
-            left = max(0, (scaled.width() - self.width()) // 2)
-            top = max(0, (scaled.height() - self.height()) // 2)
-            scaled = scaled.copy(left, top, min(self.width(), scaled.width()), min(self.height(), scaled.height()))
-        self.setPixmap(scaled)
+        self._rendering = True
+        try:
+            mode = Qt.AspectRatioMode.KeepAspectRatioByExpanding if self._crop else Qt.AspectRatioMode.KeepAspectRatio
+            scaled = self._source.scaled(size, mode, Qt.TransformationMode.SmoothTransformation)
+            if self._crop and (scaled.width() > size.width() or scaled.height() > size.height()):
+                left = max(0, (scaled.width() - size.width()) // 2)
+                top = max(0, (scaled.height() - size.height()) // 2)
+                scaled = scaled.copy(left, top, min(size.width(), scaled.width()), min(size.height(), scaled.height()))
+            self.setPixmap(scaled)
+            self._render_size = size
+        finally:
+            self._rendering = False
 
 
 def _load_automation_hub_catalog() -> List[Dict[str, Any]]:
@@ -8127,7 +8135,12 @@ class PacWorkspaceDialog(QDialog):
         guided_example = QPushButton(self.tr("Load safe example")); guided_example.clicked.connect(self._load_guided_example)
         guided_buttons.addWidget(guided_build); guided_buttons.addWidget(guided_example); guided_buttons.addStretch(); guided_layout.addLayout(guided_buttons)
         self.guided_status = QLabel(); self.guided_status.setWordWrap(True); guided_layout.addWidget(self.guided_status)
-        guided_layout.addStretch()
+        guided_layout.addWidget(QLabel(self.tr("Generated PAC preview (read-only):")))
+        self.guided_preview = PacCodeEditor(); self.guided_preview.setReadOnly(True); self.guided_preview.setFont(QFont("Monospace")); self.guided_preview.setMinimumHeight(220)
+        guided_layout.addWidget(self.guided_preview, 1)
+        for field in (self.guided_bypass_input, self.guided_gateway_input, self.guided_secondary_input):
+            signal = field.textChanged
+            signal.connect(self._refresh_guided_preview)
         self.tabs.addTab(guided_tab, self.tr("Guided setup"))
         author_tab = QWidget(); author_layout = QVBoxLayout(author_tab)
         author_layout.addWidget(QLabel(self.tr("PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.")))
@@ -8162,7 +8175,7 @@ class PacWorkspaceDialog(QDialog):
         self.help_table = QTableWidget(0, 2); self.help_table.setHorizontalHeaderLabels((self.tr("Variable or function"), self.tr("Purpose / guidance")))
         self.help_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         self.help_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-        reference = [(f"${{{key}}}", value) for key, value in PAC_VARIABLES.items()] + list(PAC_FUNCTIONS.items())
+        reference = self._localized_pac_reference()
         self.help_table.setRowCount(len(reference))
         for row, (name, explanation) in enumerate(reference):
             self.help_table.setItem(row, 0, QTableWidgetItem(name)); self.help_table.setItem(row, 1, QTableWidgetItem(explanation))
@@ -8223,6 +8236,7 @@ class PacWorkspaceDialog(QDialog):
         actions.addWidget(zia_validate); actions.addWidget(zia_upload); actions.addWidget(zia_list); actions.addWidget(zia_action); actions.addStretch(); actions.addWidget(close)
         layout.addLayout(actions)
         self._set_pac_mode()
+        self._refresh_guided_preview()
         self._verify()
         self._search_cenr()
 
@@ -8246,6 +8260,40 @@ class PacWorkspaceDialog(QDialog):
         self.guided_secondary_input.setText("${SECONDARY_GATEWAY}")
         self._build_guided_pac()
 
+    def _localized_pac_reference(self):
+        """Keep PAC terms stable while translating their operator guidance."""
+        variable_help = {
+            "GATEWAY": self.tr("Primary Zscaler gateway."), "SECONDARY_GATEWAY": self.tr("Secondary Zscaler gateway."),
+            "GATEWAY_FX": self.tr("Primary gateway with failover support."), "SECONDARY_GATEWAY_FX": self.tr("Secondary gateway with failover support."),
+            "LOCATION": self.tr("Optional local deployment label."), "CLOUD": self.tr("Zscaler cloud name."),
+            "GATEWAY.<subcloud>.<cloud>.net": self.tr("Primary gateway for an explicit subcloud."),
+            "SECONDARY_GATEWAY.<subcloud>.<cloud>.net": self.tr("Secondary gateway for an explicit subcloud."),
+        }
+        function_help = {
+            "FindProxyForURL(url, host)": self.tr("Required PAC entry point; returns DIRECT, PROXY, or SOCKS."),
+            "isPlainHostName(host)": self.tr("Matches a host without a DNS suffix."),
+            "dnsDomainIs(host, domain)": self.tr("Matches a DNS suffix."),
+            "localHostOrDomainIs(host, hostdom)": self.tr("Matches a local host or fully qualified name."),
+            "shExpMatch(value, pattern)": self.tr("Matches wildcard patterns such as *.example.com."),
+            "dnsDomainLevels(host)": self.tr("Counts DNS labels in a host name."),
+            "weekdayRange(...)": self.tr("Matches a weekday range."), "dateRange(...)": self.tr("Matches a date range."),
+            "timeRange(...)": self.tr("Matches a time range."),
+            "dnsResolve(host)": self.tr("Resolves DNS; avoid in Client Connector PAC files unless required."),
+            "isResolvable(host)": self.tr("Tests DNS resolution; avoid in Client Connector PAC files unless required."),
+            "isInNet(host, pattern, mask)": self.tr("Tests a network; avoid in Client Connector PAC files unless required."),
+        }
+        return [(f"${{{key}}}", variable_help.get(key, value)) for key, value in PAC_VARIABLES.items()] + [(key, function_help.get(key, value)) for key, value in PAC_FUNCTIONS.items()]
+
+    def _refresh_guided_preview(self, *_unused):
+        """Show the entire generated PAC before the user commits it to Author."""
+        try:
+            content = build_guided_pac(self.guided_bypass_input.toPlainText().splitlines(), self.guided_gateway_input.text().strip() or "${GATEWAY}", self.guided_secondary_input.text().strip() or "${SECONDARY_GATEWAY}")
+        except ValueError as error:
+            self.guided_preview.setPlainText(self.tr("Fix the guided input to generate a PAC preview: ") + str(error)); return
+        self.guided_preview.setPlainText(content)
+        references = pac_config_references(content, self.cenr_index)
+        self.guided_preview.set_line_help({number: pac_line_explanation(line, references.get(number, ())) for number, line in enumerate(content.splitlines(), 1)})
+
     def _build_guided_pac(self):
         patterns = self.guided_bypass_input.toPlainText().splitlines()
         try:
@@ -8253,6 +8301,7 @@ class PacWorkspaceDialog(QDialog):
         except ValueError as error:
             QMessageBox.warning(self, self.tr("Guided PAC"), str(error)); return
         self.pac_editor.setPlainText(content)
+        self._refresh_guided_preview()
         self._verify()
         self.guided_status.setText(self.tr("Guided PAC created. Review the verification findings, test a URL, then prepare ZIA validation."))
 
@@ -8512,6 +8561,11 @@ class MainWindow(QMainWindow):
         self.operations_shortcut = QPushButton(self.tr("Operations Center"))
         self.operations_shortcut.clicked.connect(self._show_operations)
         command_layout.addWidget(self.operations_shortcut)
+        self.pac_shortcut = QPushButton(self.tr("PAC Workspace"))
+        self.pac_shortcut.setToolTip(self.tr("Create, verify, map, and prepare PAC files (Ctrl+Shift+P)"))
+        self.pac_shortcut.setShortcut("Ctrl+Shift+P")
+        self.pac_shortcut.clicked.connect(self._show_pac_workspace)
+        command_layout.addWidget(self.pac_shortcut)
         settings_shortcut = QPushButton(self.tr("Settings"))
         settings_shortcut.clicked.connect(self._show_settings)
         command_layout.addWidget(settings_shortcut)
