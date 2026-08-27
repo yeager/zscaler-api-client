@@ -28,3 +28,17 @@ class PacServicesTests(unittest.TestCase):
         self.assertEqual(result["id"], "1")
         self.assertEqual(result["forwardingProfileActions"][0]["customPac"], "PAC")
         self.assertEqual(result["forwardingProfileActions"][0]["systemProxyData"]["enablePAC"], 1)
+
+    def test_guided_pac_creates_bounded_bypass_and_fallback(self):
+        result = pac.build_guided_pac(["*.local", "intranet.example.com"])
+        self.assertIn('shExpMatch(host, "*.local")', result)
+        self.assertIn("${SECONDARY_GATEWAY}", result)
+        self.assertFalse(any(item.severity == "error" for item in pac.lint_pac(result)))
+
+    def test_guided_pac_rejects_javascript_in_host_input(self):
+        with self.assertRaises(ValueError):
+            pac.build_guided_pac(['example.com"); return "DIRECT"; //'])
+
+    def test_improvement_advice_calls_out_dns_helpers(self):
+        suggestions = pac.pac_improvements('function FindProxyForURL(url, host) { return dnsResolve(host); }')
+        self.assertTrue(any("DNS/network" in item or "DNS" in item for item in suggestions))

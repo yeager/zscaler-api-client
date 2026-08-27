@@ -6895,6 +6895,26 @@ Ada,ada@example.com</translation>
         <message><source>Paste one ZCC forwarding profile object with its id before preparing an update.</source><translation>Klistra in ett ZCC-vidarebefordringsprofilobjekt med dess id innan du förbereder en uppdatering.</translation></message>
         <message><source>ZIA PAC lifecycle</source><translation>ZIA PAC-livscykel</translation></message>
         <message><source>Enter a numeric PAC ID and version before preparing a lifecycle action.</source><translation>Ange ett numeriskt PAC-ID och en version innan du förbereder en livscykelåtgärd.</translation></message>
+        <message><source>PAC experience:</source><translation>PAC-läge:</translation></message>
+        <message><source>Guided (recommended)</source><translation>Guidat (rekommenderas)</translation></message>
+        <message><source>Advanced</source><translation>Avancerat</translation></message>
+        <message><source>Start with a safe baseline. Enter only internal destinations that must bypass Zscaler; all other traffic uses the selected gateway and failover.</source><translation>Börja med en säker grund. Ange endast interna mål som måste kringgå Zscaler; all annan trafik använder vald gateway och failover.</translation></message>
+        <message><source>Direct-bypass host patterns (one per line):</source><translation>Värdsmönster för direkt kringgående (ett per rad):</translation></message>
+        <message><source>Primary gateway:</source><translation>Primär gateway:</translation></message>
+        <message><source>Secondary gateway:</source><translation>Sekundär gateway:</translation></message>
+        <message><source>Create guided PAC</source><translation>Skapa guidad PAC</translation></message>
+        <message><source>Load safe example</source><translation>Läs in säkert exempel</translation></message>
+        <message><source>Guided setup</source><translation>Guidad konfiguration</translation></message>
+        <message><source>PAC reference and review help. The verifier never executes JavaScript; validate in ZIA and test a pilot group before deployment.</source><translation>PAC-referens och granskningshjälp. Verifieraren kör aldrig JavaScript; validera i ZIA och testa en pilotgrupp före driftsättning.</translation></message>
+        <message><source>Variable or function</source><translation>Variabel eller funktion</translation></message>
+        <message><source>Purpose / guidance</source><translation>Syfte / vägledning</translation></message>
+        <message><source>Roll out in stages: validate, test representative URLs, stage to a small pilot group, then deploy. Prefer host-pattern checks; avoid DNS helpers in Client Connector PAC files where possible.</source><translation>Rulla ut stegvis: validera, testa representativa URL:er, aktivera för en liten pilotgrupp och driftsätt sedan. Föredra värdsmönster och undvik DNS-hjälpfunktioner i Client Connector-PAC när möjligt.</translation></message>
+        <message><source>Help and reference</source><translation>Hjälp och referens</translation></message>
+        <message><source>Guided PAC</source><translation>Guidad PAC</translation></message>
+        <message><source>Guided mode creates a minimal, reviewable PAC. Switch to Advanced to edit JavaScript, update ZCC profiles, or prepare ZIA lifecycle actions.</source><translation>Guidat läge skapar en minimal PAC som är enkel att granska. Växla till Avancerat för att redigera JavaScript, uppdatera ZCC-profiler eller förbereda ZIA-livscykelåtgärder.</translation></message>
+        <message><source>Advanced mode exposes the PAC editor, ZCC profile patching, and ZIA version lifecycle actions. Every write remains explicit.</source><translation>Avancerat läge visar PAC-redigeraren, ZCC-profilpatchning och ZIA-versionsåtgärder. Varje skrivning är fortsatt uttrycklig.</translation></message>
+        <message><source>Guided PAC created. Review the verification findings, test a URL, then prepare ZIA validation.</source><translation>Guidad PAC skapad. Granska verifieringsresultatet, testa en URL och förbered sedan ZIA-validering.</translation></message>
+        <message><source>Improvement tips:</source><translation>Förbättringstips:</translation></message>
     </context>
     <context>
         <name>MainWindow</name>

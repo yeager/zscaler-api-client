@@ -76,7 +76,7 @@ except (ImportError, OSError):  # Keep source checkouts usable with the minimal 
     pg = None
 from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, exposure_access_analysis, investigation_note, PLAYBOOK_TEMPLATES, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from evidence_signing import generate_private_key, public_key, sign_evidence, verify_evidence
-from pac_services import PAC_TEMPLATE, PAC_VARIABLES, lint_pac, pac_variables, preview_pac_decision, substitute_pac_variables, zia_pac_payload, zcc_pac_patch
+from pac_services import PAC_TEMPLATE, PAC_VARIABLES, PAC_FUNCTIONS, build_guided_pac, lint_pac, pac_improvements, pac_variables, preview_pac_decision, substitute_pac_variables, zia_pac_payload, zcc_pac_patch
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
@@ -8049,6 +8049,17 @@ class PacWorkspaceDialog(QDialog):
         intro.setWordWrap(True)
         layout.addWidget(intro)
 
+        mode_layout = QHBoxLayout()
+        mode_layout.addWidget(QLabel(self.tr("PAC experience:")))
+        self.pac_mode_combo = QComboBox()
+        self.pac_mode_combo.addItem(self.tr("Guided (recommended)"), "guided")
+        self.pac_mode_combo.addItem(self.tr("Advanced"), "advanced")
+        saved_mode = self.settings.value("pac/workspace/mode", self.settings.value("ui/mode", "basic"))
+        self.pac_mode_combo.setCurrentIndex(1 if saved_mode == "advanced" else 0)
+        self.pac_mode_combo.currentIndexChanged.connect(self._set_pac_mode)
+        mode_layout.addWidget(self.pac_mode_combo); mode_layout.addStretch()
+        layout.addLayout(mode_layout)
+
         metadata = QFormLayout()
         self.name_input = QLineEdit(self.settings.value("pac/workspace/name", "custom-pac"))
         self.commit_input = QLineEdit(self.settings.value("pac/workspace/commit", ""))
@@ -8065,10 +8076,31 @@ class PacWorkspaceDialog(QDialog):
         metadata.addRow(self.tr("Existing ZIA PAC ID (for lifecycle actions):"), self.zia_pac_id_input)
         metadata.addRow(self.tr("ZIA PAC version:"), self.zia_version_input)
         metadata.addRow(self.tr("ZIA version action:"), self.zia_action_combo)
+        self.advanced_metadata_widgets = tuple(widget for field in (self.zia_pac_id_input, self.zia_version_input, self.zia_action_combo) for widget in (field, metadata.labelForField(field)) if widget is not None)
         layout.addLayout(metadata)
 
-        tabs = QTabWidget()
-        layout.addWidget(tabs, 1)
+        self.tabs = QTabWidget()
+        layout.addWidget(self.tabs, 1)
+        guided_tab = QWidget(); guided_layout = QVBoxLayout(guided_tab)
+        guided_intro = QLabel(self.tr("Start with a safe baseline. Enter only internal destinations that must bypass Zscaler; all other traffic uses the selected gateway and failover."))
+        guided_intro.setWordWrap(True); guided_layout.addWidget(guided_intro)
+        guided_form = QFormLayout()
+        self.guided_bypass_input = QPlainTextEdit(self.settings.value("pac/workspace/guided_bypass", "*.local\nintranet.example.com"))
+        self.guided_bypass_input.setPlaceholderText("*.local\nintranet.example.com")
+        self.guided_bypass_input.setMaximumHeight(110)
+        self.guided_gateway_input = QLineEdit(self.settings.value("pac/workspace/guided_gateway", "${GATEWAY}"))
+        self.guided_secondary_input = QLineEdit(self.settings.value("pac/workspace/guided_secondary", "${SECONDARY_GATEWAY}"))
+        guided_form.addRow(self.tr("Direct-bypass host patterns (one per line):"), self.guided_bypass_input)
+        guided_form.addRow(self.tr("Primary gateway:"), self.guided_gateway_input)
+        guided_form.addRow(self.tr("Secondary gateway:"), self.guided_secondary_input)
+        guided_layout.addLayout(guided_form)
+        guided_buttons = QHBoxLayout()
+        guided_build = QPushButton(self.tr("Create guided PAC")); guided_build.clicked.connect(self._build_guided_pac)
+        guided_example = QPushButton(self.tr("Load safe example")); guided_example.clicked.connect(self._load_guided_example)
+        guided_buttons.addWidget(guided_build); guided_buttons.addWidget(guided_example); guided_buttons.addStretch(); guided_layout.addLayout(guided_buttons)
+        self.guided_status = QLabel(); self.guided_status.setWordWrap(True); guided_layout.addWidget(self.guided_status)
+        guided_layout.addStretch()
+        self.tabs.addTab(guided_tab, self.tr("Guided setup"))
         author_tab = QWidget(); author_layout = QVBoxLayout(author_tab)
         author_layout.addWidget(QLabel(self.tr("PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.")))
         self.pac_editor = QPlainTextEdit(self.settings.value("pac/workspace/draft", PAC_TEMPLATE))
@@ -8080,7 +8112,7 @@ class PacWorkspaceDialog(QDialog):
         draft_button = QPushButton(self.tr("Save local draft")); draft_button.clicked.connect(self._save_draft)
         author_buttons.addWidget(load_button); author_buttons.addWidget(save_button); author_buttons.addWidget(draft_button); author_buttons.addStretch()
         author_layout.addLayout(author_buttons)
-        tabs.addTab(author_tab, self.tr("Author"))
+        self.tabs.addTab(author_tab, self.tr("Author"))
 
         verify_tab = QWidget(); verify_layout = QVBoxLayout(verify_tab)
         verify_layout.addWidget(QLabel(self.tr("Variables (JSON). Standard Zscaler names: ") + ", ".join(PAC_VARIABLES)))
@@ -8094,7 +8126,21 @@ class PacWorkspaceDialog(QDialog):
         preview_button = QPushButton(self.tr("Preview decision")); preview_button.clicked.connect(self._preview)
         verify_buttons.addWidget(apply_button); verify_buttons.addWidget(check_button); verify_buttons.addWidget(preview_button); verify_buttons.addStretch(); verify_layout.addLayout(verify_buttons)
         self.result_output = QPlainTextEdit(); self.result_output.setReadOnly(True); self.result_output.setMinimumHeight(160); verify_layout.addWidget(self.result_output)
-        tabs.addTab(verify_tab, self.tr("Verify"))
+        self.tabs.addTab(verify_tab, self.tr("Verify"))
+
+        help_tab = QWidget(); help_layout = QVBoxLayout(help_tab)
+        help_layout.addWidget(QLabel(self.tr("PAC reference and review help. The verifier never executes JavaScript; validate in ZIA and test a pilot group before deployment.")))
+        self.help_table = QTableWidget(0, 2); self.help_table.setHorizontalHeaderLabels((self.tr("Variable or function"), self.tr("Purpose / guidance")))
+        self.help_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        self.help_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        reference = [(f"${{{key}}}", value) for key, value in PAC_VARIABLES.items()] + list(PAC_FUNCTIONS.items())
+        self.help_table.setRowCount(len(reference))
+        for row, (name, explanation) in enumerate(reference):
+            self.help_table.setItem(row, 0, QTableWidgetItem(name)); self.help_table.setItem(row, 1, QTableWidgetItem(explanation))
+        help_layout.addWidget(self.help_table, 1)
+        help_tips = QLabel(self.tr("Roll out in stages: validate, test representative URLs, stage to a small pilot group, then deploy. Prefer host-pattern checks; avoid DNS helpers in Client Connector PAC files where possible."))
+        help_tips.setWordWrap(True); help_layout.addWidget(help_tips)
+        self.tabs.addTab(help_tab, self.tr("Help and reference"))
 
         zcc_tab = QWidget(); zcc_layout = QVBoxLayout(zcc_tab)
         zcc_layout.addWidget(QLabel(self.tr("Paste a forwarding profile returned by ZCC, or first prepare the profile-list request. Existing profile fields are preserved when PAC fields are updated.")))
@@ -8103,7 +8149,7 @@ class PacWorkspaceDialog(QDialog):
         zcc_list = QPushButton(self.tr("Prepare ZCC profile list")); zcc_list.clicked.connect(self._prepare_zcc_list)
         zcc_update = QPushButton(self.tr("Prepare ZCC update")); zcc_update.clicked.connect(self._prepare_zcc_update)
         zcc_buttons.addWidget(zcc_list); zcc_buttons.addWidget(zcc_update); zcc_buttons.addStretch(); zcc_layout.addLayout(zcc_buttons)
-        tabs.addTab(zcc_tab, self.tr("ZCC / Mobile Portal"))
+        self.tabs.addTab(zcc_tab, self.tr("ZCC / Mobile Portal"))
 
         actions = QHBoxLayout()
         zia_validate = QPushButton(self.tr("Prepare ZIA validation")); zia_validate.clicked.connect(self._prepare_zia_validate)
@@ -8113,7 +8159,37 @@ class PacWorkspaceDialog(QDialog):
         close = QPushButton(self.tr("Close")); close.clicked.connect(self.accept)
         actions.addWidget(zia_validate); actions.addWidget(zia_upload); actions.addWidget(zia_list); actions.addWidget(zia_action); actions.addStretch(); actions.addWidget(close)
         layout.addLayout(actions)
+        self._set_pac_mode()
         self._verify()
+
+    def _set_pac_mode(self, *_unused):
+        """Keep the beginner flow small while preserving advanced capabilities."""
+        advanced = self.pac_mode_combo.currentData() == "advanced"
+        self.tabs.setTabVisible(1, advanced)  # Author
+        self.tabs.setTabVisible(4, advanced)  # ZCC / Mobile Portal
+        for widget in self.advanced_metadata_widgets:
+            widget.setVisible(advanced)
+        if not advanced and self.tabs.currentIndex() in {1, 4}:
+            self.tabs.setCurrentIndex(0)
+        self.guided_status.setText(
+            self.tr("Guided mode creates a minimal, reviewable PAC. Switch to Advanced to edit JavaScript, update ZCC profiles, or prepare ZIA lifecycle actions.")
+            if not advanced else self.tr("Advanced mode exposes the PAC editor, ZCC profile patching, and ZIA version lifecycle actions. Every write remains explicit."))
+
+    def _load_guided_example(self):
+        self.guided_bypass_input.setPlainText("*.local\nintranet.example.com\n*.internal.example.com")
+        self.guided_gateway_input.setText("${GATEWAY}")
+        self.guided_secondary_input.setText("${SECONDARY_GATEWAY}")
+        self._build_guided_pac()
+
+    def _build_guided_pac(self):
+        patterns = self.guided_bypass_input.toPlainText().splitlines()
+        try:
+            content = build_guided_pac(patterns, self.guided_gateway_input.text().strip(), self.guided_secondary_input.text().strip())
+        except ValueError as error:
+            QMessageBox.warning(self, self.tr("Guided PAC"), str(error)); return
+        self.pac_editor.setPlainText(content)
+        self._verify()
+        self.guided_status.setText(self.tr("Guided PAC created. Review the verification findings, test a URL, then prepare ZIA validation."))
 
     def _content(self) -> str:
         return self.pac_editor.toPlainText()
@@ -8137,6 +8213,8 @@ class PacWorkspaceDialog(QDialog):
         for finding in findings:
             location = f" [line {finding.line}]" if finding.line else ""
             lines.append(f"{finding.severity.upper()}{location}: {finding.message}")
+        lines.extend(["", self.tr("Improvement tips:")])
+        lines.extend(f"• {tip}" for tip in pac_improvements(self._content()))
         self.result_output.setPlainText("\n".join(lines))
         return not any(finding.severity == "error" for finding in findings)
 
@@ -8160,6 +8238,10 @@ class PacWorkspaceDialog(QDialog):
         self.settings.setValue("pac/workspace/hosted_url", self.hosted_url_input.text().strip())
         self.settings.setValue("pac/workspace/zia_pac_id", self.zia_pac_id_input.text().strip())
         self.settings.setValue("pac/workspace/zia_version", self.zia_version_input.text().strip())
+        self.settings.setValue("pac/workspace/mode", self.pac_mode_combo.currentData())
+        self.settings.setValue("pac/workspace/guided_bypass", self.guided_bypass_input.toPlainText())
+        self.settings.setValue("pac/workspace/guided_gateway", self.guided_gateway_input.text().strip())
+        self.settings.setValue("pac/workspace/guided_secondary", self.guided_secondary_input.text().strip())
         self.settings.setValue("pac/workspace/draft", self._content())
         self.settings.setValue("pac/workspace/variables", self.variables_editor.toPlainText())
         self.settings.setValue("pac/workspace/zcc_profile", self.zcc_profile_editor.toPlainText())

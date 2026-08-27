@@ -21,6 +21,20 @@ PAC_VARIABLES = {
     "GATEWAY.<subcloud>.<cloud>.net": "Primary gateway for an explicit subcloud",
     "SECONDARY_GATEWAY.<subcloud>.<cloud>.net": "Secondary gateway for an explicit subcloud",
 }
+PAC_FUNCTIONS = {
+    "FindProxyForURL(url, host)": "Required PAC entry point; return DIRECT, PROXY, or SOCKS.",
+    "isPlainHostName(host)": "Matches a host without a DNS suffix.",
+    "dnsDomainIs(host, domain)": "Matches a DNS suffix.",
+    "localHostOrDomainIs(host, hostdom)": "Matches a local host or fully qualified name.",
+    "shExpMatch(value, pattern)": "Matches shell-style wildcard patterns such as *.example.com.",
+    "dnsDomainLevels(host)": "Counts DNS labels in a host name.",
+    "weekdayRange(...)": "Matches a weekday range.",
+    "dateRange(...)": "Matches a date range.",
+    "timeRange(...)": "Matches a time range.",
+    "dnsResolve(host)": "Resolves DNS; avoid for Client Connector performance unless required.",
+    "isResolvable(host)": "Tests DNS resolution; avoid for Client Connector performance unless required.",
+    "isInNet(host, pattern, mask)": "Tests a network; avoid for Client Connector performance unless required.",
+}
 PAC_TEMPLATE = '''function FindProxyForURL(url, host) {
   // Keep direct/private destinations local; customize the patterns below.
   if (isPlainHostName(host) || shExpMatch(host, "*.local")) return "DIRECT";
@@ -54,6 +68,44 @@ def substitute_pac_variables(text: str, values: dict[str, object]) -> tuple[str,
         return str(value).strip()
 
     return re.sub(r"\$\{([A-Za-z0-9_.-]+)\}", replace, text or ""), sorted(set(missing))
+
+
+def build_guided_pac(bypass_domains: list[str], gateway: str = "${GATEWAY}", secondary_gateway: str = "${SECONDARY_GATEWAY}") -> str:
+    """Create a conservative PAC from simple host-bypass inputs only."""
+    patterns: list[str] = []
+    for domain in bypass_domains:
+        value = str(domain).strip().lower()
+        if not value:
+            continue
+        if not re.fullmatch(r"(?:\*\.)?[a-z0-9][a-z0-9.-]*", value):
+            raise ValueError(f"Invalid host pattern: {domain}")
+        patterns.append(value)
+    bypass = " || ".join(["isPlainHostName(host)"] + [f'shExpMatch(host, "{item}")' for item in dict.fromkeys(patterns)])
+    return "\n".join((
+        "function FindProxyForURL(url, host) {",
+        "  // Guided PAC: direct only for explicitly listed internal destinations.",
+        f'  if ({bypass}) return "DIRECT";',
+        f'  return "PROXY {gateway}:80; PROXY {secondary_gateway}:80; DIRECT";',
+        "}",
+        "",
+    ))
+
+
+def pac_improvements(text: str) -> list[str]:
+    """Return safe, explainable simplification suggestions without changing code."""
+    source = text or ""
+    suggestions: list[str] = []
+    if re.search(r"\b(?:dnsResolve|isResolvable|isInNet)\s*\(", source):
+        suggestions.append("Replace DNS/network helper calls with host-pattern rules where possible; they can slow PAC evaluation.")
+    if source.count("return ") > 3:
+        suggestions.append("Group related host conditions before a return statement to make rule order easier to review.")
+    if "${GATEWAY" in source and "${SECONDARY_GATEWAY" not in source:
+        suggestions.append("Add a secondary gateway followed by DIRECT so clients retain a bounded failover path.")
+    if not re.search(r"\bisPlainHostName\s*\(", source):
+        suggestions.append("Consider handling plain internal host names explicitly before proxying external traffic.")
+    if not suggestions:
+        suggestions.append("PAC structure is already compact. Test representative internal, SaaS, and internet URLs before rollout.")
+    return suggestions
 
 
 def lint_pac(text: str, *, max_bytes: int = 256 * 1024) -> list[PacFinding]:

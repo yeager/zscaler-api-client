@@ -72,7 +72,7 @@ ZS API Client is built with security as a top priority:
 
 ### Productivity
 - **Batch Operations** – Import CSV files for bulk create/delete/update operations
-- **PAC Workspace** – Author hosted PAC files locally with reusable `${VARIABLE}` values, static syntax and performance checks, explainable URL-decision previews, and load/save drafts. Prepare (never auto-send) ZIA validation, custom-PAC upload, listing, and version lifecycle actions, or safely patch a retrieved ZCC forwarding profile for Client Connector/Mobile Portal PAC settings.
+- **PAC Workspace** – Start in a guided mode that generates a minimal PAC from safe direct-bypass patterns and gateway failover, or switch to advanced JavaScript/profile controls. It includes reusable `${VARIABLE}` values, complete PAC-function reference, static syntax/performance checks, explainable URL-decision previews, and improvement tips. Prepare (never auto-send) ZIA validation, custom-PAC upload, listing, and version lifecycle actions, or safely patch a retrieved ZCC forwarding profile for Client Connector/Mobile Portal PAC settings.
 - **Operations Center** – Local policy diffs and simulations, CSV validation, isolated environment profiles, dashboards, report schedules, and a hash-linked audit trail
 - **Digital Policy Twin** – Visualize first-match rule order, explain local decisions, detect overlapping actions, conflicts, redundant or fully shadowed rules, estimate change blast radius, and compare tenant-scoped time-travel snapshots without applying configuration
 - **Accelerated SOC telemetry** – Render longer live latency series with pyqtgraph downsampling and clipping, with a Qt-native fallback for minimal or offline source installations
