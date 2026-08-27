@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.4] - 2026-08-27
+
+### Fixed
+- Bundle the complete `cryptography` package and native dependencies for frozen applications so the resource-backed evidence-signing module can load on macOS.
+
 ## [2.8.3] - 2026-08-27
 
 ### Fixed

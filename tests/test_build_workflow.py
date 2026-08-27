@@ -20,6 +20,8 @@ class BuildWorkflowTests(unittest.TestCase):
             for section in build_sections:
                 self.assertIn(marker, section)
                 self.assertIn(data_marker, section)
+        for section in build_sections:
+            self.assertIn("--collect-all cryptography", section)
 
 
 if __name__ == "__main__":
