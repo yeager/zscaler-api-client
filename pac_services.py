@@ -8,6 +8,7 @@ and an explainable rule preview before any Zscaler write is prepared.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 import re
 
 
@@ -152,6 +153,76 @@ def preview_pac_decision(text: str, url: str, host: str | None = None) -> dict[s
             return {"host": resolved_host, "decision": match.group(3), "reason": f"Matched host pattern: {', '.join(patterns)}"}
     returns = re.findall(r"\breturn\s+[\"']([^\"']+)[\"']", source)
     return {"host": resolved_host, "decision": returns[-1] if returns else "UNRESOLVED", "reason": "Default return preview; JavaScript execution is intentionally disabled."}
+
+
+def _records(value: object) -> list[dict]:
+    """Extract documented API lists without treating arbitrary JSON as records."""
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, dict)]
+    if isinstance(value, dict):
+        for key in ("data", "records", "list", "items", "results"):
+            if isinstance(value.get(key), list):
+                return [item for item in value[key] if isinstance(item, dict)]
+    return []
+
+
+def _normal_url(value: object) -> str:
+    return str(value or "").strip().rstrip("/").lower()
+
+
+def pac_profile_mappings(zia_pacs: object, zcc_profiles: object) -> list[dict[str, str]]:
+    """Correlate ZIA hosted PAC metadata with ZCC forwarding-profile actions.
+
+    The result deliberately reports unresolved references rather than guessing
+    from a PAC name. PAC code itself is never included in the mapping output.
+    """
+    pacs = _records(zia_pacs)
+    profiles = _records(zcc_profiles)
+    by_url: dict[str, dict] = {}
+    by_content: dict[str, dict] = {}
+    for pac in pacs:
+        for field in ("pacUrl", "pacSubURL", "pacUrlObfuscated"):
+            if _normal_url(pac.get(field)):
+                by_url[_normal_url(pac[field])] = pac
+        content = pac.get("pacContent")
+        if isinstance(content, str) and content:
+            by_content[hashlib.sha256(content.encode("utf-8")).hexdigest()] = pac
+
+    mappings: list[dict[str, str]] = []
+    for profile in profiles:
+        actions = profile.get("forwardingProfileActions")
+        if not isinstance(actions, list):
+            actions = []
+        for position, action in enumerate(actions, 1):
+            if not isinstance(action, dict):
+                continue
+            proxy = action.get("systemProxyData") if isinstance(action.get("systemProxyData"), dict) else {}
+            url = str(proxy.get("pacURL") or proxy.get("pacDataPath") or "").strip()
+            inline = action.get("customPac") if isinstance(action.get("customPac"), str) else ""
+            pac = by_url.get(_normal_url(url)) if url else None
+            relation, reference = "", ""
+            if pac:
+                relation = "Hosted URL matched"
+                reference = str(pac.get("name") or pac.get("id") or "Unnamed ZIA PAC")
+            elif inline:
+                inline_hash = hashlib.sha256(inline.encode("utf-8")).hexdigest()
+                pac = by_content.get(inline_hash)
+                relation = "Inline PAC matches ZIA content" if pac else "Inline custom PAC"
+                reference = str(pac.get("name") or pac.get("id") or "") if pac else f"SHA-256 {inline_hash[:12]}…"
+            elif url:
+                relation, reference = "Hosted URL not found in supplied ZIA PAC list", url
+            else:
+                relation, reference = "No PAC configured", ""
+            mappings.append({
+                "profile_id": str(profile.get("id") or ""),
+                "profile": str(profile.get("name") or profile.get("hostname") or "Unnamed profile"),
+                "action": str(action.get("networkType") or action.get("actionType") or f"Action {position}"),
+                "pac_type": "Hosted" if url else "Inline" if inline else "None",
+                "reference": reference,
+                "status": str(pac.get("pacVersionStatus") or pac.get("pacVerificationStatus") or "") if pac else "",
+                "relation": relation,
+            })
+    return mappings
 
 
 def zia_pac_payload(name: str, content: str, commit_message: str = "") -> dict[str, str]:

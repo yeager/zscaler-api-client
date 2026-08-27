@@ -42,3 +42,23 @@ class PacServicesTests(unittest.TestCase):
     def test_improvement_advice_calls_out_dns_helpers(self):
         suggestions = pac.pac_improvements('function FindProxyForURL(url, host) { return dnsResolve(host); }')
         self.assertTrue(any("DNS/network" in item or "DNS" in item for item in suggestions))
+
+    def test_profile_mapping_matches_hosted_url_and_reports_unresolved(self):
+        pacs = [{"id": 7, "name": "Corporate", "pacUrl": "https://pac.example.com/corp.pac", "pacVersionStatus": "DEPLOYED"}]
+        profiles = [
+            {"id": "a", "name": "Remote", "forwardingProfileActions": [{"networkType": "ANY", "systemProxyData": {"pacURL": "https://pac.example.com/corp.pac"}}]},
+            {"id": "b", "name": "Branch", "forwardingProfileActions": [{"networkType": "ANY", "systemProxyData": {"pacURL": "https://missing.example.com/pac"}}]},
+        ]
+        mappings = pac.pac_profile_mappings(pacs, profiles)
+        self.assertEqual(mappings[0]["reference"], "Corporate")
+        self.assertEqual(mappings[0]["relation"], "Hosted URL matched")
+        self.assertIn("not found", mappings[1]["relation"])
+
+    def test_profile_mapping_uses_inline_content_fingerprint(self):
+        content = 'function FindProxyForURL(url, host) { return "DIRECT"; }'
+        mappings = pac.pac_profile_mappings(
+            [{"id": 7, "name": "Corporate", "pacContent": content}],
+            [{"id": "a", "forwardingProfileActions": [{"customPac": content}]}],
+        )
+        self.assertEqual(mappings[0]["relation"], "Inline PAC matches ZIA content")
+        self.assertEqual(mappings[0]["reference"], "Corporate")

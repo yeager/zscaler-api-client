@@ -76,7 +76,7 @@ except (ImportError, OSError):  # Keep source checkouts usable with the minimal 
     pg = None
 from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, exposure_access_analysis, investigation_note, PLAYBOOK_TEMPLATES, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from evidence_signing import generate_private_key, public_key, sign_evidence, verify_evidence
-from pac_services import PAC_TEMPLATE, PAC_VARIABLES, PAC_FUNCTIONS, build_guided_pac, lint_pac, pac_improvements, pac_variables, preview_pac_decision, substitute_pac_variables, zia_pac_payload, zcc_pac_patch
+from pac_services import PAC_TEMPLATE, PAC_VARIABLES, PAC_FUNCTIONS, build_guided_pac, lint_pac, pac_improvements, pac_profile_mappings, pac_variables, preview_pac_decision, substitute_pac_variables, zia_pac_payload, zcc_pac_patch
 from schedule_services import register_background_schedule, unregister_background_schedule
 QT_BINDINGS = "PySide6"
 
@@ -8142,6 +8142,26 @@ class PacWorkspaceDialog(QDialog):
         help_tips.setWordWrap(True); help_layout.addWidget(help_tips)
         self.tabs.addTab(help_tab, self.tr("Help and reference"))
 
+        mapping_tab = QWidget(); mapping_layout = QVBoxLayout(mapping_tab)
+        mapping_intro = QLabel(self.tr("Map supplied ZIA PAC metadata to ZCC forwarding-profile actions. Matches use hosted PAC URLs or an inline PAC content fingerprint; names alone are never treated as a match."))
+        mapping_intro.setWordWrap(True); mapping_layout.addWidget(mapping_intro)
+        mapping_inputs = QSplitter(Qt.Orientation.Horizontal)
+        zia_mapping_group = QGroupBox(self.tr("ZIA PAC list JSON")); zia_mapping_layout = QVBoxLayout(zia_mapping_group)
+        self.mapping_zia_input = QPlainTextEdit(); self.mapping_zia_input.setFont(pac_font); self.mapping_zia_input.setPlaceholderText('[{"id": 1, "name": "Corporate PAC", "pacUrl": "https://…"}]'); zia_mapping_layout.addWidget(self.mapping_zia_input)
+        zcc_mapping_group = QGroupBox(self.tr("ZCC forwarding-profile list JSON")); zcc_mapping_layout = QVBoxLayout(zcc_mapping_group)
+        self.mapping_zcc_input = QPlainTextEdit(); self.mapping_zcc_input.setFont(pac_font); self.mapping_zcc_input.setPlaceholderText('[{"id": "1", "name": "Remote users", "forwardingProfileActions": [...]}]'); zcc_mapping_layout.addWidget(self.mapping_zcc_input)
+        mapping_inputs.addWidget(zia_mapping_group); mapping_inputs.addWidget(zcc_mapping_group); mapping_inputs.setSizes([500, 500]); mapping_layout.addWidget(mapping_inputs, 1)
+        mapping_buttons = QHBoxLayout()
+        map_button = QPushButton(self.tr("Build PAC mappings")); map_button.clicked.connect(self._build_pac_mappings)
+        map_zia_request = QPushButton(self.tr("Prepare ZIA PAC list")); map_zia_request.clicked.connect(self._prepare_zia_list)
+        map_zcc_request = QPushButton(self.tr("Prepare ZCC profile list")); map_zcc_request.clicked.connect(self._prepare_zcc_list)
+        mapping_buttons.addWidget(map_button); mapping_buttons.addWidget(map_zia_request); mapping_buttons.addWidget(map_zcc_request); mapping_buttons.addStretch(); mapping_layout.addLayout(mapping_buttons)
+        self.mapping_summary = QLabel(); self.mapping_summary.setWordWrap(True); mapping_layout.addWidget(self.mapping_summary)
+        self.mapping_table = QTableWidget(0, 7); self.mapping_table.setHorizontalHeaderLabels((self.tr("ZCC profile"), self.tr("Action / network"), self.tr("PAC type"), self.tr("PAC reference"), self.tr("ZIA status"), self.tr("Mapping result"), self.tr("Profile ID")))
+        self.mapping_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents); self.mapping_table.horizontalHeader().setStretchLastSection(True)
+        mapping_layout.addWidget(self.mapping_table, 1)
+        self.tabs.addTab(mapping_tab, self.tr("PAC mappings"))
+
         zcc_tab = QWidget(); zcc_layout = QVBoxLayout(zcc_tab)
         zcc_layout.addWidget(QLabel(self.tr("Paste a forwarding profile returned by ZCC, or first prepare the profile-list request. Existing profile fields are preserved when PAC fields are updated.")))
         self.zcc_profile_editor = QPlainTextEdit(self.settings.value("pac/workspace/zcc_profile", "{}")); self.zcc_profile_editor.setFont(pac_font); zcc_layout.addWidget(self.zcc_profile_editor, 1)
@@ -8166,10 +8186,11 @@ class PacWorkspaceDialog(QDialog):
         """Keep the beginner flow small while preserving advanced capabilities."""
         advanced = self.pac_mode_combo.currentData() == "advanced"
         self.tabs.setTabVisible(1, advanced)  # Author
-        self.tabs.setTabVisible(4, advanced)  # ZCC / Mobile Portal
+        self.tabs.setTabVisible(4, advanced)  # PAC mappings
+        self.tabs.setTabVisible(5, advanced)  # ZCC / Mobile Portal
         for widget in self.advanced_metadata_widgets:
             widget.setVisible(advanced)
-        if not advanced and self.tabs.currentIndex() in {1, 4}:
+        if not advanced and self.tabs.currentIndex() in {1, 4, 5}:
             self.tabs.setCurrentIndex(0)
         self.guided_status.setText(
             self.tr("Guided mode creates a minimal, reviewable PAC. Switch to Advanced to edit JavaScript, update ZCC profiles, or prepare ZIA lifecycle actions.")
@@ -8190,6 +8211,23 @@ class PacWorkspaceDialog(QDialog):
         self.pac_editor.setPlainText(content)
         self._verify()
         self.guided_status.setText(self.tr("Guided PAC created. Review the verification findings, test a URL, then prepare ZIA validation."))
+
+    def _build_pac_mappings(self):
+        """Render a read-only correlation table from explicitly supplied API JSON."""
+        try:
+            zia_pacs = json.loads(self.mapping_zia_input.toPlainText() or "[]")
+            zcc_profiles = json.loads(self.mapping_zcc_input.toPlainText() or "[]")
+        except ValueError as error:
+            QMessageBox.warning(self, self.tr("PAC mappings"), self.tr("Both mapping inputs must be valid JSON: ") + str(error)); return
+        mappings = pac_profile_mappings(zia_pacs, zcc_profiles)
+        self.mapping_table.setRowCount(len(mappings))
+        columns = ("profile", "action", "pac_type", "reference", "status", "relation", "profile_id")
+        for row, mapping in enumerate(mappings):
+            for column, key in enumerate(columns):
+                self.mapping_table.setItem(row, column, QTableWidgetItem(mapping[key]))
+        matched = sum(1 for item in mappings if "matched" in item["relation"].lower())
+        unresolved = sum(1 for item in mappings if "not found" in item["relation"].lower())
+        self.mapping_summary.setText(self.tr("Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.").format(total=len(mappings), matched=matched, unresolved=unresolved))
 
     def _content(self) -> str:
         return self.pac_editor.toPlainText()

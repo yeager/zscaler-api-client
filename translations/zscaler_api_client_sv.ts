@@ -6915,6 +6915,20 @@ Ada,ada@example.com</translation>
         <message><source>Advanced mode exposes the PAC editor, ZCC profile patching, and ZIA version lifecycle actions. Every write remains explicit.</source><translation>Avancerat läge visar PAC-redigeraren, ZCC-profilpatchning och ZIA-versionsåtgärder. Varje skrivning är fortsatt uttrycklig.</translation></message>
         <message><source>Guided PAC created. Review the verification findings, test a URL, then prepare ZIA validation.</source><translation>Guidad PAC skapad. Granska verifieringsresultatet, testa en URL och förbered sedan ZIA-validering.</translation></message>
         <message><source>Improvement tips:</source><translation>Förbättringstips:</translation></message>
+        <message><source>Map supplied ZIA PAC metadata to ZCC forwarding-profile actions. Matches use hosted PAC URLs or an inline PAC content fingerprint; names alone are never treated as a match.</source><translation>Mappa tillhandahållen ZIA PAC-metadata till ZCC-vidarebefordringsprofilåtgärder. Matchningar använder URL för hostad PAC eller ett fingeravtryck av inline-PAC-innehåll; enbart namn behandlas aldrig som en matchning.</translation></message>
+        <message><source>ZIA PAC list JSON</source><translation>JSON för ZIA PAC-lista</translation></message>
+        <message><source>ZCC forwarding-profile list JSON</source><translation>JSON för ZCC-vidarebefordringsprofiler</translation></message>
+        <message><source>Build PAC mappings</source><translation>Skapa PAC-mappningar</translation></message>
+        <message><source>PAC mappings</source><translation>PAC-mappningar</translation></message>
+        <message><source>ZCC profile</source><translation>ZCC-profil</translation></message>
+        <message><source>Action / network</source><translation>Åtgärd / nätverk</translation></message>
+        <message><source>PAC type</source><translation>PAC-typ</translation></message>
+        <message><source>PAC reference</source><translation>PAC-referens</translation></message>
+        <message><source>ZIA status</source><translation>ZIA-status</translation></message>
+        <message><source>Mapping result</source><translation>Mappningsresultat</translation></message>
+        <message><source>Profile ID</source><translation>Profil-ID</translation></message>
+        <message><source>Both mapping inputs must be valid JSON: </source><translation>Båda mappningsindata måste vara giltig JSON: </translation></message>
+        <message><source>Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.</source><translation>Mappade åtgärder: {total}; bekräftade mappningar: {matched}; olösta URL:er för hostad PAC: {unresolved}.</translation></message>
     </context>
     <context>
         <name>MainWindow</name>
