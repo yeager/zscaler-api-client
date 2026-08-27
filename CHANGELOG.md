@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.6] - 2026-08-27
+
 ### Added
 - Local Zscaler Configuration Center index covering 935 Cloud Enforcement Node endpoint records and 171 SVPN IP records from the official zscaler.net catalog.
 - PAC line-help balloons and a data-center explorer that explain PAC expressions and correlate explicit Zscaler hostnames or IPs to indexed locations.
