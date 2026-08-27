@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.1] - 2026-08-27
+
+### Added
+- Separate native macOS application packages for Intel Macs and Apple Silicon Macs.
+- Windows x64 per-user installer built with Inno Setup.
+
+### Changed
+- System-default language is resolved at every application launch, including bundled macOS apps; an explicit language selection remains an override.
+- Release assets, installation instructions, SPDX SBOMs, and GitHub attestations now cover both macOS architectures and the Windows installer.
+
 ## [2.8.0] - 2026-08-26
 
 ### Added
