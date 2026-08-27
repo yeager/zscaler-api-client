@@ -8,6 +8,8 @@
 
 ![Screenshot](screenshots/main.png)
 
+Current release: [v2.8.6](https://github.com/yeager/zscaler-api-client/releases/tag/v2.8.6).
+
 ## 🛡️ Security First
 
 ZS API Client is built with security as a top priority:
@@ -136,8 +138,20 @@ python zscaler_api_client.py
 
 ### Build standalone app
 ```bash
-pyinstaller --noconfirm --name "ZS API Client" --add-data "translations:translations" --add-data "data:data" --add-data "CHANGELOG.md:." zscaler_api_client.py
+python3 -m PyInstaller --noconfirm --name "ZS API Client" \
+  --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" \
+  --add-data "CHANGELOG.md:." --add-data "feature_services.py:." \
+  --add-data "evidence_signing.py:." --add-data "schedule_services.py:." \
+  --add-data "pac_services.py:." --add-data "zscaler_config_services.py:." \
+  --collect-all cryptography --hidden-import feature_services \
+  --hidden-import evidence_signing --hidden-import schedule_services \
+  --hidden-import pac_services --hidden-import zscaler_config_services \
+  zscaler_api_client.py
 ```
+
+This example targets Linux and other POSIX source environments. The release
+workflow contains the platform-specific Keychain backend and packaging options
+for Windows and macOS.
 
 ## 🚀 Quick Start
 
@@ -162,9 +176,38 @@ Select an API → Choose an **Authenticate** endpoint → Click **Send**
 Browse endpoints in the tree, modify parameters, and send requests!
 
 ### PAC files
-Open **Operations → PAC Workspace** to create or update a PAC workflow. The verifier is deliberately static: it checks the required `FindProxyForURL(url, host)` entry point, quoted return values, braces, default ZIA size limit, risky DNS helpers, gateway fallback, and unresolved variables without executing JavaScript. A preview explains common `shExpMatch(host, pattern)` results.
+Open **Operations → PAC Workspace** to create or update a PAC workflow. Guided
+mode produces a minimal, reviewable PAC from direct-bypass patterns and gateway
+failover; Advanced mode exposes the full JavaScript editor, reusable variables,
+PAC-function reference, and profile controls. Hover a line in the editor for an
+explanatory balloon. The verifier is deliberately static: it checks the required
+`FindProxyForURL(url, host)` entry point, quoted return values, braces, default
+ZIA size limit, risky DNS helpers, gateway fallback, and unresolved variables
+without executing JavaScript. A preview explains common `shExpMatch(host, pattern)`
+results.
 
-For ZIA, use **Prepare ZIA validation** before upload. Uploading creates a PAC file but does not deploy it; lifecycle actions such as `STAGE`, `DEPLOY`, and `LKG` must be prepared and explicitly sent separately. For ZCC, first prepare the forwarding-profile list, paste one returned profile JSON object, then prepare its update. This preserves unrelated profile fields and avoids guessing tenant configuration. See Zscaler's [PAC overview](https://help.zscaler.com/zia/understanding-pac-file), [PAC authoring guidance](https://help.zscaler.com/zia/writing-pac-file), and [Client Connector PAC practices](https://help.zscaler.com/zscaler-client-connector/best-practices-using-pac-files-zscaler-client-connector).
+For ZIA, use **Prepare ZIA validation** before upload. Uploading creates a PAC
+file but does not deploy it; lifecycle actions such as `STAGE`, `DEPLOY`, and
+`LKG` must be prepared and explicitly sent separately. For ZCC, first prepare
+the forwarding-profile list, paste one returned profile JSON object, then prepare
+its update. This preserves unrelated profile fields and avoids guessing tenant
+configuration. PAC mappings correlate ZIA metadata with ZCC forwarding profiles
+by hosted URL or inline PAC fingerprint, with clear confirmed, inline,
+unconfigured, and unresolved states.
+
+The workspace also includes a bundled, searchable Zscaler Cloud Enforcement Node
+index. It identifies explicit Zscaler endpoints in PAC content and shows relevant
+region and data-center context locally; PAC text is not sent externally. Refresh
+the source catalog from the public Configuration Center with:
+
+```bash
+python3 scripts/update_zscaler_config_index.py
+```
+
+See Zscaler's [PAC overview](https://help.zscaler.com/zia/understanding-pac-file),
+[PAC authoring guidance](https://help.zscaler.com/zia/writing-pac-file),
+[Client Connector PAC practices](https://help.zscaler.com/zscaler-client-connector/best-practices-using-pac-files-zscaler-client-connector),
+and [Configuration Center](https://config.zscaler.com/zscaler.net/cenr).
 
 ## 📋 Supported APIs
 
@@ -239,6 +282,7 @@ External threat discovery.
 | `Ctrl+,` | Settings |
 | `Ctrl+B` | Batch Operations |
 | `Ctrl+H` | Request History |
+| `Ctrl+Shift+P` | PAC Workspace |
 | `Ctrl+Shift+C` | Copy as cURL |
 | `Ctrl+Shift+R` | Copy Response |
 | `Ctrl+Q` | Quit |
@@ -282,6 +326,7 @@ python3 scripts/compile_translations.py
 | ZTW | [help.zscaler.com/cloud-branch-connector/api-reference](https://help.zscaler.com/cloud-branch-connector/api-reference) |
 | ZWA | [help.zscaler.com/workflow-automation/api-reference](https://help.zscaler.com/workflow-automation/api-reference) |
 | EASM | [help.zscaler.com/easm/api-reference](https://help.zscaler.com/easm/api-reference) |
+| Zscaler Configuration Center | [config.zscaler.com/zscaler.net/cenr](https://config.zscaler.com/zscaler.net/cenr) |
 
 **Official SDK:** [zscaler-sdk-python](https://github.com/zscaler/zscaler-sdk-python)
 
