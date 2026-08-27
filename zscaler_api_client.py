@@ -8068,6 +8068,31 @@ class PacCodeEditor(QPlainTextEdit):
         super().mouseMoveEvent(event)
 
 
+class PacSyntaxHighlighter(QSyntaxHighlighter):
+    """Use restrained colors to make PAC routing decisions reviewable."""
+    def __init__(self, document):
+        super().__init__(document)
+        self.rules = []
+        for expression, color, weight in (
+            (r"//.*$", "#94a3b8", False),
+            (r"\b(?:function|if|else|return)\b", "#7dd3fc", True),
+            (r'"DIRECT"', "#fbbf24", True),
+            (r'"(?:PROXY|SOCKS)[^"]*"', "#34d399", True),
+            (r"\$\{[A-Za-z0-9_.-]+\}", "#c4b5fd", True),
+            (r"\b(?:\d{1,3}\.){3}\d{1,3}(?:/\d{1,2})?\b", "#fb923c", True),
+            (r"\b[a-z0-9][a-z0-9.-]*\.zscaler\.net\b", "#22d3ee", True),
+            (r"\b(?:dnsResolve|isResolvable|isInNet)\b", "#fb7185", True),
+        ):
+            style = QTextCharFormat(); style.setForeground(QColor(color))
+            if weight: style.setFontWeight(QFont.Weight.Bold)
+            self.rules.append((re.compile(expression, re.IGNORECASE), style))
+
+    def highlightBlock(self, text):
+        for expression, style in self.rules:
+            for match in expression.finditer(text):
+                self.setFormat(match.start(), match.end() - match.start(), style)
+
+
 class PacWorkspaceDialog(QDialog):
     """Create, validate and safely prepare ZIA/ZCC PAC updates."""
 
@@ -8144,6 +8169,7 @@ class PacWorkspaceDialog(QDialog):
         self.guided_status = QLabel(); self.guided_status.setWordWrap(True); guided_layout.addWidget(self.guided_status)
         guided_layout.addWidget(QLabel(self.tr("Generated PAC preview (read-only):")))
         self.guided_preview = PacCodeEditor(); self.guided_preview.setReadOnly(True); self.guided_preview.setFont(QFont("Monospace")); self.guided_preview.setMinimumHeight(220)
+        self.guided_highlighter = PacSyntaxHighlighter(self.guided_preview.document())
         guided_layout.addWidget(self.guided_preview, 1)
         for field in (self.guided_bypass_input, self.guided_gateway_input, self.guided_secondary_input):
             signal = field.textChanged
@@ -8153,7 +8179,10 @@ class PacWorkspaceDialog(QDialog):
         author_layout.addWidget(QLabel(self.tr("PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.")))
         self.pac_editor = PacCodeEditor(self.settings.value("pac/workspace/draft", PAC_TEMPLATE))
         pac_font = QFont("Monospace"); pac_font.setStyleHint(QFont.StyleHint.Monospace); self.pac_editor.setFont(pac_font)
+        self.pac_highlighter = PacSyntaxHighlighter(self.pac_editor.document())
         self.pac_editor.textChanged.connect(self._refresh_pac_line_help)
+        legend = QLabel(self.tr("Color guide: blue = PAC structure, amber = DIRECT bypass, green = proxy route, purple = variable, cyan = Zscaler endpoint, orange = IP/network, red = performance-sensitive DNS helper."))
+        legend.setObjectName("mutedLabel"); legend.setWordWrap(True); author_layout.addWidget(legend)
         author_layout.addWidget(self.pac_editor, 1)
         author_buttons = QHBoxLayout()
         load_button = QPushButton(self.tr("Load PAC…")); load_button.clicked.connect(self._load_pac)
