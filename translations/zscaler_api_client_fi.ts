@@ -469,206 +469,206 @@
     <context>
         <name>MainWindow</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="8588" />
+            <location filename="../zscaler_api_client.py" line="8617" />
             <source>API Explorer</source>
             <translation>API Explorer</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8591" />
-            <location filename="../zscaler_api_client.py" line="9915" />
+            <location filename="../zscaler_api_client.py" line="8620" />
+            <location filename="../zscaler_api_client.py" line="9944" />
             <source>Product</source>
             <translation>Tuote</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8601" />
+            <location filename="../zscaler_api_client.py" line="8630" />
             <source>Auth</source>
             <translation>Tod</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8602" />
+            <location filename="../zscaler_api_client.py" line="8631" />
             <source>Authenticate with selected API (Ctrl+Shift+A)</source>
             <translation>Todennus valitulla API:lla (Ctrl+Shift+A)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8612" />
+            <location filename="../zscaler_api_client.py" line="8641" />
             <source>🔍 Filter endpoints...</source>
             <translation>🔍 Suodata päätepisteitä...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8623" />
+            <location filename="../zscaler_api_client.py" line="8652" />
             <source>Endpoints</source>
             <translation>Päätepisteet</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8629" />
+            <location filename="../zscaler_api_client.py" line="8658" />
             <source>Output</source>
             <translation>Lähtö</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8635" />
+            <location filename="../zscaler_api_client.py" line="8664" />
             <source>Authentication status, requests, and audit info...</source>
             <translation>Todennuksen tila, pyynnöt ja tarkastustiedot...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8646" />
+            <location filename="../zscaler_api_client.py" line="8675" />
             <source>Request Builder</source>
             <translation>Pyydä rakentajaa</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8669" />
+            <location filename="../zscaler_api_client.py" line="8698" />
             <source>Enter URL or select endpoint...</source>
             <translation>Anna URL-osoite tai valitse päätepiste...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8673" />
+            <location filename="../zscaler_api_client.py" line="8702" />
             <source>Send</source>
             <translation>Lähetä</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8674" />
+            <location filename="../zscaler_api_client.py" line="8703" />
             <source>Send request (Ctrl+Return)</source>
             <translation>Lähetä pyyntö (Ctrl+Return)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8682" />
+            <location filename="../zscaler_api_client.py" line="8711" />
             <source>cURL</source>
             <translation>cURL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8683" />
+            <location filename="../zscaler_api_client.py" line="8712" />
             <source>Copy request as cURL command (Ctrl+Shift+C)</source>
             <translation>Kopioi pyyntö cURL-komentona (Ctrl+Shift+C)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8689" />
+            <location filename="../zscaler_api_client.py" line="8718" />
             <source>GraphQL request</source>
             <translation>GraphQL-pyyntö</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8690" />
+            <location filename="../zscaler_api_client.py" line="8719" />
             <source>Send the request body as a GraphQL query and preserve data, errors, and extensions.</source>
             <translation>Lähetä pyynnön runko GraphQL-kyselynä ja säilytä tiedot, virheet ja laajennukset.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8709" />
+            <location filename="../zscaler_api_client.py" line="8738" />
             <source>Saved GraphQL query name</source>
             <translation>Tallennetun GraphQL-kyselyn nimi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8713" />
+            <location filename="../zscaler_api_client.py" line="8742" />
             <source>Save query</source>
             <translation>Tallenna kysely</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8716" />
+            <location filename="../zscaler_api_client.py" line="8745" />
             <source>Load query</source>
             <translation>Lataa kysely</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8719" />
+            <location filename="../zscaler_api_client.py" line="8748" />
             <source>Rename query</source>
             <translation>Nimeä kysely uudelleen</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8722" />
+            <location filename="../zscaler_api_client.py" line="8751" />
             <source>Delete query</source>
             <translation>Poista kysely</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8725" />
+            <location filename="../zscaler_api_client.py" line="8754" />
             <source>Introspect schema</source>
             <translation>Introspect-skeema</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8728" />
+            <location filename="../zscaler_api_client.py" line="8757" />
             <source>Load saved schema</source>
             <translation>Lataa tallennettu malli</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8755" />
-            <location filename="../zscaler_api_client.py" line="8764" />
+            <location filename="../zscaler_api_client.py" line="8784" />
+            <location filename="../zscaler_api_client.py" line="8793" />
             <source>Key</source>
             <translation>Avain</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8755" />
-            <location filename="../zscaler_api_client.py" line="8764" />
-            <location filename="../zscaler_api_client.py" line="8824" />
-            <location filename="../zscaler_api_client.py" line="8899" />
+            <location filename="../zscaler_api_client.py" line="8784" />
+            <location filename="../zscaler_api_client.py" line="8793" />
+            <location filename="../zscaler_api_client.py" line="8853" />
+            <location filename="../zscaler_api_client.py" line="8928" />
             <source>Value</source>
             <translation>Arvo</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8758" />
+            <location filename="../zscaler_api_client.py" line="8787" />
             <source>Params</source>
             <translation>Parametrit</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8767" />
-            <location filename="../zscaler_api_client.py" line="8892" />
+            <location filename="../zscaler_api_client.py" line="8796" />
+            <location filename="../zscaler_api_client.py" line="8921" />
             <source>Headers</source>
             <translation>Otsikot</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8800" />
-            <location filename="../zscaler_api_client.py" line="10622" />
+            <location filename="../zscaler_api_client.py" line="8829" />
+            <location filename="../zscaler_api_client.py" line="10651" />
             <source>Request body (JSON)...</source>
             <translation>Pyynnön runko (JSON)...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8804" />
-            <location filename="../zscaler_api_client.py" line="8891" />
+            <location filename="../zscaler_api_client.py" line="8833" />
+            <location filename="../zscaler_api_client.py" line="8920" />
             <source>Body</source>
             <translation>Runko</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8811" />
-            <location filename="../zscaler_api_client.py" line="8824" />
+            <location filename="../zscaler_api_client.py" line="8840" />
+            <location filename="../zscaler_api_client.py" line="8853" />
             <source>Variable</source>
             <translation>Muuttuva</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8827" />
+            <location filename="../zscaler_api_client.py" line="8856" />
             <source>Path Variables</source>
             <translation>Polun muuttujat</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8849" />
-            <location filename="../zscaler_api_client.py" line="10527" />
+            <location filename="../zscaler_api_client.py" line="8878" />
+            <location filename="../zscaler_api_client.py" line="10556" />
             <source>Response</source>
             <translation>Vastaus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8864" />
+            <location filename="../zscaler_api_client.py" line="8893" />
             <source>Pretty</source>
             <translation>nätti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8867" />
+            <location filename="../zscaler_api_client.py" line="8896" />
             <source>Toggle pretty-print JSON (Ctrl+P)</source>
             <translation>Vaihda kauniisti painettu JSON (Ctrl+P)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8872" />
-            <location filename="../zscaler_api_client.py" line="10034" />
-            <location filename="../zscaler_api_client.py" line="10053" />
-            <location filename="../zscaler_api_client.py" line="10058" />
-            <location filename="../zscaler_api_client.py" line="10066" />
+            <location filename="../zscaler_api_client.py" line="8901" />
+            <location filename="../zscaler_api_client.py" line="10063" />
+            <location filename="../zscaler_api_client.py" line="10082" />
+            <location filename="../zscaler_api_client.py" line="10087" />
+            <location filename="../zscaler_api_client.py" line="10095" />
             <source>Export response</source>
             <translation>Vie vastaus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8875" />
+            <location filename="../zscaler_api_client.py" line="8904" />
             <source>Preview export</source>
             <translation>Esikatsele vientiä</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8895" />
+            <location filename="../zscaler_api_client.py" line="8924" />
             <source>Table</source>
             <translation>Taulukko</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8897" />
+            <location filename="../zscaler_api_client.py" line="8926" />
             <source>Chart</source>
             <translation>Kaavio</translation>
         </message>
@@ -677,239 +677,239 @@
             <translation type="vanished">JSON-rakenne</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8901" />
+            <location filename="../zscaler_api_client.py" line="8930" />
             <source>Tree</source>
             <translation>puu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8904" />
+            <location filename="../zscaler_api_client.py" line="8933" />
             <source>Heatmap</source>
             <translation>Lämpökartta</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8907" />
+            <location filename="../zscaler_api_client.py" line="8936" />
             <source>Topology</source>
             <translation>Topologia</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8911" />
+            <location filename="../zscaler_api_client.py" line="8940" />
             <source>Schema</source>
             <translation>Kaavio</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8916" />
-            <location filename="../zscaler_api_client.py" line="8982" />
+            <location filename="../zscaler_api_client.py" line="8945" />
+            <location filename="../zscaler_api_client.py" line="9011" />
             <source>AI Assistant</source>
             <translation>AI Assistant</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8919" />
+            <location filename="../zscaler_api_client.py" line="8948" />
             <source>Ask a OneAPI question, e.g. list ZPA application segments</source>
             <translation>Esitä OneAPI-kysymys, esim. luettele ZPA-sovellussegmentit</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8923" />
+            <location filename="../zscaler_api_client.py" line="8952" />
             <source>Choose a guided AI example…</source>
             <translation>Valitse ohjattu AI-esimerkki…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8929" />
+            <location filename="../zscaler_api_client.py" line="8958" />
             <source>Find API request</source>
             <translation>Etsi API-pyyntö</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8932" />
+            <location filename="../zscaler_api_client.py" line="8961" />
             <source>Run selected request</source>
             <translation>Suorita valittu pyyntö</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8935" />
+            <location filename="../zscaler_api_client.py" line="8964" />
             <source>Export result</source>
             <translation>Vie tulos</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8939" />
-            <location filename="../zscaler_api_client.py" line="11682" />
+            <location filename="../zscaler_api_client.py" line="8968" />
+            <location filename="../zscaler_api_client.py" line="11711" />
             <source>Ask in plain language. Sensitive values are masked before display or export.</source>
             <translation>Kysy selkeällä kielellä. Herkät arvot peitetään ennen näyttöä tai vientiä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8945" />
+            <location filename="../zscaler_api_client.py" line="8974" />
             <source>AI request preview appears here before execution.</source>
             <translation>AI-pyynnön esikatselu näkyy tässä ennen suoritusta.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8951" />
+            <location filename="../zscaler_api_client.py" line="8980" />
             <source>Bar chart</source>
             <translation>Pylväskaavio</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8952" />
+            <location filename="../zscaler_api_client.py" line="8981" />
             <source>Line chart</source>
             <translation>Viivakaavio</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8953" />
+            <location filename="../zscaler_api_client.py" line="8982" />
             <source>Pie chart</source>
             <translation>Ympyräkaavio</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8962" />
+            <location filename="../zscaler_api_client.py" line="8991" />
             <source>Help</source>
             <translation>Apua</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8980" />
+            <location filename="../zscaler_api_client.py" line="9009" />
             <source>Documentation</source>
             <translation>Dokumentaatio</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8981" />
+            <location filename="../zscaler_api_client.py" line="9010" />
             <source>Console</source>
             <translation>konsoli</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8998" />
+            <location filename="../zscaler_api_client.py" line="9027" />
             <source>Ready</source>
             <translation>Valmis</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9007" />
+            <location filename="../zscaler_api_client.py" line="9036" />
             <source>&amp;File</source>
             <translation>&amp;Tiedosto</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9009" />
+            <location filename="../zscaler_api_client.py" line="9038" />
             <source>&amp;Settings...</source>
             <translation>&amp;Asetukset...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9014" />
+            <location filename="../zscaler_api_client.py" line="9043" />
             <source>&amp;Batch Operations...</source>
             <translation>&amp;Erätoiminnot...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9021" />
+            <location filename="../zscaler_api_client.py" line="9050" />
             <source>Request &amp;History...</source>
             <translation>Pyynnön &amp;historia...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9030" />
+            <location filename="../zscaler_api_client.py" line="9059" />
             <source>&amp;Quit</source>
             <translation>&amp;Lopeta</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9036" />
+            <location filename="../zscaler_api_client.py" line="9065" />
             <source>&amp;Edit</source>
             <translation>&amp;Muokkaa</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9038" />
+            <location filename="../zscaler_api_client.py" line="9067" />
             <source>Copy as c&amp;URL</source>
             <translation>Kopioi c&amp;URL-osoitteena</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9043" />
+            <location filename="../zscaler_api_client.py" line="9072" />
             <source>Copy &amp;Response</source>
             <translation>Kopioi &amp;Vastaus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9050" />
+            <location filename="../zscaler_api_client.py" line="9079" />
             <source>C&amp;lear Request</source>
             <translation>&amp; Tyhjennä pyyntö</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9055" />
+            <location filename="../zscaler_api_client.py" line="9084" />
             <source>&amp;Request</source>
             <translation>&amp;Pyyntö</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9057" />
+            <location filename="../zscaler_api_client.py" line="9086" />
             <source>&amp;Send Request</source>
             <translation>&amp;Lähetä pyyntö</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9064" />
+            <location filename="../zscaler_api_client.py" line="9093" />
             <source>Authenticate &amp;ZIA</source>
             <translation>Todenna &amp;ZIA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9068" />
+            <location filename="../zscaler_api_client.py" line="9097" />
             <source>Authenticate Z&amp;PA</source>
             <translation>Todenna Z&amp;PA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9074" />
+            <location filename="../zscaler_api_client.py" line="9103" />
             <source>&amp;Logout All Sessions</source>
             <translation>&amp;Kirjaudu ulos kaikista istunnoista</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9078" />
+            <location filename="../zscaler_api_client.py" line="9107" />
             <source>&amp;Operations</source>
             <translation>&amp;Toiminnot</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9079" />
+            <location filename="../zscaler_api_client.py" line="9108" />
             <source>Operations &amp;Center...</source>
             <translation>Toiminta &amp;keskus...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9087" />
+            <location filename="../zscaler_api_client.py" line="9116" />
             <source>Environment &amp;Profiles...</source>
             <translation>Ympäristö &amp;profiilit...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9092" />
+            <location filename="../zscaler_api_client.py" line="9121" />
             <source>&amp;Language</source>
             <translation>&amp;Kieli</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9101" />
+            <location filename="../zscaler_api_client.py" line="9130" />
             <source>&amp;Help</source>
             <translation>&amp;Apua</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9103" />
+            <location filename="../zscaler_api_client.py" line="9132" />
             <source>&amp;Welcome Guide...</source>
             <translation>&amp;Tervetuloa opas...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9107" />
+            <location filename="../zscaler_api_client.py" line="9136" />
             <source>&amp;About...</source>
             <translation>&amp;Tietoja...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9112" />
+            <location filename="../zscaler_api_client.py" line="9141" />
             <source>About &amp;Qt...</source>
             <translation>Tietoja &amp;Qt...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9119" />
+            <location filename="../zscaler_api_client.py" line="9148" />
             <source>ZIA API &amp;Documentation</source>
             <translation>ZIA API &amp;dokumentaatio</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9123" />
+            <location filename="../zscaler_api_client.py" line="9152" />
             <source>ZPA API D&amp;ocumentation</source>
             <translation>ZPA API D&amp;dokumentaatio</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9127" />
+            <location filename="../zscaler_api_client.py" line="9156" />
             <source>Zscaler API &amp;Portal</source>
             <translation>Zscaler API &amp;portaali</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9131" />
+            <location filename="../zscaler_api_client.py" line="9160" />
             <source>API &amp;Error Codes...</source>
             <translation>API &amp;virhekoodit...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9137" />
+            <location filename="../zscaler_api_client.py" line="9166" />
             <source>Check for &amp;Updates...</source>
             <translation>Tarkista &amp;päivitykset...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9207" />
+            <location filename="../zscaler_api_client.py" line="9236" />
             <source>{count} operations · {groups} groups</source>
             <translation>{count} operations · {groups} groups</translation>
         </message>
@@ -918,7 +918,7 @@
             <translation type="vanished">Luo uusi profiili…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9552" />
+            <location filename="../zscaler_api_client.py" line="9581" />
             <source>Environment profiles</source>
             <translation>Ympäristöprofiilit</translation>
         </message>
@@ -935,53 +935,53 @@
             <translation type="vanished">Ympäristöprofiili aktiivinen: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9599" />
+            <location filename="../zscaler_api_client.py" line="9628" />
             <source>{count} matching operations</source>
             <translation>{count} matching operations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9599" />
+            <location filename="../zscaler_api_client.py" line="9628" />
             <source>{count} operations</source>
             <translation>{count} operations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9636" />
+            <location filename="../zscaler_api_client.py" line="9665" />
             <source>Guided example loaded. Find the API request, review the preview, then choose whether to run it.</source>
             <translation>Ohjattu esimerkki ladattu. Etsi API-pyyntö, tarkista esikatselu ja valitse sitten, suoritetaanko se.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9737" />
-            <location filename="../zscaler_api_client.py" line="9767" />
-            <location filename="../zscaler_api_client.py" line="9792" />
-            <location filename="../zscaler_api_client.py" line="9856" />
-            <location filename="../zscaler_api_client.py" line="11067" />
-            <location filename="../zscaler_api_client.py" line="11070" />
-            <location filename="../zscaler_api_client.py" line="11097" />
+            <location filename="../zscaler_api_client.py" line="9766" />
+            <location filename="../zscaler_api_client.py" line="9796" />
+            <location filename="../zscaler_api_client.py" line="9821" />
+            <location filename="../zscaler_api_client.py" line="9885" />
+            <location filename="../zscaler_api_client.py" line="11096" />
+            <location filename="../zscaler_api_client.py" line="11099" />
+            <location filename="../zscaler_api_client.py" line="11126" />
             <source>Error</source>
             <translation>Virhe</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9738" />
+            <location filename="../zscaler_api_client.py" line="9767" />
             <source>ZIA credentials not configured. Please go to Settings.</source>
             <translation>ZIA-tunnistetietoja ei ole määritetty. Mene Asetuksiin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9767" />
+            <location filename="../zscaler_api_client.py" line="9796" />
             <source>ZCC credentials not configured. Please go to Settings.</source>
             <translation>ZCC-tunnistetietoja ei ole määritetty. Mene Asetuksiin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9793" />
+            <location filename="../zscaler_api_client.py" line="9822" />
             <source>{api_type} credentials not configured. Please go to Settings.</source>
             <translation>{api_type} credentials not configured. Please go to Settings.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9857" />
+            <location filename="../zscaler_api_client.py" line="9886" />
             <source>OneAPI credentials not configured. Please go to Settings.</source>
             <translation>OneAPI-tunnistetietoja ei ole määritetty. Mene Asetuksiin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9898" />
+            <location filename="../zscaler_api_client.py" line="9927" />
             <source>No matching API operation was found. Try product and resource names.</source>
             <translation>Vastaavaa API-toimintoa ei löytynyt. Kokeile tuotteiden ja resurssien nimiä.</translation>
         </message>
@@ -990,350 +990,350 @@
             <translation type="vanished">Suggested request: {method} {name}. Review path variables before running.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9915" />
+            <location filename="../zscaler_api_client.py" line="9944" />
             <source>Operation</source>
             <translation>Toiminta</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9915" />
+            <location filename="../zscaler_api_client.py" line="9944" />
             <source>Method</source>
             <translation>menetelmä</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9915" />
+            <location filename="../zscaler_api_client.py" line="9944" />
             <source>URL</source>
             <translation>URL-osoite</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9949" />
+            <location filename="../zscaler_api_client.py" line="9978" />
             <source>Ask the AI assistant for a request first.</source>
             <translation>Pyydä ensin pyyntö tekoälyassistentilta.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9952" />
+            <location filename="../zscaler_api_client.py" line="9981" />
             <source>Review AI request</source>
             <translation>Tarkista AI-pyyntö</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9953" />
+            <location filename="../zscaler_api_client.py" line="9982" />
             <source>Review the URL, path variables, and parameters in the preview before sending. Send this request now?</source>
             <translation>Tarkista URL-osoite, polkumuuttujat ja parametrit esikatselusta ennen lähettämistä. Lähetetäänkö tämä pyyntö nyt?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9976" />
-            <location filename="../zscaler_api_client.py" line="9981" />
+            <location filename="../zscaler_api_client.py" line="10005" />
+            <location filename="../zscaler_api_client.py" line="10010" />
             <source>Asking configured LLM…</source>
             <translation>Kysytään määritettyä LLM:tä…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9979" />
+            <location filename="../zscaler_api_client.py" line="10008" />
             <source>LLM unavailable; using the local catalog assistant.</source>
             <translation>LLM ei saatavilla; käyttämällä paikallista luetteloavustajaa.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9990" />
+            <location filename="../zscaler_api_client.py" line="10019" />
             <source>Configure an AI endpoint and model in Settings.</source>
             <translation>Määritä AI-päätepiste ja malli asetuksissa.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9994" />
+            <location filename="../zscaler_api_client.py" line="10023" />
             <source>AI endpoint must use HTTP or HTTPS.</source>
             <translation>AI-päätepisteen on käytettävä HTTP:tä tai HTTPS:ää.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9996" />
+            <location filename="../zscaler_api_client.py" line="10025" />
             <source>External AI is disabled. Enable it explicitly in Settings.</source>
             <translation>Ulkoinen AI on poistettu käytöstä. Ota se käyttöön erikseen asetuksissa.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9998" />
+            <location filename="../zscaler_api_client.py" line="10027" />
             <source>External AI endpoints must use HTTPS.</source>
             <translation>Ulkoisten AI-päätepisteiden on käytettävä HTTPS:ää.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10000" />
+            <location filename="../zscaler_api_client.py" line="10029" />
             <source>AI question is too long (maximum 2000 characters).</source>
             <translation>Tekoälykysymys on liian pitkä (enintään 2000 merkkiä).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10022" />
-            <location filename="../zscaler_api_client.py" line="10028" />
+            <location filename="../zscaler_api_client.py" line="10051" />
+            <location filename="../zscaler_api_client.py" line="10057" />
             <source>Save binary response</source>
             <translation>Tallenna binäärivaste</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10023" />
+            <location filename="../zscaler_api_client.py" line="10052" />
             <source>Binary content cannot be inspected or obfuscated as text. Save the original response only if you trust this endpoint and destination?</source>
             <translation>Binaarisisältöä ei voi tarkastaa tai hämärtää tekstinä. Tallennetaanko alkuperäinen vastaus vain, jos luotat tähän päätepisteeseen ja kohteeseen?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10028" />
+            <location filename="../zscaler_api_client.py" line="10057" />
             <source>All files (*)</source>
             <translation>Kaikki tiedostot (*)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10031" />
+            <location filename="../zscaler_api_client.py" line="10060" />
             <source>Original binary response saved</source>
             <translation>Alkuperäinen binäärivaste tallennettu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10080" />
+            <location filename="../zscaler_api_client.py" line="10109" />
             <source>Masked response exported</source>
             <translation>Naamioitu vastaus vietiin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10186" />
+            <location filename="../zscaler_api_client.py" line="10215" />
             <source>Binary content is not included in this preview.</source>
             <translation>Binaarisisältö ei sisälly tähän esikatseluun.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10188" />
-            <location filename="../zscaler_api_client.py" line="10194" />
+            <location filename="../zscaler_api_client.py" line="10217" />
+            <location filename="../zscaler_api_client.py" line="10223" />
             <source>Export preview</source>
             <translation>Vie esikatselu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10189" />
+            <location filename="../zscaler_api_client.py" line="10218" />
             <source>Original binary export requires a separate confirmation.</source>
             <translation>Alkuperäinen binäärivienti vaatii erillisen vahvistuksen.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10195" />
+            <location filename="../zscaler_api_client.py" line="10224" />
             <source>Sensitive fields are masked in every export.</source>
             <translation>Herkät kentät peitetään jokaisessa viennissä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10249" />
-            <location filename="../zscaler_api_client.py" line="10258" />
-            <location filename="../zscaler_api_client.py" line="10266" />
+            <location filename="../zscaler_api_client.py" line="10278" />
+            <location filename="../zscaler_api_client.py" line="10287" />
+            <location filename="../zscaler_api_client.py" line="10295" />
             <source>Export AI result</source>
             <translation>Vie AI-tulos</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10058" />
-            <location filename="../zscaler_api_client.py" line="10066" />
-            <location filename="../zscaler_api_client.py" line="10258" />
-            <location filename="../zscaler_api_client.py" line="10266" />
+            <location filename="../zscaler_api_client.py" line="10087" />
+            <location filename="../zscaler_api_client.py" line="10095" />
+            <location filename="../zscaler_api_client.py" line="10287" />
+            <location filename="../zscaler_api_client.py" line="10295" />
             <source>No chart data is available to export.</source>
             <translation>Kaavion tietoja ei ole saatavilla vietäväksi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10275" />
+            <location filename="../zscaler_api_client.py" line="10304" />
             <source>AI result exported</source>
             <translation>AI-tulos viety</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10534" />
+            <location filename="../zscaler_api_client.py" line="10563" />
             <source>No tabular datasets</source>
             <translation>Ei taulukkomuotoisia tietojoukkoja</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10543" />
+            <location filename="../zscaler_api_client.py" line="10572" />
             <source>Nodes</source>
             <translation>Solmut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10543" />
+            <location filename="../zscaler_api_client.py" line="10572" />
             <source>Connections</source>
             <translation>Liitännät</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10545" />
+            <location filename="../zscaler_api_client.py" line="10574" />
             <source>No nodes or connections were found in this response.</source>
             <translation>Tästä vastauksesta ei löytynyt solmuja tai yhteyksiä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10606" />
+            <location filename="../zscaler_api_client.py" line="10635" />
             <source>Visualized {count} records as a masked table. Export is available from the AI Assistant tab.</source>
             <translation>Visualized {count} records as a masked table. Export is available from the AI Assistant tab.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10623" />
+            <location filename="../zscaler_api_client.py" line="10652" />
             <source>Raw request body...</source>
             <translation>Raaka pyynnön teksti...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10624" />
+            <location filename="../zscaler_api_client.py" line="10653" />
             <source>Form fields as JSON or an encoded key=value string...</source>
             <translation>Lomakekentät JSON-muodossa tai koodattu avain=arvo-merkkijono...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10625" />
+            <location filename="../zscaler_api_client.py" line="10654" />
             <source>Optional multipart fields as a JSON object...</source>
             <translation>Valinnaiset moniosaiset kentät JSON-objektina...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10631" />
+            <location filename="../zscaler_api_client.py" line="10660" />
             <source>Select upload file</source>
             <translation>Valitse lataustiedosto</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9403" />
-            <location filename="../zscaler_api_client.py" line="10680" />
+            <location filename="../zscaler_api_client.py" line="9432" />
+            <location filename="../zscaler_api_client.py" line="10709" />
             <source>Yes</source>
             <translation>Kyllä</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9403" />
-            <location filename="../zscaler_api_client.py" line="10680" />
+            <location filename="../zscaler_api_client.py" line="9432" />
+            <location filename="../zscaler_api_client.py" line="10709" />
             <source>No</source>
             <translation>Ei</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10242" />
-            <location filename="../zscaler_api_client.py" line="10244" />
+            <location filename="../zscaler_api_client.py" line="10271" />
+            <location filename="../zscaler_api_client.py" line="10273" />
             <source>Response drift comparison</source>
             <translation>Vastauksen ajautumisen vertailu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10242" />
+            <location filename="../zscaler_api_client.py" line="10271" />
             <source>Binary responses cannot be structurally compared. Export and inspect the original file with an appropriate tool.</source>
             <translation>Binäärivasteita ei voida verrata rakenteellisesti. Vie ja tarkasta alkuperäinen tiedosto sopivalla työkalulla.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10244" />
+            <location filename="../zscaler_api_client.py" line="10273" />
             <source>Send a request or open a response export before comparing drift.</source>
             <translation>Lähetä pyyntö tai avaa vastausvienti ennen poikkeaman vertailua.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10698" />
+            <location filename="../zscaler_api_client.py" line="10727" />
             <source>{count} variable(s) extracted · {missing} required value(s) missing</source>
             <translation>{count} variable(s) extracted · {missing} required value(s) missing</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10705" />
-            <location filename="../zscaler_api_client.py" line="11053" />
+            <location filename="../zscaler_api_client.py" line="10734" />
+            <location filename="../zscaler_api_client.py" line="11082" />
             <source>GraphQL body must be a JSON object containing a query string.</source>
             <translation>GraphQL-rungon on oltava JSON-objekti, joka sisältää kyselymerkkijonon.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10709" />
+            <location filename="../zscaler_api_client.py" line="10738" />
             <source>Choose operationName because the document contains multiple GraphQL operations.</source>
             <translation>Valitse operaationName, koska asiakirja sisältää useita GraphQL-operaatioita.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10711" />
+            <location filename="../zscaler_api_client.py" line="10740" />
             <source>GraphQL operationName does not match a named operation in the query.</source>
             <translation>GraphQL operationName ei vastaa kyselyn nimettyä toimintoa.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10722" />
+            <location filename="../zscaler_api_client.py" line="10751" />
             <source>Variable ${name} is required.</source>
             <translation>Variable ${name} is required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10726" />
+            <location filename="../zscaler_api_client.py" line="10755" />
             <source>Variable ${name} must be valid for type {type}.</source>
             <translation>Variable ${name} must be valid for type {type}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10733" />
+            <location filename="../zscaler_api_client.py" line="10762" />
             <source>Remove undeclared GraphQL variables: {names}</source>
             <translation>Remove undeclared GraphQL variables: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10757" />
-            <location filename="../zscaler_api_client.py" line="10777" />
+            <location filename="../zscaler_api_client.py" line="10786" />
+            <location filename="../zscaler_api_client.py" line="10806" />
             <source>Documented GraphQL schema</source>
             <translation>Dokumentoitu GraphQL-skeema</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10758" />
+            <location filename="../zscaler_api_client.py" line="10787" />
             <source>The current Automation Hub page has no executable query example. Open its documentation or use schema introspection.</source>
             <translation>Nykyisellä Automation Hub -sivulla ei ole suoritettavaa kyselyesimerkkiä. Avaa sen dokumentaatio tai käytä skeeman itsetutkiskelua.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10772" />
+            <location filename="../zscaler_api_client.py" line="10801" />
             <source>Loaded documented ZInsights query. Review time ranges, filters, and fields before sending.</source>
             <translation>Ladattu dokumentoitu ZInsights-kysely. Tarkista aikavälit, suodattimet ja kentät ennen lähettämistä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10808" />
+            <location filename="../zscaler_api_client.py" line="10837" />
             <source>Enter a name before saving the GraphQL query.</source>
             <translation>Anna nimi ennen GraphQL-kyselyn tallentamista.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10812" />
-            <location filename="../zscaler_api_client.py" line="10853" />
-            <location filename="../zscaler_api_client.py" line="10866" />
-            <location filename="../zscaler_api_client.py" line="10885" />
+            <location filename="../zscaler_api_client.py" line="10841" />
+            <location filename="../zscaler_api_client.py" line="10882" />
+            <location filename="../zscaler_api_client.py" line="10895" />
+            <location filename="../zscaler_api_client.py" line="10914" />
             <source>Secure storage</source>
             <translation>Turvallinen säilytys</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10812" />
+            <location filename="../zscaler_api_client.py" line="10841" />
             <source>The system keychain could not save the GraphQL query.</source>
             <translation>Järjestelmän avainnippu ei voinut tallentaa GraphQL-kyselyä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10818" />
+            <location filename="../zscaler_api_client.py" line="10847" />
             <source>GraphQL query saved securely</source>
             <translation>GraphQL-kysely tallennettu turvallisesti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10824" />
+            <location filename="../zscaler_api_client.py" line="10853" />
             <source>Saved GraphQL query is unavailable.</source>
             <translation>Tallennettu GraphQL-kysely ei ole käytettävissä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10853" />
+            <location filename="../zscaler_api_client.py" line="10882" />
             <source>The system keychain could not rename the GraphQL query.</source>
             <translation>Järjestelmän avainnippu ei voinut nimetä uudelleen GraphQL-kyselyä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10866" />
+            <location filename="../zscaler_api_client.py" line="10895" />
             <source>The system keychain could not delete the GraphQL query.</source>
             <translation>Järjestelmän avainnippu ei voinut poistaa GraphQL-kyselyä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10877" />
+            <location filename="../zscaler_api_client.py" line="10906" />
             <source>GraphQL introspection query prepared. Review the endpoint before sending.</source>
             <translation>GraphQL:n itsetutkiskelukysely valmis. Tarkista päätepiste ennen lähettämistä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10885" />
+            <location filename="../zscaler_api_client.py" line="10914" />
             <source>The system keychain could not save the GraphQL schema.</source>
             <translation>Järjestelmän avainnippu ei voinut tallentaa GraphQL-skeemaa.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10887" />
+            <location filename="../zscaler_api_client.py" line="10916" />
             <source>GraphQL schema saved securely</source>
             <translation>GraphQL-skeema tallennettu turvallisesti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10948" />
-            <location filename="../zscaler_api_client.py" line="11465" />
+            <location filename="../zscaler_api_client.py" line="10977" />
+            <location filename="../zscaler_api_client.py" line="11494" />
             <source>Read only</source>
             <translation>Vain luku</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10948" />
-            <location filename="../zscaler_api_client.py" line="11465" />
+            <location filename="../zscaler_api_client.py" line="10977" />
+            <location filename="../zscaler_api_client.py" line="11494" />
             <source>Read-only mode blocks write requests. Change the local role in Operations Center to continue.</source>
             <translation>Vain luku -tila estää kirjoituspyynnöt. Vaihda paikallista roolia Operations Centerissä jatkaaksesi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10984" />
+            <location filename="../zscaler_api_client.py" line="11013" />
             <source>Configure a base URL for the selected product before sending a relative API path.</source>
             <translation>Määritä perus-URL-osoite valitulle tuotteelle ennen suhteellisen API-polun lähettämistä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11062" />
+            <location filename="../zscaler_api_client.py" line="11091" />
             <source>Select an available local file before sending.</source>
             <translation>Valitse käytettävissä oleva paikallinen tiedosto ennen lähettämistä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11067" />
+            <location filename="../zscaler_api_client.py" line="11096" />
             <source>Multipart fields must be a JSON object: {error}</source>
             <translation>Multipart fields must be a JSON object: {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11070" />
+            <location filename="../zscaler_api_client.py" line="11099" />
             <source>Multipart fields must be a JSON object.</source>
             <translation>Moniosaisten kenttien on oltava JSON-objekteja.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11253" />
+            <location filename="../zscaler_api_client.py" line="11282" />
             <source>Binary response ready to save.
 File: {name}
 Type: {type}
@@ -1344,579 +1344,579 @@ Type: {type}
 Size: {size}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11457" />
+            <location filename="../zscaler_api_client.py" line="11486" />
             <source>Batch validation failed: </source>
             <translation>Erän vahvistus epäonnistui: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11460" />
+            <location filename="../zscaler_api_client.py" line="11489" />
             <source>Select {api} before running this batch.</source>
             <translation>Select {api} before running this batch.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11468" />
+            <location filename="../zscaler_api_client.py" line="11497" />
             <source>Review complete. Send {count} request(s) to the active environment?</source>
             <translation>Review complete. Send {count} request(s) to the active environment?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11469" />
+            <location filename="../zscaler_api_client.py" line="11498" />
             <source>Confirm batch</source>
             <translation>Vahvista erä</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11484" />
+            <location filename="../zscaler_api_client.py" line="11513" />
             <source>Sending batch request 0 of {count}...</source>
             <translation>Sending batch request 0 of {count}...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11485" />
+            <location filename="../zscaler_api_client.py" line="11514" />
             <source>Batch execution started: {count} request(s)</source>
             <translation>Batch execution started: {count} request(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11502" />
+            <location filename="../zscaler_api_client.py" line="11531" />
             <source>Sending batch request {completed} of {total}...</source>
             <translation>Sending batch request {completed} of {total}...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11512" />
-            <location filename="../zscaler_api_client.py" line="11513" />
-            <location filename="../zscaler_api_client.py" line="11514" />
+            <location filename="../zscaler_api_client.py" line="11541" />
+            <location filename="../zscaler_api_client.py" line="11542" />
+            <location filename="../zscaler_api_client.py" line="11543" />
             <source>Batch complete: {successful} succeeded, {failed} failed.</source>
             <translation>Batch complete: {successful} succeeded, {failed} failed.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11527" />
+            <location filename="../zscaler_api_client.py" line="11556" />
             <source>Request History</source>
             <translation>Pyydä historiaa</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11528" />
+            <location filename="../zscaler_api_client.py" line="11557" />
             <source>This request belongs to another environment. Activate that environment profile before loading it.</source>
             <translation>Tämä pyyntö kuuluu toiseen ympäristöön. Aktivoi ympäristöprofiili ennen sen lataamista.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11541" />
-            <location filename="../zscaler_api_client.py" line="11560" />
+            <location filename="../zscaler_api_client.py" line="11570" />
+            <location filename="../zscaler_api_client.py" line="11589" />
             <source>Multipart request loaded. Select the local file again before sending.</source>
             <translation>Moniosainen pyyntö ladattu. Valitse paikallinen tiedosto uudelleen ennen lähettämistä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11632" />
+            <location filename="../zscaler_api_client.py" line="11661" />
             <source>Masked cURL command copied to clipboard</source>
             <translation>Maskoitu cURL-komento kopioitu leikepöydälle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11637" />
+            <location filename="../zscaler_api_client.py" line="11666" />
             <source>Binary response</source>
             <translation>Binäärivaste</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11637" />
+            <location filename="../zscaler_api_client.py" line="11666" />
             <source>Binary response content is not copied to the clipboard. Use Export to save the original file.</source>
             <translation>Binaarivastauksen sisältöä ei kopioida leikepöydälle. Tallenna alkuperäinen tiedosto valitsemalla Vie.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11646" />
+            <location filename="../zscaler_api_client.py" line="11675" />
             <source>Masked response copied to clipboard</source>
             <translation>Maskivastaus kopioitiin leikepöydälle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8909" />
-            <location filename="../zscaler_api_client.py" line="10892" />
+            <location filename="../zscaler_api_client.py" line="8938" />
+            <location filename="../zscaler_api_client.py" line="10921" />
             <source>GraphQL schema</source>
             <translation>GraphQL-skeema</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10892" />
+            <location filename="../zscaler_api_client.py" line="10921" />
             <source>No saved introspection result exists for this endpoint.</source>
             <translation>Tälle päätepisteelle ei ole tallennettu itsetutkiskelutulosta.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10933" />
+            <location filename="../zscaler_api_client.py" line="10962" />
             <source>{count} GraphQL errors</source>
             <translation>{count} GraphQL errors</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10935" />
+            <location filename="../zscaler_api_client.py" line="10964" />
             <source>extensions included</source>
             <translation>laajennukset mukana</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9949" />
-            <location filename="../zscaler_api_client.py" line="10808" />
-            <location filename="../zscaler_api_client.py" line="10824" />
-            <location filename="../zscaler_api_client.py" line="10952" />
-            <location filename="../zscaler_api_client.py" line="10984" />
-            <location filename="../zscaler_api_client.py" line="11629" />
-            <location filename="../zscaler_api_client.py" line="11648" />
+            <location filename="../zscaler_api_client.py" line="9978" />
+            <location filename="../zscaler_api_client.py" line="10837" />
+            <location filename="../zscaler_api_client.py" line="10853" />
+            <location filename="../zscaler_api_client.py" line="10981" />
+            <location filename="../zscaler_api_client.py" line="11013" />
+            <location filename="../zscaler_api_client.py" line="11658" />
+            <location filename="../zscaler_api_client.py" line="11677" />
             <source>Warning</source>
             <translation>Varoitus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8480" />
+            <location filename="../zscaler_api_client.py" line="8509" />
             <source>ZIA · List users</source>
             <translation>ZIA · Listaa käyttäjät</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8480" />
+            <location filename="../zscaler_api_client.py" line="8509" />
             <source>List ZIA users with pagination</source>
             <translation>Listaa ZIA-käyttäjät sivutuksineen</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8481" />
+            <location filename="../zscaler_api_client.py" line="8510" />
             <source>ZIA · Find URL categories</source>
             <translation>ZIA · Etsi URL-luokkia</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8481" />
+            <location filename="../zscaler_api_client.py" line="8510" />
             <source>Search ZIA URL categories for social media</source>
             <translation>Etsi sosiaalisen median ZIA URL-luokista</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8482" />
+            <location filename="../zscaler_api_client.py" line="8511" />
             <source>ZIA · Review firewall policies</source>
             <translation>ZIA · Tarkista palomuurikäytännöt</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8482" />
+            <location filename="../zscaler_api_client.py" line="8511" />
             <source>List ZIA cloud firewall policies</source>
             <translation>Luettele ZIA-pilven palomuurikäytännöt</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8483" />
+            <location filename="../zscaler_api_client.py" line="8512" />
             <source>ZPA · Application segments</source>
             <translation>ZPA · Sovellussegmentit</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8483" />
+            <location filename="../zscaler_api_client.py" line="8512" />
             <source>List ZPA application segments</source>
             <translation>Luettelo ZPA-sovellussegmentit</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8484" />
+            <location filename="../zscaler_api_client.py" line="8513" />
             <source>ZPA · Connector inventory</source>
             <translation>ZPA · Liitinluettelo</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8484" />
+            <location filename="../zscaler_api_client.py" line="8513" />
             <source>List ZPA connectors</source>
             <translation>Listaa ZPA-liittimet</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8485" />
+            <location filename="../zscaler_api_client.py" line="8514" />
             <source>ZDX · Experience overview</source>
             <translation>ZDX · Kokemusten yleiskatsaus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8485" />
+            <location filename="../zscaler_api_client.py" line="8514" />
             <source>List ZDX devices and experience scores</source>
             <translation>Listaa ZDX-laitteet ja kokemuspisteet</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8486" />
+            <location filename="../zscaler_api_client.py" line="8515" />
             <source>ZDX · Active alerts</source>
             <translation>ZDX · Aktiiviset hälytykset</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8486" />
+            <location filename="../zscaler_api_client.py" line="8515" />
             <source>List active ZDX alerts with pagination</source>
             <translation>Listaa aktiiviset ZDX-hälytykset sivutuksineen</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8487" />
+            <location filename="../zscaler_api_client.py" line="8516" />
             <source>ZDX · Application monitoring</source>
             <translation>ZDX · Sovelluksen valvonta</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8487" />
+            <location filename="../zscaler_api_client.py" line="8516" />
             <source>List monitored ZDX applications</source>
             <translation>Listaa valvotut ZDX-sovellukset</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8488" />
+            <location filename="../zscaler_api_client.py" line="8517" />
             <source>Client Connector · Devices</source>
             <translation>Asiakasliitin · Laitteet</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8488" />
+            <location filename="../zscaler_api_client.py" line="8517" />
             <source>List Client Connector devices</source>
             <translation>Listaa Client Connector -laitteet</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8489" />
+            <location filename="../zscaler_api_client.py" line="8518" />
             <source>ZIdentity · Users</source>
             <translation>ZIdentity · Käyttäjät</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8489" />
+            <location filename="../zscaler_api_client.py" line="8518" />
             <source>List ZIdentity users with pagination</source>
             <translation>Listaa ZIdentity-käyttäjät sivutuksineen</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8490" />
+            <location filename="../zscaler_api_client.py" line="8519" />
             <source>ZIdentity · Groups</source>
             <translation>ZIdentity · Ryhmät</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8490" />
+            <location filename="../zscaler_api_client.py" line="8519" />
             <source>List ZIdentity groups</source>
             <translation>Listaa ZIdentity-ryhmät</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8491" />
+            <location filename="../zscaler_api_client.py" line="8520" />
             <source>AI Security · Workloads</source>
             <translation>AI-suojaus · Työkuormat</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8491" />
+            <location filename="../zscaler_api_client.py" line="8520" />
             <source>List AI Security workloads</source>
             <translation>Listaa tekoälyn suojaustyökuormat</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8545" />
+            <location filename="../zscaler_api_client.py" line="8574" />
             <source>ZS API Client</source>
             <translation>ZS API Client</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8552" />
+            <location filename="../zscaler_api_client.py" line="8581" />
             <source>Explore APIs, review changes, and operate safely</source>
             <translation>Tutustu sovellusliittymiin, tarkista muutokset ja käytä turvallisesti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8556" />
+            <location filename="../zscaler_api_client.py" line="8585" />
             <source>1 · Environment</source>
             <translation>1 · Ympäristö</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8557" />
+            <location filename="../zscaler_api_client.py" line="8586" />
             <source>Select or create a tenant environment profile</source>
             <translation>Valitse tai luo vuokralainen ympäristöprofiili</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8560" />
+            <location filename="../zscaler_api_client.py" line="8589" />
             <source>2 · Analyze</source>
             <translation>2 · Analysoi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8561" />
+            <location filename="../zscaler_api_client.py" line="8590" />
             <source>Open dashboards, audits, policy diffs, and response analysis</source>
             <translation>Avaa hallintapaneelit, tarkastukset, käytäntöerot ja vastausanalyysit</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8564" />
+            <location filename="../zscaler_api_client.py" line="8593" />
             <source>3 · Change</source>
             <translation>3 · Muuta</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8565" />
+            <location filename="../zscaler_api_client.py" line="8594" />
             <source>Open policy diff and policy-as-code export</source>
             <translation>Avaa käytäntödiff ja Policy-as-code -vienti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8568" />
+            <location filename="../zscaler_api_client.py" line="8597" />
             <source>Operations Center</source>
             <translation>Operaatiokeskus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8571" />
+            <location filename="../zscaler_api_client.py" line="8600" />
             <source>PAC Workspace</source>
             <translation>PAC Workspace</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8572" />
+            <location filename="../zscaler_api_client.py" line="8601" />
             <source>Create, verify, map, and prepare PAC files (Ctrl+Shift+P)</source>
             <translation>Create, verify, map, and prepare PAC files (Ctrl+Shift+P)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8576" />
+            <location filename="../zscaler_api_client.py" line="8605" />
             <source>Settings</source>
             <translation>Asetukset</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8678" />
+            <location filename="../zscaler_api_client.py" line="8707" />
             <source>Cancel</source>
             <translation>Peruuta</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8679" />
+            <location filename="../zscaler_api_client.py" line="8708" />
             <source>Stop before the next page or chain step; the current HTTP request is allowed to finish safely.</source>
             <translation>Pysäytä ennen seuraavaa sivu- tai ketjuvaihetta; nykyisen HTTP-pyynnön sallitaan päättyä turvallisesti.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8694" />
+            <location filename="../zscaler_api_client.py" line="8723" />
             <source>Fetch all pages</source>
             <translation>Hae kaikki sivut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8695" />
+            <location filename="../zscaler_api_client.py" line="8724" />
             <source>Follow only the pagination parameters documented for the selected read operation.</source>
             <translation>Noudata vain valitulle lukutoiminnolle dokumentoituja sivutusparametreja.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8697" />
+            <location filename="../zscaler_api_client.py" line="8726" />
             <source>Page size:</source>
             <translation>Sivun koko:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8701" />
+            <location filename="../zscaler_api_client.py" line="8730" />
             <source>Maximum pages:</source>
             <translation>Sivujen enimmäismäärä:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8734" />
+            <location filename="../zscaler_api_client.py" line="8763" />
             <source>Documented ZInsights query…</source>
             <translation>Dokumentoitu ZInsights-kysely…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8739" />
+            <location filename="../zscaler_api_client.py" line="8768" />
             <source>Load documented query</source>
             <translation>Lataa dokumentoitu kysely</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8742" />
+            <location filename="../zscaler_api_client.py" line="8771" />
             <source>Browse documented schema</source>
             <translation>Selaa dokumentoitua mallia</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8773" />
+            <location filename="../zscaler_api_client.py" line="8802" />
             <source>Body type:</source>
             <translation>Vartalotyyppi:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8775" />
+            <location filename="../zscaler_api_client.py" line="8804" />
             <source>JSON</source>
             <translation>JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8776" />
+            <location filename="../zscaler_api_client.py" line="8805" />
             <source>Raw text</source>
             <translation>Raaka teksti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8777" />
+            <location filename="../zscaler_api_client.py" line="8806" />
             <source>Form URL encoded</source>
             <translation>Lomakkeen URL-osoite koodattu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8778" />
-            <location filename="../zscaler_api_client.py" line="11062" />
+            <location filename="../zscaler_api_client.py" line="8807" />
+            <location filename="../zscaler_api_client.py" line="11091" />
             <source>Multipart file upload</source>
             <translation>Moniosaisen tiedoston lataus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8786" />
+            <location filename="../zscaler_api_client.py" line="8815" />
             <source>File field:</source>
             <translation>Tiedostokenttä:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8790" />
+            <location filename="../zscaler_api_client.py" line="8819" />
             <source>Upload file:</source>
             <translation>Lataa tiedosto:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8793" />
+            <location filename="../zscaler_api_client.py" line="8822" />
             <source>Select a local file; its path is never saved in history</source>
             <translation>Valitse paikallinen tiedosto; sen polkua ei ole koskaan tallennettu historiaan</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8795" />
+            <location filename="../zscaler_api_client.py" line="8824" />
             <source>Browse…</source>
             <translation>Selaa…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8809" />
+            <location filename="../zscaler_api_client.py" line="8838" />
             <source>Extract typed variables from the selected GraphQL operation. Values are inserted into the JSON request body, never into the URL.</source>
             <translation>Pura kirjoitetut muuttujat valitusta GraphQL-toiminnosta. Arvot lisätään JSON-pyynnön runkoon, ei koskaan URL-osoitteeseen.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8811" />
-            <location filename="../zscaler_api_client.py" line="8836" />
+            <location filename="../zscaler_api_client.py" line="8840" />
+            <location filename="../zscaler_api_client.py" line="8865" />
             <source>Type</source>
             <translation>Kirjoita</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8811" />
-            <location filename="../zscaler_api_client.py" line="8836" />
+            <location filename="../zscaler_api_client.py" line="8840" />
+            <location filename="../zscaler_api_client.py" line="8865" />
             <source>Required</source>
             <translation>Pakollinen</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8811" />
-            <location filename="../zscaler_api_client.py" line="8837" />
+            <location filename="../zscaler_api_client.py" line="8840" />
+            <location filename="../zscaler_api_client.py" line="8866" />
             <source>Default</source>
             <translation>Oletus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8811" />
+            <location filename="../zscaler_api_client.py" line="8840" />
             <source>JSON value</source>
             <translation>JSON-arvo</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8815" />
+            <location filename="../zscaler_api_client.py" line="8844" />
             <source>Extract variables from query</source>
             <translation>Poimi muuttujat kyselystä</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8816" />
-            <location filename="../zscaler_api_client.py" line="10700" />
-            <location filename="../zscaler_api_client.py" line="11662" />
+            <location filename="../zscaler_api_client.py" line="8845" />
+            <location filename="../zscaler_api_client.py" line="10729" />
+            <location filename="../zscaler_api_client.py" line="11691" />
             <source>No GraphQL variables extracted.</source>
             <translation>GraphQL-muuttujia ei purettu.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8817" />
-            <location filename="../zscaler_api_client.py" line="11053" />
-            <location filename="../zscaler_api_client.py" line="11103" />
+            <location filename="../zscaler_api_client.py" line="8846" />
+            <location filename="../zscaler_api_client.py" line="11082" />
+            <location filename="../zscaler_api_client.py" line="11132" />
             <source>GraphQL Variables</source>
             <translation>GraphQL-muuttujat</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8831" />
-            <location filename="../zscaler_api_client.py" line="11667" />
+            <location filename="../zscaler_api_client.py" line="8860" />
+            <location filename="../zscaler_api_client.py" line="11696" />
             <source>Select a documented endpoint to inspect its request contract.</source>
             <translation>Valitse dokumentoitu päätepiste tarkistaaksesi sen pyyntösopimuksen.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8836" />
+            <location filename="../zscaler_api_client.py" line="8865" />
             <source>Location</source>
             <translation>Sijainti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8836" />
+            <location filename="../zscaler_api_client.py" line="8865" />
             <source>Name</source>
             <translation>Nimi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8837" />
+            <location filename="../zscaler_api_client.py" line="8866" />
             <source>Description</source>
             <translation>Kuvaus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8842" />
+            <location filename="../zscaler_api_client.py" line="8871" />
             <source>API Guide</source>
             <translation>API-opas</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8856" />
+            <location filename="../zscaler_api_client.py" line="8885" />
             <source>Dataset:</source>
             <translation>Tietojoukko:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8878" />
+            <location filename="../zscaler_api_client.py" line="8907" />
             <source>Open export</source>
             <translation>Avaa vienti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8879" />
+            <location filename="../zscaler_api_client.py" line="8908" />
             <source>Compare drift</source>
             <translation>Vertaa driftiä</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8899" />
+            <location filename="../zscaler_api_client.py" line="8928" />
             <source>Field</source>
             <translation>Kenttä</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9025" />
+            <location filename="../zscaler_api_client.py" line="9054" />
             <source>Open response export…</source>
             <translation>Avaa vastauksen vienti…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9026" />
+            <location filename="../zscaler_api_client.py" line="9055" />
             <source>Compare response drift…</source>
             <translation>Vertaa vasteen siirtymää…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9083" />
+            <location filename="../zscaler_api_client.py" line="9112" />
             <source>PAC &amp;Workspace...</source>
             <translation>PAC &amp;työtila...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9363" />
-            <location filename="../zscaler_api_client.py" line="9377" />
+            <location filename="../zscaler_api_client.py" line="9392" />
+            <location filename="../zscaler_api_client.py" line="9406" />
             <source>Required value</source>
             <translation>Vaadittu arvo</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9363" />
-            <location filename="../zscaler_api_client.py" line="9377" />
+            <location filename="../zscaler_api_client.py" line="9392" />
+            <location filename="../zscaler_api_client.py" line="9406" />
             <source>Optional value</source>
             <translation>Valinnainen arvo</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9411" />
+            <location filename="../zscaler_api_client.py" line="9440" />
             <source>body template available</source>
             <translation>runkomalli saatavilla</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9411" />
+            <location filename="../zscaler_api_client.py" line="9440" />
             <source>no body template</source>
             <translation>ei vartalomallia</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9412" />
+            <location filename="../zscaler_api_client.py" line="9441" />
             <source>not listed</source>
             <translation>ei listattu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9413" />
+            <location filename="../zscaler_api_client.py" line="9442" />
             <source>{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.</source>
             <translation>{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9417" />
+            <location filename="../zscaler_api_client.py" line="9446" />
             <source>Documented {mode} pagination is available as an explicit bounded option.</source>
             <translation>Documented {mode} pagination is available as an explicit bounded option.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9436" />
+            <location filename="../zscaler_api_client.py" line="9465" />
             <source>Documented {mode} pagination using {parameter}. Results retain every page and stop at the configured maximum.</source>
             <translation>Documented {mode} pagination using {parameter}. Results retain every page and stop at the configured maximum.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9448" />
+            <location filename="../zscaler_api_client.py" line="9477" />
             <source>The URL was edited manually. Select an endpoint again to attach its documented request contract.</source>
             <translation>URL-osoite on muokattu manuaalisesti. Valitse päätepiste uudelleen liittääksesi sen dokumentoidun pyyntösopimuksen.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9540" />
+            <location filename="../zscaler_api_client.py" line="9569" />
             <source>Active environment: {name}</source>
             <translation>Active environment: {name}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9552" />
+            <location filename="../zscaler_api_client.py" line="9581" />
             <source>The selected environment profile is unavailable.</source>
             <translation>Valittu ympäristöprofiili ei ole käytettävissä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9566" />
+            <location filename="../zscaler_api_client.py" line="9595" />
             <source>Environment profile active: {name}. Sessions and request data were cleared.</source>
             <translation>Environment profile active: {name}. Sessions and request data were cleared.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9610" />
+            <location filename="../zscaler_api_client.py" line="9639" />
             <source>Write request prepared</source>
             <translation>Kirjoita pyyntö valmis</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9611" />
+            <location filename="../zscaler_api_client.py" line="9640" />
             <source>The documented write template is ready. Review the API Guide, parameters, and body, then choose Send explicitly.</source>
             <translation>Dokumentoitu kirjoitusmalli on valmis. Tarkista API-opas, parametrit ja runko ja valitse sitten Lähetä erikseen.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9905" />
+            <location filename="../zscaler_api_client.py" line="9934" />
             <source>Suggested request: {method} {name}. Review the attached API Guide and all template values before running.</source>
             <translation>Suggested request: {method} {name}. Review the attached API Guide and all template values before running.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10053" />
+            <location filename="../zscaler_api_client.py" line="10082" />
             <source>No tabular response data is available to export.</source>
             <translation>Vietäväksi ei ole saatavilla taulukkomuotoisia vastaustietoja.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10203" />
-            <location filename="../zscaler_api_client.py" line="10214" />
+            <location filename="../zscaler_api_client.py" line="10232" />
+            <location filename="../zscaler_api_client.py" line="10243" />
             <source>Open response export</source>
             <translation>Avaa vastauksen vienti</translation>
         </message>
@@ -1933,150 +1933,150 @@ Size: {size}</translation>
             <translation type="vanished">Vastauksenvaihtotiedosto on epätäydellinen.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10237" />
+            <location filename="../zscaler_api_client.py" line="10266" />
             <source>Response export opened locally; no API request was sent.</source>
             <translation>Vastausten vienti avattu paikallisesti; API-pyyntöä ei lähetetty.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10952" />
+            <location filename="../zscaler_api_client.py" line="10981" />
             <source>Please enter a URL</source>
             <translation>Anna URL-osoite</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10973" />
+            <location filename="../zscaler_api_client.py" line="11002" />
             <source>Missing Path Variables</source>
             <translation>Puuttuvat polkumuuttujat</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10974" />
+            <location filename="../zscaler_api_client.py" line="11003" />
             <source>Enter values for: {names}</source>
             <translation>Enter values for: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11038" />
+            <location filename="../zscaler_api_client.py" line="11067" />
             <source>Missing documented parameters</source>
             <translation>Dokumentoidut parametrit puuttuvat</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11039" />
+            <location filename="../zscaler_api_client.py" line="11068" />
             <source>Enter required values for: {names}</source>
             <translation>Enter required values for: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11109" />
+            <location filename="../zscaler_api_client.py" line="11138" />
             <source>Sending request...</source>
             <translation>Lähetetään pyyntöä...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11140" />
+            <location filename="../zscaler_api_client.py" line="11169" />
             <source>Pagination unavailable</source>
             <translation>Sivutus ei ole käytettävissä</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11140" />
+            <location filename="../zscaler_api_client.py" line="11169" />
             <source>Select a documented paginated GET operation before fetching all pages.</source>
             <translation>Valitse dokumentoitu sivutettu GET-toiminto ennen kaikkien sivujen hakemista.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11158" />
+            <location filename="../zscaler_api_client.py" line="11187" />
             <source>Fetching page {page} of at most {maximum}…</source>
             <translation>Fetching page {page} of at most {maximum}…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11162" />
+            <location filename="../zscaler_api_client.py" line="11191" />
             <source>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</source>
             <translation>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11171" />
+            <location filename="../zscaler_api_client.py" line="11200" />
             <source>Cancellation requested; waiting for the current HTTP request to finish safely…</source>
             <translation>Peruutus pyydetty; odottaa nykyisen HTTP-pyynnön päättymistä turvallisesti…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11184" />
+            <location filename="../zscaler_api_client.py" line="11213" />
             <source>Request cancelled before completion</source>
             <translation>Pyyntö peruttu ennen valmistumista</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11232" />
+            <location filename="../zscaler_api_client.py" line="11261" />
             <source>Safe read retries: {count}</source>
             <translation>Safe read retries: {count}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11293" />
+            <location filename="../zscaler_api_client.py" line="11322" />
             <source>Pagination complete: {pages} page(s), {records} record(s)</source>
             <translation>Pagination complete: {pages} page(s), {records} record(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11300" />
+            <location filename="../zscaler_api_client.py" line="11329" />
             <source>Pagination stopped before completion: {pages} page(s), {records} record(s)</source>
             <translation>Pagination stopped before completion: {pages} page(s), {records} record(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11305" />
+            <location filename="../zscaler_api_client.py" line="11334" />
             <source>Request successful</source>
             <translation>Pyyntö onnistui</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11315" />
+            <location filename="../zscaler_api_client.py" line="11344" />
             <source>ZIA authenticated successfully</source>
             <translation>ZIA todennettu onnistuneesti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11324" />
+            <location filename="../zscaler_api_client.py" line="11353" />
             <source>ZPA authenticated successfully</source>
             <translation>ZPA-todennus onnistui</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11328" />
+            <location filename="../zscaler_api_client.py" line="11357" />
             <source>ZDX authenticated successfully</source>
             <translation>ZDX-todennus onnistui</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11332" />
+            <location filename="../zscaler_api_client.py" line="11361" />
             <source>ZCC authenticated successfully</source>
             <translation>ZCC todennettu onnistuneesti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11336" />
+            <location filename="../zscaler_api_client.py" line="11365" />
             <source>ZIdentity authenticated successfully</source>
             <translation>ZIdentity todennettu onnistuneesti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11340" />
+            <location filename="../zscaler_api_client.py" line="11369" />
             <source>ZTW authenticated successfully</source>
             <translation>ZTW-todennus onnistui</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11344" />
+            <location filename="../zscaler_api_client.py" line="11373" />
             <source>ZWA authenticated successfully</source>
             <translation>ZWA todennettu onnistuneesti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11348" />
+            <location filename="../zscaler_api_client.py" line="11377" />
             <source>EASM authenticated successfully</source>
             <translation>EASM todennettu onnistuneesti</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11352" />
+            <location filename="../zscaler_api_client.py" line="11381" />
             <source>OneAPI authenticated successfully</source>
             <translation>OneAPI-todennus onnistui</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11357" />
+            <location filename="../zscaler_api_client.py" line="11386" />
             <source>Authenticated successfully</source>
             <translation>Todennus onnistui</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11390" />
-            <location filename="../zscaler_api_client.py" line="11396" />
+            <location filename="../zscaler_api_client.py" line="11419" />
+            <location filename="../zscaler_api_client.py" line="11425" />
             <source>Request failed</source>
             <translation>Pyyntö epäonnistui</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11457" />
-            <location filename="../zscaler_api_client.py" line="11460" />
-            <location filename="../zscaler_api_client.py" line="11514" />
+            <location filename="../zscaler_api_client.py" line="11486" />
+            <location filename="../zscaler_api_client.py" line="11489" />
+            <location filename="../zscaler_api_client.py" line="11543" />
             <source>Batch</source>
             <translation>Erä</translation>
         </message>
@@ -2085,12 +2085,12 @@ Size: {size}</translation>
             <translation type="vanished">Processing {count} items...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11562" />
+            <location filename="../zscaler_api_client.py" line="11591" />
             <source>Request loaded from history</source>
             <translation>Pyyntö ladattu historiasta</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11629" />
+            <location filename="../zscaler_api_client.py" line="11658" />
             <source>No URL to copy</source>
             <translation>Ei URL-osoitetta kopioitavaksi</translation>
         </message>
@@ -2103,53 +2103,53 @@ Size: {size}</translation>
             <translation type="vanished">Vastaus kopioitu leikepöydälle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11648" />
+            <location filename="../zscaler_api_client.py" line="11677" />
             <source>No response to copy</source>
             <translation>Ei vastausta kopiointiin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11684" />
+            <location filename="../zscaler_api_client.py" line="11713" />
             <source>Request cleared</source>
             <translation>Pyyntö tyhjennetty</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11697" />
-            <location filename="../zscaler_api_client.py" line="11748" />
+            <location filename="../zscaler_api_client.py" line="11726" />
+            <location filename="../zscaler_api_client.py" line="11777" />
             <source>Missing Credentials</source>
             <translation>Tunnukset puuttuvat</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11698" />
+            <location filename="../zscaler_api_client.py" line="11727" />
             <source>Please configure ZIA credentials in Settings first.</source>
             <translation>Määritä ensin ZIA-tunnistetiedot asetuksissa.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11720" />
+            <location filename="../zscaler_api_client.py" line="11749" />
             <source>ZIA auth request prepared. Click Send to authenticate.</source>
             <translation>ZIA-todennuspyyntö valmis. Vahvista napsauttamalla Lähetä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11749" />
+            <location filename="../zscaler_api_client.py" line="11778" />
             <source>Please configure ZPA credentials in Settings first.</source>
             <translation>Määritä ensin ZPA-kirjautumistiedot asetuksista.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11762" />
+            <location filename="../zscaler_api_client.py" line="11791" />
             <source>ZPA auth request prepared. Click Send to authenticate.</source>
             <translation>ZPA-todennuspyyntö valmis. Vahvista napsauttamalla Lähetä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11767" />
+            <location filename="../zscaler_api_client.py" line="11796" />
             <source>All sessions cleared</source>
             <translation>Kaikki istunnot tyhjennetty</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11790" />
+            <location filename="../zscaler_api_client.py" line="11819" />
             <source>Language Changed</source>
             <translation>Kieli muutettu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11791" />
+            <location filename="../zscaler_api_client.py" line="11820" />
             <source>The application needs to restart to apply the new language.
 
 Restart now?</source>
@@ -2158,49 +2158,49 @@ Restart now?</source>
 Aloitetaanko nyt uudelleen?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11839" />
+            <location filename="../zscaler_api_client.py" line="11868" />
             <source>Checking for updates...</source>
             <translation>Tarkistetaan päivityksiä...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11912" />
+            <location filename="../zscaler_api_client.py" line="11941" />
             <source>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</source>
             <translation>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11916" />
+            <location filename="../zscaler_api_client.py" line="11945" />
             <source>Update Available</source>
             <translation>Päivitys saatavilla</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11918" />
+            <location filename="../zscaler_api_client.py" line="11947" />
             <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
             <translation>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11938" />
+            <location filename="../zscaler_api_client.py" line="11967" />
             <source>Update available: v{version}</source>
             <translation>Update available: v{version}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11941" />
+            <location filename="../zscaler_api_client.py" line="11970" />
             <source>You are up to date (v{version})</source>
             <translation>You are up to date (v{version})</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11946" />
+            <location filename="../zscaler_api_client.py" line="11975" />
             <source>Update Check Failed</source>
             <translation>Päivitystarkistus epäonnistui</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11947" />
+            <location filename="../zscaler_api_client.py" line="11976" />
             <source>Could not check for updates:
 {error}</source>
             <translation>Could not check for updates:
 {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11949" />
+            <location filename="../zscaler_api_client.py" line="11978" />
             <source>Update check failed</source>
             <translation>Päivitystarkistus epäonnistui</translation>
         </message>
@@ -5584,596 +5584,601 @@ Ada,ada@example.com</translation>
     <context>
         <name>PacWorkspaceDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="8087" />
-            <location filename="../zscaler_api_client.py" line="8408" />
+            <location filename="../zscaler_api_client.py" line="8112" />
+            <location filename="../zscaler_api_client.py" line="8437" />
             <source>PAC Workspace</source>
             <translation>PAC-työtila</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8091" />
+            <location filename="../zscaler_api_client.py" line="8116" />
             <source>Create and verify PAC files locally. API operations are prepared in the request editor and are never sent or deployed automatically.</source>
             <translation>Luo ja tarkista PAC-tiedostot paikallisesti. API-toiminnot valmistetaan pyyntöeditorissa, eikä niitä koskaan lähetetä tai oteta käyttöön automaattisesti.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8096" />
+            <location filename="../zscaler_api_client.py" line="8121" />
             <source>PAC experience:</source>
             <translation>PAC-kokemus:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8098" />
+            <location filename="../zscaler_api_client.py" line="8123" />
             <source>Guided (recommended)</source>
             <translation>Opastettu (suositus)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8099" />
+            <location filename="../zscaler_api_client.py" line="8124" />
             <source>Advanced</source>
             <translation>Edistynyt</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8116" />
+            <location filename="../zscaler_api_client.py" line="8141" />
             <source>PAC name:</source>
             <translation>PAC-nimi:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8117" />
+            <location filename="../zscaler_api_client.py" line="8142" />
             <source>Change note:</source>
             <translation>Muuta huomautusta:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8118" />
+            <location filename="../zscaler_api_client.py" line="8143" />
             <source>Hosted PAC URL (optional for ZCC):</source>
             <translation>Isännöity PAC-URL-osoite (valinnainen ZCC:lle):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8119" />
+            <location filename="../zscaler_api_client.py" line="8144" />
             <source>Existing ZIA PAC ID (for lifecycle actions):</source>
             <translation>Nykyinen ZIA PAC -tunnus (elinkaaritoimintoja varten):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8120" />
+            <location filename="../zscaler_api_client.py" line="8145" />
             <source>ZIA PAC version:</source>
             <translation>ZIA PAC -versio:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8121" />
+            <location filename="../zscaler_api_client.py" line="8146" />
             <source>ZIA version action:</source>
             <translation>ZIA-version toiminta:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8128" />
+            <location filename="../zscaler_api_client.py" line="8153" />
             <source>Start with a safe baseline. Enter only internal destinations that must bypass Zscaler; all other traffic uses the selected gateway and failover.</source>
             <translation>Aloita turvallisesta lähtökohdasta. Anna vain sisäiset kohteet, joiden on ohitettava Zscaler; kaikki muu liikenne käyttää valittua yhdyskäytävää ja vikasietoa.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8136" />
+            <location filename="../zscaler_api_client.py" line="8161" />
             <source>Direct-bypass host patterns (one per line):</source>
             <translation>Suoran ohituksen isäntämallit (yksi per rivi):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8137" />
+            <location filename="../zscaler_api_client.py" line="8162" />
             <source>Primary gateway:</source>
             <translation>Ensisijainen yhdyskäytävä:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8138" />
+            <location filename="../zscaler_api_client.py" line="8163" />
             <source>Secondary gateway:</source>
             <translation>Toissijainen yhdyskäytävä:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8141" />
+            <location filename="../zscaler_api_client.py" line="8166" />
             <source>Create guided PAC</source>
             <translation>Luo ohjattu PAC</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8142" />
+            <location filename="../zscaler_api_client.py" line="8167" />
             <source>Load safe example</source>
             <translation>Lataa turvallinen esimerkki</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8145" />
+            <location filename="../zscaler_api_client.py" line="8170" />
             <source>Generated PAC preview (read-only):</source>
             <translation>Generated PAC preview (read-only):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8151" />
+            <location filename="../zscaler_api_client.py" line="8177" />
             <source>Guided setup</source>
             <translation>Ohjattu asennus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8153" />
+            <location filename="../zscaler_api_client.py" line="8179" />
             <source>PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.</source>
             <translation>PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8159" />
+            <location filename="../zscaler_api_client.py" line="8184" />
+            <source>Color guide: blue = PAC structure, amber = DIRECT bypass, green = proxy route, purple = variable, cyan = Zscaler endpoint, orange = IP/network, red = performance-sensitive DNS helper.</source>
+            <translation>Color guide: blue = PAC structure, amber = DIRECT bypass, green = proxy route, purple = variable, cyan = Zscaler endpoint, orange = IP/network, red = performance-sensitive DNS helper.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8188" />
             <source>Load PAC…</source>
             <translation>Lataa PAC…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8160" />
+            <location filename="../zscaler_api_client.py" line="8189" />
             <source>Save PAC…</source>
             <translation>Tallenna PAC…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8161" />
+            <location filename="../zscaler_api_client.py" line="8190" />
             <source>Save local draft</source>
             <translation>Tallenna paikallinen luonnos</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8164" />
+            <location filename="../zscaler_api_client.py" line="8193" />
             <source>Author</source>
             <translation>Tekijä</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8167" />
+            <location filename="../zscaler_api_client.py" line="8196" />
             <source>Variables (JSON). Standard Zscaler names: </source>
             <translation>Muuttujat (JSON). Tavalliset Zscaler-nimet: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8171" />
+            <location filename="../zscaler_api_client.py" line="8200" />
             <source>Test URL:</source>
             <translation>Testin URL-osoite:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8173" />
+            <location filename="../zscaler_api_client.py" line="8202" />
             <source>Apply variables</source>
             <translation>Käytä muuttujia</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8174" />
+            <location filename="../zscaler_api_client.py" line="8203" />
             <source>Run static verification</source>
             <translation>Suorita staattinen vahvistus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8175" />
+            <location filename="../zscaler_api_client.py" line="8204" />
             <source>Preview decision</source>
             <translation>Päätöksen esikatselu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8178" />
+            <location filename="../zscaler_api_client.py" line="8207" />
             <source>Verify</source>
             <translation>Vahvista</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8181" />
+            <location filename="../zscaler_api_client.py" line="8210" />
             <source>PAC reference and review help. The verifier never executes JavaScript; validate in ZIA and test a pilot group before deployment.</source>
             <translation>PAC-viite- ja arvosteluohjeet. Todentaja ei koskaan suorita JavaScriptiä; validoi ZIA:ssa ja testaa pilottiryhmää ennen käyttöönottoa.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8182" />
+            <location filename="../zscaler_api_client.py" line="8211" />
             <source>Variable or function</source>
             <translation>Muuttuja tai funktio</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8182" />
+            <location filename="../zscaler_api_client.py" line="8211" />
             <source>Purpose / guidance</source>
             <translation>Tarkoitus / opastus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8190" />
+            <location filename="../zscaler_api_client.py" line="8219" />
             <source>Roll out in stages: validate, test representative URLs, stage to a small pilot group, then deploy. Prefer host-pattern checks; avoid DNS helpers in Client Connector PAC files where possible.</source>
             <translation>Ota käyttöön vaiheittain: vahvista, testaa edustavat URL-osoitteet, vaihe pieneen pilottiryhmään ja ota sitten käyttöön. Suosi isäntämallin tarkistuksia; Vältä DNS-auttajia Client Connector PAC -tiedostoissa mahdollisuuksien mukaan.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8192" />
+            <location filename="../zscaler_api_client.py" line="8221" />
             <source>Help and reference</source>
             <translation>Ohje ja viittaus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8195" />
+            <location filename="../zscaler_api_client.py" line="8224" />
             <source>Map supplied ZIA PAC metadata to ZCC forwarding-profile actions. Matches use hosted PAC URLs or an inline PAC content fingerprint; names alone are never treated as a match.</source>
             <translation>Map toimitti ZIA PAC -metatiedot ZCC:n edelleenlähetysprofiilitoimintoihin. Otteluissa käytetään isännöityjä PAC-URL-osoitteita tai sisäistä PAC-sisällön sormenjälkeä. Pelkästään nimiä ei koskaan käsitellä vastaavuutena.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8198" />
+            <location filename="../zscaler_api_client.py" line="8227" />
             <source>ZIA PAC list JSON</source>
             <translation>ZIA PAC -luettelo JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8200" />
+            <location filename="../zscaler_api_client.py" line="8229" />
             <source>ZCC forwarding-profile list JSON</source>
             <translation>ZCC-välitysprofiililuettelo JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8204" />
+            <location filename="../zscaler_api_client.py" line="8233" />
             <source>Build PAC mappings</source>
             <translation>Rakenna PAC-kartoitukset</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8205" />
-            <location filename="../zscaler_api_client.py" line="8240" />
+            <location filename="../zscaler_api_client.py" line="8234" />
+            <location filename="../zscaler_api_client.py" line="8269" />
             <source>Prepare ZIA PAC list</source>
             <translation>Valmistele ZIA PAC -luettelo</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8206" />
-            <location filename="../zscaler_api_client.py" line="8232" />
+            <location filename="../zscaler_api_client.py" line="8235" />
+            <location filename="../zscaler_api_client.py" line="8261" />
             <source>Prepare ZCC profile list</source>
             <translation>Valmistele ZCC-profiililuettelo</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>ZCC profile</source>
             <translation>ZCC profiili</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>Action / network</source>
             <translation>Toiminta / verkko</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>PAC type</source>
             <translation>PAC tyyppi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>PAC reference</source>
             <translation>PAC-viite</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>ZIA status</source>
             <translation>ZIA tila</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>Mapping result</source>
             <translation>Kartoitustulos</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>Profile ID</source>
             <translation>Profiilin tunnus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8212" />
-            <location filename="../zscaler_api_client.py" line="8321" />
+            <location filename="../zscaler_api_client.py" line="8241" />
+            <location filename="../zscaler_api_client.py" line="8350" />
             <source>PAC mappings</source>
             <translation>PAC-kartoitukset</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8215" />
+            <location filename="../zscaler_api_client.py" line="8244" />
             <source>Search the bundled Zscaler Configuration Center index of Cloud Enforcement Node ranges, proxy/VPN hostnames, GRE and extranet virtual IP addresses. The PAC editor shows a help balloon when a line references an indexed endpoint.</source>
             <translation>Hae mukana toimitetusta Zscaler Configuration Center -hakemistosta Cloud Enforcement Node -alueista, välityspalvelin-/VPN-isäntänimistä, GRE- ja extranet-virtuaali-IP-osoitteista. PAC-editori näyttää ohjepallon, kun rivi viittaa indeksoituun päätepisteeseen.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8219" />
+            <location filename="../zscaler_api_client.py" line="8248" />
             <source>Search city, CIDR, hostname, GRE or VPN address</source>
             <translation>Hae kaupunkia, CIDR:ää, isäntänimeä, GRE- tai VPN-osoitetta</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8220" />
+            <location filename="../zscaler_api_client.py" line="8249" />
             <source>Search data centers</source>
             <translation>Hae palvelinkeskuksia</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>Continent</source>
             <translation>Manner</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>Data center</source>
             <translation>Datakeskus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>CIDR range</source>
             <translation>CIDR valikoima</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>Proxy hostname</source>
             <translation>Välityspalvelimen isäntänimi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>VPN hostname</source>
             <translation>VPN-isäntänimi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>GRE VIP</source>
             <translation>GRE VIP</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>Extranet VIP</source>
             <translation>Extranet VIP</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>Coordinates</source>
             <translation>Koordinaatit</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8226" />
+            <location filename="../zscaler_api_client.py" line="8255" />
             <source>Zscaler data centers</source>
             <translation>Zscaler-palvelinkeskukset</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8229" />
+            <location filename="../zscaler_api_client.py" line="8258" />
             <source>Paste a forwarding profile returned by ZCC, or first prepare the profile-list request. Existing profile fields are preserved when PAC fields are updated.</source>
             <translation>Liitä ZCC:n palauttama edelleenlähetysprofiili tai valmistele ensin profiililuettelopyyntö. Olemassa olevat profiilikentät säilytetään, kun PAC-kentät päivitetään.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8233" />
+            <location filename="../zscaler_api_client.py" line="8262" />
             <source>Prepare ZCC update</source>
             <translation>Valmistele ZCC-päivitys</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8235" />
+            <location filename="../zscaler_api_client.py" line="8264" />
             <source>ZCC / Mobile Portal</source>
             <translation>ZCC / mobiiliportaali</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8238" />
+            <location filename="../zscaler_api_client.py" line="8267" />
             <source>Prepare ZIA validation</source>
             <translation>Valmistele ZIA-validointi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8239" />
+            <location filename="../zscaler_api_client.py" line="8268" />
             <source>Prepare ZIA hosted PAC upload</source>
             <translation>Valmistele ZIA-isännöimä PAC-lataus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8241" />
+            <location filename="../zscaler_api_client.py" line="8270" />
             <source>Prepare ZIA version action</source>
             <translation>Valmistele ZIA-version toiminto</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8242" />
+            <location filename="../zscaler_api_client.py" line="8271" />
             <source>Close</source>
             <translation>Sulje</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8261" />
+            <location filename="../zscaler_api_client.py" line="8290" />
             <source>Guided mode creates a minimal, reviewable PAC. Switch to Advanced to edit JavaScript, update ZCC profiles, or prepare ZIA lifecycle actions.</source>
             <translation>Ohjattu tila luo minimaalisen, tarkistettavan PAC:n. Vaihda kohtaan Lisäasetukset muokataksesi JavaScriptiä, päivittääksesi ZCC-profiileja tai valmistellaksesi ZIA:n elinkaaritoimintoja.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8262" />
+            <location filename="../zscaler_api_client.py" line="8291" />
             <source>Advanced mode exposes the PAC editor, ZCC profile patching, and ZIA version lifecycle actions. Every write remains explicit.</source>
             <translation>Edistynyt tila paljastaa PAC-editorin, ZCC-profiilien korjauksen ja ZIA-version elinkaaren toiminnot. Jokainen kirjoitus pysyy selkeänä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8273" />
+            <location filename="../zscaler_api_client.py" line="8302" />
             <source>Primary Zscaler gateway.</source>
             <translation>Primary Zscaler gateway.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8273" />
+            <location filename="../zscaler_api_client.py" line="8302" />
             <source>Secondary Zscaler gateway.</source>
             <translation>Secondary Zscaler gateway.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8274" />
+            <location filename="../zscaler_api_client.py" line="8303" />
             <source>Primary gateway with failover support.</source>
             <translation>Primary gateway with failover support.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8274" />
+            <location filename="../zscaler_api_client.py" line="8303" />
             <source>Secondary gateway with failover support.</source>
             <translation>Secondary gateway with failover support.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8275" />
+            <location filename="../zscaler_api_client.py" line="8304" />
             <source>Optional local deployment label.</source>
             <translation>Optional local deployment label.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8275" />
+            <location filename="../zscaler_api_client.py" line="8304" />
             <source>Zscaler cloud name.</source>
             <translation>Zscaler cloud name.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8276" />
+            <location filename="../zscaler_api_client.py" line="8305" />
             <source>Primary gateway for an explicit subcloud.</source>
             <translation>Primary gateway for an explicit subcloud.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8277" />
+            <location filename="../zscaler_api_client.py" line="8306" />
             <source>Secondary gateway for an explicit subcloud.</source>
             <translation>Secondary gateway for an explicit subcloud.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8280" />
+            <location filename="../zscaler_api_client.py" line="8309" />
             <source>Required PAC entry point; returns DIRECT, PROXY, or SOCKS.</source>
             <translation>Required PAC entry point; returns DIRECT, PROXY, or SOCKS.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8281" />
+            <location filename="../zscaler_api_client.py" line="8310" />
             <source>Matches a host without a DNS suffix.</source>
             <translation>Matches a host without a DNS suffix.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8282" />
+            <location filename="../zscaler_api_client.py" line="8311" />
             <source>Matches a DNS suffix.</source>
             <translation>Matches a DNS suffix.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8283" />
+            <location filename="../zscaler_api_client.py" line="8312" />
             <source>Matches a local host or fully qualified name.</source>
             <translation>Matches a local host or fully qualified name.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8284" />
+            <location filename="../zscaler_api_client.py" line="8313" />
             <source>Matches wildcard patterns such as *.example.com.</source>
             <translation>Matches wildcard patterns such as *.example.com.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8285" />
+            <location filename="../zscaler_api_client.py" line="8314" />
             <source>Counts DNS labels in a host name.</source>
             <translation>Counts DNS labels in a host name.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8286" />
+            <location filename="../zscaler_api_client.py" line="8315" />
             <source>Matches a weekday range.</source>
             <translation>Matches a weekday range.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8286" />
+            <location filename="../zscaler_api_client.py" line="8315" />
             <source>Matches a date range.</source>
             <translation>Matches a date range.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8287" />
+            <location filename="../zscaler_api_client.py" line="8316" />
             <source>Matches a time range.</source>
             <translation>Matches a time range.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8288" />
+            <location filename="../zscaler_api_client.py" line="8317" />
             <source>Resolves DNS; avoid in Client Connector PAC files unless required.</source>
             <translation>Resolves DNS; avoid in Client Connector PAC files unless required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8289" />
+            <location filename="../zscaler_api_client.py" line="8318" />
             <source>Tests DNS resolution; avoid in Client Connector PAC files unless required.</source>
             <translation>Tests DNS resolution; avoid in Client Connector PAC files unless required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8290" />
+            <location filename="../zscaler_api_client.py" line="8319" />
             <source>Tests a network; avoid in Client Connector PAC files unless required.</source>
             <translation>Tests a network; avoid in Client Connector PAC files unless required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8299" />
+            <location filename="../zscaler_api_client.py" line="8328" />
             <source>Fix the guided input to generate a PAC preview: </source>
             <translation>Fix the guided input to generate a PAC preview: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8309" />
+            <location filename="../zscaler_api_client.py" line="8338" />
             <source>Guided PAC</source>
             <translation>Ohjattu PAC</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8313" />
+            <location filename="../zscaler_api_client.py" line="8342" />
             <source>Guided PAC created. Review the verification findings, test a URL, then prepare ZIA validation.</source>
             <translation>Ohjattu PAC luotu. Tarkista vahvistushavainnot, testaa URL-osoite ja valmistele sitten ZIA-vahvistus.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8321" />
+            <location filename="../zscaler_api_client.py" line="8350" />
             <source>Both mapping inputs must be valid JSON: </source>
             <translation>Molempien kartoitussyötteiden on oltava kelvollisia JSON-tiedostoja: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8330" />
+            <location filename="../zscaler_api_client.py" line="8359" />
             <source>Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.</source>
             <translation>Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8351" />
+            <location filename="../zscaler_api_client.py" line="8380" />
             <source>{matches} matching endpoint records from {total} indexed Zscaler data-center records. Source: {source}</source>
             <translation>{matches} matching endpoint records from {total} indexed Zscaler data-center records. Source: {source}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8360" />
-            <location filename="../zscaler_api_client.py" line="8362" />
             <location filename="../zscaler_api_client.py" line="8389" />
+            <location filename="../zscaler_api_client.py" line="8391" />
+            <location filename="../zscaler_api_client.py" line="8418" />
             <source>PAC variables</source>
             <translation>PAC-muuttujat</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8360" />
+            <location filename="../zscaler_api_client.py" line="8389" />
             <source>Variables must be valid JSON: </source>
             <translation>Muuttujien on oltava kelvollisia JSON-tiedostoja: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8362" />
+            <location filename="../zscaler_api_client.py" line="8391" />
             <source>Variables must be a JSON object with text or numeric values.</source>
             <translation>Muuttujien on oltava JSON-objekteja, joissa on teksti- tai numeerisia arvoja.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8371" />
+            <location filename="../zscaler_api_client.py" line="8400" />
             <source>none</source>
             <translation>ei yhtään</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8372" />
+            <location filename="../zscaler_api_client.py" line="8401" />
             <source>Detected variables: </source>
             <translation>Havaitut muuttujat: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8376" />
+            <location filename="../zscaler_api_client.py" line="8405" />
             <source>Improvement tips:</source>
             <translation>Parannusvinkkejä:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8388" />
+            <location filename="../zscaler_api_client.py" line="8417" />
             <source>Variables applied.</source>
             <translation>Muuttujat käytössä.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8388" />
+            <location filename="../zscaler_api_client.py" line="8417" />
             <source>Variables applied; missing values were retained: </source>
             <translation>Käytetyt muuttujat; puuttuvat arvot säilytettiin: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8393" />
+            <location filename="../zscaler_api_client.py" line="8422" />
             <source>Preview</source>
             <translation>Esikatselu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8408" />
+            <location filename="../zscaler_api_client.py" line="8437" />
             <source>PAC draft saved locally.</source>
             <translation>PAC-luonnos tallennettu paikallisesti.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8411" />
-            <location filename="../zscaler_api_client.py" line="8416" />
+            <location filename="../zscaler_api_client.py" line="8440" />
+            <location filename="../zscaler_api_client.py" line="8445" />
             <source>Load PAC</source>
             <translation>Lataa PAC</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8419" />
-            <location filename="../zscaler_api_client.py" line="8424" />
+            <location filename="../zscaler_api_client.py" line="8448" />
+            <location filename="../zscaler_api_client.py" line="8453" />
             <source>Save PAC</source>
             <translation>Säästä PAC</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8432" />
+            <location filename="../zscaler_api_client.py" line="8461" />
             <source>PAC request prepared</source>
             <translation>PAC-pyyntö valmis</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8432" />
+            <location filename="../zscaler_api_client.py" line="8461" />
             <source>The request was placed in the main editor. Review it and explicitly select Send Request; no deployment action has been performed.</source>
             <translation>Pyyntö laitettiin päätoimittajaan. Tarkista se ja valitse erikseen Lähetä pyyntö; käyttöönottotoimia ei ole suoritettu.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8437" />
+            <location filename="../zscaler_api_client.py" line="8466" />
             <source>PAC verification</source>
             <translation>PAC-tarkastus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8437" />
+            <location filename="../zscaler_api_client.py" line="8466" />
             <source>Resolve PAC errors before preparing an API write.</source>
             <translation>Ratkaise PAC-virheet ennen API-kirjoituksen valmistelua.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8453" />
+            <location filename="../zscaler_api_client.py" line="8482" />
             <source>ZIA PAC lifecycle</source>
             <translation>ZIA PAC:n elinkaari</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8453" />
+            <location filename="../zscaler_api_client.py" line="8482" />
             <source>Enter a numeric PAC ID and version before preparing a lifecycle action.</source>
             <translation>Anna numeerinen PAC-tunnus ja versio ennen elinkaaritoimenpiteen valmistelua.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8467" />
-            <location filename="../zscaler_api_client.py" line="8469" />
+            <location filename="../zscaler_api_client.py" line="8496" />
+            <location filename="../zscaler_api_client.py" line="8498" />
             <source>ZCC forwarding profile</source>
             <translation>ZCC-välitysprofiili</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8467" />
+            <location filename="../zscaler_api_client.py" line="8496" />
             <source>Profile must be valid JSON: </source>
             <translation>Profiilin on oltava kelvollinen JSON: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8469" />
+            <location filename="../zscaler_api_client.py" line="8498" />
             <source>Paste one ZCC forwarding profile object with its id before preparing an update.</source>
             <translation>Liitä yksi ZCC-lähetysprofiiliobjekti sen tunnuksella ennen päivityksen valmistelua.</translation>
         </message>
@@ -7375,12 +7380,12 @@ Ada,ada@example.com</translation>
     <context>
         <name>window</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="12101" />
+            <location filename="../zscaler_api_client.py" line="12130" />
             <source>Automatic Update Check</source>
             <translation>Automaattinen päivitysten tarkistus</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12103" />
+            <location filename="../zscaler_api_client.py" line="12132" />
             <source>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</source>
             <translation>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</translation>
         </message>

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.9] - 2026-08-27
+
+### Added
+- Color-coded PAC routing editor for structure, DIRECT bypasses, proxy routes, variables, Zscaler endpoints, IP networks, and performance-sensitive helpers.
+- Localized PAC preview and line-level guidance, enriched with matching Zscaler data-center and endpoint context.
+
 ## [2.8.8] - 2026-08-27
 
 ### Fixed

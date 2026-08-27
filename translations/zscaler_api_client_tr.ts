@@ -469,206 +469,206 @@
     <context>
         <name>MainWindow</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="8588" />
+            <location filename="../zscaler_api_client.py" line="8617" />
             <source>API Explorer</source>
             <translation>API Gezgini</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8591" />
-            <location filename="../zscaler_api_client.py" line="9915" />
+            <location filename="../zscaler_api_client.py" line="8620" />
+            <location filename="../zscaler_api_client.py" line="9944" />
             <source>Product</source>
             <translation>Ürün</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8601" />
+            <location filename="../zscaler_api_client.py" line="8630" />
             <source>Auth</source>
             <translation>Yetki</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8602" />
+            <location filename="../zscaler_api_client.py" line="8631" />
             <source>Authenticate with selected API (Ctrl+Shift+A)</source>
             <translation>Seçilen API ile kimlik doğrulaması yapın (Ctrl+Shift+A)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8612" />
+            <location filename="../zscaler_api_client.py" line="8641" />
             <source>🔍 Filter endpoints...</source>
             <translation>🔍 Uç noktaları filtrele...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8623" />
+            <location filename="../zscaler_api_client.py" line="8652" />
             <source>Endpoints</source>
             <translation>Uç noktalar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8629" />
+            <location filename="../zscaler_api_client.py" line="8658" />
             <source>Output</source>
             <translation>Çıkış</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8635" />
+            <location filename="../zscaler_api_client.py" line="8664" />
             <source>Authentication status, requests, and audit info...</source>
             <translation>Kimlik doğrulama durumu, istekler ve denetim bilgileri...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8646" />
+            <location filename="../zscaler_api_client.py" line="8675" />
             <source>Request Builder</source>
             <translation>Oluşturucu İste</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8669" />
+            <location filename="../zscaler_api_client.py" line="8698" />
             <source>Enter URL or select endpoint...</source>
             <translation>URL'yi girin veya uç noktayı seçin...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8673" />
+            <location filename="../zscaler_api_client.py" line="8702" />
             <source>Send</source>
             <translation>Gönder</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8674" />
+            <location filename="../zscaler_api_client.py" line="8703" />
             <source>Send request (Ctrl+Return)</source>
             <translation>İsteği gönder (Ctrl+Return)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8682" />
+            <location filename="../zscaler_api_client.py" line="8711" />
             <source>cURL</source>
             <translation>kıvrılma</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8683" />
+            <location filename="../zscaler_api_client.py" line="8712" />
             <source>Copy request as cURL command (Ctrl+Shift+C)</source>
             <translation>İsteği cURL komutu olarak kopyala (Ctrl+Shift+C)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8689" />
+            <location filename="../zscaler_api_client.py" line="8718" />
             <source>GraphQL request</source>
             <translation>GraphQL isteği</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8690" />
+            <location filename="../zscaler_api_client.py" line="8719" />
             <source>Send the request body as a GraphQL query and preserve data, errors, and extensions.</source>
             <translation>İstek gövdesini GraphQL sorgusu olarak gönderin ve verileri, hataları ve uzantıları koruyun.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8709" />
+            <location filename="../zscaler_api_client.py" line="8738" />
             <source>Saved GraphQL query name</source>
             <translation>GraphQL sorgu adı kaydedildi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8713" />
+            <location filename="../zscaler_api_client.py" line="8742" />
             <source>Save query</source>
             <translation>Sorguyu kaydet</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8716" />
+            <location filename="../zscaler_api_client.py" line="8745" />
             <source>Load query</source>
             <translation>Sorguyu yükle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8719" />
+            <location filename="../zscaler_api_client.py" line="8748" />
             <source>Rename query</source>
             <translation>Sorguyu yeniden adlandır</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8722" />
+            <location filename="../zscaler_api_client.py" line="8751" />
             <source>Delete query</source>
             <translation>Sorguyu sil</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8725" />
+            <location filename="../zscaler_api_client.py" line="8754" />
             <source>Introspect schema</source>
             <translation>İç gözlem şeması</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8728" />
+            <location filename="../zscaler_api_client.py" line="8757" />
             <source>Load saved schema</source>
             <translation>Kaydedilen şemayı yükle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8755" />
-            <location filename="../zscaler_api_client.py" line="8764" />
+            <location filename="../zscaler_api_client.py" line="8784" />
+            <location filename="../zscaler_api_client.py" line="8793" />
             <source>Key</source>
             <translation>Anahtar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8755" />
-            <location filename="../zscaler_api_client.py" line="8764" />
-            <location filename="../zscaler_api_client.py" line="8824" />
-            <location filename="../zscaler_api_client.py" line="8899" />
+            <location filename="../zscaler_api_client.py" line="8784" />
+            <location filename="../zscaler_api_client.py" line="8793" />
+            <location filename="../zscaler_api_client.py" line="8853" />
+            <location filename="../zscaler_api_client.py" line="8928" />
             <source>Value</source>
             <translation>Değer</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8758" />
+            <location filename="../zscaler_api_client.py" line="8787" />
             <source>Params</source>
             <translation>Parametreler</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8767" />
-            <location filename="../zscaler_api_client.py" line="8892" />
+            <location filename="../zscaler_api_client.py" line="8796" />
+            <location filename="../zscaler_api_client.py" line="8921" />
             <source>Headers</source>
             <translation>Başlıklar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8800" />
-            <location filename="../zscaler_api_client.py" line="10622" />
+            <location filename="../zscaler_api_client.py" line="8829" />
+            <location filename="../zscaler_api_client.py" line="10651" />
             <source>Request body (JSON)...</source>
             <translation>İstek gövdesi (JSON)...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8804" />
-            <location filename="../zscaler_api_client.py" line="8891" />
+            <location filename="../zscaler_api_client.py" line="8833" />
+            <location filename="../zscaler_api_client.py" line="8920" />
             <source>Body</source>
             <translation>Vücut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8811" />
-            <location filename="../zscaler_api_client.py" line="8824" />
+            <location filename="../zscaler_api_client.py" line="8840" />
+            <location filename="../zscaler_api_client.py" line="8853" />
             <source>Variable</source>
             <translation>Değişken</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8827" />
+            <location filename="../zscaler_api_client.py" line="8856" />
             <source>Path Variables</source>
             <translation>Yol Değişkenleri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8849" />
-            <location filename="../zscaler_api_client.py" line="10527" />
+            <location filename="../zscaler_api_client.py" line="8878" />
+            <location filename="../zscaler_api_client.py" line="10556" />
             <source>Response</source>
             <translation>Yanıt</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8864" />
+            <location filename="../zscaler_api_client.py" line="8893" />
             <source>Pretty</source>
             <translation>Güzel</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8867" />
+            <location filename="../zscaler_api_client.py" line="8896" />
             <source>Toggle pretty-print JSON (Ctrl+P)</source>
             <translation>Güzel yazdırma JSON'unu değiştir (Ctrl+P)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8872" />
-            <location filename="../zscaler_api_client.py" line="10034" />
-            <location filename="../zscaler_api_client.py" line="10053" />
-            <location filename="../zscaler_api_client.py" line="10058" />
-            <location filename="../zscaler_api_client.py" line="10066" />
+            <location filename="../zscaler_api_client.py" line="8901" />
+            <location filename="../zscaler_api_client.py" line="10063" />
+            <location filename="../zscaler_api_client.py" line="10082" />
+            <location filename="../zscaler_api_client.py" line="10087" />
+            <location filename="../zscaler_api_client.py" line="10095" />
             <source>Export response</source>
             <translation>Yanıtı dışa aktar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8875" />
+            <location filename="../zscaler_api_client.py" line="8904" />
             <source>Preview export</source>
             <translation>Dışa aktarmayı önizle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8895" />
+            <location filename="../zscaler_api_client.py" line="8924" />
             <source>Table</source>
             <translation>Tablo</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8897" />
+            <location filename="../zscaler_api_client.py" line="8926" />
             <source>Chart</source>
             <translation>Grafik</translation>
         </message>
@@ -677,239 +677,239 @@
             <translation type="vanished">JSON yapısı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8901" />
+            <location filename="../zscaler_api_client.py" line="8930" />
             <source>Tree</source>
             <translation>Ağaç</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8904" />
+            <location filename="../zscaler_api_client.py" line="8933" />
             <source>Heatmap</source>
             <translation>Isı haritası</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8907" />
+            <location filename="../zscaler_api_client.py" line="8936" />
             <source>Topology</source>
             <translation>Topoloji</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8911" />
+            <location filename="../zscaler_api_client.py" line="8940" />
             <source>Schema</source>
             <translation>Şema</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8916" />
-            <location filename="../zscaler_api_client.py" line="8982" />
+            <location filename="../zscaler_api_client.py" line="8945" />
+            <location filename="../zscaler_api_client.py" line="9011" />
             <source>AI Assistant</source>
             <translation>Yapay Zeka Asistanı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8919" />
+            <location filename="../zscaler_api_client.py" line="8948" />
             <source>Ask a OneAPI question, e.g. list ZPA application segments</source>
             <translation>Bir OneAPI sorusu sorun, ör. ZPA uygulama segmentlerini listele</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8923" />
+            <location filename="../zscaler_api_client.py" line="8952" />
             <source>Choose a guided AI example…</source>
             <translation>Rehberli bir yapay zeka örneği seçin…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8929" />
+            <location filename="../zscaler_api_client.py" line="8958" />
             <source>Find API request</source>
             <translation>API isteğini bulun</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8932" />
+            <location filename="../zscaler_api_client.py" line="8961" />
             <source>Run selected request</source>
             <translation>Seçilen isteği çalıştır</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8935" />
+            <location filename="../zscaler_api_client.py" line="8964" />
             <source>Export result</source>
             <translation>Sonucu dışa aktar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8939" />
-            <location filename="../zscaler_api_client.py" line="11682" />
+            <location filename="../zscaler_api_client.py" line="8968" />
+            <location filename="../zscaler_api_client.py" line="11711" />
             <source>Ask in plain language. Sensitive values are masked before display or export.</source>
             <translation>Sade bir dille sorun. Hassas değerler görüntülenmeden veya dışa aktarılmadan önce maskelenir.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8945" />
+            <location filename="../zscaler_api_client.py" line="8974" />
             <source>AI request preview appears here before execution.</source>
             <translation>AI isteğinin önizlemesi yürütmeden önce burada görünür.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8951" />
+            <location filename="../zscaler_api_client.py" line="8980" />
             <source>Bar chart</source>
             <translation>Çubuk grafik</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8952" />
+            <location filename="../zscaler_api_client.py" line="8981" />
             <source>Line chart</source>
             <translation>Çizgi grafiği</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8953" />
+            <location filename="../zscaler_api_client.py" line="8982" />
             <source>Pie chart</source>
             <translation>Pasta grafiği</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8962" />
+            <location filename="../zscaler_api_client.py" line="8991" />
             <source>Help</source>
             <translation>Yardım</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8980" />
+            <location filename="../zscaler_api_client.py" line="9009" />
             <source>Documentation</source>
             <translation>Dokümantasyon</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8981" />
+            <location filename="../zscaler_api_client.py" line="9010" />
             <source>Console</source>
             <translation>Konsol</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8998" />
+            <location filename="../zscaler_api_client.py" line="9027" />
             <source>Ready</source>
             <translation>Hazır</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9007" />
+            <location filename="../zscaler_api_client.py" line="9036" />
             <source>&amp;File</source>
             <translation>&amp;Dosya</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9009" />
+            <location filename="../zscaler_api_client.py" line="9038" />
             <source>&amp;Settings...</source>
             <translation>&amp;Ayarlar...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9014" />
+            <location filename="../zscaler_api_client.py" line="9043" />
             <source>&amp;Batch Operations...</source>
             <translation>&amp;Toplu İşlemler...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9021" />
+            <location filename="../zscaler_api_client.py" line="9050" />
             <source>Request &amp;History...</source>
             <translation>Talep &amp;Geçmiş...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9030" />
+            <location filename="../zscaler_api_client.py" line="9059" />
             <source>&amp;Quit</source>
             <translation>&amp;Çık</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9036" />
+            <location filename="../zscaler_api_client.py" line="9065" />
             <source>&amp;Edit</source>
             <translation>&amp;Düzenle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9038" />
+            <location filename="../zscaler_api_client.py" line="9067" />
             <source>Copy as c&amp;URL</source>
             <translation>C&amp;URL olarak kopyala</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9043" />
+            <location filename="../zscaler_api_client.py" line="9072" />
             <source>Copy &amp;Response</source>
             <translation>&amp;Yanıtı Kopyala</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9050" />
+            <location filename="../zscaler_api_client.py" line="9079" />
             <source>C&amp;lear Request</source>
             <translation>&amp;Talebi Temizle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9055" />
+            <location filename="../zscaler_api_client.py" line="9084" />
             <source>&amp;Request</source>
             <translation>&amp;Talep</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9057" />
+            <location filename="../zscaler_api_client.py" line="9086" />
             <source>&amp;Send Request</source>
             <translation>&amp;Talep Gönder</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9064" />
+            <location filename="../zscaler_api_client.py" line="9093" />
             <source>Authenticate &amp;ZIA</source>
             <translation>&amp;ZIA'yı doğrula</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9068" />
+            <location filename="../zscaler_api_client.py" line="9097" />
             <source>Authenticate Z&amp;PA</source>
             <translation>Z&amp;PA'nın kimliğini doğrulayın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9074" />
+            <location filename="../zscaler_api_client.py" line="9103" />
             <source>&amp;Logout All Sessions</source>
             <translation>&amp;Tüm Oturumlardan Çıkış Yap</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9078" />
+            <location filename="../zscaler_api_client.py" line="9107" />
             <source>&amp;Operations</source>
             <translation>&amp;İşlemler</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9079" />
+            <location filename="../zscaler_api_client.py" line="9108" />
             <source>Operations &amp;Center...</source>
             <translation>Operasyon ve Merkez...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9087" />
+            <location filename="../zscaler_api_client.py" line="9116" />
             <source>Environment &amp;Profiles...</source>
             <translation>Çevre ve Profiller...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9092" />
+            <location filename="../zscaler_api_client.py" line="9121" />
             <source>&amp;Language</source>
             <translation>&amp;Dil</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9101" />
+            <location filename="../zscaler_api_client.py" line="9130" />
             <source>&amp;Help</source>
             <translation>&amp;Yardım</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9103" />
+            <location filename="../zscaler_api_client.py" line="9132" />
             <source>&amp;Welcome Guide...</source>
             <translation>&amp;Hoş Geldiniz Kılavuzu...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9107" />
+            <location filename="../zscaler_api_client.py" line="9136" />
             <source>&amp;About...</source>
             <translation>&amp;Hakkında...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9112" />
+            <location filename="../zscaler_api_client.py" line="9141" />
             <source>About &amp;Qt...</source>
             <translation>&amp;Qt hakkında...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9119" />
+            <location filename="../zscaler_api_client.py" line="9148" />
             <source>ZIA API &amp;Documentation</source>
             <translation>ZIA API ve Dokümantasyon</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9123" />
+            <location filename="../zscaler_api_client.py" line="9152" />
             <source>ZPA API D&amp;ocumentation</source>
             <translation>ZPA API Dokümantasyonu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9127" />
+            <location filename="../zscaler_api_client.py" line="9156" />
             <source>Zscaler API &amp;Portal</source>
             <translation>Zscaler API'si ve Portalı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9131" />
+            <location filename="../zscaler_api_client.py" line="9160" />
             <source>API &amp;Error Codes...</source>
             <translation>API veHata Kodları...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9137" />
+            <location filename="../zscaler_api_client.py" line="9166" />
             <source>Check for &amp;Updates...</source>
             <translation>&amp;Güncellemeleri kontrol et...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9207" />
+            <location filename="../zscaler_api_client.py" line="9236" />
             <source>{count} operations · {groups} groups</source>
             <translation>{count} operations · {groups} groups</translation>
         </message>
@@ -918,7 +918,7 @@
             <translation type="vanished">Yeni profil oluştur…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9552" />
+            <location filename="../zscaler_api_client.py" line="9581" />
             <source>Environment profiles</source>
             <translation>Çevre profilleri</translation>
         </message>
@@ -935,53 +935,53 @@
             <translation type="vanished">Ortam profili etkin: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9599" />
+            <location filename="../zscaler_api_client.py" line="9628" />
             <source>{count} matching operations</source>
             <translation>{count} matching operations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9599" />
+            <location filename="../zscaler_api_client.py" line="9628" />
             <source>{count} operations</source>
             <translation>{count} operations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9636" />
+            <location filename="../zscaler_api_client.py" line="9665" />
             <source>Guided example loaded. Find the API request, review the preview, then choose whether to run it.</source>
             <translation>Kılavuzlu örnek yüklendi. API isteğini bulun, önizlemeyi inceleyin ve ardından çalıştırılıp çalıştırılmayacağını seçin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9737" />
-            <location filename="../zscaler_api_client.py" line="9767" />
-            <location filename="../zscaler_api_client.py" line="9792" />
-            <location filename="../zscaler_api_client.py" line="9856" />
-            <location filename="../zscaler_api_client.py" line="11067" />
-            <location filename="../zscaler_api_client.py" line="11070" />
-            <location filename="../zscaler_api_client.py" line="11097" />
+            <location filename="../zscaler_api_client.py" line="9766" />
+            <location filename="../zscaler_api_client.py" line="9796" />
+            <location filename="../zscaler_api_client.py" line="9821" />
+            <location filename="../zscaler_api_client.py" line="9885" />
+            <location filename="../zscaler_api_client.py" line="11096" />
+            <location filename="../zscaler_api_client.py" line="11099" />
+            <location filename="../zscaler_api_client.py" line="11126" />
             <source>Error</source>
             <translation>Hata</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9738" />
+            <location filename="../zscaler_api_client.py" line="9767" />
             <source>ZIA credentials not configured. Please go to Settings.</source>
             <translation>ZIA kimlik bilgileri yapılandırılmadı. Lütfen Ayarlar'a gidin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9767" />
+            <location filename="../zscaler_api_client.py" line="9796" />
             <source>ZCC credentials not configured. Please go to Settings.</source>
             <translation>ZCC kimlik bilgileri yapılandırılmadı. Lütfen Ayarlar'a gidin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9793" />
+            <location filename="../zscaler_api_client.py" line="9822" />
             <source>{api_type} credentials not configured. Please go to Settings.</source>
             <translation>{api_type} credentials not configured. Please go to Settings.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9857" />
+            <location filename="../zscaler_api_client.py" line="9886" />
             <source>OneAPI credentials not configured. Please go to Settings.</source>
             <translation>OneAPI kimlik bilgileri yapılandırılmadı. Lütfen Ayarlar'a gidin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9898" />
+            <location filename="../zscaler_api_client.py" line="9927" />
             <source>No matching API operation was found. Try product and resource names.</source>
             <translation>Eşleşen bir API işlemi bulunamadı. Ürün ve kaynak adlarını deneyin.</translation>
         </message>
@@ -990,350 +990,350 @@
             <translation type="vanished">Suggested request: {method} {name}. Review path variables before running.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9915" />
+            <location filename="../zscaler_api_client.py" line="9944" />
             <source>Operation</source>
             <translation>Operasyon</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9915" />
+            <location filename="../zscaler_api_client.py" line="9944" />
             <source>Method</source>
             <translation>Yöntem</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9915" />
+            <location filename="../zscaler_api_client.py" line="9944" />
             <source>URL</source>
             <translation>URL'si</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9949" />
+            <location filename="../zscaler_api_client.py" line="9978" />
             <source>Ask the AI assistant for a request first.</source>
             <translation>Önce yapay zeka asistanından bir istek isteyin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9952" />
+            <location filename="../zscaler_api_client.py" line="9981" />
             <source>Review AI request</source>
             <translation>AI isteğini inceleyin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9953" />
+            <location filename="../zscaler_api_client.py" line="9982" />
             <source>Review the URL, path variables, and parameters in the preview before sending. Send this request now?</source>
             <translation>Göndermeden önce URL'yi, yol değişkenlerini ve parametreleri önizlemede inceleyin. Bu istek şimdi gönderilsin mi?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9976" />
-            <location filename="../zscaler_api_client.py" line="9981" />
+            <location filename="../zscaler_api_client.py" line="10005" />
+            <location filename="../zscaler_api_client.py" line="10010" />
             <source>Asking configured LLM…</source>
             <translation>Yapılandırılmış LLM isteniyor…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9979" />
+            <location filename="../zscaler_api_client.py" line="10008" />
             <source>LLM unavailable; using the local catalog assistant.</source>
             <translation>Yüksek Lisans mevcut değil; yerel katalog asistanını kullanarak.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9990" />
+            <location filename="../zscaler_api_client.py" line="10019" />
             <source>Configure an AI endpoint and model in Settings.</source>
             <translation>Ayarlar'da bir AI uç noktası ve modeli yapılandırın.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9994" />
+            <location filename="../zscaler_api_client.py" line="10023" />
             <source>AI endpoint must use HTTP or HTTPS.</source>
             <translation>AI uç noktasının HTTP veya HTTPS kullanması gerekir.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9996" />
+            <location filename="../zscaler_api_client.py" line="10025" />
             <source>External AI is disabled. Enable it explicitly in Settings.</source>
             <translation>Harici AI devre dışı. Ayarlar'da açıkça etkinleştirin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9998" />
+            <location filename="../zscaler_api_client.py" line="10027" />
             <source>External AI endpoints must use HTTPS.</source>
             <translation>Harici AI uç noktaları HTTPS kullanmalıdır.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10000" />
+            <location filename="../zscaler_api_client.py" line="10029" />
             <source>AI question is too long (maximum 2000 characters).</source>
             <translation>AI sorusu çok uzun (maksimum 2000 karakter).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10022" />
-            <location filename="../zscaler_api_client.py" line="10028" />
+            <location filename="../zscaler_api_client.py" line="10051" />
+            <location filename="../zscaler_api_client.py" line="10057" />
             <source>Save binary response</source>
             <translation>İkili yanıtı kaydet</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10023" />
+            <location filename="../zscaler_api_client.py" line="10052" />
             <source>Binary content cannot be inspected or obfuscated as text. Save the original response only if you trust this endpoint and destination?</source>
             <translation>İkili içerik incelenemez veya metin olarak gizlenemez. Orijinal yanıt yalnızca bu uç noktaya ve hedefe güveniyorsanız kaydedilsin mi?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10028" />
+            <location filename="../zscaler_api_client.py" line="10057" />
             <source>All files (*)</source>
             <translation>Tüm dosyalar (*)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10031" />
+            <location filename="../zscaler_api_client.py" line="10060" />
             <source>Original binary response saved</source>
             <translation>Orijinal ikili yanıt kaydedildi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10080" />
+            <location filename="../zscaler_api_client.py" line="10109" />
             <source>Masked response exported</source>
             <translation>Maskelenmiş yanıt dışa aktarıldı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10186" />
+            <location filename="../zscaler_api_client.py" line="10215" />
             <source>Binary content is not included in this preview.</source>
             <translation>İkili içerik bu önizlemeye dahil değildir.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10188" />
-            <location filename="../zscaler_api_client.py" line="10194" />
+            <location filename="../zscaler_api_client.py" line="10217" />
+            <location filename="../zscaler_api_client.py" line="10223" />
             <source>Export preview</source>
             <translation>Önizlemeyi dışa aktar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10189" />
+            <location filename="../zscaler_api_client.py" line="10218" />
             <source>Original binary export requires a separate confirmation.</source>
             <translation>Orijinal ikili dosya aktarımı ayrı bir onay gerektirir.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10195" />
+            <location filename="../zscaler_api_client.py" line="10224" />
             <source>Sensitive fields are masked in every export.</source>
             <translation>Her dışa aktarmada hassas alanlar maskelenir.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10249" />
-            <location filename="../zscaler_api_client.py" line="10258" />
-            <location filename="../zscaler_api_client.py" line="10266" />
+            <location filename="../zscaler_api_client.py" line="10278" />
+            <location filename="../zscaler_api_client.py" line="10287" />
+            <location filename="../zscaler_api_client.py" line="10295" />
             <source>Export AI result</source>
             <translation>AI sonucunu dışa aktar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10058" />
-            <location filename="../zscaler_api_client.py" line="10066" />
-            <location filename="../zscaler_api_client.py" line="10258" />
-            <location filename="../zscaler_api_client.py" line="10266" />
+            <location filename="../zscaler_api_client.py" line="10087" />
+            <location filename="../zscaler_api_client.py" line="10095" />
+            <location filename="../zscaler_api_client.py" line="10287" />
+            <location filename="../zscaler_api_client.py" line="10295" />
             <source>No chart data is available to export.</source>
             <translation>Dışa aktarılacak grafik verisi yok.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10275" />
+            <location filename="../zscaler_api_client.py" line="10304" />
             <source>AI result exported</source>
             <translation>AI sonucu dışa aktarıldı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10534" />
+            <location filename="../zscaler_api_client.py" line="10563" />
             <source>No tabular datasets</source>
             <translation>Tablosal veri kümesi yok</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10543" />
+            <location filename="../zscaler_api_client.py" line="10572" />
             <source>Nodes</source>
             <translation>Düğümler</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10543" />
+            <location filename="../zscaler_api_client.py" line="10572" />
             <source>Connections</source>
             <translation>Bağlantılar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10545" />
+            <location filename="../zscaler_api_client.py" line="10574" />
             <source>No nodes or connections were found in this response.</source>
             <translation>Bu yanıtta hiçbir düğüm veya bağlantı bulunamadı.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10606" />
+            <location filename="../zscaler_api_client.py" line="10635" />
             <source>Visualized {count} records as a masked table. Export is available from the AI Assistant tab.</source>
             <translation>Visualized {count} records as a masked table. Export is available from the AI Assistant tab.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10623" />
+            <location filename="../zscaler_api_client.py" line="10652" />
             <source>Raw request body...</source>
             <translation>Ham istek gövdesi...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10624" />
+            <location filename="../zscaler_api_client.py" line="10653" />
             <source>Form fields as JSON or an encoded key=value string...</source>
             <translation>Alanları JSON veya kodlanmış bir anahtar=değer dizesi olarak oluşturun...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10625" />
+            <location filename="../zscaler_api_client.py" line="10654" />
             <source>Optional multipart fields as a JSON object...</source>
             <translation>JSON nesnesi olarak isteğe bağlı çok parçalı alanlar...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10631" />
+            <location filename="../zscaler_api_client.py" line="10660" />
             <source>Select upload file</source>
             <translation>Yükleme dosyasını seçin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9403" />
-            <location filename="../zscaler_api_client.py" line="10680" />
+            <location filename="../zscaler_api_client.py" line="9432" />
+            <location filename="../zscaler_api_client.py" line="10709" />
             <source>Yes</source>
             <translation>Evet</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9403" />
-            <location filename="../zscaler_api_client.py" line="10680" />
+            <location filename="../zscaler_api_client.py" line="9432" />
+            <location filename="../zscaler_api_client.py" line="10709" />
             <source>No</source>
             <translation>Hayır</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10242" />
-            <location filename="../zscaler_api_client.py" line="10244" />
+            <location filename="../zscaler_api_client.py" line="10271" />
+            <location filename="../zscaler_api_client.py" line="10273" />
             <source>Response drift comparison</source>
             <translation>Tepki kayması karşılaştırması</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10242" />
+            <location filename="../zscaler_api_client.py" line="10271" />
             <source>Binary responses cannot be structurally compared. Export and inspect the original file with an appropriate tool.</source>
             <translation>İkili tepkiler yapısal olarak karşılaştırılamaz. Orijinal dosyayı uygun bir araçla dışa aktarın ve inceleyin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10244" />
+            <location filename="../zscaler_api_client.py" line="10273" />
             <source>Send a request or open a response export before comparing drift.</source>
             <translation>Sapmayı karşılaştırmadan önce bir istek gönderin veya bir yanıt aktarımı açın.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10698" />
+            <location filename="../zscaler_api_client.py" line="10727" />
             <source>{count} variable(s) extracted · {missing} required value(s) missing</source>
             <translation>{count} variable(s) extracted · {missing} required value(s) missing</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10705" />
-            <location filename="../zscaler_api_client.py" line="11053" />
+            <location filename="../zscaler_api_client.py" line="10734" />
+            <location filename="../zscaler_api_client.py" line="11082" />
             <source>GraphQL body must be a JSON object containing a query string.</source>
             <translation>GraphQL gövdesi, sorgu dizesi içeren bir JSON nesnesi olmalıdır.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10709" />
+            <location filename="../zscaler_api_client.py" line="10738" />
             <source>Choose operationName because the document contains multiple GraphQL operations.</source>
             <translation>Belge birden fazla GraphQL işlemi içerdiğinden, operasyonAdı'nı seçin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10711" />
+            <location filename="../zscaler_api_client.py" line="10740" />
             <source>GraphQL operationName does not match a named operation in the query.</source>
             <translation>GraphQL operasyonAdı, sorgudaki adlandırılmış bir işlemle eşleşmiyor.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10722" />
+            <location filename="../zscaler_api_client.py" line="10751" />
             <source>Variable ${name} is required.</source>
             <translation>Variable ${name} is required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10726" />
+            <location filename="../zscaler_api_client.py" line="10755" />
             <source>Variable ${name} must be valid for type {type}.</source>
             <translation>Variable ${name} must be valid for type {type}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10733" />
+            <location filename="../zscaler_api_client.py" line="10762" />
             <source>Remove undeclared GraphQL variables: {names}</source>
             <translation>Remove undeclared GraphQL variables: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10757" />
-            <location filename="../zscaler_api_client.py" line="10777" />
+            <location filename="../zscaler_api_client.py" line="10786" />
+            <location filename="../zscaler_api_client.py" line="10806" />
             <source>Documented GraphQL schema</source>
             <translation>Belgelenmiş GraphQL şeması</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10758" />
+            <location filename="../zscaler_api_client.py" line="10787" />
             <source>The current Automation Hub page has no executable query example. Open its documentation or use schema introspection.</source>
             <translation>Geçerli Otomasyon Merkezi sayfasında yürütülebilir sorgu örneği yok. Belgelerini açın veya şema iç gözlemini kullanın.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10772" />
+            <location filename="../zscaler_api_client.py" line="10801" />
             <source>Loaded documented ZInsights query. Review time ranges, filters, and fields before sending.</source>
             <translation>Belgelenen ZInsights sorgusu yüklendi. Göndermeden önce zaman aralıklarını, filtreleri ve alanları inceleyin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10808" />
+            <location filename="../zscaler_api_client.py" line="10837" />
             <source>Enter a name before saving the GraphQL query.</source>
             <translation>GraphQL sorgusunu kaydetmeden önce bir ad girin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10812" />
-            <location filename="../zscaler_api_client.py" line="10853" />
-            <location filename="../zscaler_api_client.py" line="10866" />
-            <location filename="../zscaler_api_client.py" line="10885" />
+            <location filename="../zscaler_api_client.py" line="10841" />
+            <location filename="../zscaler_api_client.py" line="10882" />
+            <location filename="../zscaler_api_client.py" line="10895" />
+            <location filename="../zscaler_api_client.py" line="10914" />
             <source>Secure storage</source>
             <translation>Güvenli depolama</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10812" />
+            <location filename="../zscaler_api_client.py" line="10841" />
             <source>The system keychain could not save the GraphQL query.</source>
             <translation>Sistem anahtarlığı GraphQL sorgusunu kaydedemedi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10818" />
+            <location filename="../zscaler_api_client.py" line="10847" />
             <source>GraphQL query saved securely</source>
             <translation>GraphQL sorgusu güvenli bir şekilde kaydedildi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10824" />
+            <location filename="../zscaler_api_client.py" line="10853" />
             <source>Saved GraphQL query is unavailable.</source>
             <translation>Kaydedilen GraphQL sorgusu kullanılamıyor.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10853" />
+            <location filename="../zscaler_api_client.py" line="10882" />
             <source>The system keychain could not rename the GraphQL query.</source>
             <translation>Sistem anahtarlığı GraphQL sorgusunu yeniden adlandıramadı.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10866" />
+            <location filename="../zscaler_api_client.py" line="10895" />
             <source>The system keychain could not delete the GraphQL query.</source>
             <translation>Sistem anahtarlığı GraphQL sorgusunu silemedi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10877" />
+            <location filename="../zscaler_api_client.py" line="10906" />
             <source>GraphQL introspection query prepared. Review the endpoint before sending.</source>
             <translation>GraphQL iç gözlem sorgusu hazırlandı. Göndermeden önce uç noktayı inceleyin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10885" />
+            <location filename="../zscaler_api_client.py" line="10914" />
             <source>The system keychain could not save the GraphQL schema.</source>
             <translation>Sistem anahtarlığı GraphQL şemasını kaydedemedi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10887" />
+            <location filename="../zscaler_api_client.py" line="10916" />
             <source>GraphQL schema saved securely</source>
             <translation>GraphQL şeması güvenli bir şekilde kaydedildi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10948" />
-            <location filename="../zscaler_api_client.py" line="11465" />
+            <location filename="../zscaler_api_client.py" line="10977" />
+            <location filename="../zscaler_api_client.py" line="11494" />
             <source>Read only</source>
             <translation>Salt okunur</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10948" />
-            <location filename="../zscaler_api_client.py" line="11465" />
+            <location filename="../zscaler_api_client.py" line="10977" />
+            <location filename="../zscaler_api_client.py" line="11494" />
             <source>Read-only mode blocks write requests. Change the local role in Operations Center to continue.</source>
             <translation>Salt okunur mod, yazma isteklerini engeller. Devam etmek için Operasyon Merkezi'ndeki yerel rolü değiştirin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10984" />
+            <location filename="../zscaler_api_client.py" line="11013" />
             <source>Configure a base URL for the selected product before sending a relative API path.</source>
             <translation>Göreli bir API yolu göndermeden önce seçilen ürün için bir temel URL yapılandırın.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11062" />
+            <location filename="../zscaler_api_client.py" line="11091" />
             <source>Select an available local file before sending.</source>
             <translation>Göndermeden önce kullanılabilir bir yerel dosya seçin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11067" />
+            <location filename="../zscaler_api_client.py" line="11096" />
             <source>Multipart fields must be a JSON object: {error}</source>
             <translation>Multipart fields must be a JSON object: {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11070" />
+            <location filename="../zscaler_api_client.py" line="11099" />
             <source>Multipart fields must be a JSON object.</source>
             <translation>Çok parçalı alanlar bir JSON nesnesi olmalıdır.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11253" />
+            <location filename="../zscaler_api_client.py" line="11282" />
             <source>Binary response ready to save.
 File: {name}
 Type: {type}
@@ -1344,579 +1344,579 @@ Type: {type}
 Size: {size}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11457" />
+            <location filename="../zscaler_api_client.py" line="11486" />
             <source>Batch validation failed: </source>
             <translation>Toplu doğrulama başarısız oldu: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11460" />
+            <location filename="../zscaler_api_client.py" line="11489" />
             <source>Select {api} before running this batch.</source>
             <translation>Select {api} before running this batch.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11468" />
+            <location filename="../zscaler_api_client.py" line="11497" />
             <source>Review complete. Send {count} request(s) to the active environment?</source>
             <translation>Review complete. Send {count} request(s) to the active environment?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11469" />
+            <location filename="../zscaler_api_client.py" line="11498" />
             <source>Confirm batch</source>
             <translation>Toplu işlemi onayla</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11484" />
+            <location filename="../zscaler_api_client.py" line="11513" />
             <source>Sending batch request 0 of {count}...</source>
             <translation>Sending batch request 0 of {count}...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11485" />
+            <location filename="../zscaler_api_client.py" line="11514" />
             <source>Batch execution started: {count} request(s)</source>
             <translation>Batch execution started: {count} request(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11502" />
+            <location filename="../zscaler_api_client.py" line="11531" />
             <source>Sending batch request {completed} of {total}...</source>
             <translation>Sending batch request {completed} of {total}...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11512" />
-            <location filename="../zscaler_api_client.py" line="11513" />
-            <location filename="../zscaler_api_client.py" line="11514" />
+            <location filename="../zscaler_api_client.py" line="11541" />
+            <location filename="../zscaler_api_client.py" line="11542" />
+            <location filename="../zscaler_api_client.py" line="11543" />
             <source>Batch complete: {successful} succeeded, {failed} failed.</source>
             <translation>Batch complete: {successful} succeeded, {failed} failed.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11527" />
+            <location filename="../zscaler_api_client.py" line="11556" />
             <source>Request History</source>
             <translation>Talep Geçmişi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11528" />
+            <location filename="../zscaler_api_client.py" line="11557" />
             <source>This request belongs to another environment. Activate that environment profile before loading it.</source>
             <translation>Bu istek başka bir ortama ait. Yüklemeden önce bu ortam profilini etkinleştirin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11541" />
-            <location filename="../zscaler_api_client.py" line="11560" />
+            <location filename="../zscaler_api_client.py" line="11570" />
+            <location filename="../zscaler_api_client.py" line="11589" />
             <source>Multipart request loaded. Select the local file again before sending.</source>
             <translation>Çok parçalı istek yüklendi. Göndermeden önce yerel dosyayı tekrar seçin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11632" />
+            <location filename="../zscaler_api_client.py" line="11661" />
             <source>Masked cURL command copied to clipboard</source>
             <translation>Maskelenmiş cURL komutu panoya kopyalandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11637" />
+            <location filename="../zscaler_api_client.py" line="11666" />
             <source>Binary response</source>
             <translation>İkili yanıt</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11637" />
+            <location filename="../zscaler_api_client.py" line="11666" />
             <source>Binary response content is not copied to the clipboard. Use Export to save the original file.</source>
             <translation>İkili yanıt içeriği panoya kopyalanmaz. Orijinal dosyayı kaydetmek için Dışa Aktar'ı kullanın.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11646" />
+            <location filename="../zscaler_api_client.py" line="11675" />
             <source>Masked response copied to clipboard</source>
             <translation>Maskelenmiş yanıt panoya kopyalandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8909" />
-            <location filename="../zscaler_api_client.py" line="10892" />
+            <location filename="../zscaler_api_client.py" line="8938" />
+            <location filename="../zscaler_api_client.py" line="10921" />
             <source>GraphQL schema</source>
             <translation>GraphQL şeması</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10892" />
+            <location filename="../zscaler_api_client.py" line="10921" />
             <source>No saved introspection result exists for this endpoint.</source>
             <translation>Bu uç nokta için kaydedilmiş bir iç gözlem sonucu mevcut değil.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10933" />
+            <location filename="../zscaler_api_client.py" line="10962" />
             <source>{count} GraphQL errors</source>
             <translation>{count} GraphQL errors</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10935" />
+            <location filename="../zscaler_api_client.py" line="10964" />
             <source>extensions included</source>
             <translation>Uzantılar dahil</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9949" />
-            <location filename="../zscaler_api_client.py" line="10808" />
-            <location filename="../zscaler_api_client.py" line="10824" />
-            <location filename="../zscaler_api_client.py" line="10952" />
-            <location filename="../zscaler_api_client.py" line="10984" />
-            <location filename="../zscaler_api_client.py" line="11629" />
-            <location filename="../zscaler_api_client.py" line="11648" />
+            <location filename="../zscaler_api_client.py" line="9978" />
+            <location filename="../zscaler_api_client.py" line="10837" />
+            <location filename="../zscaler_api_client.py" line="10853" />
+            <location filename="../zscaler_api_client.py" line="10981" />
+            <location filename="../zscaler_api_client.py" line="11013" />
+            <location filename="../zscaler_api_client.py" line="11658" />
+            <location filename="../zscaler_api_client.py" line="11677" />
             <source>Warning</source>
             <translation>Uyarı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8480" />
+            <location filename="../zscaler_api_client.py" line="8509" />
             <source>ZIA · List users</source>
             <translation>ZIA · Kullanıcıları listele</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8480" />
+            <location filename="../zscaler_api_client.py" line="8509" />
             <source>List ZIA users with pagination</source>
             <translation>ZIA kullanıcılarını sayfalandırmayla listeleme</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8481" />
+            <location filename="../zscaler_api_client.py" line="8510" />
             <source>ZIA · Find URL categories</source>
             <translation>ZIA · URL kategorilerini bul</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8481" />
+            <location filename="../zscaler_api_client.py" line="8510" />
             <source>Search ZIA URL categories for social media</source>
             <translation>Sosyal medya için ZIA URL kategorilerini arayın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8482" />
+            <location filename="../zscaler_api_client.py" line="8511" />
             <source>ZIA · Review firewall policies</source>
             <translation>ZIA · Güvenlik duvarı politikalarını inceleyin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8482" />
+            <location filename="../zscaler_api_client.py" line="8511" />
             <source>List ZIA cloud firewall policies</source>
             <translation>ZIA bulut güvenlik duvarı politikalarını listeleme</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8483" />
+            <location filename="../zscaler_api_client.py" line="8512" />
             <source>ZPA · Application segments</source>
             <translation>ZPA · Uygulama segmentleri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8483" />
+            <location filename="../zscaler_api_client.py" line="8512" />
             <source>List ZPA application segments</source>
             <translation>ZPA uygulama segmentlerini listeleyin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8484" />
+            <location filename="../zscaler_api_client.py" line="8513" />
             <source>ZPA · Connector inventory</source>
             <translation>ZPA · Bağlayıcı envanteri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8484" />
+            <location filename="../zscaler_api_client.py" line="8513" />
             <source>List ZPA connectors</source>
             <translation>ZPA konnektörlerini listele</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8485" />
+            <location filename="../zscaler_api_client.py" line="8514" />
             <source>ZDX · Experience overview</source>
             <translation>ZDX · Deneyime genel bakış</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8485" />
+            <location filename="../zscaler_api_client.py" line="8514" />
             <source>List ZDX devices and experience scores</source>
             <translation>ZDX cihazlarını ve deneyim puanlarını listeleyin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8486" />
+            <location filename="../zscaler_api_client.py" line="8515" />
             <source>ZDX · Active alerts</source>
             <translation>ZDX · Aktif uyarılar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8486" />
+            <location filename="../zscaler_api_client.py" line="8515" />
             <source>List active ZDX alerts with pagination</source>
             <translation>Aktif ZDX uyarılarını sayfalandırmayla listeleme</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8487" />
+            <location filename="../zscaler_api_client.py" line="8516" />
             <source>ZDX · Application monitoring</source>
             <translation>ZDX · Uygulama izleme</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8487" />
+            <location filename="../zscaler_api_client.py" line="8516" />
             <source>List monitored ZDX applications</source>
             <translation>İzlenen ZDX uygulamalarını listeleyin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8488" />
+            <location filename="../zscaler_api_client.py" line="8517" />
             <source>Client Connector · Devices</source>
             <translation>İstemci Bağlayıcı · Cihazlar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8488" />
+            <location filename="../zscaler_api_client.py" line="8517" />
             <source>List Client Connector devices</source>
             <translation>İstemci Bağlayıcı cihazlarını listeleme</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8489" />
+            <location filename="../zscaler_api_client.py" line="8518" />
             <source>ZIdentity · Users</source>
             <translation>ZIdentity · Kullanıcılar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8489" />
+            <location filename="../zscaler_api_client.py" line="8518" />
             <source>List ZIdentity users with pagination</source>
             <translation>ZIdentity kullanıcılarını sayfalandırmayla listeleme</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8490" />
+            <location filename="../zscaler_api_client.py" line="8519" />
             <source>ZIdentity · Groups</source>
             <translation>ZIdentity · Gruplar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8490" />
+            <location filename="../zscaler_api_client.py" line="8519" />
             <source>List ZIdentity groups</source>
             <translation>ZIdentity gruplarını listeleme</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8491" />
+            <location filename="../zscaler_api_client.py" line="8520" />
             <source>AI Security · Workloads</source>
             <translation>Yapay Zeka Güvenliği · İş Yükleri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8491" />
+            <location filename="../zscaler_api_client.py" line="8520" />
             <source>List AI Security workloads</source>
             <translation>AI Güvenliği iş yüklerini listeleme</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8545" />
+            <location filename="../zscaler_api_client.py" line="8574" />
             <source>ZS API Client</source>
             <translation>ZS API İstemcisi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8552" />
+            <location filename="../zscaler_api_client.py" line="8581" />
             <source>Explore APIs, review changes, and operate safely</source>
             <translation>API'leri keşfedin, değişiklikleri inceleyin ve güvenle çalışın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8556" />
+            <location filename="../zscaler_api_client.py" line="8585" />
             <source>1 · Environment</source>
             <translation>1 · Çevre</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8557" />
+            <location filename="../zscaler_api_client.py" line="8586" />
             <source>Select or create a tenant environment profile</source>
             <translation>Kiracı ortamı profili seçin veya oluşturun</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8560" />
+            <location filename="../zscaler_api_client.py" line="8589" />
             <source>2 · Analyze</source>
             <translation>2 · Analiz et</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8561" />
+            <location filename="../zscaler_api_client.py" line="8590" />
             <source>Open dashboards, audits, policy diffs, and response analysis</source>
             <translation>Açık kontrol panelleri, denetimler, politika farklılıkları ve yanıt analizi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8564" />
+            <location filename="../zscaler_api_client.py" line="8593" />
             <source>3 · Change</source>
             <translation>3 · Değiştir</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8565" />
+            <location filename="../zscaler_api_client.py" line="8594" />
             <source>Open policy diff and policy-as-code export</source>
             <translation>Açık politika farkını ve kod olarak politikayı dışa aktarma</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8568" />
+            <location filename="../zscaler_api_client.py" line="8597" />
             <source>Operations Center</source>
             <translation>Operasyon Merkezi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8571" />
+            <location filename="../zscaler_api_client.py" line="8600" />
             <source>PAC Workspace</source>
             <translation>PAC Workspace</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8572" />
+            <location filename="../zscaler_api_client.py" line="8601" />
             <source>Create, verify, map, and prepare PAC files (Ctrl+Shift+P)</source>
             <translation>Create, verify, map, and prepare PAC files (Ctrl+Shift+P)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8576" />
+            <location filename="../zscaler_api_client.py" line="8605" />
             <source>Settings</source>
             <translation>Ayarlar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8678" />
+            <location filename="../zscaler_api_client.py" line="8707" />
             <source>Cancel</source>
             <translation>İptal</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8679" />
+            <location filename="../zscaler_api_client.py" line="8708" />
             <source>Stop before the next page or chain step; the current HTTP request is allowed to finish safely.</source>
             <translation>Bir sonraki sayfa veya zincir adımından önce durun; geçerli HTTP isteğinin güvenli bir şekilde tamamlanmasına izin verilir.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8694" />
+            <location filename="../zscaler_api_client.py" line="8723" />
             <source>Fetch all pages</source>
             <translation>Tüm sayfaları getir</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8695" />
+            <location filename="../zscaler_api_client.py" line="8724" />
             <source>Follow only the pagination parameters documented for the selected read operation.</source>
             <translation>Yalnızca seçilen okuma işlemi için belgelenen sayfalandırma parametrelerini izleyin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8697" />
+            <location filename="../zscaler_api_client.py" line="8726" />
             <source>Page size:</source>
             <translation>Sayfa boyutu:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8701" />
+            <location filename="../zscaler_api_client.py" line="8730" />
             <source>Maximum pages:</source>
             <translation>Maksimum sayfa sayısı:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8734" />
+            <location filename="../zscaler_api_client.py" line="8763" />
             <source>Documented ZInsights query…</source>
             <translation>Belgelenen ZInsights sorgusu…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8739" />
+            <location filename="../zscaler_api_client.py" line="8768" />
             <source>Load documented query</source>
             <translation>Belgelenen sorguyu yükle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8742" />
+            <location filename="../zscaler_api_client.py" line="8771" />
             <source>Browse documented schema</source>
             <translation>Belgelenen şemaya göz atın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8773" />
+            <location filename="../zscaler_api_client.py" line="8802" />
             <source>Body type:</source>
             <translation>Vücut tipi:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8775" />
+            <location filename="../zscaler_api_client.py" line="8804" />
             <source>JSON</source>
             <translation>JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8776" />
+            <location filename="../zscaler_api_client.py" line="8805" />
             <source>Raw text</source>
             <translation>Ham metin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8777" />
+            <location filename="../zscaler_api_client.py" line="8806" />
             <source>Form URL encoded</source>
             <translation>Form URL'si kodlandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8778" />
-            <location filename="../zscaler_api_client.py" line="11062" />
+            <location filename="../zscaler_api_client.py" line="8807" />
+            <location filename="../zscaler_api_client.py" line="11091" />
             <source>Multipart file upload</source>
             <translation>Çok parçalı dosya yükleme</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8786" />
+            <location filename="../zscaler_api_client.py" line="8815" />
             <source>File field:</source>
             <translation>Dosya alanı:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8790" />
+            <location filename="../zscaler_api_client.py" line="8819" />
             <source>Upload file:</source>
             <translation>Dosya yükle:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8793" />
+            <location filename="../zscaler_api_client.py" line="8822" />
             <source>Select a local file; its path is never saved in history</source>
             <translation>Yerel bir dosya seçin; onun yolu tarihte asla kaydedilmez</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8795" />
+            <location filename="../zscaler_api_client.py" line="8824" />
             <source>Browse…</source>
             <translation>Göz at…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8809" />
+            <location filename="../zscaler_api_client.py" line="8838" />
             <source>Extract typed variables from the selected GraphQL operation. Values are inserted into the JSON request body, never into the URL.</source>
             <translation>Seçilen GraphQL işleminden yazılan değişkenleri çıkarın. Değerler, hiçbir zaman URL'ye değil, JSON istek gövdesine eklenir.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8811" />
-            <location filename="../zscaler_api_client.py" line="8836" />
+            <location filename="../zscaler_api_client.py" line="8840" />
+            <location filename="../zscaler_api_client.py" line="8865" />
             <source>Type</source>
             <translation>Tür</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8811" />
-            <location filename="../zscaler_api_client.py" line="8836" />
+            <location filename="../zscaler_api_client.py" line="8840" />
+            <location filename="../zscaler_api_client.py" line="8865" />
             <source>Required</source>
             <translation>Gerekli</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8811" />
-            <location filename="../zscaler_api_client.py" line="8837" />
+            <location filename="../zscaler_api_client.py" line="8840" />
+            <location filename="../zscaler_api_client.py" line="8866" />
             <source>Default</source>
             <translation>Varsayılan</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8811" />
+            <location filename="../zscaler_api_client.py" line="8840" />
             <source>JSON value</source>
             <translation>JSON değeri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8815" />
+            <location filename="../zscaler_api_client.py" line="8844" />
             <source>Extract variables from query</source>
             <translation>Sorgudan değişkenleri çıkarma</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8816" />
-            <location filename="../zscaler_api_client.py" line="10700" />
-            <location filename="../zscaler_api_client.py" line="11662" />
+            <location filename="../zscaler_api_client.py" line="8845" />
+            <location filename="../zscaler_api_client.py" line="10729" />
+            <location filename="../zscaler_api_client.py" line="11691" />
             <source>No GraphQL variables extracted.</source>
             <translation>Hiçbir GraphQL değişkeni çıkarılmadı.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8817" />
-            <location filename="../zscaler_api_client.py" line="11053" />
-            <location filename="../zscaler_api_client.py" line="11103" />
+            <location filename="../zscaler_api_client.py" line="8846" />
+            <location filename="../zscaler_api_client.py" line="11082" />
+            <location filename="../zscaler_api_client.py" line="11132" />
             <source>GraphQL Variables</source>
             <translation>GraphQL Değişkenleri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8831" />
-            <location filename="../zscaler_api_client.py" line="11667" />
+            <location filename="../zscaler_api_client.py" line="8860" />
+            <location filename="../zscaler_api_client.py" line="11696" />
             <source>Select a documented endpoint to inspect its request contract.</source>
             <translation>İstek sözleşmesini incelemek için belgelenmiş bir uç nokta seçin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8836" />
+            <location filename="../zscaler_api_client.py" line="8865" />
             <source>Location</source>
             <translation>Konum</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8836" />
+            <location filename="../zscaler_api_client.py" line="8865" />
             <source>Name</source>
             <translation>İsim</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8837" />
+            <location filename="../zscaler_api_client.py" line="8866" />
             <source>Description</source>
             <translation>Açıklama</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8842" />
+            <location filename="../zscaler_api_client.py" line="8871" />
             <source>API Guide</source>
             <translation>API Kılavuzu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8856" />
+            <location filename="../zscaler_api_client.py" line="8885" />
             <source>Dataset:</source>
             <translation>Veri kümesi:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8878" />
+            <location filename="../zscaler_api_client.py" line="8907" />
             <source>Open export</source>
             <translation>Dışa aktarmayı aç</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8879" />
+            <location filename="../zscaler_api_client.py" line="8908" />
             <source>Compare drift</source>
             <translation>Drift'i karşılaştırın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8899" />
+            <location filename="../zscaler_api_client.py" line="8928" />
             <source>Field</source>
             <translation>Alan</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9025" />
+            <location filename="../zscaler_api_client.py" line="9054" />
             <source>Open response export…</source>
             <translation>Açık yanıt dışa aktarımı…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9026" />
+            <location filename="../zscaler_api_client.py" line="9055" />
             <source>Compare response drift…</source>
             <translation>Tepki sapmasını karşılaştırın…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9083" />
+            <location filename="../zscaler_api_client.py" line="9112" />
             <source>PAC &amp;Workspace...</source>
             <translation>PAC veÇalışma Alanı...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9363" />
-            <location filename="../zscaler_api_client.py" line="9377" />
+            <location filename="../zscaler_api_client.py" line="9392" />
+            <location filename="../zscaler_api_client.py" line="9406" />
             <source>Required value</source>
             <translation>Gerekli değer</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9363" />
-            <location filename="../zscaler_api_client.py" line="9377" />
+            <location filename="../zscaler_api_client.py" line="9392" />
+            <location filename="../zscaler_api_client.py" line="9406" />
             <source>Optional value</source>
             <translation>İsteğe bağlı değer</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9411" />
+            <location filename="../zscaler_api_client.py" line="9440" />
             <source>body template available</source>
             <translation>gövde şablonu mevcut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9411" />
+            <location filename="../zscaler_api_client.py" line="9440" />
             <source>no body template</source>
             <translation>gövde şablonu yok</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9412" />
+            <location filename="../zscaler_api_client.py" line="9441" />
             <source>not listed</source>
             <translation>listelenmemiş</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9413" />
+            <location filename="../zscaler_api_client.py" line="9442" />
             <source>{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.</source>
             <translation>{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9417" />
+            <location filename="../zscaler_api_client.py" line="9446" />
             <source>Documented {mode} pagination is available as an explicit bounded option.</source>
             <translation>Documented {mode} pagination is available as an explicit bounded option.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9436" />
+            <location filename="../zscaler_api_client.py" line="9465" />
             <source>Documented {mode} pagination using {parameter}. Results retain every page and stop at the configured maximum.</source>
             <translation>Documented {mode} pagination using {parameter}. Results retain every page and stop at the configured maximum.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9448" />
+            <location filename="../zscaler_api_client.py" line="9477" />
             <source>The URL was edited manually. Select an endpoint again to attach its documented request contract.</source>
             <translation>URL manuel olarak düzenlendi. Belgelenen istek sözleşmesini eklemek için yeniden bir uç nokta seçin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9540" />
+            <location filename="../zscaler_api_client.py" line="9569" />
             <source>Active environment: {name}</source>
             <translation>Active environment: {name}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9552" />
+            <location filename="../zscaler_api_client.py" line="9581" />
             <source>The selected environment profile is unavailable.</source>
             <translation>Seçilen ortam profili kullanılamıyor.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9566" />
+            <location filename="../zscaler_api_client.py" line="9595" />
             <source>Environment profile active: {name}. Sessions and request data were cleared.</source>
             <translation>Environment profile active: {name}. Sessions and request data were cleared.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9610" />
+            <location filename="../zscaler_api_client.py" line="9639" />
             <source>Write request prepared</source>
             <translation>Yazma isteği hazırlandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9611" />
+            <location filename="../zscaler_api_client.py" line="9640" />
             <source>The documented write template is ready. Review the API Guide, parameters, and body, then choose Send explicitly.</source>
             <translation>Belgelenen yazma şablonu hazır. API Kılavuzunu, parametreleri ve gövde metnini inceleyin ve ardından Açıkça gönder'i seçin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9905" />
+            <location filename="../zscaler_api_client.py" line="9934" />
             <source>Suggested request: {method} {name}. Review the attached API Guide and all template values before running.</source>
             <translation>Suggested request: {method} {name}. Review the attached API Guide and all template values before running.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10053" />
+            <location filename="../zscaler_api_client.py" line="10082" />
             <source>No tabular response data is available to export.</source>
             <translation>Dışa aktarılacak tablo halinde yanıt verisi yok.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10203" />
-            <location filename="../zscaler_api_client.py" line="10214" />
+            <location filename="../zscaler_api_client.py" line="10232" />
+            <location filename="../zscaler_api_client.py" line="10243" />
             <source>Open response export</source>
             <translation>Açık yanıt dışa aktarımı</translation>
         </message>
@@ -1933,150 +1933,150 @@ Size: {size}</translation>
             <translation type="vanished">Yanıt değişim dosyası eksik.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10237" />
+            <location filename="../zscaler_api_client.py" line="10266" />
             <source>Response export opened locally; no API request was sent.</source>
             <translation>Yanıt aktarımı yerel olarak açıldı; API isteği gönderilmedi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10952" />
+            <location filename="../zscaler_api_client.py" line="10981" />
             <source>Please enter a URL</source>
             <translation>Lütfen bir URL girin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10973" />
+            <location filename="../zscaler_api_client.py" line="11002" />
             <source>Missing Path Variables</source>
             <translation>Eksik Yol Değişkenleri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10974" />
+            <location filename="../zscaler_api_client.py" line="11003" />
             <source>Enter values for: {names}</source>
             <translation>Enter values for: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11038" />
+            <location filename="../zscaler_api_client.py" line="11067" />
             <source>Missing documented parameters</source>
             <translation>Belgelenen parametreler eksik</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11039" />
+            <location filename="../zscaler_api_client.py" line="11068" />
             <source>Enter required values for: {names}</source>
             <translation>Enter required values for: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11109" />
+            <location filename="../zscaler_api_client.py" line="11138" />
             <source>Sending request...</source>
             <translation>İstek gönderiliyor...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11140" />
+            <location filename="../zscaler_api_client.py" line="11169" />
             <source>Pagination unavailable</source>
             <translation>Sayfalandırma kullanılamıyor</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11140" />
+            <location filename="../zscaler_api_client.py" line="11169" />
             <source>Select a documented paginated GET operation before fetching all pages.</source>
             <translation>Tüm sayfaları getirmeden önce belgelenmiş, sayfalandırılmış bir GET işlemi seçin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11158" />
+            <location filename="../zscaler_api_client.py" line="11187" />
             <source>Fetching page {page} of at most {maximum}…</source>
             <translation>Fetching page {page} of at most {maximum}…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11162" />
+            <location filename="../zscaler_api_client.py" line="11191" />
             <source>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</source>
             <translation>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11171" />
+            <location filename="../zscaler_api_client.py" line="11200" />
             <source>Cancellation requested; waiting for the current HTTP request to finish safely…</source>
             <translation>İptal talebi; mevcut HTTP isteğinin güvenli bir şekilde tamamlanması bekleniyor…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11184" />
+            <location filename="../zscaler_api_client.py" line="11213" />
             <source>Request cancelled before completion</source>
             <translation>İstek tamamlanmadan iptal edildi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11232" />
+            <location filename="../zscaler_api_client.py" line="11261" />
             <source>Safe read retries: {count}</source>
             <translation>Safe read retries: {count}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11293" />
+            <location filename="../zscaler_api_client.py" line="11322" />
             <source>Pagination complete: {pages} page(s), {records} record(s)</source>
             <translation>Pagination complete: {pages} page(s), {records} record(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11300" />
+            <location filename="../zscaler_api_client.py" line="11329" />
             <source>Pagination stopped before completion: {pages} page(s), {records} record(s)</source>
             <translation>Pagination stopped before completion: {pages} page(s), {records} record(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11305" />
+            <location filename="../zscaler_api_client.py" line="11334" />
             <source>Request successful</source>
             <translation>İstek başarılı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11315" />
+            <location filename="../zscaler_api_client.py" line="11344" />
             <source>ZIA authenticated successfully</source>
             <translation>ZIA'nın kimliği başarıyla doğrulandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11324" />
+            <location filename="../zscaler_api_client.py" line="11353" />
             <source>ZPA authenticated successfully</source>
             <translation>ZPA'nın kimliği başarıyla doğrulandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11328" />
+            <location filename="../zscaler_api_client.py" line="11357" />
             <source>ZDX authenticated successfully</source>
             <translation>ZDX'in kimliği başarıyla doğrulandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11332" />
+            <location filename="../zscaler_api_client.py" line="11361" />
             <source>ZCC authenticated successfully</source>
             <translation>ZCC'nin kimliği başarıyla doğrulandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11336" />
+            <location filename="../zscaler_api_client.py" line="11365" />
             <source>ZIdentity authenticated successfully</source>
             <translation>ZIdentity'nin kimliği başarıyla doğrulandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11340" />
+            <location filename="../zscaler_api_client.py" line="11369" />
             <source>ZTW authenticated successfully</source>
             <translation>ZTW'nin kimliği başarıyla doğrulandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11344" />
+            <location filename="../zscaler_api_client.py" line="11373" />
             <source>ZWA authenticated successfully</source>
             <translation>ZWA'nın kimliği başarıyla doğrulandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11348" />
+            <location filename="../zscaler_api_client.py" line="11377" />
             <source>EASM authenticated successfully</source>
             <translation>EASM'nin kimliği başarıyla doğrulandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11352" />
+            <location filename="../zscaler_api_client.py" line="11381" />
             <source>OneAPI authenticated successfully</source>
             <translation>OneAPI'nin kimliği başarıyla doğrulandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11357" />
+            <location filename="../zscaler_api_client.py" line="11386" />
             <source>Authenticated successfully</source>
             <translation>Kimliği başarıyla doğrulandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11390" />
-            <location filename="../zscaler_api_client.py" line="11396" />
+            <location filename="../zscaler_api_client.py" line="11419" />
+            <location filename="../zscaler_api_client.py" line="11425" />
             <source>Request failed</source>
             <translation>İstek başarısız oldu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11457" />
-            <location filename="../zscaler_api_client.py" line="11460" />
-            <location filename="../zscaler_api_client.py" line="11514" />
+            <location filename="../zscaler_api_client.py" line="11486" />
+            <location filename="../zscaler_api_client.py" line="11489" />
+            <location filename="../zscaler_api_client.py" line="11543" />
             <source>Batch</source>
             <translation>Toplu</translation>
         </message>
@@ -2085,12 +2085,12 @@ Size: {size}</translation>
             <translation type="vanished">Processing {count} items...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11562" />
+            <location filename="../zscaler_api_client.py" line="11591" />
             <source>Request loaded from history</source>
             <translation>İstek geçmişten yüklendi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11629" />
+            <location filename="../zscaler_api_client.py" line="11658" />
             <source>No URL to copy</source>
             <translation>Kopyalanacak URL yok</translation>
         </message>
@@ -2103,53 +2103,53 @@ Size: {size}</translation>
             <translation type="vanished">Yanıt panoya kopyalandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11648" />
+            <location filename="../zscaler_api_client.py" line="11677" />
             <source>No response to copy</source>
             <translation>Kopyaya yanıt yok</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11684" />
+            <location filename="../zscaler_api_client.py" line="11713" />
             <source>Request cleared</source>
             <translation>İstek temizlendi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11697" />
-            <location filename="../zscaler_api_client.py" line="11748" />
+            <location filename="../zscaler_api_client.py" line="11726" />
+            <location filename="../zscaler_api_client.py" line="11777" />
             <source>Missing Credentials</source>
             <translation>Eksik Kimlik Bilgileri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11698" />
+            <location filename="../zscaler_api_client.py" line="11727" />
             <source>Please configure ZIA credentials in Settings first.</source>
             <translation>Lütfen önce Ayarlar'da ZIA kimlik bilgilerini yapılandırın.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11720" />
+            <location filename="../zscaler_api_client.py" line="11749" />
             <source>ZIA auth request prepared. Click Send to authenticate.</source>
             <translation>ZIA kimlik doğrulama isteği hazırlandı. Kimlik doğrulamak için Gönder'i tıklayın.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11749" />
+            <location filename="../zscaler_api_client.py" line="11778" />
             <source>Please configure ZPA credentials in Settings first.</source>
             <translation>Lütfen önce Ayarlar'da ZPA kimlik bilgilerini yapılandırın.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11762" />
+            <location filename="../zscaler_api_client.py" line="11791" />
             <source>ZPA auth request prepared. Click Send to authenticate.</source>
             <translation>ZPA kimlik doğrulama isteği hazırlandı. Kimlik doğrulamak için Gönder'i tıklayın.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11767" />
+            <location filename="../zscaler_api_client.py" line="11796" />
             <source>All sessions cleared</source>
             <translation>Tüm oturumlar temizlendi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11790" />
+            <location filename="../zscaler_api_client.py" line="11819" />
             <source>Language Changed</source>
             <translation>Dil Değiştirildi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11791" />
+            <location filename="../zscaler_api_client.py" line="11820" />
             <source>The application needs to restart to apply the new language.
 
 Restart now?</source>
@@ -2158,49 +2158,49 @@ Restart now?</source>
 Şimdi yeniden başlatılsın mı?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11839" />
+            <location filename="../zscaler_api_client.py" line="11868" />
             <source>Checking for updates...</source>
             <translation>Güncellemeler kontrol ediliyor...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11912" />
+            <location filename="../zscaler_api_client.py" line="11941" />
             <source>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</source>
             <translation>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11916" />
+            <location filename="../zscaler_api_client.py" line="11945" />
             <source>Update Available</source>
             <translation>Güncelleme Mevcut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11918" />
+            <location filename="../zscaler_api_client.py" line="11947" />
             <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
             <translation>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11938" />
+            <location filename="../zscaler_api_client.py" line="11967" />
             <source>Update available: v{version}</source>
             <translation>Update available: v{version}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11941" />
+            <location filename="../zscaler_api_client.py" line="11970" />
             <source>You are up to date (v{version})</source>
             <translation>You are up to date (v{version})</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11946" />
+            <location filename="../zscaler_api_client.py" line="11975" />
             <source>Update Check Failed</source>
             <translation>Güncelleme Kontrolü Başarısız</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11947" />
+            <location filename="../zscaler_api_client.py" line="11976" />
             <source>Could not check for updates:
 {error}</source>
             <translation>Could not check for updates:
 {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11949" />
+            <location filename="../zscaler_api_client.py" line="11978" />
             <source>Update check failed</source>
             <translation>Güncelleme kontrolü başarısız oldu</translation>
         </message>
@@ -5584,596 +5584,601 @@ Ada,ada@example.com</translation>
     <context>
         <name>PacWorkspaceDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="8087" />
-            <location filename="../zscaler_api_client.py" line="8408" />
+            <location filename="../zscaler_api_client.py" line="8112" />
+            <location filename="../zscaler_api_client.py" line="8437" />
             <source>PAC Workspace</source>
             <translation>PAC Çalışma Alanı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8091" />
+            <location filename="../zscaler_api_client.py" line="8116" />
             <source>Create and verify PAC files locally. API operations are prepared in the request editor and are never sent or deployed automatically.</source>
             <translation>PAC dosyalarını yerel olarak oluşturun ve doğrulayın. API işlemleri istek düzenleyicide hazırlanır ve hiçbir zaman otomatik olarak gönderilmez veya dağıtılmaz.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8096" />
+            <location filename="../zscaler_api_client.py" line="8121" />
             <source>PAC experience:</source>
             <translation>PAC deneyimi:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8098" />
+            <location filename="../zscaler_api_client.py" line="8123" />
             <source>Guided (recommended)</source>
             <translation>Rehberli (önerilir)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8099" />
+            <location filename="../zscaler_api_client.py" line="8124" />
             <source>Advanced</source>
             <translation>Gelişmiş</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8116" />
+            <location filename="../zscaler_api_client.py" line="8141" />
             <source>PAC name:</source>
             <translation>PAC adı:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8117" />
+            <location filename="../zscaler_api_client.py" line="8142" />
             <source>Change note:</source>
             <translation>Notu değiştir:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8118" />
+            <location filename="../zscaler_api_client.py" line="8143" />
             <source>Hosted PAC URL (optional for ZCC):</source>
             <translation>Barındırılan PAC URL'si (ZCC için isteğe bağlı):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8119" />
+            <location filename="../zscaler_api_client.py" line="8144" />
             <source>Existing ZIA PAC ID (for lifecycle actions):</source>
             <translation>Mevcut ZIA PAC Kimliği (yaşam döngüsü eylemleri için):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8120" />
+            <location filename="../zscaler_api_client.py" line="8145" />
             <source>ZIA PAC version:</source>
             <translation>ZIA PAC sürümü:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8121" />
+            <location filename="../zscaler_api_client.py" line="8146" />
             <source>ZIA version action:</source>
             <translation>ZIA sürüm eylemi:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8128" />
+            <location filename="../zscaler_api_client.py" line="8153" />
             <source>Start with a safe baseline. Enter only internal destinations that must bypass Zscaler; all other traffic uses the selected gateway and failover.</source>
             <translation>Güvenli bir temel ile başlayın. Yalnızca Zscaler'ı atlaması gereken dahili hedefleri girin; diğer tüm trafik seçilen ağ geçidini ve yük devretmeyi kullanır.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8136" />
+            <location filename="../zscaler_api_client.py" line="8161" />
             <source>Direct-bypass host patterns (one per line):</source>
             <translation>Doğrudan baypas ana bilgisayar modelleri (satır başına bir tane):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8137" />
+            <location filename="../zscaler_api_client.py" line="8162" />
             <source>Primary gateway:</source>
             <translation>Birincil ağ geçidi:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8138" />
+            <location filename="../zscaler_api_client.py" line="8163" />
             <source>Secondary gateway:</source>
             <translation>İkincil ağ geçidi:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8141" />
+            <location filename="../zscaler_api_client.py" line="8166" />
             <source>Create guided PAC</source>
             <translation>Kılavuzlu PAC oluşturun</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8142" />
+            <location filename="../zscaler_api_client.py" line="8167" />
             <source>Load safe example</source>
             <translation>Güvenli örnek yükle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8145" />
+            <location filename="../zscaler_api_client.py" line="8170" />
             <source>Generated PAC preview (read-only):</source>
             <translation>Generated PAC preview (read-only):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8151" />
+            <location filename="../zscaler_api_client.py" line="8177" />
             <source>Guided setup</source>
             <translation>Kılavuzlu kurulum</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8153" />
+            <location filename="../zscaler_api_client.py" line="8179" />
             <source>PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.</source>
             <translation>PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8159" />
+            <location filename="../zscaler_api_client.py" line="8184" />
+            <source>Color guide: blue = PAC structure, amber = DIRECT bypass, green = proxy route, purple = variable, cyan = Zscaler endpoint, orange = IP/network, red = performance-sensitive DNS helper.</source>
+            <translation>Color guide: blue = PAC structure, amber = DIRECT bypass, green = proxy route, purple = variable, cyan = Zscaler endpoint, orange = IP/network, red = performance-sensitive DNS helper.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8188" />
             <source>Load PAC…</source>
             <translation>PAC'yi yükle…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8160" />
+            <location filename="../zscaler_api_client.py" line="8189" />
             <source>Save PAC…</source>
             <translation>PAC'yi kaydet…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8161" />
+            <location filename="../zscaler_api_client.py" line="8190" />
             <source>Save local draft</source>
             <translation>Yerel taslağı kaydet</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8164" />
+            <location filename="../zscaler_api_client.py" line="8193" />
             <source>Author</source>
             <translation>Yazar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8167" />
+            <location filename="../zscaler_api_client.py" line="8196" />
             <source>Variables (JSON). Standard Zscaler names: </source>
             <translation>Değişkenler (JSON). Standart Zscaler adları: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8171" />
+            <location filename="../zscaler_api_client.py" line="8200" />
             <source>Test URL:</source>
             <translation>Test URL'si:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8173" />
+            <location filename="../zscaler_api_client.py" line="8202" />
             <source>Apply variables</source>
             <translation>Değişkenleri uygula</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8174" />
+            <location filename="../zscaler_api_client.py" line="8203" />
             <source>Run static verification</source>
             <translation>Statik doğrulamayı çalıştır</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8175" />
+            <location filename="../zscaler_api_client.py" line="8204" />
             <source>Preview decision</source>
             <translation>Önizleme kararı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8178" />
+            <location filename="../zscaler_api_client.py" line="8207" />
             <source>Verify</source>
             <translation>Doğrula</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8181" />
+            <location filename="../zscaler_api_client.py" line="8210" />
             <source>PAC reference and review help. The verifier never executes JavaScript; validate in ZIA and test a pilot group before deployment.</source>
             <translation>PAC referansı ve inceleme yardımı. Doğrulayıcı hiçbir zaman JavaScript'i çalıştırmaz; ZIA'da doğrulayın ve dağıtımdan önce bir pilot grubu test edin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8182" />
+            <location filename="../zscaler_api_client.py" line="8211" />
             <source>Variable or function</source>
             <translation>Değişken veya fonksiyon</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8182" />
+            <location filename="../zscaler_api_client.py" line="8211" />
             <source>Purpose / guidance</source>
             <translation>Amaç / rehberlik</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8190" />
+            <location filename="../zscaler_api_client.py" line="8219" />
             <source>Roll out in stages: validate, test representative URLs, stage to a small pilot group, then deploy. Prefer host-pattern checks; avoid DNS helpers in Client Connector PAC files where possible.</source>
             <translation>Aşamalar halinde kullanıma alın: doğrulayın, temsili URL'leri test edin, küçük bir pilot gruba hazırlayın ve ardından dağıtın. Ana bilgisayar modeli kontrollerini tercih edin; Mümkün olduğunda Client Connector PAC dosyalarındaki DNS yardımcılarından kaçının.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8192" />
+            <location filename="../zscaler_api_client.py" line="8221" />
             <source>Help and reference</source>
             <translation>Yardım ve referans</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8195" />
+            <location filename="../zscaler_api_client.py" line="8224" />
             <source>Map supplied ZIA PAC metadata to ZCC forwarding-profile actions. Matches use hosted PAC URLs or an inline PAC content fingerprint; names alone are never treated as a match.</source>
             <translation>Harita, ZCC yönlendirme profili eylemlerine ZIA PAC meta verilerini sağladı. Eşleşmeler, barındırılan PAC URL'lerini veya satır içi PAC içerik parmak izini kullanır; isimler tek başına hiçbir zaman eşleşme olarak değerlendirilmez.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8198" />
+            <location filename="../zscaler_api_client.py" line="8227" />
             <source>ZIA PAC list JSON</source>
             <translation>ZIA PAC listesi JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8200" />
+            <location filename="../zscaler_api_client.py" line="8229" />
             <source>ZCC forwarding-profile list JSON</source>
             <translation>ZCC yönlendirme profili listesi JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8204" />
+            <location filename="../zscaler_api_client.py" line="8233" />
             <source>Build PAC mappings</source>
             <translation>PAC eşlemeleri oluşturun</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8205" />
-            <location filename="../zscaler_api_client.py" line="8240" />
+            <location filename="../zscaler_api_client.py" line="8234" />
+            <location filename="../zscaler_api_client.py" line="8269" />
             <source>Prepare ZIA PAC list</source>
             <translation>ZIA PAC listesini hazırlayın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8206" />
-            <location filename="../zscaler_api_client.py" line="8232" />
+            <location filename="../zscaler_api_client.py" line="8235" />
+            <location filename="../zscaler_api_client.py" line="8261" />
             <source>Prepare ZCC profile list</source>
             <translation>ZCC profil listesini hazırlayın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>ZCC profile</source>
             <translation>ZCC profili</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>Action / network</source>
             <translation>Eylem / ağ</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>PAC type</source>
             <translation>PAC tipi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>PAC reference</source>
             <translation>PAC referansı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>ZIA status</source>
             <translation>ZIA durumu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>Mapping result</source>
             <translation>Eşleme sonucu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8238" />
             <source>Profile ID</source>
             <translation>Profil Kimliği</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8212" />
-            <location filename="../zscaler_api_client.py" line="8321" />
+            <location filename="../zscaler_api_client.py" line="8241" />
+            <location filename="../zscaler_api_client.py" line="8350" />
             <source>PAC mappings</source>
             <translation>PAC eşlemeleri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8215" />
+            <location filename="../zscaler_api_client.py" line="8244" />
             <source>Search the bundled Zscaler Configuration Center index of Cloud Enforcement Node ranges, proxy/VPN hostnames, GRE and extranet virtual IP addresses. The PAC editor shows a help balloon when a line references an indexed endpoint.</source>
             <translation>Bulut Uygulama Düğümü aralıkları, proxy/VPN ana bilgisayar adları, GRE ve extranet sanal IP adreslerinden oluşan paketlenmiş Zscaler Configuration Center dizininde arama yapın. PAC düzenleyicisi, bir çizgi indekslenmiş bir uç noktaya referans verdiğinde bir yardım balonu gösterir.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8219" />
+            <location filename="../zscaler_api_client.py" line="8248" />
             <source>Search city, CIDR, hostname, GRE or VPN address</source>
             <translation>Şehir, CIDR, ana bilgisayar adı, GRE veya VPN adresini arayın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8220" />
+            <location filename="../zscaler_api_client.py" line="8249" />
             <source>Search data centers</source>
             <translation>Veri merkezlerini arayın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>Continent</source>
             <translation>Kıta</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>Data center</source>
             <translation>Veri merkezi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>CIDR range</source>
             <translation>CIDR aralığı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>Proxy hostname</source>
             <translation>Proxy ana bilgisayar adı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>VPN hostname</source>
             <translation>VPN ana bilgisayar adı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>GRE VIP</source>
             <translation>GRE VIP</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>Extranet VIP</source>
             <translation>Extranet VIP'si</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8252" />
             <source>Coordinates</source>
             <translation>Koordinatlar</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8226" />
+            <location filename="../zscaler_api_client.py" line="8255" />
             <source>Zscaler data centers</source>
             <translation>Zscaler veri merkezleri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8229" />
+            <location filename="../zscaler_api_client.py" line="8258" />
             <source>Paste a forwarding profile returned by ZCC, or first prepare the profile-list request. Existing profile fields are preserved when PAC fields are updated.</source>
             <translation>ZCC tarafından döndürülen bir yönlendirme profilini yapıştırın veya önce profil listesi isteğini hazırlayın. PAC alanları güncellendiğinde mevcut profil alanları korunur.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8233" />
+            <location filename="../zscaler_api_client.py" line="8262" />
             <source>Prepare ZCC update</source>
             <translation>ZCC güncellemesini hazırlayın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8235" />
+            <location filename="../zscaler_api_client.py" line="8264" />
             <source>ZCC / Mobile Portal</source>
             <translation>ZCC / Mobil Portal</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8238" />
+            <location filename="../zscaler_api_client.py" line="8267" />
             <source>Prepare ZIA validation</source>
             <translation>ZIA doğrulamasını hazırlayın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8239" />
+            <location filename="../zscaler_api_client.py" line="8268" />
             <source>Prepare ZIA hosted PAC upload</source>
             <translation>ZIA tarafından barındırılan PAC yüklemesini hazırlayın</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8241" />
+            <location filename="../zscaler_api_client.py" line="8270" />
             <source>Prepare ZIA version action</source>
             <translation>ZIA sürümünü hazırlama eylemi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8242" />
+            <location filename="../zscaler_api_client.py" line="8271" />
             <source>Close</source>
             <translation>Kapat</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8261" />
+            <location filename="../zscaler_api_client.py" line="8290" />
             <source>Guided mode creates a minimal, reviewable PAC. Switch to Advanced to edit JavaScript, update ZCC profiles, or prepare ZIA lifecycle actions.</source>
             <translation>Kılavuzlu mod, minimum düzeyde gözden geçirilebilir bir PAC oluşturur. JavaScript'i düzenlemek, ZCC profillerini güncellemek veya ZIA yaşam döngüsü eylemlerini hazırlamak için Gelişmiş'e geçin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8262" />
+            <location filename="../zscaler_api_client.py" line="8291" />
             <source>Advanced mode exposes the PAC editor, ZCC profile patching, and ZIA version lifecycle actions. Every write remains explicit.</source>
             <translation>Gelişmiş mod, PAC düzenleyicisini, ZCC profil düzeltme ekini ve ZIA sürümü yaşam döngüsü eylemlerini ortaya çıkarır. Her yazma açık kalır.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8273" />
+            <location filename="../zscaler_api_client.py" line="8302" />
             <source>Primary Zscaler gateway.</source>
             <translation>Primary Zscaler gateway.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8273" />
+            <location filename="../zscaler_api_client.py" line="8302" />
             <source>Secondary Zscaler gateway.</source>
             <translation>Secondary Zscaler gateway.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8274" />
+            <location filename="../zscaler_api_client.py" line="8303" />
             <source>Primary gateway with failover support.</source>
             <translation>Primary gateway with failover support.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8274" />
+            <location filename="../zscaler_api_client.py" line="8303" />
             <source>Secondary gateway with failover support.</source>
             <translation>Secondary gateway with failover support.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8275" />
+            <location filename="../zscaler_api_client.py" line="8304" />
             <source>Optional local deployment label.</source>
             <translation>Optional local deployment label.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8275" />
+            <location filename="../zscaler_api_client.py" line="8304" />
             <source>Zscaler cloud name.</source>
             <translation>Zscaler cloud name.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8276" />
+            <location filename="../zscaler_api_client.py" line="8305" />
             <source>Primary gateway for an explicit subcloud.</source>
             <translation>Primary gateway for an explicit subcloud.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8277" />
+            <location filename="../zscaler_api_client.py" line="8306" />
             <source>Secondary gateway for an explicit subcloud.</source>
             <translation>Secondary gateway for an explicit subcloud.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8280" />
+            <location filename="../zscaler_api_client.py" line="8309" />
             <source>Required PAC entry point; returns DIRECT, PROXY, or SOCKS.</source>
             <translation>Required PAC entry point; returns DIRECT, PROXY, or SOCKS.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8281" />
+            <location filename="../zscaler_api_client.py" line="8310" />
             <source>Matches a host without a DNS suffix.</source>
             <translation>Matches a host without a DNS suffix.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8282" />
+            <location filename="../zscaler_api_client.py" line="8311" />
             <source>Matches a DNS suffix.</source>
             <translation>Matches a DNS suffix.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8283" />
+            <location filename="../zscaler_api_client.py" line="8312" />
             <source>Matches a local host or fully qualified name.</source>
             <translation>Matches a local host or fully qualified name.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8284" />
+            <location filename="../zscaler_api_client.py" line="8313" />
             <source>Matches wildcard patterns such as *.example.com.</source>
             <translation>Matches wildcard patterns such as *.example.com.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8285" />
+            <location filename="../zscaler_api_client.py" line="8314" />
             <source>Counts DNS labels in a host name.</source>
             <translation>Counts DNS labels in a host name.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8286" />
+            <location filename="../zscaler_api_client.py" line="8315" />
             <source>Matches a weekday range.</source>
             <translation>Matches a weekday range.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8286" />
+            <location filename="../zscaler_api_client.py" line="8315" />
             <source>Matches a date range.</source>
             <translation>Matches a date range.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8287" />
+            <location filename="../zscaler_api_client.py" line="8316" />
             <source>Matches a time range.</source>
             <translation>Matches a time range.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8288" />
+            <location filename="../zscaler_api_client.py" line="8317" />
             <source>Resolves DNS; avoid in Client Connector PAC files unless required.</source>
             <translation>Resolves DNS; avoid in Client Connector PAC files unless required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8289" />
+            <location filename="../zscaler_api_client.py" line="8318" />
             <source>Tests DNS resolution; avoid in Client Connector PAC files unless required.</source>
             <translation>Tests DNS resolution; avoid in Client Connector PAC files unless required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8290" />
+            <location filename="../zscaler_api_client.py" line="8319" />
             <source>Tests a network; avoid in Client Connector PAC files unless required.</source>
             <translation>Tests a network; avoid in Client Connector PAC files unless required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8299" />
+            <location filename="../zscaler_api_client.py" line="8328" />
             <source>Fix the guided input to generate a PAC preview: </source>
             <translation>Fix the guided input to generate a PAC preview: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8309" />
+            <location filename="../zscaler_api_client.py" line="8338" />
             <source>Guided PAC</source>
             <translation>Kılavuzlu PAC</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8313" />
+            <location filename="../zscaler_api_client.py" line="8342" />
             <source>Guided PAC created. Review the verification findings, test a URL, then prepare ZIA validation.</source>
             <translation>Kılavuzlu PAC oluşturuldu. Doğrulama bulgularını inceleyin, bir URL'yi test edin ve ardından ZIA doğrulamasını hazırlayın.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8321" />
+            <location filename="../zscaler_api_client.py" line="8350" />
             <source>Both mapping inputs must be valid JSON: </source>
             <translation>Her iki eşleme girişi de geçerli JSON olmalıdır: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8330" />
+            <location filename="../zscaler_api_client.py" line="8359" />
             <source>Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.</source>
             <translation>Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8351" />
+            <location filename="../zscaler_api_client.py" line="8380" />
             <source>{matches} matching endpoint records from {total} indexed Zscaler data-center records. Source: {source}</source>
             <translation>{matches} matching endpoint records from {total} indexed Zscaler data-center records. Source: {source}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8360" />
-            <location filename="../zscaler_api_client.py" line="8362" />
             <location filename="../zscaler_api_client.py" line="8389" />
+            <location filename="../zscaler_api_client.py" line="8391" />
+            <location filename="../zscaler_api_client.py" line="8418" />
             <source>PAC variables</source>
             <translation>PAC değişkenleri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8360" />
+            <location filename="../zscaler_api_client.py" line="8389" />
             <source>Variables must be valid JSON: </source>
             <translation>Değişkenler geçerli JSON olmalıdır: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8362" />
+            <location filename="../zscaler_api_client.py" line="8391" />
             <source>Variables must be a JSON object with text or numeric values.</source>
             <translation>Değişkenler, metin veya sayısal değerlere sahip bir JSON nesnesi olmalıdır.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8371" />
+            <location filename="../zscaler_api_client.py" line="8400" />
             <source>none</source>
             <translation>hiçbiri</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8372" />
+            <location filename="../zscaler_api_client.py" line="8401" />
             <source>Detected variables: </source>
             <translation>Algılanan değişkenler: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8376" />
+            <location filename="../zscaler_api_client.py" line="8405" />
             <source>Improvement tips:</source>
             <translation>İyileştirme ipuçları:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8388" />
+            <location filename="../zscaler_api_client.py" line="8417" />
             <source>Variables applied.</source>
             <translation>Değişkenler uygulandı.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8388" />
+            <location filename="../zscaler_api_client.py" line="8417" />
             <source>Variables applied; missing values were retained: </source>
             <translation>Uygulanan değişkenler; eksik değerler korundu: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8393" />
+            <location filename="../zscaler_api_client.py" line="8422" />
             <source>Preview</source>
             <translation>Önizleme</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8408" />
+            <location filename="../zscaler_api_client.py" line="8437" />
             <source>PAC draft saved locally.</source>
             <translation>PAC taslağı yerel olarak kaydedildi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8411" />
-            <location filename="../zscaler_api_client.py" line="8416" />
+            <location filename="../zscaler_api_client.py" line="8440" />
+            <location filename="../zscaler_api_client.py" line="8445" />
             <source>Load PAC</source>
             <translation>PAC'yi yükle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8419" />
-            <location filename="../zscaler_api_client.py" line="8424" />
+            <location filename="../zscaler_api_client.py" line="8448" />
+            <location filename="../zscaler_api_client.py" line="8453" />
             <source>Save PAC</source>
             <translation>PAC'yi kaydet</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8432" />
+            <location filename="../zscaler_api_client.py" line="8461" />
             <source>PAC request prepared</source>
             <translation>PAC talebi hazırlandı</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8432" />
+            <location filename="../zscaler_api_client.py" line="8461" />
             <source>The request was placed in the main editor. Review it and explicitly select Send Request; no deployment action has been performed.</source>
             <translation>Talep ana editöre yerleştirildi. Gözden geçirin ve açıkça İstek Gönder'i seçin; herhangi bir dağıtım eylemi gerçekleştirilmedi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8437" />
+            <location filename="../zscaler_api_client.py" line="8466" />
             <source>PAC verification</source>
             <translation>PAC doğrulaması</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8437" />
+            <location filename="../zscaler_api_client.py" line="8466" />
             <source>Resolve PAC errors before preparing an API write.</source>
             <translation>API yazma işlemine hazırlanmadan önce PAC hatalarını çözün.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8453" />
+            <location filename="../zscaler_api_client.py" line="8482" />
             <source>ZIA PAC lifecycle</source>
             <translation>ZIA PAC yaşam döngüsü</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8453" />
+            <location filename="../zscaler_api_client.py" line="8482" />
             <source>Enter a numeric PAC ID and version before preparing a lifecycle action.</source>
             <translation>Bir yaşam döngüsü eylemi hazırlamadan önce sayısal bir PAC kimliği ve sürümü girin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8467" />
-            <location filename="../zscaler_api_client.py" line="8469" />
+            <location filename="../zscaler_api_client.py" line="8496" />
+            <location filename="../zscaler_api_client.py" line="8498" />
             <source>ZCC forwarding profile</source>
             <translation>ZCC yönlendirme profili</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8467" />
+            <location filename="../zscaler_api_client.py" line="8496" />
             <source>Profile must be valid JSON: </source>
             <translation>Profil geçerli bir JSON olmalıdır: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8469" />
+            <location filename="../zscaler_api_client.py" line="8498" />
             <source>Paste one ZCC forwarding profile object with its id before preparing an update.</source>
             <translation>Bir güncelleme hazırlamadan önce bir ZCC yönlendirme profili nesnesini kimliğiyle birlikte yapıştırın.</translation>
         </message>
@@ -7375,12 +7380,12 @@ Ada,ada@example.com</translation>
     <context>
         <name>window</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="12101" />
+            <location filename="../zscaler_api_client.py" line="12130" />
             <source>Automatic Update Check</source>
             <translation>Otomatik Güncelleme Kontrolü</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12103" />
+            <location filename="../zscaler_api_client.py" line="12132" />
             <source>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</source>
             <translation>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</translation>
         </message>
