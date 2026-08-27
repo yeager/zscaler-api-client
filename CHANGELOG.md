@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.7] - 2026-08-27
+
+### Changed
+- Synchronized all 20 Qt localization catalogs with the current application source, including PAC Workspace and Zscaler data-center guidance.
+- Added AI-assisted translations for the non-Swedish catalogs, with safe English fallbacks for rich HTML help and runtime-template strings where translation could alter markup or API parameters.
+- Added catalog validation that detects translation-provider artifacts and preserves technical placeholders, PAC examples, and security-sensitive interface context.
+
 ## [2.8.6] - 2026-08-27
 
 ### Added
