@@ -1,102 +1,102 @@
 <?xml version='1.0' encoding='utf-8'?>
-<TS version="2.1" language="fr_FR">
+<TS version="2.1" language="fr">
     <context>
         <name>AboutDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="4386" />
+            <location filename="../zscaler_api_client.py" line="4428" />
             <source>About ZS API Client</source>
             <translation>À propos de ZS API Client</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4412" />
+            <location filename="../zscaler_api_client.py" line="4454" />
             <source>&lt;p&gt;A Postman-like desktop application for exploring and testing Zscaler APIs (ZIA and ZPA).&lt;/p&gt;</source>
-            <translation>&lt;p&gt;Une application de bureau similaire à Postman pour explorer et tester les APIs Zscaler (ZIA et ZPA).&lt;/p&gt;</translation>
+            <translation>&lt;p&gt;A Postman-like desktop application for exploring and testing Zscaler APIs (ZIA and ZPA).&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4445" />
+            <location filename="../zscaler_api_client.py" line="4487" />
             <source>Disclaimer</source>
             <translation>Avertissement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4448" />
+            <location filename="../zscaler_api_client.py" line="4490" />
             <source>&lt;p style='color: #666;'&gt;This software is &lt;b&gt;not affiliated with, endorsed by, or supported by Zscaler, Inc.&lt;/b&gt; in any way. This is an independent community project.&lt;/p&gt;&lt;p style='color: #666;'&gt;Zscaler® is a registered trademark of Zscaler, Inc. All product names, logos, and brands are property of their respective owners.&lt;/p&gt;&lt;p style='color: #666;'&gt;&lt;b&gt;NO WARRANTY:&lt;/b&gt; This software is provided "as is" without warranty of any kind. Use at your own risk. The author is not responsible for any damage or data loss resulting from the use of this software.&lt;/p&gt;&lt;p style='color: #666;'&gt;&lt;b&gt;NO SUPPORT:&lt;/b&gt; For Zscaler product support, please contact Zscaler directly through official channels.&lt;/p&gt;</source>
-            <translation>&lt;p style='color: #666;'&gt;Ce logiciel n'est &lt;b&gt;pas affilié, approuvé ou soutenu par Zscaler, Inc.&lt;/b&gt; de quelque manière que ce soit. Il s'agit d'un projet communautaire indépendant.&lt;/p&gt;&lt;p style='color: #666;'&gt;Zscaler® est une marque déposée de Zscaler, Inc. Tous les noms de produits, logos et marques appartiennent à leurs propriétaires respectifs.&lt;/p&gt;&lt;p style='color: #666;'&gt;&lt;b&gt;AUCUNE GARANTIE :&lt;/b&gt; Ce logiciel est fourni "tel quel" sans aucune garantie. Utilisation à vos propres risques. L'auteur n'est pas responsable des dommages ou pertes de données résultant de l'utilisation de ce logiciel.&lt;/p&gt;&lt;p style='color: #666;'&gt;&lt;b&gt;PAS DE SUPPORT :&lt;/b&gt; Pour le support des produits Zscaler, veuillez contacter Zscaler directement via les canaux officiels.&lt;/p&gt;</translation>
+            <translation>&lt;p style='color: #666;'&gt;This software is &lt;b&gt;not affiliated with, endorsed by, or supported by Zscaler, Inc.&lt;/b&gt; in any way. This is an independent community project.&lt;/p&gt;&lt;p style='color: #666;'&gt;Zscaler® is a registered trademark of Zscaler, Inc. All product names, logos, and brands are property of their respective owners.&lt;/p&gt;&lt;p style='color: #666;'&gt;&lt;b&gt;NO WARRANTY:&lt;/b&gt; This software is provided "as is" without warranty of any kind. Use at your own risk. The author is not responsible for any damage or data loss resulting from the use of this software.&lt;/p&gt;&lt;p style='color: #666;'&gt;&lt;b&gt;NO SUPPORT:&lt;/b&gt; For Zscaler product support, please contact Zscaler directly through official channels.&lt;/p&gt;</translation>
         </message>
     </context>
     <context>
         <name>BatchDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="5672" />
+            <location filename="../zscaler_api_client.py" line="5714" />
             <source>Batch Operations</source>
             <translation>Opérations par lots</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5679" />
+            <location filename="../zscaler_api_client.py" line="5721" />
             <source>Import a CSV file to perform batch operations. The CSV should have columns matching the API parameters.</source>
             <translation>Importez un fichier CSV pour effectuer des opérations par lots. Le CSV doit avoir des colonnes correspondant aux paramètres de l'API.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5688" />
+            <location filename="../zscaler_api_client.py" line="5730" />
             <source>Select CSV file...</source>
             <translation>Sélectionner un fichier CSV...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5691" />
+            <location filename="../zscaler_api_client.py" line="5733" />
             <source>Browse...</source>
             <translation>Parcourir...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5703" />
+            <location filename="../zscaler_api_client.py" line="5745" />
             <source>Operation:</source>
             <translation>Opération :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5707" />
+            <location filename="../zscaler_api_client.py" line="5749" />
             <source>Create Users (ZIA)</source>
             <translation>Créer des utilisateurs (ZIA)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5708" />
+            <location filename="../zscaler_api_client.py" line="5750" />
             <source>Update Users (ZIA)</source>
-            <translation>Update Users (ZIA)</translation>
+            <translation>Mettre à jour les utilisateurs (ZIA)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5709" />
+            <location filename="../zscaler_api_client.py" line="5751" />
             <source>Delete Users (ZIA)</source>
             <translation>Supprimer des utilisateurs (ZIA)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5710" />
+            <location filename="../zscaler_api_client.py" line="5752" />
             <source>Create Locations (ZIA)</source>
             <translation>Créer des emplacements (ZIA)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5711" />
+            <location filename="../zscaler_api_client.py" line="5753" />
             <source>URL Lookup (ZIA)</source>
             <translation>Recherche d'URL (ZIA)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5712" />
+            <location filename="../zscaler_api_client.py" line="5754" />
             <source>Create App Segments (ZPA)</source>
             <translation>Créer des segments d'application (ZPA)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5738" />
+            <location filename="../zscaler_api_client.py" line="5780" />
             <source>Select CSV File</source>
             <translation>Sélectionner un fichier CSV</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5768" />
+            <location filename="../zscaler_api_client.py" line="5810" />
             <source>Error</source>
             <translation>Erreur</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5777" />
+            <location filename="../zscaler_api_client.py" line="5819" />
             <source>Validated: {count} requests are ready for review.</source>
             <translation>Validated: {count} requests are ready for review.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5779" />
+            <location filename="../zscaler_api_client.py" line="5821" />
             <source>Batch validation failed. Required CSV columns: {columns}</source>
             <translation>Batch validation failed. Required CSV columns: {columns}</translation>
         </message>
@@ -104,32 +104,32 @@
     <context>
         <name>ChangelogDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="4491" />
+            <location filename="../zscaler_api_client.py" line="4533" />
             <source>What's New</source>
             <translation>Les nouveautés</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4498" />
+            <location filename="../zscaler_api_client.py" line="4540" />
             <source>&lt;h2&gt;🎉 Updated to version {version}&lt;/h2&gt;</source>
-            <translation>&lt;h2&gt;🎉 Mise à jour vers la version {version}&lt;/h2&gt;</translation>
+            <translation>&lt;h2&gt;🎉 Updated to version {version}&lt;/h2&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4503" />
+            <location filename="../zscaler_api_client.py" line="4545" />
             <source>&lt;p style='color: #666;'&gt;Updated from version {prev}&lt;/p&gt;</source>
-            <translation>&lt;p style='color: #666;'&gt;Mise à jour depuis la version {prev}&lt;/p&gt;</translation>
+            <translation>&lt;p style='color: #666;'&gt;Updated from version {prev}&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4519" />
+            <location filename="../zscaler_api_client.py" line="4561" />
             <source>Don't show this after future updates</source>
             <translation>Ne plus afficher après les futures mises à jour</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4540" />
+            <location filename="../zscaler_api_client.py" line="4582" />
             <source>*Changelog not found*</source>
             <translation>*Changelog introuvable*</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4561" />
+            <location filename="../zscaler_api_client.py" line="4603" />
             <source>*Could not load changelog: {error}*</source>
             <translation>*Impossible de charger le journal des modifications : {error}*</translation>
         </message>
@@ -137,265 +137,265 @@
     <context>
         <name>EnvironmentProfilesDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="5915" />
-            <location filename="../zscaler_api_client.py" line="5958" />
-            <location filename="../zscaler_api_client.py" line="5961" />
-            <location filename="../zscaler_api_client.py" line="5969" />
+            <location filename="../zscaler_api_client.py" line="5957" />
+            <location filename="../zscaler_api_client.py" line="6000" />
+            <location filename="../zscaler_api_client.py" line="6003" />
+            <location filename="../zscaler_api_client.py" line="6011" />
             <source>Environment profiles</source>
-            <translation>Environment profiles</translation>
+            <translation>Profils d'environnement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5917" />
+            <location filename="../zscaler_api_client.py" line="5959" />
             <source>Each environment keeps separate tenant hosts, client identifiers, enabled products, and keychain credentials. Creating a profile copies only non-secret configuration. Activating a profile clears every in-memory API session.</source>
-            <translation>Each environment keeps separate tenant hosts, client identifiers, enabled products, and keychain credentials. Creating a profile copies only non-secret configuration. Activating a profile clears every in-memory API session.</translation>
+            <translation>Chaque environnement conserve des hôtes locataires, des identifiants client, des produits activés et des informations d'identification de trousseau distincts. La création d'un profil copie uniquement la configuration non secrète. L'activation d'un profil efface chaque session API en mémoire.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5918" />
+            <location filename="../zscaler_api_client.py" line="5960" />
             <source>Active</source>
-            <translation>Active</translation>
+            <translation>Actif</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5918" />
+            <location filename="../zscaler_api_client.py" line="5960" />
             <source>Name</source>
-            <translation>Name</translation>
+            <translation>Nom</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5918" />
+            <location filename="../zscaler_api_client.py" line="5960" />
             <source>Default API</source>
-            <translation>Default API</translation>
+            <translation>API par défaut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5918" />
+            <location filename="../zscaler_api_client.py" line="5960" />
             <source>Configured host</source>
-            <translation>Configured host</translation>
+            <translation>Hôte configuré</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5918" />
+            <location filename="../zscaler_api_client.py" line="5960" />
             <source>Keychain secrets</source>
-            <translation>Keychain secrets</translation>
+            <translation>Secrets du porte-clés</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5921" />
-            <location filename="../zscaler_api_client.py" line="5954" />
+            <location filename="../zscaler_api_client.py" line="5963" />
+            <location filename="../zscaler_api_client.py" line="5996" />
             <source>Create profile</source>
-            <translation>Create profile</translation>
+            <translation>Créer un profil</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5922" />
-            <location filename="../zscaler_api_client.py" line="5966" />
+            <location filename="../zscaler_api_client.py" line="5964" />
+            <location filename="../zscaler_api_client.py" line="6008" />
             <source>Rename profile</source>
-            <translation>Rename profile</translation>
+            <translation>Renommer le profil</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5923" />
-            <location filename="../zscaler_api_client.py" line="5977" />
-            <location filename="../zscaler_api_client.py" line="5978" />
+            <location filename="../zscaler_api_client.py" line="5965" />
+            <location filename="../zscaler_api_client.py" line="6019" />
+            <location filename="../zscaler_api_client.py" line="6020" />
             <source>Delete profile</source>
-            <translation>Delete profile</translation>
+            <translation>Supprimer le profil</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5924" />
+            <location filename="../zscaler_api_client.py" line="5966" />
             <source>Activate profile</source>
-            <translation>Activate profile</translation>
+            <translation>Activer le profil</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5925" />
+            <location filename="../zscaler_api_client.py" line="5967" />
             <source>Close</source>
-            <translation>Close</translation>
+            <translation>Fermer</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5941" />
+            <location filename="../zscaler_api_client.py" line="5983" />
             <source>{count} configured</source>
             <translation>{count} configured</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5954" />
-            <location filename="../zscaler_api_client.py" line="5966" />
+            <location filename="../zscaler_api_client.py" line="5996" />
+            <location filename="../zscaler_api_client.py" line="6008" />
             <source>Profile name:</source>
-            <translation>Profile name:</translation>
+            <translation>Nom du profil :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5958" />
-            <location filename="../zscaler_api_client.py" line="5969" />
+            <location filename="../zscaler_api_client.py" line="6000" />
+            <location filename="../zscaler_api_client.py" line="6011" />
             <source>Enter a unique profile name without path separators (maximum 60 characters).</source>
-            <translation>Enter a unique profile name without path separators (maximum 60 characters).</translation>
+            <translation>Entrez un nom de profil unique sans séparateurs de chemin (60 caractères maximum).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5961" />
+            <location filename="../zscaler_api_client.py" line="6003" />
             <source>The profile was created with non-secret settings only. Open Settings after activation to add its keychain credentials.</source>
-            <translation>The profile was created with non-secret settings only. Open Settings after activation to add its keychain credentials.</translation>
+            <translation>Le profil a été créé uniquement avec des paramètres non secrets. Ouvrez les paramètres après l'activation pour ajouter ses informations d'identification de trousseau.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5977" />
+            <location filename="../zscaler_api_client.py" line="6019" />
             <source>The default or active profile cannot be deleted. Activate another profile first.</source>
-            <translation>The default or active profile cannot be deleted. Activate another profile first.</translation>
+            <translation>Le profil par défaut ou actif ne peut pas être supprimé. Activez d'abord un autre profil.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5978" />
+            <location filename="../zscaler_api_client.py" line="6020" />
             <source>Delete profile “{name}” and all of its keychain credentials? This cannot be undone.</source>
             <translation>Delete profile “{name}” and all of its keychain credentials? This cannot be undone.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5980" />
+            <location filename="../zscaler_api_client.py" line="6022" />
             <source>Secure storage</source>
-            <translation>Secure storage</translation>
+            <translation>Stockage sécurisé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5980" />
+            <location filename="../zscaler_api_client.py" line="6022" />
             <source>The profile could not be deleted because its keychain credentials could not be removed.</source>
-            <translation>The profile could not be deleted because its keychain credentials could not be removed.</translation>
+            <translation>Le profil n'a pas pu être supprimé car ses informations d'identification de trousseau n'ont pas pu être supprimées.</translation>
         </message>
     </context>
     <context>
         <name>ErrorCodesDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="5609" />
+            <location filename="../zscaler_api_client.py" line="5651" />
             <source>API Error Codes Reference</source>
-            <translation>API Error Codes Reference</translation>
+            <translation>Référence des codes d'erreur de l'API</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5615" />
+            <location filename="../zscaler_api_client.py" line="5657" />
             <source>&lt;h2&gt;🔴 Zscaler API Error Codes&lt;/h2&gt;</source>
             <translation>&lt;h2&gt;🔴 Zscaler API Error Codes&lt;/h2&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5618" />
+            <location filename="../zscaler_api_client.py" line="5660" />
             <source>Common error codes and their meanings for each API.</source>
-            <translation>Common error codes and their meanings for each API.</translation>
+            <translation>Codes d'erreur courants et leur signification pour chaque API.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5631" />
+            <location filename="../zscaler_api_client.py" line="5673" />
             <source>Code</source>
-            <translation>Code</translation>
+            <translation>Coder</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5631" />
+            <location filename="../zscaler_api_client.py" line="5673" />
             <source>Name</source>
-            <translation>Name</translation>
+            <translation>Nom</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5631" />
+            <location filename="../zscaler_api_client.py" line="5673" />
             <source>Description</source>
-            <translation>Description</translation>
+            <translation>Descriptif</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5651" />
+            <location filename="../zscaler_api_client.py" line="5693" />
             <source>&lt;p&gt;&lt;b&gt;💡 Tips:&lt;/b&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;401/403:&lt;/b&gt; Re-authenticate using the Auth button&lt;/li&gt;&lt;li&gt;&lt;b&gt;429:&lt;/b&gt; Wait 60 seconds before retrying&lt;/li&gt;&lt;li&gt;&lt;b&gt;500:&lt;/b&gt; Check Zscaler status page for outages&lt;/li&gt;&lt;/ul&gt;</source>
             <translation>&lt;p&gt;&lt;b&gt;💡 Tips:&lt;/b&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;b&gt;401/403:&lt;/b&gt; Re-authenticate using the Auth button&lt;/li&gt;&lt;li&gt;&lt;b&gt;429:&lt;/b&gt; Wait 60 seconds before retrying&lt;/li&gt;&lt;li&gt;&lt;b&gt;500:&lt;/b&gt; Check Zscaler status page for outages&lt;/li&gt;&lt;/ul&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5662" />
+            <location filename="../zscaler_api_client.py" line="5704" />
             <source>Close</source>
-            <translation>Close</translation>
+            <translation>Fermer</translation>
         </message>
     </context>
     <context>
         <name>ExperienceJourneyGraph</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="3912" />
+            <location filename="../zscaler_api_client.py" line="3954" />
             <source>No journey telemetry in the current response</source>
-            <translation>No journey telemetry in the current response</translation>
+            <translation>Aucune télémétrie de trajet dans la réponse actuelle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3931" />
+            <location filename="../zscaler_api_client.py" line="3973" />
             <source>No observed data</source>
-            <translation>No observed data</translation>
+            <translation>Aucune donnée observée</translation>
         </message>
     </context>
     <context>
         <name>HighPerformanceLineChart</name>
         <message>
             <source>Latency</source>
-            <translation type="vanished">Latency</translation>
+            <translation>Latence</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3743" />
+            <location filename="../zscaler_api_client.py" line="3785" />
             <source>Value</source>
-            <translation>Value</translation>
+            <translation>Valeur</translation>
         </message>
     </context>
     <context>
         <name>HistoryDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="5789" />
+            <location filename="../zscaler_api_client.py" line="5831" />
             <source>Request History</source>
             <translation>Historique des requêtes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5798" />
+            <location filename="../zscaler_api_client.py" line="5840" />
             <source>Search:</source>
             <translation>Rechercher:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5800" />
+            <location filename="../zscaler_api_client.py" line="5842" />
             <source>Filter by URL or method...</source>
-            <translation>Filter by URL or method...</translation>
+            <translation>Filtrer par URL ou méthode...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5805" />
+            <location filename="../zscaler_api_client.py" line="5847" />
             <source>Current environment: {name}</source>
             <translation>Current environment: {name}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5806" />
+            <location filename="../zscaler_api_client.py" line="5848" />
             <source>All environments</source>
-            <translation>All environments</translation>
+            <translation>Tous les environnements</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5810" />
-            <location filename="../zscaler_api_client.py" line="5887" />
+            <location filename="../zscaler_api_client.py" line="5852" />
+            <location filename="../zscaler_api_client.py" line="5929" />
             <source>Clear History</source>
             <translation>Effacer l'historique</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5819" />
+            <location filename="../zscaler_api_client.py" line="5861" />
             <source>Time</source>
             <translation>Heure</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5819" />
+            <location filename="../zscaler_api_client.py" line="5861" />
             <source>Method</source>
             <translation>Méthode</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5819" />
+            <location filename="../zscaler_api_client.py" line="5861" />
             <source>URL</source>
             <translation>URL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5819" />
+            <location filename="../zscaler_api_client.py" line="5861" />
             <source>Environment</source>
-            <translation>Environment</translation>
+            <translation>Environnement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5820" />
+            <location filename="../zscaler_api_client.py" line="5862" />
             <source>Status</source>
-            <translation>Status</translation>
+            <translation>Statut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5820" />
+            <location filename="../zscaler_api_client.py" line="5862" />
             <source>Duration</source>
             <translation>Durée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5832" />
+            <location filename="../zscaler_api_client.py" line="5874" />
             <source>Load Request</source>
             <translation>Charger la requête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5836" />
+            <location filename="../zscaler_api_client.py" line="5878" />
             <source>Close</source>
             <translation>Fermer</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5860" />
+            <location filename="../zscaler_api_client.py" line="5902" />
             <source>Default</source>
-            <translation>Default</translation>
+            <translation>Par défaut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5888" />
+            <location filename="../zscaler_api_client.py" line="5930" />
             <source>Are you sure you want to clear all request history?</source>
-            <translation>Are you sure you want to clear all request history?</translation>
+            <translation>Êtes-vous sûr de vouloir effacer tout l'historique des demandes ?</translation>
         </message>
     </context>
     <context>
@@ -405,1444 +405,1449 @@
             <translation type="vanished">API :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8113" />
+            <location filename="../zscaler_api_client.py" line="8540" />
             <source>Auth</source>
-            <translation>Auth</translation>
+            <translation>Authentification</translation>
         </message>
         <message>
             <source>Authenticate with selected API</source>
-            <translation type="vanished">Authenticate with selected API</translation>
+            <translation>Authentifier avec l'API sélectionnée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8135" />
+            <location filename="../zscaler_api_client.py" line="8562" />
             <source>Endpoints</source>
             <translation>Points de terminaison</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8141" />
+            <location filename="../zscaler_api_client.py" line="8568" />
             <source>Output</source>
-            <translation>Output</translation>
+            <translation>Sortie</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8147" />
+            <location filename="../zscaler_api_client.py" line="8574" />
             <source>Authentication status, requests, and audit info...</source>
-            <translation>Authentication status, requests, and audit info...</translation>
+            <translation>Statut d'authentification, demandes et informations d'audit...</translation>
         </message>
         <message>
             <source>Request</source>
             <translation type="vanished">Requête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8181" />
+            <location filename="../zscaler_api_client.py" line="8608" />
             <source>Enter URL or select endpoint...</source>
             <translation>Entrez l'URL ou sélectionnez un point de terminaison...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8185" />
+            <location filename="../zscaler_api_client.py" line="8612" />
             <source>Send</source>
             <translation>Envoyer</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8194" />
+            <location filename="../zscaler_api_client.py" line="8621" />
             <source>cURL</source>
-            <translation>cURL</translation>
+            <translation>boucle</translation>
         </message>
         <message>
             <source>Copy request as cURL command</source>
             <translation type="vanished">Copier la demande en tant que commande cURL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8267" />
-            <location filename="../zscaler_api_client.py" line="8276" />
+            <location filename="../zscaler_api_client.py" line="8694" />
+            <location filename="../zscaler_api_client.py" line="8703" />
             <source>Key</source>
             <translation>Clé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8267" />
-            <location filename="../zscaler_api_client.py" line="8276" />
-            <location filename="../zscaler_api_client.py" line="8336" />
-            <location filename="../zscaler_api_client.py" line="8411" />
+            <location filename="../zscaler_api_client.py" line="8694" />
+            <location filename="../zscaler_api_client.py" line="8703" />
+            <location filename="../zscaler_api_client.py" line="8763" />
+            <location filename="../zscaler_api_client.py" line="8838" />
             <source>Value</source>
             <translation>Valeur</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8270" />
+            <location filename="../zscaler_api_client.py" line="8697" />
             <source>Params</source>
             <translation>Paramètres</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8279" />
-            <location filename="../zscaler_api_client.py" line="8404" />
+            <location filename="../zscaler_api_client.py" line="8706" />
+            <location filename="../zscaler_api_client.py" line="8831" />
             <source>Headers</source>
             <translation>En-têtes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8312" />
-            <location filename="../zscaler_api_client.py" line="10126" />
+            <location filename="../zscaler_api_client.py" line="8739" />
+            <location filename="../zscaler_api_client.py" line="10561" />
             <source>Request body (JSON)...</source>
             <translation>Corps de la requête (JSON)...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8316" />
-            <location filename="../zscaler_api_client.py" line="8403" />
+            <location filename="../zscaler_api_client.py" line="8743" />
+            <location filename="../zscaler_api_client.py" line="8830" />
             <source>Body</source>
             <translation>Corps</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8323" />
-            <location filename="../zscaler_api_client.py" line="8336" />
+            <location filename="../zscaler_api_client.py" line="8750" />
+            <location filename="../zscaler_api_client.py" line="8763" />
             <source>Variable</source>
             <translation>Variable</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8339" />
+            <location filename="../zscaler_api_client.py" line="8766" />
             <source>Path Variables</source>
-            <translation>Path Variables</translation>
+            <translation>Variables de chemin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8361" />
-            <location filename="../zscaler_api_client.py" line="10031" />
+            <location filename="../zscaler_api_client.py" line="8788" />
+            <location filename="../zscaler_api_client.py" line="10466" />
             <source>Response</source>
             <translation>Réponse</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8376" />
+            <location filename="../zscaler_api_client.py" line="8803" />
             <source>Pretty</source>
-            <translation>Pretty</translation>
+            <translation>Jolie</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8379" />
+            <location filename="../zscaler_api_client.py" line="8806" />
             <source>Toggle pretty-print JSON (Ctrl+P)</source>
-            <translation>Toggle pretty-print JSON (Ctrl+P)</translation>
+            <translation>Activer/désactiver le JSON à jolie impression (Ctrl+P)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8384" />
-            <location filename="../zscaler_api_client.py" line="9538" />
-            <location filename="../zscaler_api_client.py" line="9557" />
-            <location filename="../zscaler_api_client.py" line="9562" />
-            <location filename="../zscaler_api_client.py" line="9570" />
+            <location filename="../zscaler_api_client.py" line="8811" />
+            <location filename="../zscaler_api_client.py" line="9973" />
+            <location filename="../zscaler_api_client.py" line="9992" />
+            <location filename="../zscaler_api_client.py" line="9997" />
+            <location filename="../zscaler_api_client.py" line="10005" />
             <source>Export response</source>
-            <translation>Export response</translation>
+            <translation>Exporter la réponse</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8387" />
+            <location filename="../zscaler_api_client.py" line="8814" />
             <source>Preview export</source>
-            <translation>Preview export</translation>
+            <translation>Aperçu de l'exportation</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8407" />
+            <location filename="../zscaler_api_client.py" line="8834" />
             <source>Table</source>
-            <translation>Table</translation>
+            <translation>Tableau</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8409" />
+            <location filename="../zscaler_api_client.py" line="8836" />
             <source>Chart</source>
-            <translation>Chart</translation>
+            <translation>Graphique</translation>
         </message>
         <message>
             <source>JSON structure</source>
-            <translation type="vanished">JSON structure</translation>
+            <translation>Structure JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8413" />
+            <location filename="../zscaler_api_client.py" line="8840" />
             <source>Tree</source>
-            <translation>Tree</translation>
+            <translation>Arbre</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8416" />
+            <location filename="../zscaler_api_client.py" line="8843" />
             <source>Heatmap</source>
-            <translation>Heatmap</translation>
+            <translation>Carte thermique</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8419" />
+            <location filename="../zscaler_api_client.py" line="8846" />
             <source>Topology</source>
-            <translation>Topology</translation>
+            <translation>Topologie</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8423" />
+            <location filename="../zscaler_api_client.py" line="8850" />
             <source>Schema</source>
-            <translation>Schema</translation>
+            <translation>Schéma</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8428" />
-            <location filename="../zscaler_api_client.py" line="8494" />
+            <location filename="../zscaler_api_client.py" line="8855" />
+            <location filename="../zscaler_api_client.py" line="8921" />
             <source>AI Assistant</source>
-            <translation>AI Assistant</translation>
+            <translation>Assistant IA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8431" />
+            <location filename="../zscaler_api_client.py" line="8858" />
             <source>Ask a OneAPI question, e.g. list ZPA application segments</source>
-            <translation>Ask a OneAPI question, e.g. list ZPA application segments</translation>
+            <translation>Posez une question OneAPI, par ex. lister les segments d'application ZPA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8435" />
+            <location filename="../zscaler_api_client.py" line="8862" />
             <source>Choose a guided AI example…</source>
-            <translation>Choose a guided AI example…</translation>
+            <translation>Choisissez un exemple d’IA guidée…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8441" />
+            <location filename="../zscaler_api_client.py" line="8868" />
             <source>Find API request</source>
-            <translation>Find API request</translation>
+            <translation>Rechercher une demande d'API</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8444" />
+            <location filename="../zscaler_api_client.py" line="8871" />
             <source>Run selected request</source>
-            <translation>Run selected request</translation>
+            <translation>Exécuter la requête sélectionnée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8447" />
+            <location filename="../zscaler_api_client.py" line="8874" />
             <source>Export result</source>
-            <translation>Export result</translation>
+            <translation>Résultat de l'exportation</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8451" />
-            <location filename="../zscaler_api_client.py" line="11186" />
+            <location filename="../zscaler_api_client.py" line="8878" />
+            <location filename="../zscaler_api_client.py" line="11621" />
             <source>Ask in plain language. Sensitive values are masked before display or export.</source>
-            <translation>Ask in plain language. Sensitive values are masked before display or export.</translation>
+            <translation>Demandez dans un langage simple. Les valeurs sensibles sont masquées avant affichage ou export.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8457" />
+            <location filename="../zscaler_api_client.py" line="8884" />
             <source>AI request preview appears here before execution.</source>
-            <translation>AI request preview appears here before execution.</translation>
+            <translation>L'aperçu de la demande AI apparaît ici avant l'exécution.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8463" />
+            <location filename="../zscaler_api_client.py" line="8890" />
             <source>Bar chart</source>
-            <translation>Bar chart</translation>
+            <translation>Graphique à barres</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8464" />
+            <location filename="../zscaler_api_client.py" line="8891" />
             <source>Line chart</source>
-            <translation>Line chart</translation>
+            <translation>Graphique linéaire</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8465" />
+            <location filename="../zscaler_api_client.py" line="8892" />
             <source>Pie chart</source>
-            <translation>Pie chart</translation>
+            <translation>Diagramme circulaire</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8474" />
+            <location filename="../zscaler_api_client.py" line="8901" />
             <source>Help</source>
             <translation>Aide</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8493" />
+            <location filename="../zscaler_api_client.py" line="8920" />
             <source>Console</source>
             <translation>Console</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8510" />
+            <location filename="../zscaler_api_client.py" line="8937" />
             <source>Ready</source>
             <translation>Prêt</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8519" />
+            <location filename="../zscaler_api_client.py" line="8946" />
             <source>&amp;File</source>
             <translation>&amp;Fichier</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8521" />
+            <location filename="../zscaler_api_client.py" line="8948" />
             <source>&amp;Settings...</source>
             <translation>&amp;Paramètres...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8526" />
+            <location filename="../zscaler_api_client.py" line="8953" />
             <source>&amp;Batch Operations...</source>
             <translation>Opérations par &amp;lots...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8533" />
+            <location filename="../zscaler_api_client.py" line="8960" />
             <source>Request &amp;History...</source>
-            <translation>Request &amp;History...</translation>
+            <translation>Demande et historique...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8542" />
+            <location filename="../zscaler_api_client.py" line="8969" />
             <source>&amp;Quit</source>
             <translation>&amp;Quitter</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8548" />
+            <location filename="../zscaler_api_client.py" line="8975" />
             <source>&amp;Edit</source>
             <translation>&amp;Édition</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8550" />
+            <location filename="../zscaler_api_client.py" line="8977" />
             <source>Copy as c&amp;URL</source>
-            <translation>Copy as c&amp;URL</translation>
+            <translation>Copier en tant que c&amp;URL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8555" />
+            <location filename="../zscaler_api_client.py" line="8982" />
             <source>Copy &amp;Response</source>
-            <translation>Copy &amp;Response</translation>
+            <translation>Copier la &amp;réponse</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8562" />
+            <location filename="../zscaler_api_client.py" line="8989" />
             <source>C&amp;lear Request</source>
-            <translation>C&amp;lear Request</translation>
+            <translation>Demande de &amp;clairage</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8567" />
+            <location filename="../zscaler_api_client.py" line="8994" />
             <source>&amp;Request</source>
             <translation>&amp;Requête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8569" />
+            <location filename="../zscaler_api_client.py" line="8996" />
             <source>&amp;Send Request</source>
-            <translation>&amp;Send Request</translation>
+            <translation>&amp;Envoyer la demande</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8576" />
+            <location filename="../zscaler_api_client.py" line="9003" />
             <source>Authenticate &amp;ZIA</source>
-            <translation>Authenticate &amp;ZIA</translation>
+            <translation>Authentifier &amp;ZIA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8580" />
+            <location filename="../zscaler_api_client.py" line="9007" />
             <source>Authenticate Z&amp;PA</source>
-            <translation>Authenticate Z&amp;PA</translation>
+            <translation>Authentifier Z&amp;PA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8586" />
+            <location filename="../zscaler_api_client.py" line="9013" />
             <source>&amp;Logout All Sessions</source>
-            <translation>&amp;Logout All Sessions</translation>
+            <translation>&amp;Déconnexion de toutes les sessions</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8590" />
+            <location filename="../zscaler_api_client.py" line="9017" />
             <source>&amp;Operations</source>
-            <translation>&amp;Operations</translation>
+            <translation>&amp;Opérations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8591" />
+            <location filename="../zscaler_api_client.py" line="9018" />
             <source>Operations &amp;Center...</source>
-            <translation>Operations &amp;Center...</translation>
+            <translation>Opérations et Centre...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8595" />
+            <location filename="../zscaler_api_client.py" line="9026" />
             <source>Environment &amp;Profiles...</source>
-            <translation>Environment &amp;Profiles...</translation>
+            <translation>Environnement et profils...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8600" />
+            <location filename="../zscaler_api_client.py" line="9031" />
             <source>&amp;Language</source>
             <translation>&amp;Langue</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8609" />
+            <location filename="../zscaler_api_client.py" line="9040" />
             <source>&amp;Help</source>
             <translation>&amp;Aide</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8611" />
+            <location filename="../zscaler_api_client.py" line="9042" />
             <source>&amp;Welcome Guide...</source>
             <translation>Guide de &amp;bienvenue...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8615" />
+            <location filename="../zscaler_api_client.py" line="9046" />
             <source>&amp;About...</source>
             <translation>À &amp;propos...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8620" />
+            <location filename="../zscaler_api_client.py" line="9051" />
             <source>About &amp;Qt...</source>
             <translation>À propos de &amp; Qt</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8627" />
+            <location filename="../zscaler_api_client.py" line="9058" />
             <source>ZIA API &amp;Documentation</source>
-            <translation>ZIA API &amp;Documentation</translation>
+            <translation>API ZIA et documentation</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8631" />
+            <location filename="../zscaler_api_client.py" line="9062" />
             <source>ZPA API D&amp;ocumentation</source>
-            <translation>ZPA API D&amp;ocumentation</translation>
+            <translation>Documentation de l'API ZPA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8635" />
+            <location filename="../zscaler_api_client.py" line="9066" />
             <source>Zscaler API &amp;Portal</source>
-            <translation>Zscaler API &amp;Portal</translation>
+            <translation>API et portail Zscaler</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8639" />
+            <location filename="../zscaler_api_client.py" line="9070" />
             <source>API &amp;Error Codes...</source>
-            <translation>API &amp;Error Codes...</translation>
+            <translation>API et codes d'erreur...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8645" />
+            <location filename="../zscaler_api_client.py" line="9076" />
             <source>Check for &amp;Updates...</source>
             <translation>Vérifier les &amp;mises à jour...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8715" />
+            <location filename="../zscaler_api_client.py" line="9146" />
             <source>{count} operations · {groups} groups</source>
             <translation>{count} operations · {groups} groups</translation>
         </message>
         <message>
             <source>Create new profile…</source>
-            <translation type="vanished">Create new profile…</translation>
+            <translation>Créer un nouveau profil…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9056" />
+            <location filename="../zscaler_api_client.py" line="9491" />
             <source>Environment profiles</source>
-            <translation>Environment profiles</translation>
+            <translation>Profils d'environnement</translation>
         </message>
         <message>
             <source>Profile:</source>
-            <translation type="vanished">Profile:</translation>
+            <translation>Profil :</translation>
         </message>
         <message>
             <source>New profile name:</source>
-            <translation type="vanished">New profile name:</translation>
+            <translation>Nouveau nom de profil :</translation>
         </message>
         <message>
             <source>Environment profile active: </source>
-            <translation type="vanished">Environment profile active: </translation>
+            <translation>Profil d'environnement actif : </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9103" />
+            <location filename="../zscaler_api_client.py" line="9538" />
             <source>{count} matching operations</source>
             <translation>{count} matching operations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9103" />
+            <location filename="../zscaler_api_client.py" line="9538" />
             <source>{count} operations</source>
             <translation>{count} operations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9140" />
+            <location filename="../zscaler_api_client.py" line="9575" />
             <source>Guided example loaded. Find the API request, review the preview, then choose whether to run it.</source>
-            <translation>Guided example loaded. Find the API request, review the preview, then choose whether to run it.</translation>
+            <translation>Exemple guidé chargé. Recherchez la demande d'API, examinez l'aperçu, puis choisissez si vous souhaitez l'exécuter.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9242" />
+            <location filename="../zscaler_api_client.py" line="9677" />
             <source>ZIA credentials not configured. Please go to Settings.</source>
-            <translation>ZIA credentials not configured. Please go to Settings.</translation>
+            <translation>Les informations d'identification ZIA ne sont pas configurées. Veuillez accéder aux paramètres.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9271" />
+            <location filename="../zscaler_api_client.py" line="9706" />
             <source>ZCC credentials not configured. Please go to Settings.</source>
-            <translation>ZCC credentials not configured. Please go to Settings.</translation>
+            <translation>Les informations d'identification ZCC ne sont pas configurées. Veuillez accéder aux paramètres.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9297" />
+            <location filename="../zscaler_api_client.py" line="9732" />
             <source>{api_type} credentials not configured. Please go to Settings.</source>
             <translation>{api_type} credentials not configured. Please go to Settings.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9361" />
+            <location filename="../zscaler_api_client.py" line="9796" />
             <source>OneAPI credentials not configured. Please go to Settings.</source>
-            <translation>OneAPI credentials not configured. Please go to Settings.</translation>
+            <translation>Les identifiants OneAPI ne sont pas configurés. Veuillez accéder aux paramètres.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9402" />
+            <location filename="../zscaler_api_client.py" line="9837" />
             <source>No matching API operation was found. Try product and resource names.</source>
-            <translation>No matching API operation was found. Try product and resource names.</translation>
+            <translation>Aucune opération d'API correspondante n'a été trouvée. Essayez les noms de produits et de ressources.</translation>
         </message>
         <message>
             <source>Suggested request: {method} {name}. Review path variables before running.</source>
-            <translation type="vanished">Suggested request: {method} {name}. Review path variables before running.</translation>
+            <translation>Suggested request: {method} {name}. Review path variables before running.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9419" />
+            <location filename="../zscaler_api_client.py" line="9854" />
             <source>Operation</source>
-            <translation>Operation</translation>
+            <translation>Fonctionnement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9419" />
+            <location filename="../zscaler_api_client.py" line="9854" />
             <source>Method</source>
-            <translation>Method</translation>
+            <translation>Méthode</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9419" />
+            <location filename="../zscaler_api_client.py" line="9854" />
             <source>URL</source>
             <translation>URL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9453" />
+            <location filename="../zscaler_api_client.py" line="9888" />
             <source>Ask the AI assistant for a request first.</source>
-            <translation>Ask the AI assistant for a request first.</translation>
+            <translation>Demandez d’abord une demande à l’assistant IA.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9456" />
+            <location filename="../zscaler_api_client.py" line="9891" />
             <source>Review AI request</source>
-            <translation>Review AI request</translation>
+            <translation>Examiner la demande d'IA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9457" />
+            <location filename="../zscaler_api_client.py" line="9892" />
             <source>Review the URL, path variables, and parameters in the preview before sending. Send this request now?</source>
-            <translation>Review the URL, path variables, and parameters in the preview before sending. Send this request now?</translation>
+            <translation>Vérifiez l'URL, les variables de chemin et les paramètres dans l'aperçu avant l'envoi. Envoyer cette demande maintenant ?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9480" />
-            <location filename="../zscaler_api_client.py" line="9485" />
+            <location filename="../zscaler_api_client.py" line="9915" />
+            <location filename="../zscaler_api_client.py" line="9920" />
             <source>Asking configured LLM…</source>
-            <translation>Asking configured LLM…</translation>
+            <translation>Demander un LLM configuré…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9483" />
+            <location filename="../zscaler_api_client.py" line="9918" />
             <source>LLM unavailable; using the local catalog assistant.</source>
-            <translation>LLM unavailable; using the local catalog assistant.</translation>
+            <translation>LLM indisponible ; à l'aide de l'assistant de catalogue local.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9494" />
+            <location filename="../zscaler_api_client.py" line="9929" />
             <source>Configure an AI endpoint and model in Settings.</source>
-            <translation>Configure an AI endpoint and model in Settings.</translation>
+            <translation>Configurez un point de terminaison et un modèle IA dans Paramètres.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9498" />
+            <location filename="../zscaler_api_client.py" line="9933" />
             <source>AI endpoint must use HTTP or HTTPS.</source>
-            <translation>AI endpoint must use HTTP or HTTPS.</translation>
+            <translation>Le point de terminaison AI doit utiliser HTTP ou HTTPS.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9500" />
+            <location filename="../zscaler_api_client.py" line="9935" />
             <source>External AI is disabled. Enable it explicitly in Settings.</source>
-            <translation>External AI is disabled. Enable it explicitly in Settings.</translation>
+            <translation>L'IA externe est désactivée. Activez-le explicitement dans Paramètres.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9502" />
+            <location filename="../zscaler_api_client.py" line="9937" />
             <source>External AI endpoints must use HTTPS.</source>
-            <translation>External AI endpoints must use HTTPS.</translation>
+            <translation>Les points de terminaison IA externes doivent utiliser HTTPS.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9504" />
+            <location filename="../zscaler_api_client.py" line="9939" />
             <source>AI question is too long (maximum 2000 characters).</source>
-            <translation>AI question is too long (maximum 2000 characters).</translation>
+            <translation>La question AI est trop longue (2 000 caractères maximum).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9526" />
-            <location filename="../zscaler_api_client.py" line="9532" />
+            <location filename="../zscaler_api_client.py" line="9961" />
+            <location filename="../zscaler_api_client.py" line="9967" />
             <source>Save binary response</source>
-            <translation>Save binary response</translation>
+            <translation>Enregistrer la réponse binaire</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9527" />
+            <location filename="../zscaler_api_client.py" line="9962" />
             <source>Binary content cannot be inspected or obfuscated as text. Save the original response only if you trust this endpoint and destination?</source>
-            <translation>Binary content cannot be inspected or obfuscated as text. Save the original response only if you trust this endpoint and destination?</translation>
+            <translation>Le contenu binaire ne peut pas être inspecté ou masqué sous forme de texte. Enregistrer la réponse d'origine uniquement si vous faites confiance à ce point de terminaison et à cette destination ?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9532" />
+            <location filename="../zscaler_api_client.py" line="9967" />
             <source>All files (*)</source>
-            <translation>All files (*)</translation>
+            <translation>Tous les fichiers (*)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9535" />
+            <location filename="../zscaler_api_client.py" line="9970" />
             <source>Original binary response saved</source>
-            <translation>Original binary response saved</translation>
+            <translation>Réponse binaire originale enregistrée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9584" />
+            <location filename="../zscaler_api_client.py" line="10019" />
             <source>Masked response exported</source>
-            <translation>Masked response exported</translation>
+            <translation>Réponse masquée exportée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9690" />
+            <location filename="../zscaler_api_client.py" line="10125" />
             <source>Binary content is not included in this preview.</source>
-            <translation>Binary content is not included in this preview.</translation>
+            <translation>Le contenu binaire n'est pas inclus dans cet aperçu.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9692" />
-            <location filename="../zscaler_api_client.py" line="9698" />
+            <location filename="../zscaler_api_client.py" line="10127" />
+            <location filename="../zscaler_api_client.py" line="10133" />
             <source>Export preview</source>
-            <translation>Export preview</translation>
+            <translation>Aperçu de l'exportation</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9693" />
+            <location filename="../zscaler_api_client.py" line="10128" />
             <source>Original binary export requires a separate confirmation.</source>
-            <translation>Original binary export requires a separate confirmation.</translation>
+            <translation>L'exportation binaire d'origine nécessite une confirmation distincte.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9699" />
+            <location filename="../zscaler_api_client.py" line="10134" />
             <source>Sensitive fields are masked in every export.</source>
-            <translation>Sensitive fields are masked in every export.</translation>
+            <translation>Les champs sensibles sont masqués à chaque export.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9753" />
-            <location filename="../zscaler_api_client.py" line="9762" />
-            <location filename="../zscaler_api_client.py" line="9770" />
+            <location filename="../zscaler_api_client.py" line="10188" />
+            <location filename="../zscaler_api_client.py" line="10197" />
+            <location filename="../zscaler_api_client.py" line="10205" />
             <source>Export AI result</source>
-            <translation>Export AI result</translation>
+            <translation>Exporter le résultat de l'IA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9562" />
-            <location filename="../zscaler_api_client.py" line="9570" />
-            <location filename="../zscaler_api_client.py" line="9762" />
-            <location filename="../zscaler_api_client.py" line="9770" />
+            <location filename="../zscaler_api_client.py" line="9997" />
+            <location filename="../zscaler_api_client.py" line="10005" />
+            <location filename="../zscaler_api_client.py" line="10197" />
+            <location filename="../zscaler_api_client.py" line="10205" />
             <source>No chart data is available to export.</source>
-            <translation>No chart data is available to export.</translation>
+            <translation>Aucune donnée graphique n'est disponible pour l'exportation.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9779" />
+            <location filename="../zscaler_api_client.py" line="10214" />
             <source>AI result exported</source>
-            <translation>AI result exported</translation>
+            <translation>Résultat IA exporté</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10038" />
+            <location filename="../zscaler_api_client.py" line="10473" />
             <source>No tabular datasets</source>
-            <translation>No tabular datasets</translation>
+            <translation>Aucun ensemble de données tabulaires</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10047" />
+            <location filename="../zscaler_api_client.py" line="10482" />
             <source>Nodes</source>
-            <translation>Nodes</translation>
+            <translation>Nœuds</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10047" />
+            <location filename="../zscaler_api_client.py" line="10482" />
             <source>Connections</source>
-            <translation>Connections</translation>
+            <translation>Connexions</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10049" />
+            <location filename="../zscaler_api_client.py" line="10484" />
             <source>No nodes or connections were found in this response.</source>
-            <translation>No nodes or connections were found in this response.</translation>
+            <translation>Aucun nœud ou connexion n'a été trouvé dans cette réponse.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10110" />
+            <location filename="../zscaler_api_client.py" line="10545" />
             <source>Visualized {count} records as a masked table. Export is available from the AI Assistant tab.</source>
             <translation>Visualized {count} records as a masked table. Export is available from the AI Assistant tab.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10127" />
+            <location filename="../zscaler_api_client.py" line="10562" />
             <source>Raw request body...</source>
-            <translation>Raw request body...</translation>
+            <translation>Corps brut de la requête...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10128" />
+            <location filename="../zscaler_api_client.py" line="10563" />
             <source>Form fields as JSON or an encoded key=value string...</source>
-            <translation>Form fields as JSON or an encoded key=value string...</translation>
+            <translation>Champs de formulaire au format JSON ou chaîne clé = valeur codée...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10129" />
+            <location filename="../zscaler_api_client.py" line="10564" />
             <source>Optional multipart fields as a JSON object...</source>
-            <translation>Optional multipart fields as a JSON object...</translation>
+            <translation>Champs multipart facultatifs en tant qu'objet JSON...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10135" />
+            <location filename="../zscaler_api_client.py" line="10570" />
             <source>Select upload file</source>
-            <translation>Select upload file</translation>
+            <translation>Sélectionnez le fichier de téléchargement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8911" />
-            <location filename="../zscaler_api_client.py" line="10184" />
+            <location filename="../zscaler_api_client.py" line="9342" />
+            <location filename="../zscaler_api_client.py" line="10619" />
             <source>Yes</source>
-            <translation>Yes</translation>
+            <translation>Oui</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8911" />
-            <location filename="../zscaler_api_client.py" line="10184" />
+            <location filename="../zscaler_api_client.py" line="9342" />
+            <location filename="../zscaler_api_client.py" line="10619" />
             <source>No</source>
-            <translation>No</translation>
+            <translation>Non</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10202" />
+            <location filename="../zscaler_api_client.py" line="10637" />
             <source>{count} variable(s) extracted · {missing} required value(s) missing</source>
             <translation>{count} variable(s) extracted · {missing} required value(s) missing</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10209" />
-            <location filename="../zscaler_api_client.py" line="10557" />
+            <location filename="../zscaler_api_client.py" line="10644" />
+            <location filename="../zscaler_api_client.py" line="10992" />
             <source>GraphQL body must be a JSON object containing a query string.</source>
-            <translation>GraphQL body must be a JSON object containing a query string.</translation>
+            <translation>Le corps GraphQL doit être un objet JSON contenant une chaîne de requête.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10213" />
+            <location filename="../zscaler_api_client.py" line="10648" />
             <source>Choose operationName because the document contains multiple GraphQL operations.</source>
-            <translation>Choose operationName because the document contains multiple GraphQL operations.</translation>
+            <translation>Choisissez operationName car le document contient plusieurs opérations GraphQL.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10215" />
+            <location filename="../zscaler_api_client.py" line="10650" />
             <source>GraphQL operationName does not match a named operation in the query.</source>
-            <translation>GraphQL operationName does not match a named operation in the query.</translation>
+            <translation>GraphQL operationName ne correspond pas à une opération nommée dans la requête.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10226" />
+            <location filename="../zscaler_api_client.py" line="10661" />
             <source>Variable ${name} is required.</source>
             <translation>Variable ${name} is required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10230" />
+            <location filename="../zscaler_api_client.py" line="10665" />
             <source>Variable ${name} must be valid for type {type}.</source>
             <translation>Variable ${name} must be valid for type {type}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10237" />
+            <location filename="../zscaler_api_client.py" line="10672" />
             <source>Remove undeclared GraphQL variables: {names}</source>
             <translation>Remove undeclared GraphQL variables: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10261" />
-            <location filename="../zscaler_api_client.py" line="10281" />
+            <location filename="../zscaler_api_client.py" line="10696" />
+            <location filename="../zscaler_api_client.py" line="10716" />
             <source>Documented GraphQL schema</source>
-            <translation>Documented GraphQL schema</translation>
+            <translation>Schéma GraphQL documenté</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10262" />
+            <location filename="../zscaler_api_client.py" line="10697" />
             <source>The current Automation Hub page has no executable query example. Open its documentation or use schema introspection.</source>
-            <translation>The current Automation Hub page has no executable query example. Open its documentation or use schema introspection.</translation>
+            <translation>La page actuelle d'Automation Hub ne contient aucun exemple de requête exécutable. Ouvrez sa documentation ou utilisez l'introspection de schéma.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10276" />
+            <location filename="../zscaler_api_client.py" line="10711" />
             <source>Loaded documented ZInsights query. Review time ranges, filters, and fields before sending.</source>
-            <translation>Loaded documented ZInsights query. Review time ranges, filters, and fields before sending.</translation>
+            <translation>Requête ZInsights documentée chargée. Vérifiez les plages horaires, les filtres et les champs avant l'envoi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10312" />
+            <location filename="../zscaler_api_client.py" line="10747" />
             <source>Enter a name before saving the GraphQL query.</source>
-            <translation>Enter a name before saving the GraphQL query.</translation>
+            <translation>Entrez un nom avant d'enregistrer la requête GraphQL.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10316" />
-            <location filename="../zscaler_api_client.py" line="10357" />
-            <location filename="../zscaler_api_client.py" line="10370" />
-            <location filename="../zscaler_api_client.py" line="10389" />
+            <location filename="../zscaler_api_client.py" line="10751" />
+            <location filename="../zscaler_api_client.py" line="10792" />
+            <location filename="../zscaler_api_client.py" line="10805" />
+            <location filename="../zscaler_api_client.py" line="10824" />
             <source>Secure storage</source>
-            <translation>Secure storage</translation>
+            <translation>Stockage sécurisé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10316" />
+            <location filename="../zscaler_api_client.py" line="10751" />
             <source>The system keychain could not save the GraphQL query.</source>
-            <translation>The system keychain could not save the GraphQL query.</translation>
+            <translation>Le trousseau système n'a pas pu enregistrer la requête GraphQL.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10322" />
+            <location filename="../zscaler_api_client.py" line="10757" />
             <source>GraphQL query saved securely</source>
-            <translation>GraphQL query saved securely</translation>
+            <translation>Requête GraphQL enregistrée en toute sécurité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10328" />
+            <location filename="../zscaler_api_client.py" line="10763" />
             <source>Saved GraphQL query is unavailable.</source>
-            <translation>Saved GraphQL query is unavailable.</translation>
+            <translation>La requête GraphQL enregistrée n'est pas disponible.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10357" />
+            <location filename="../zscaler_api_client.py" line="10792" />
             <source>The system keychain could not rename the GraphQL query.</source>
-            <translation>The system keychain could not rename the GraphQL query.</translation>
+            <translation>Le trousseau système n'a pas pu renommer la requête GraphQL.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10370" />
+            <location filename="../zscaler_api_client.py" line="10805" />
             <source>The system keychain could not delete the GraphQL query.</source>
-            <translation>The system keychain could not delete the GraphQL query.</translation>
+            <translation>Le trousseau système n'a pas pu supprimer la requête GraphQL.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10381" />
+            <location filename="../zscaler_api_client.py" line="10816" />
             <source>GraphQL introspection query prepared. Review the endpoint before sending.</source>
-            <translation>GraphQL introspection query prepared. Review the endpoint before sending.</translation>
+            <translation>Requête d'introspection GraphQL préparée. Vérifiez le point de terminaison avant l’envoi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10389" />
+            <location filename="../zscaler_api_client.py" line="10824" />
             <source>The system keychain could not save the GraphQL schema.</source>
-            <translation>The system keychain could not save the GraphQL schema.</translation>
+            <translation>Le trousseau système n'a pas pu enregistrer le schéma GraphQL.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10391" />
+            <location filename="../zscaler_api_client.py" line="10826" />
             <source>GraphQL schema saved securely</source>
-            <translation>GraphQL schema saved securely</translation>
+            <translation>Schéma GraphQL enregistré en toute sécurité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8421" />
-            <location filename="../zscaler_api_client.py" line="10396" />
+            <location filename="../zscaler_api_client.py" line="8848" />
+            <location filename="../zscaler_api_client.py" line="10831" />
             <source>GraphQL schema</source>
-            <translation>GraphQL schema</translation>
+            <translation>Schéma GraphQL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10396" />
+            <location filename="../zscaler_api_client.py" line="10831" />
             <source>No saved introspection result exists for this endpoint.</source>
-            <translation>No saved introspection result exists for this endpoint.</translation>
+            <translation>Aucun résultat d'introspection enregistré n'existe pour ce point de terminaison.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10437" />
+            <location filename="../zscaler_api_client.py" line="10872" />
             <source>{count} GraphQL errors</source>
             <translation>{count} GraphQL errors</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10439" />
+            <location filename="../zscaler_api_client.py" line="10874" />
             <source>extensions included</source>
-            <translation>extensions included</translation>
+            <translation>rallonges incluses</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9453" />
-            <location filename="../zscaler_api_client.py" line="10312" />
-            <location filename="../zscaler_api_client.py" line="10328" />
-            <location filename="../zscaler_api_client.py" line="10456" />
-            <location filename="../zscaler_api_client.py" line="10488" />
-            <location filename="../zscaler_api_client.py" line="11133" />
-            <location filename="../zscaler_api_client.py" line="11152" />
+            <location filename="../zscaler_api_client.py" line="9888" />
+            <location filename="../zscaler_api_client.py" line="10747" />
+            <location filename="../zscaler_api_client.py" line="10763" />
+            <location filename="../zscaler_api_client.py" line="10891" />
+            <location filename="../zscaler_api_client.py" line="10923" />
+            <location filename="../zscaler_api_client.py" line="11568" />
+            <location filename="../zscaler_api_client.py" line="11587" />
             <source>Warning</source>
             <translation>Avertissement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10456" />
+            <location filename="../zscaler_api_client.py" line="10891" />
             <source>Please enter a URL</source>
             <translation>Veuillez entrer une URL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9241" />
-            <location filename="../zscaler_api_client.py" line="9271" />
-            <location filename="../zscaler_api_client.py" line="9296" />
-            <location filename="../zscaler_api_client.py" line="9360" />
-            <location filename="../zscaler_api_client.py" line="10571" />
-            <location filename="../zscaler_api_client.py" line="10574" />
-            <location filename="../zscaler_api_client.py" line="10601" />
+            <location filename="../zscaler_api_client.py" line="9676" />
+            <location filename="../zscaler_api_client.py" line="9706" />
+            <location filename="../zscaler_api_client.py" line="9731" />
+            <location filename="../zscaler_api_client.py" line="9795" />
+            <location filename="../zscaler_api_client.py" line="11006" />
+            <location filename="../zscaler_api_client.py" line="11009" />
+            <location filename="../zscaler_api_client.py" line="11036" />
             <source>Error</source>
             <translation>Erreur</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7997" />
+            <location filename="../zscaler_api_client.py" line="8424" />
             <source>ZIA · List users</source>
-            <translation>ZIA · List users</translation>
+            <translation>ZIA · Liste des utilisateurs</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7997" />
+            <location filename="../zscaler_api_client.py" line="8424" />
             <source>List ZIA users with pagination</source>
-            <translation>List ZIA users with pagination</translation>
+            <translation>Liste des utilisateurs ZIA avec pagination</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7998" />
+            <location filename="../zscaler_api_client.py" line="8425" />
             <source>ZIA · Find URL categories</source>
-            <translation>ZIA · Find URL categories</translation>
+            <translation>ZIA · Rechercher des catégories d'URL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7998" />
+            <location filename="../zscaler_api_client.py" line="8425" />
             <source>Search ZIA URL categories for social media</source>
-            <translation>Search ZIA URL categories for social media</translation>
+            <translation>Rechercher des catégories d'URL ZIA pour les médias sociaux</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7999" />
+            <location filename="../zscaler_api_client.py" line="8426" />
             <source>ZIA · Review firewall policies</source>
-            <translation>ZIA · Review firewall policies</translation>
+            <translation>ZIA · Examiner les politiques de pare-feu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7999" />
+            <location filename="../zscaler_api_client.py" line="8426" />
             <source>List ZIA cloud firewall policies</source>
-            <translation>List ZIA cloud firewall policies</translation>
+            <translation>Répertorier les politiques de pare-feu cloud ZIA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8000" />
+            <location filename="../zscaler_api_client.py" line="8427" />
             <source>ZPA · Application segments</source>
-            <translation>ZPA · Application segments</translation>
+            <translation>ZPA · Segments d'application</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8000" />
+            <location filename="../zscaler_api_client.py" line="8427" />
             <source>List ZPA application segments</source>
-            <translation>List ZPA application segments</translation>
+            <translation>Répertorier les segments d'application ZPA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8001" />
+            <location filename="../zscaler_api_client.py" line="8428" />
             <source>ZPA · Connector inventory</source>
-            <translation>ZPA · Connector inventory</translation>
+            <translation>ZPA · Inventaire des connecteurs</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8001" />
+            <location filename="../zscaler_api_client.py" line="8428" />
             <source>List ZPA connectors</source>
-            <translation>List ZPA connectors</translation>
+            <translation>Liste des connecteurs ZPA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8002" />
+            <location filename="../zscaler_api_client.py" line="8429" />
             <source>ZDX · Experience overview</source>
-            <translation>ZDX · Experience overview</translation>
+            <translation>ZDX · Aperçu de l'expérience</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8002" />
+            <location filename="../zscaler_api_client.py" line="8429" />
             <source>List ZDX devices and experience scores</source>
-            <translation>List ZDX devices and experience scores</translation>
+            <translation>Répertorier les appareils ZDX et les scores d'expérience</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8003" />
+            <location filename="../zscaler_api_client.py" line="8430" />
             <source>ZDX · Active alerts</source>
-            <translation>ZDX · Active alerts</translation>
+            <translation>ZDX · Alertes actives</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8003" />
+            <location filename="../zscaler_api_client.py" line="8430" />
             <source>List active ZDX alerts with pagination</source>
-            <translation>List active ZDX alerts with pagination</translation>
+            <translation>Liste des alertes ZDX actives avec pagination</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8004" />
+            <location filename="../zscaler_api_client.py" line="8431" />
             <source>ZDX · Application monitoring</source>
-            <translation>ZDX · Application monitoring</translation>
+            <translation>ZDX · Surveillance des applications</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8004" />
+            <location filename="../zscaler_api_client.py" line="8431" />
             <source>List monitored ZDX applications</source>
-            <translation>List monitored ZDX applications</translation>
+            <translation>Répertorier les applications ZDX surveillées</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8005" />
+            <location filename="../zscaler_api_client.py" line="8432" />
             <source>Client Connector · Devices</source>
-            <translation>Client Connector · Devices</translation>
+            <translation>Connecteur client · Appareils</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8005" />
+            <location filename="../zscaler_api_client.py" line="8432" />
             <source>List Client Connector devices</source>
-            <translation>List Client Connector devices</translation>
+            <translation>Répertorier les périphériques Client Connector</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8006" />
+            <location filename="../zscaler_api_client.py" line="8433" />
             <source>ZIdentity · Users</source>
-            <translation>ZIdentity · Users</translation>
+            <translation>ZIdentity · Utilisateurs</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8006" />
+            <location filename="../zscaler_api_client.py" line="8433" />
             <source>List ZIdentity users with pagination</source>
-            <translation>List ZIdentity users with pagination</translation>
+            <translation>Liste des utilisateurs ZIdentity avec pagination</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8007" />
+            <location filename="../zscaler_api_client.py" line="8434" />
             <source>ZIdentity · Groups</source>
-            <translation>ZIdentity · Groups</translation>
+            <translation>ZIdentité · Groupes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8007" />
+            <location filename="../zscaler_api_client.py" line="8434" />
             <source>List ZIdentity groups</source>
-            <translation>List ZIdentity groups</translation>
+            <translation>Liste des groupes ZIdentity</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8008" />
+            <location filename="../zscaler_api_client.py" line="8435" />
             <source>AI Security · Workloads</source>
-            <translation>AI Security · Workloads</translation>
+            <translation>Sécurité de l'IA · Charges de travail</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8008" />
+            <location filename="../zscaler_api_client.py" line="8435" />
             <source>List AI Security workloads</source>
-            <translation>List AI Security workloads</translation>
+            <translation>Répertorier les charges de travail de sécurité IA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8062" />
+            <location filename="../zscaler_api_client.py" line="8489" />
             <source>ZS API Client</source>
-            <translation>ZS API Client</translation>
+            <translation>Client API ZS</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8069" />
+            <location filename="../zscaler_api_client.py" line="8496" />
             <source>Explore APIs, review changes, and operate safely</source>
-            <translation>Explore APIs, review changes, and operate safely</translation>
+            <translation>Explorez les API, examinez les modifications et opérez en toute sécurité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8073" />
+            <location filename="../zscaler_api_client.py" line="8500" />
             <source>1 · Environment</source>
-            <translation>1 · Environment</translation>
+            <translation>1 · Environnement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8074" />
+            <location filename="../zscaler_api_client.py" line="8501" />
             <source>Select or create a tenant environment profile</source>
-            <translation>Select or create a tenant environment profile</translation>
+            <translation>Sélectionner ou créer un profil d'environnement de locataire</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8077" />
+            <location filename="../zscaler_api_client.py" line="8504" />
             <source>2 · Analyze</source>
-            <translation>2 · Analyze</translation>
+            <translation>2 · Analyser</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8078" />
+            <location filename="../zscaler_api_client.py" line="8505" />
             <source>Open dashboards, audits, policy diffs, and response analysis</source>
-            <translation>Open dashboards, audits, policy diffs, and response analysis</translation>
+            <translation>Tableaux de bord ouverts, audits, différences de politiques et analyse des réponses</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8081" />
+            <location filename="../zscaler_api_client.py" line="8508" />
             <source>3 · Change</source>
-            <translation>3 · Change</translation>
+            <translation>3 · Changement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8082" />
+            <location filename="../zscaler_api_client.py" line="8509" />
             <source>Open policy diff and policy-as-code export</source>
-            <translation>Open policy diff and policy-as-code export</translation>
+            <translation>Ouvrir la différence de politique et exporter la politique en tant que code</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8085" />
+            <location filename="../zscaler_api_client.py" line="8512" />
             <source>Operations Center</source>
-            <translation>Operations Center</translation>
+            <translation>Centre des opérations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8088" />
+            <location filename="../zscaler_api_client.py" line="8515" />
             <source>Settings</source>
-            <translation>Settings</translation>
+            <translation>Paramètres</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8100" />
+            <location filename="../zscaler_api_client.py" line="8527" />
             <source>API Explorer</source>
-            <translation>API Explorer</translation>
+            <translation>Explorateur d'API</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8103" />
-            <location filename="../zscaler_api_client.py" line="9419" />
+            <location filename="../zscaler_api_client.py" line="8530" />
+            <location filename="../zscaler_api_client.py" line="9854" />
             <source>Product</source>
-            <translation>Product</translation>
+            <translation>Produit</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8114" />
+            <location filename="../zscaler_api_client.py" line="8541" />
             <source>Authenticate with selected API (Ctrl+Shift+A)</source>
-            <translation>Authenticate with selected API (Ctrl+Shift+A)</translation>
+            <translation>Authentifier avec l'API sélectionnée (Ctrl+Shift+A)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8124" />
+            <location filename="../zscaler_api_client.py" line="8551" />
             <source>🔍 Filter endpoints...</source>
-            <translation>🔍 Filter endpoints...</translation>
+            <translation>🔍 Filtrer les points de terminaison...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8158" />
+            <location filename="../zscaler_api_client.py" line="8585" />
             <source>Request Builder</source>
-            <translation>Request Builder</translation>
+            <translation>Générateur de requêtes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8186" />
+            <location filename="../zscaler_api_client.py" line="8613" />
             <source>Send request (Ctrl+Return)</source>
-            <translation>Send request (Ctrl+Return)</translation>
+            <translation>Envoyer la demande (Ctrl+Retour)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8190" />
+            <location filename="../zscaler_api_client.py" line="8617" />
             <source>Cancel</source>
-            <translation>Cancel</translation>
+            <translation>Annuler</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8191" />
+            <location filename="../zscaler_api_client.py" line="8618" />
             <source>Stop before the next page or chain step; the current HTTP request is allowed to finish safely.</source>
-            <translation>Stop before the next page or chain step; the current HTTP request is allowed to finish safely.</translation>
+            <translation>Arrêtez-vous avant la page suivante ou l'étape de la chaîne ; la requête HTTP actuelle peut se terminer en toute sécurité.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8195" />
+            <location filename="../zscaler_api_client.py" line="8622" />
             <source>Copy request as cURL command (Ctrl+Shift+C)</source>
-            <translation>Copy request as cURL command (Ctrl+Shift+C)</translation>
+            <translation>Copier la demande en tant que commande cURL (Ctrl+Shift+C)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8201" />
+            <location filename="../zscaler_api_client.py" line="8628" />
             <source>GraphQL request</source>
-            <translation>GraphQL request</translation>
+            <translation>Requête GraphQL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8202" />
+            <location filename="../zscaler_api_client.py" line="8629" />
             <source>Send the request body as a GraphQL query and preserve data, errors, and extensions.</source>
-            <translation>Send the request body as a GraphQL query and preserve data, errors, and extensions.</translation>
+            <translation>Envoyez le corps de la requête sous forme de requête GraphQL et conservez les données, les erreurs et les extensions.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8206" />
+            <location filename="../zscaler_api_client.py" line="8633" />
             <source>Fetch all pages</source>
-            <translation>Fetch all pages</translation>
+            <translation>Récupérer toutes les pages</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8207" />
+            <location filename="../zscaler_api_client.py" line="8634" />
             <source>Follow only the pagination parameters documented for the selected read operation.</source>
-            <translation>Follow only the pagination parameters documented for the selected read operation.</translation>
+            <translation>Suivez uniquement les paramètres de pagination documentés pour l'opération de lecture sélectionnée.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8209" />
+            <location filename="../zscaler_api_client.py" line="8636" />
             <source>Page size:</source>
-            <translation>Page size:</translation>
+            <translation>Taille des pages :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8213" />
+            <location filename="../zscaler_api_client.py" line="8640" />
             <source>Maximum pages:</source>
-            <translation>Maximum pages:</translation>
+            <translation>Pages maximales :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8221" />
+            <location filename="../zscaler_api_client.py" line="8648" />
             <source>Saved GraphQL query name</source>
-            <translation>Saved GraphQL query name</translation>
+            <translation>Nom de la requête GraphQL enregistré</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8225" />
+            <location filename="../zscaler_api_client.py" line="8652" />
             <source>Save query</source>
-            <translation>Save query</translation>
+            <translation>Enregistrer la requête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8228" />
+            <location filename="../zscaler_api_client.py" line="8655" />
             <source>Load query</source>
-            <translation>Load query</translation>
+            <translation>Charger la requête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8231" />
+            <location filename="../zscaler_api_client.py" line="8658" />
             <source>Rename query</source>
-            <translation>Rename query</translation>
+            <translation>Renommer la requête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8234" />
+            <location filename="../zscaler_api_client.py" line="8661" />
             <source>Delete query</source>
-            <translation>Delete query</translation>
+            <translation>Supprimer la requête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8237" />
+            <location filename="../zscaler_api_client.py" line="8664" />
             <source>Introspect schema</source>
-            <translation>Introspect schema</translation>
+            <translation>Schéma d'introspection</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8240" />
+            <location filename="../zscaler_api_client.py" line="8667" />
             <source>Load saved schema</source>
-            <translation>Load saved schema</translation>
+            <translation>Charger le schéma enregistré</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8246" />
+            <location filename="../zscaler_api_client.py" line="8673" />
             <source>Documented ZInsights query…</source>
-            <translation>Documented ZInsights query…</translation>
+            <translation>Requête ZInsights documentée…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8251" />
+            <location filename="../zscaler_api_client.py" line="8678" />
             <source>Load documented query</source>
-            <translation>Load documented query</translation>
+            <translation>Charger une requête documentée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8254" />
+            <location filename="../zscaler_api_client.py" line="8681" />
             <source>Browse documented schema</source>
-            <translation>Browse documented schema</translation>
+            <translation>Parcourir le schéma documenté</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8285" />
+            <location filename="../zscaler_api_client.py" line="8712" />
             <source>Body type:</source>
-            <translation>Body type:</translation>
+            <translation>Type de corps :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8287" />
+            <location filename="../zscaler_api_client.py" line="8714" />
             <source>JSON</source>
             <translation>JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8288" />
+            <location filename="../zscaler_api_client.py" line="8715" />
             <source>Raw text</source>
-            <translation>Raw text</translation>
+            <translation>Texte brut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8289" />
+            <location filename="../zscaler_api_client.py" line="8716" />
             <source>Form URL encoded</source>
-            <translation>Form URL encoded</translation>
+            <translation>URL du formulaire encodée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8290" />
-            <location filename="../zscaler_api_client.py" line="10566" />
+            <location filename="../zscaler_api_client.py" line="8717" />
+            <location filename="../zscaler_api_client.py" line="11001" />
             <source>Multipart file upload</source>
-            <translation>Multipart file upload</translation>
+            <translation>Téléchargement de fichiers en plusieurs parties</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8298" />
+            <location filename="../zscaler_api_client.py" line="8725" />
             <source>File field:</source>
-            <translation>File field:</translation>
+            <translation>Champ du fichier :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8302" />
+            <location filename="../zscaler_api_client.py" line="8729" />
             <source>Upload file:</source>
-            <translation>Upload file:</translation>
+            <translation>Télécharger le fichier :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8305" />
+            <location filename="../zscaler_api_client.py" line="8732" />
             <source>Select a local file; its path is never saved in history</source>
-            <translation>Select a local file; its path is never saved in history</translation>
+            <translation>Sélectionnez un fichier local ; son chemin n'est jamais enregistré dans l'histoire</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8307" />
+            <location filename="../zscaler_api_client.py" line="8734" />
             <source>Browse…</source>
-            <translation>Browse…</translation>
+            <translation>Parcourir…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8321" />
+            <location filename="../zscaler_api_client.py" line="8748" />
             <source>Extract typed variables from the selected GraphQL operation. Values are inserted into the JSON request body, never into the URL.</source>
-            <translation>Extract typed variables from the selected GraphQL operation. Values are inserted into the JSON request body, never into the URL.</translation>
+            <translation>Extrayez les variables typées de l’opération GraphQL sélectionnée. Les valeurs sont insérées dans le corps de la requête JSON, jamais dans l'URL.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8323" />
-            <location filename="../zscaler_api_client.py" line="8348" />
+            <location filename="../zscaler_api_client.py" line="8750" />
+            <location filename="../zscaler_api_client.py" line="8775" />
             <source>Type</source>
-            <translation>Type</translation>
+            <translation>Tapez</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8323" />
-            <location filename="../zscaler_api_client.py" line="8348" />
+            <location filename="../zscaler_api_client.py" line="8750" />
+            <location filename="../zscaler_api_client.py" line="8775" />
             <source>Required</source>
-            <translation>Required</translation>
+            <translation>Obligatoire</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8323" />
-            <location filename="../zscaler_api_client.py" line="8349" />
+            <location filename="../zscaler_api_client.py" line="8750" />
+            <location filename="../zscaler_api_client.py" line="8776" />
             <source>Default</source>
-            <translation>Default</translation>
+            <translation>Par défaut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8323" />
+            <location filename="../zscaler_api_client.py" line="8750" />
             <source>JSON value</source>
-            <translation>JSON value</translation>
+            <translation>Valeur JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8327" />
+            <location filename="../zscaler_api_client.py" line="8754" />
             <source>Extract variables from query</source>
-            <translation>Extract variables from query</translation>
+            <translation>Extraire les variables de la requête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8328" />
-            <location filename="../zscaler_api_client.py" line="10204" />
-            <location filename="../zscaler_api_client.py" line="11166" />
+            <location filename="../zscaler_api_client.py" line="8755" />
+            <location filename="../zscaler_api_client.py" line="10639" />
+            <location filename="../zscaler_api_client.py" line="11601" />
             <source>No GraphQL variables extracted.</source>
-            <translation>No GraphQL variables extracted.</translation>
+            <translation>Aucune variable GraphQL extraite.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8329" />
-            <location filename="../zscaler_api_client.py" line="10557" />
-            <location filename="../zscaler_api_client.py" line="10607" />
+            <location filename="../zscaler_api_client.py" line="8756" />
+            <location filename="../zscaler_api_client.py" line="10992" />
+            <location filename="../zscaler_api_client.py" line="11042" />
             <source>GraphQL Variables</source>
-            <translation>GraphQL Variables</translation>
+            <translation>Variables GraphQL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8343" />
-            <location filename="../zscaler_api_client.py" line="11171" />
+            <location filename="../zscaler_api_client.py" line="8770" />
+            <location filename="../zscaler_api_client.py" line="11606" />
             <source>Select a documented endpoint to inspect its request contract.</source>
-            <translation>Select a documented endpoint to inspect its request contract.</translation>
+            <translation>Sélectionnez un point de terminaison documenté pour inspecter son contrat de demande.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8348" />
+            <location filename="../zscaler_api_client.py" line="8775" />
             <source>Location</source>
-            <translation>Location</translation>
+            <translation>Emplacement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8348" />
+            <location filename="../zscaler_api_client.py" line="8775" />
             <source>Name</source>
-            <translation>Name</translation>
+            <translation>Nom</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8349" />
+            <location filename="../zscaler_api_client.py" line="8776" />
             <source>Description</source>
-            <translation>Description</translation>
+            <translation>Descriptif</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8354" />
+            <location filename="../zscaler_api_client.py" line="8781" />
             <source>API Guide</source>
-            <translation>API Guide</translation>
+            <translation>Guide des API</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8368" />
+            <location filename="../zscaler_api_client.py" line="8795" />
             <source>Dataset:</source>
-            <translation>Dataset:</translation>
+            <translation>Ensemble de données :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8390" />
+            <location filename="../zscaler_api_client.py" line="8817" />
             <source>Open export</source>
-            <translation>Open export</translation>
+            <translation>Ouvrir l'exportation</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8391" />
+            <location filename="../zscaler_api_client.py" line="8818" />
             <source>Compare drift</source>
-            <translation>Compare drift</translation>
+            <translation>Comparer la dérive</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8411" />
+            <location filename="../zscaler_api_client.py" line="8838" />
             <source>Field</source>
-            <translation>Field</translation>
+            <translation>Champ</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8537" />
+            <location filename="../zscaler_api_client.py" line="8964" />
             <source>Open response export…</source>
-            <translation>Open response export…</translation>
+            <translation>Exportation de réponse ouverte…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8538" />
+            <location filename="../zscaler_api_client.py" line="8965" />
             <source>Compare response drift…</source>
-            <translation>Compare response drift…</translation>
+            <translation>Comparez la dérive des réponses…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8871" />
-            <location filename="../zscaler_api_client.py" line="8885" />
+            <location filename="../zscaler_api_client.py" line="9022" />
+            <source>PAC &amp;Workspace...</source>
+            <translation>PAC et espace de travail...</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="9302" />
+            <location filename="../zscaler_api_client.py" line="9316" />
             <source>Required value</source>
-            <translation>Required value</translation>
+            <translation>Valeur requise</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8871" />
-            <location filename="../zscaler_api_client.py" line="8885" />
+            <location filename="../zscaler_api_client.py" line="9302" />
+            <location filename="../zscaler_api_client.py" line="9316" />
             <source>Optional value</source>
-            <translation>Optional value</translation>
+            <translation>Valeur facultative</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8919" />
+            <location filename="../zscaler_api_client.py" line="9350" />
             <source>body template available</source>
-            <translation>body template available</translation>
+            <translation>modèle de corps disponible</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8919" />
+            <location filename="../zscaler_api_client.py" line="9350" />
             <source>no body template</source>
-            <translation>no body template</translation>
+            <translation>pas de modèle de corps</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8920" />
+            <location filename="../zscaler_api_client.py" line="9351" />
             <source>not listed</source>
-            <translation>not listed</translation>
+            <translation>non répertorié</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8921" />
+            <location filename="../zscaler_api_client.py" line="9352" />
             <source>{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.</source>
             <translation>{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8925" />
+            <location filename="../zscaler_api_client.py" line="9356" />
             <source>Documented {mode} pagination is available as an explicit bounded option.</source>
             <translation>Documented {mode} pagination is available as an explicit bounded option.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8944" />
+            <location filename="../zscaler_api_client.py" line="9375" />
             <source>Documented {mode} pagination using {parameter}. Results retain every page and stop at the configured maximum.</source>
             <translation>Documented {mode} pagination using {parameter}. Results retain every page and stop at the configured maximum.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8956" />
+            <location filename="../zscaler_api_client.py" line="9387" />
             <source>The URL was edited manually. Select an endpoint again to attach its documented request contract.</source>
-            <translation>The URL was edited manually. Select an endpoint again to attach its documented request contract.</translation>
+            <translation>L'URL a été modifiée manuellement. Sélectionnez à nouveau un point de terminaison pour joindre son contrat de demande documenté.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9044" />
+            <location filename="../zscaler_api_client.py" line="9479" />
             <source>Active environment: {name}</source>
             <translation>Active environment: {name}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9056" />
+            <location filename="../zscaler_api_client.py" line="9491" />
             <source>The selected environment profile is unavailable.</source>
-            <translation>The selected environment profile is unavailable.</translation>
+            <translation>Le profil d'environnement sélectionné n'est pas disponible.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9070" />
+            <location filename="../zscaler_api_client.py" line="9505" />
             <source>Environment profile active: {name}. Sessions and request data were cleared.</source>
             <translation>Environment profile active: {name}. Sessions and request data were cleared.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9114" />
+            <location filename="../zscaler_api_client.py" line="9549" />
             <source>Write request prepared</source>
-            <translation>Write request prepared</translation>
+            <translation>Demande d'écriture préparée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9115" />
+            <location filename="../zscaler_api_client.py" line="9550" />
             <source>The documented write template is ready. Review the API Guide, parameters, and body, then choose Send explicitly.</source>
-            <translation>The documented write template is ready. Review the API Guide, parameters, and body, then choose Send explicitly.</translation>
+            <translation>Le modèle d'écriture documenté est prêt. Consultez le guide de l'API, les paramètres et le corps, puis choisissez Envoyer explicitement.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9409" />
+            <location filename="../zscaler_api_client.py" line="9844" />
             <source>Suggested request: {method} {name}. Review the attached API Guide and all template values before running.</source>
             <translation>Suggested request: {method} {name}. Review the attached API Guide and all template values before running.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9557" />
+            <location filename="../zscaler_api_client.py" line="9992" />
             <source>No tabular response data is available to export.</source>
-            <translation>No tabular response data is available to export.</translation>
+            <translation>Aucune donnée de réponse tabulaire n’est disponible pour l’exportation.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9707" />
-            <location filename="../zscaler_api_client.py" line="9718" />
+            <location filename="../zscaler_api_client.py" line="10142" />
+            <location filename="../zscaler_api_client.py" line="10153" />
             <source>Open response export</source>
-            <translation>Open response export</translation>
+            <translation>Exportation de réponse ouverte</translation>
         </message>
         <message>
             <source>The response export is unavailable, is a symbolic link, or exceeds the configured transfer limit.</source>
-            <translation type="vanished">The response export is unavailable, is a symbolic link, or exceeds the configured transfer limit.</translation>
+            <translation>L'exportation de la réponse n'est pas disponible, est un lien symbolique ou dépasse la limite de transfert configurée.</translation>
         </message>
         <message>
             <source>This is not a supported ZS API response exchange file.</source>
-            <translation type="vanished">This is not a supported ZS API response exchange file.</translation>
+            <translation>Il ne s'agit pas d'un fichier d'échange de réponses API ZS pris en charge.</translation>
         </message>
         <message>
             <source>The response exchange file is incomplete.</source>
-            <translation type="vanished">The response exchange file is incomplete.</translation>
+            <translation>Le fichier d'échange de réponses est incomplet.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9741" />
+            <location filename="../zscaler_api_client.py" line="10176" />
             <source>Response export opened locally; no API request was sent.</source>
-            <translation>Response export opened locally; no API request was sent.</translation>
+            <translation>Exportation des réponses ouverte localement ; aucune demande API n'a été envoyée.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9746" />
-            <location filename="../zscaler_api_client.py" line="9748" />
+            <location filename="../zscaler_api_client.py" line="10181" />
+            <location filename="../zscaler_api_client.py" line="10183" />
             <source>Response drift comparison</source>
-            <translation>Response drift comparison</translation>
+            <translation>Comparaison de dérive de réponse</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9746" />
+            <location filename="../zscaler_api_client.py" line="10181" />
             <source>Binary responses cannot be structurally compared. Export and inspect the original file with an appropriate tool.</source>
-            <translation>Binary responses cannot be structurally compared. Export and inspect the original file with an appropriate tool.</translation>
+            <translation>Les réponses binaires ne peuvent pas être comparées structurellement. Exportez et inspectez le fichier original avec un outil approprié.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9748" />
+            <location filename="../zscaler_api_client.py" line="10183" />
             <source>Send a request or open a response export before comparing drift.</source>
-            <translation>Send a request or open a response export before comparing drift.</translation>
+            <translation>Envoyez une requête ou ouvrez un export de réponse avant de comparer la dérive.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10452" />
-            <location filename="../zscaler_api_client.py" line="10969" />
+            <location filename="../zscaler_api_client.py" line="10887" />
+            <location filename="../zscaler_api_client.py" line="11404" />
             <source>Read only</source>
-            <translation>Read only</translation>
+            <translation>Lecture seule</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10452" />
-            <location filename="../zscaler_api_client.py" line="10969" />
+            <location filename="../zscaler_api_client.py" line="10887" />
+            <location filename="../zscaler_api_client.py" line="11404" />
             <source>Read-only mode blocks write requests. Change the local role in Operations Center to continue.</source>
-            <translation>Read-only mode blocks write requests. Change the local role in Operations Center to continue.</translation>
+            <translation>Le mode lecture seule bloque les demandes d’écriture. Modifiez le rôle local dans le Centre d’opérations pour continuer.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10477" />
+            <location filename="../zscaler_api_client.py" line="10912" />
             <source>Missing Path Variables</source>
-            <translation>Missing Path Variables</translation>
+            <translation>Variables de chemin manquantes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10478" />
+            <location filename="../zscaler_api_client.py" line="10913" />
             <source>Enter values for: {names}</source>
             <translation>Enter values for: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10488" />
+            <location filename="../zscaler_api_client.py" line="10923" />
             <source>Configure a base URL for the selected product before sending a relative API path.</source>
-            <translation>Configure a base URL for the selected product before sending a relative API path.</translation>
+            <translation>Configurez une URL de base pour le produit sélectionné avant d'envoyer un chemin d'API relatif.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10542" />
+            <location filename="../zscaler_api_client.py" line="10977" />
             <source>Missing documented parameters</source>
-            <translation>Missing documented parameters</translation>
+            <translation>Paramètres documentés manquants</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10543" />
+            <location filename="../zscaler_api_client.py" line="10978" />
             <source>Enter required values for: {names}</source>
             <translation>Enter required values for: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10566" />
+            <location filename="../zscaler_api_client.py" line="11001" />
             <source>Select an available local file before sending.</source>
-            <translation>Select an available local file before sending.</translation>
+            <translation>Sélectionnez un fichier local disponible avant de l'envoyer.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10571" />
+            <location filename="../zscaler_api_client.py" line="11006" />
             <source>Multipart fields must be a JSON object: {error}</source>
             <translation>Multipart fields must be a JSON object: {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10574" />
+            <location filename="../zscaler_api_client.py" line="11009" />
             <source>Multipart fields must be a JSON object.</source>
-            <translation>Multipart fields must be a JSON object.</translation>
+            <translation>Les champs multipart doivent être un objet JSON.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10613" />
+            <location filename="../zscaler_api_client.py" line="11048" />
             <source>Sending request...</source>
             <translation>Envoi de la requête...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10644" />
+            <location filename="../zscaler_api_client.py" line="11079" />
             <source>Pagination unavailable</source>
-            <translation>Pagination unavailable</translation>
+            <translation>Pagination indisponible</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10644" />
+            <location filename="../zscaler_api_client.py" line="11079" />
             <source>Select a documented paginated GET operation before fetching all pages.</source>
-            <translation>Select a documented paginated GET operation before fetching all pages.</translation>
+            <translation>Sélectionnez une opération GET paginée documentée avant de récupérer toutes les pages.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10662" />
+            <location filename="../zscaler_api_client.py" line="11097" />
             <source>Fetching page {page} of at most {maximum}…</source>
             <translation>Fetching page {page} of at most {maximum}…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10666" />
+            <location filename="../zscaler_api_client.py" line="11101" />
             <source>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</source>
             <translation>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10675" />
+            <location filename="../zscaler_api_client.py" line="11110" />
             <source>Cancellation requested; waiting for the current HTTP request to finish safely…</source>
-            <translation>Cancellation requested; waiting for the current HTTP request to finish safely…</translation>
+            <translation>Annulation demandée ; en attendant que la requête HTTP actuelle se termine en toute sécurité…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10688" />
+            <location filename="../zscaler_api_client.py" line="11123" />
             <source>Request cancelled before completion</source>
-            <translation>Request cancelled before completion</translation>
+            <translation>Demande annulée avant la fin</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10736" />
+            <location filename="../zscaler_api_client.py" line="11171" />
             <source>Safe read retries: {count}</source>
             <translation>Safe read retries: {count}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10757" />
+            <location filename="../zscaler_api_client.py" line="11192" />
             <source>Binary response ready to save.
 File: {name}
 Type: {type}
@@ -1853,135 +1858,135 @@ Type: {type}
 Size: {size}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10797" />
+            <location filename="../zscaler_api_client.py" line="11232" />
             <source>Pagination complete: {pages} page(s), {records} record(s)</source>
             <translation>Pagination complete: {pages} page(s), {records} record(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10804" />
+            <location filename="../zscaler_api_client.py" line="11239" />
             <source>Pagination stopped before completion: {pages} page(s), {records} record(s)</source>
             <translation>Pagination stopped before completion: {pages} page(s), {records} record(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10832" />
+            <location filename="../zscaler_api_client.py" line="11267" />
             <source>ZDX authenticated successfully</source>
             <translation>Authentifié avec succès.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10836" />
+            <location filename="../zscaler_api_client.py" line="11271" />
             <source>ZCC authenticated successfully</source>
             <translation>Authentifié avec succès.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10840" />
+            <location filename="../zscaler_api_client.py" line="11275" />
             <source>ZIdentity authenticated successfully</source>
             <translation>ZIdentity authentifié avec succès</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10844" />
+            <location filename="../zscaler_api_client.py" line="11279" />
             <source>ZTW authenticated successfully</source>
             <translation>Authentifié avec succès.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10848" />
+            <location filename="../zscaler_api_client.py" line="11283" />
             <source>ZWA authenticated successfully</source>
             <translation>Authentifié avec succès.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10852" />
+            <location filename="../zscaler_api_client.py" line="11287" />
             <source>EASM authenticated successfully</source>
             <translation>Authentifié avec succès.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10856" />
+            <location filename="../zscaler_api_client.py" line="11291" />
             <source>OneAPI authenticated successfully</source>
-            <translation>OneAPI authenticated successfully</translation>
+            <translation>OneAPI authentifié avec succès</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10861" />
+            <location filename="../zscaler_api_client.py" line="11296" />
             <source>Authenticated successfully</source>
             <translation>Authentifié avec succès.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10961" />
+            <location filename="../zscaler_api_client.py" line="11396" />
             <source>Batch validation failed: </source>
-            <translation>Batch validation failed: </translation>
+            <translation>Échec de la validation par lots : </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10964" />
+            <location filename="../zscaler_api_client.py" line="11399" />
             <source>Select {api} before running this batch.</source>
             <translation>Select {api} before running this batch.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10972" />
+            <location filename="../zscaler_api_client.py" line="11407" />
             <source>Review complete. Send {count} request(s) to the active environment?</source>
             <translation>Review complete. Send {count} request(s) to the active environment?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10973" />
+            <location filename="../zscaler_api_client.py" line="11408" />
             <source>Confirm batch</source>
-            <translation>Confirm batch</translation>
+            <translation>Confirmer le lot</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10988" />
+            <location filename="../zscaler_api_client.py" line="11423" />
             <source>Sending batch request 0 of {count}...</source>
             <translation>Sending batch request 0 of {count}...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10989" />
+            <location filename="../zscaler_api_client.py" line="11424" />
             <source>Batch execution started: {count} request(s)</source>
             <translation>Batch execution started: {count} request(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11006" />
+            <location filename="../zscaler_api_client.py" line="11441" />
             <source>Sending batch request {completed} of {total}...</source>
             <translation>Sending batch request {completed} of {total}...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11016" />
-            <location filename="../zscaler_api_client.py" line="11017" />
-            <location filename="../zscaler_api_client.py" line="11018" />
+            <location filename="../zscaler_api_client.py" line="11451" />
+            <location filename="../zscaler_api_client.py" line="11452" />
+            <location filename="../zscaler_api_client.py" line="11453" />
             <source>Batch complete: {successful} succeeded, {failed} failed.</source>
             <translation>Batch complete: {successful} succeeded, {failed} failed.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11031" />
+            <location filename="../zscaler_api_client.py" line="11466" />
             <source>Request History</source>
-            <translation>Request History</translation>
+            <translation>Historique des demandes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11032" />
+            <location filename="../zscaler_api_client.py" line="11467" />
             <source>This request belongs to another environment. Activate that environment profile before loading it.</source>
-            <translation>This request belongs to another environment. Activate that environment profile before loading it.</translation>
+            <translation>Cette requête appartient à un autre environnement. Activez ce profil d'environnement avant de le charger.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11045" />
-            <location filename="../zscaler_api_client.py" line="11064" />
+            <location filename="../zscaler_api_client.py" line="11480" />
+            <location filename="../zscaler_api_client.py" line="11499" />
             <source>Multipart request loaded. Select the local file again before sending.</source>
-            <translation>Multipart request loaded. Select the local file again before sending.</translation>
+            <translation>Requête en plusieurs parties chargée. Sélectionnez à nouveau le fichier local avant de l'envoyer.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11136" />
+            <location filename="../zscaler_api_client.py" line="11571" />
             <source>Masked cURL command copied to clipboard</source>
-            <translation>Masked cURL command copied to clipboard</translation>
+            <translation>Commande cURL masquée copiée dans le presse-papiers</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11141" />
+            <location filename="../zscaler_api_client.py" line="11576" />
             <source>Binary response</source>
-            <translation>Binary response</translation>
+            <translation>Réponse binaire</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11141" />
+            <location filename="../zscaler_api_client.py" line="11576" />
             <source>Binary response content is not copied to the clipboard. Use Export to save the original file.</source>
-            <translation>Binary response content is not copied to the clipboard. Use Export to save the original file.</translation>
+            <translation>Le contenu de la réponse binaire n'est pas copié dans le presse-papiers. Utilisez Exporter pour enregistrer le fichier original.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11150" />
+            <location filename="../zscaler_api_client.py" line="11585" />
             <source>Masked response copied to clipboard</source>
-            <translation>Masked response copied to clipboard</translation>
+            <translation>Réponse masquée copiée dans le presse-papiers</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11295" />
+            <location filename="../zscaler_api_client.py" line="11730" />
             <source>The application needs to restart to apply the new language.
 
 Restart now?</source>
@@ -1990,39 +1995,39 @@ Restart now?</source>
 Redémarrer maintenant ?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11422" />
+            <location filename="../zscaler_api_client.py" line="11857" />
             <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
-            <translation>&lt;h3&gt;Une nouvelle version est disponible&amp;nbsp;!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Version actuelle&amp;nbsp;:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Dernière version&amp;nbsp;:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Publication&amp;nbsp;:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Vérifié à partir degithub.com/ {repo}&lt;/p&gt;&lt;p&gt;Souhaitez-vous ouvrir la page de téléchargement&amp;nbsp;?&lt;/p&gt;</translation>
+            <translation>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</translation>
         </message>
         <message>
             <source>Success</source>
             <translation type="vanished">Succès</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10809" />
+            <location filename="../zscaler_api_client.py" line="11244" />
             <source>Request successful</source>
             <translation>Requête réussie</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10819" />
+            <location filename="../zscaler_api_client.py" line="11254" />
             <source>ZIA authenticated successfully</source>
-            <translation>ZIA authenticated successfully</translation>
+            <translation>ZIA s'est authentifié avec succès</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10828" />
+            <location filename="../zscaler_api_client.py" line="11263" />
             <source>ZPA authenticated successfully</source>
-            <translation>ZPA authenticated successfully</translation>
+            <translation>ZPA authentifié avec succès</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10894" />
-            <location filename="../zscaler_api_client.py" line="10900" />
+            <location filename="../zscaler_api_client.py" line="11329" />
+            <location filename="../zscaler_api_client.py" line="11335" />
             <source>Request failed</source>
             <translation>Échec de la requête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10961" />
-            <location filename="../zscaler_api_client.py" line="10964" />
-            <location filename="../zscaler_api_client.py" line="11018" />
+            <location filename="../zscaler_api_client.py" line="11396" />
+            <location filename="../zscaler_api_client.py" line="11399" />
+            <location filename="../zscaler_api_client.py" line="11453" />
             <source>Batch</source>
             <translation>Lot</translation>
         </message>
@@ -2031,66 +2036,66 @@ Redémarrer maintenant ?</translation>
             <translation type="vanished">Traitement de {count} éléments...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11066" />
+            <location filename="../zscaler_api_client.py" line="11501" />
             <source>Request loaded from history</source>
-            <translation>Request loaded from history</translation>
+            <translation>Requête chargée à partir de l'historique</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11133" />
+            <location filename="../zscaler_api_client.py" line="11568" />
             <source>No URL to copy</source>
-            <translation>No URL to copy</translation>
+            <translation>Aucune URL à copier</translation>
         </message>
         <message>
             <source>cURL command copied to clipboard</source>
-            <translation type="vanished">cURL command copied to clipboard</translation>
+            <translation>Commande cURL copiée dans le presse-papiers</translation>
         </message>
         <message>
             <source>Response copied to clipboard</source>
-            <translation type="vanished">Response copied to clipboard</translation>
+            <translation>Réponse copiée dans le presse-papiers</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11152" />
+            <location filename="../zscaler_api_client.py" line="11587" />
             <source>No response to copy</source>
-            <translation>No response to copy</translation>
+            <translation>Aucune réponse à la copie</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11188" />
+            <location filename="../zscaler_api_client.py" line="11623" />
             <source>Request cleared</source>
-            <translation>Request cleared</translation>
+            <translation>Demande effacée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11201" />
-            <location filename="../zscaler_api_client.py" line="11252" />
+            <location filename="../zscaler_api_client.py" line="11636" />
+            <location filename="../zscaler_api_client.py" line="11687" />
             <source>Missing Credentials</source>
-            <translation>Missing Credentials</translation>
+            <translation>Informations d'identification manquantes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11202" />
+            <location filename="../zscaler_api_client.py" line="11637" />
             <source>Please configure ZIA credentials in Settings first.</source>
-            <translation>Please configure ZIA credentials in Settings first.</translation>
+            <translation>Veuillez d'abord configurer les informations d'identification ZIA dans Paramètres.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11224" />
+            <location filename="../zscaler_api_client.py" line="11659" />
             <source>ZIA auth request prepared. Click Send to authenticate.</source>
-            <translation>ZIA auth request prepared. Click Send to authenticate.</translation>
+            <translation>Demande d'authentification ZIA préparée. Cliquez sur Envoyer pour vous authentifier.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11253" />
+            <location filename="../zscaler_api_client.py" line="11688" />
             <source>Please configure ZPA credentials in Settings first.</source>
-            <translation>Please configure ZPA credentials in Settings first.</translation>
+            <translation>Veuillez d'abord configurer les informations d'identification ZPA dans Paramètres.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11266" />
+            <location filename="../zscaler_api_client.py" line="11701" />
             <source>ZPA auth request prepared. Click Send to authenticate.</source>
-            <translation>ZPA auth request prepared. Click Send to authenticate.</translation>
+            <translation>Demande d'authentification ZPA préparée. Cliquez sur Envoyer pour vous authentifier.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11271" />
+            <location filename="../zscaler_api_client.py" line="11706" />
             <source>All sessions cleared</source>
-            <translation>All sessions cleared</translation>
+            <translation>Toutes les sessions effacées</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11294" />
+            <location filename="../zscaler_api_client.py" line="11729" />
             <source>Language Changed</source>
             <translation>Langue modifiée</translation>
         </message>
@@ -2099,26 +2104,26 @@ Redémarrer maintenant ?</translation>
             <translation type="vanished">Veuillez redémarrer l'application pour appliquer la nouvelle langue.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11343" />
+            <location filename="../zscaler_api_client.py" line="11778" />
             <source>Checking for updates...</source>
             <translation>Recherche de mises à jour...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11416" />
+            <location filename="../zscaler_api_client.py" line="11851" />
             <source>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</source>
-            <translation>&lt;p&gt;&lt;i&gt;⚠️ Ceci est une version préliminaire&lt;/i&gt;&lt;/p&gt;</translation>
+            <translation>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11420" />
+            <location filename="../zscaler_api_client.py" line="11855" />
             <source>Update Available</source>
             <translation>Mise à jour disponible</translation>
         </message>
         <message>
             <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
-            <translation type="vanished">&lt;h3&gt;Une nouvelle version est disponible !&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Version actuelle :&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Dernière version :&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;Voulez-vous ouvrir la page de téléchargement ?&lt;/p&gt;</translation>
+            <translation>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11442" />
+            <location filename="../zscaler_api_client.py" line="11877" />
             <source>Update available: v{version}</source>
             <translation>Mise à jour disponible: v{version}</translation>
         </message>
@@ -2128,27 +2133,27 @@ Redémarrer maintenant ?</translation>
         </message>
         <message>
             <source>&lt;p&gt;You are running the latest version.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Version:&lt;/b&gt; {version}&lt;/p&gt;</source>
-            <translation type="vanished">&lt;p&gt;Vous utilisez la dernière version.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Version :&lt;/b&gt; {version}&lt;/p&gt;</translation>
+            <translation>&lt;p&gt;You are running the latest version.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Version:&lt;/b&gt; {version}&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11445" />
+            <location filename="../zscaler_api_client.py" line="11880" />
             <source>You are up to date (v{version})</source>
             <translation>Vous êtes à jour (v{version})</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11450" />
+            <location filename="../zscaler_api_client.py" line="11885" />
             <source>Update Check Failed</source>
             <translation>Échec de la vérification</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11451" />
+            <location filename="../zscaler_api_client.py" line="11886" />
             <source>Could not check for updates:
 {error}</source>
             <translation>Impossible de vérifier les mises à jour:
 {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11453" />
+            <location filename="../zscaler_api_client.py" line="11888" />
             <source>Update check failed</source>
             <translation>Échec de la vérification des mises à jour</translation>
         </message>
@@ -2166,11 +2171,11 @@ Redémarrer maintenant ?</translation>
         </message>
         <message>
             <source>ZDX (Zscaler Digital Experience)</source>
-            <translation type="vanished">ZDX (Zscaler Digital Experience)</translation>
+            <translation>ZDX (expérience numérique Zscaler)</translation>
         </message>
         <message>
             <source>ZCC (Client Connector)</source>
-            <translation type="vanished">ZCC (Client Connector)</translation>
+            <translation>ZCC (connecteur client)</translation>
         </message>
         <message>
             <source>Key ID:</source>
@@ -2197,7 +2202,7 @@ Redémarrer maintenant ?</translation>
             <translation type="vanished">Conseils pour utilisateurs avancés</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8492" />
+            <location filename="../zscaler_api_client.py" line="8919" />
             <source>Documentation</source>
             <translation>Documentation</translation>
         </message>
@@ -2221,3383 +2226,3870 @@ Redémarrer maintenant ?</translation>
     <context>
         <name>OperationsDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="6113" />
+            <location filename="../zscaler_api_client.py" line="6155" />
             <source>Operations Center</source>
-            <translation>Operations Center</translation>
+            <translation>Centre des opérations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6136" />
+            <location filename="../zscaler_api_client.py" line="6178" />
             <source>Requests</source>
-            <translation>Requests</translation>
+            <translation>Demandes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6136" />
+            <location filename="../zscaler_api_client.py" line="6178" />
             <source>Success rate</source>
-            <translation>Success rate</translation>
+            <translation>Taux de réussite</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6136" />
-            <location filename="../zscaler_api_client.py" line="7247" />
+            <location filename="../zscaler_api_client.py" line="6178" />
+            <location filename="../zscaler_api_client.py" line="7289" />
             <source>Audit integrity</source>
-            <translation>Audit integrity</translation>
+            <translation>Intégrité de l'audit</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6136" />
+            <location filename="../zscaler_api_client.py" line="6178" />
             <source>Active environment</source>
-            <translation>Active environment</translation>
+            <translation>Environnement actif</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6148" />
+            <location filename="../zscaler_api_client.py" line="6190" />
             <source>Recent request outcomes</source>
-            <translation>Recent request outcomes</translation>
+            <translation>Résultats des demandes récentes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6153" />
-            <location filename="../zscaler_api_client.py" line="6231" />
-            <location filename="../zscaler_api_client.py" line="6235" />
-            <location filename="../zscaler_api_client.py" line="6275" />
-            <location filename="../zscaler_api_client.py" line="6331" />
-            <location filename="../zscaler_api_client.py" line="6348" />
+            <location filename="../zscaler_api_client.py" line="6195" />
+            <location filename="../zscaler_api_client.py" line="6273" />
+            <location filename="../zscaler_api_client.py" line="6277" />
+            <location filename="../zscaler_api_client.py" line="6317" />
+            <location filename="../zscaler_api_client.py" line="6373" />
+            <location filename="../zscaler_api_client.py" line="6390" />
             <source>Time</source>
-            <translation>Time</translation>
+            <translation>Temps</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6153" />
+            <location filename="../zscaler_api_client.py" line="6195" />
             <source>Activity</source>
-            <translation>Activity</translation>
+            <translation>Activité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6153" />
-            <location filename="../zscaler_api_client.py" line="6213" />
-            <location filename="../zscaler_api_client.py" line="6231" />
-            <location filename="../zscaler_api_client.py" line="6348" />
-            <location filename="../zscaler_api_client.py" line="6364" />
-            <location filename="../zscaler_api_client.py" line="6379" />
-            <location filename="../zscaler_api_client.py" line="6401" />
-            <location filename="../zscaler_api_client.py" line="6426" />
-            <location filename="../zscaler_api_client.py" line="6448" />
+            <location filename="../zscaler_api_client.py" line="6195" />
+            <location filename="../zscaler_api_client.py" line="6255" />
+            <location filename="../zscaler_api_client.py" line="6273" />
+            <location filename="../zscaler_api_client.py" line="6390" />
+            <location filename="../zscaler_api_client.py" line="6406" />
+            <location filename="../zscaler_api_client.py" line="6421" />
+            <location filename="../zscaler_api_client.py" line="6443" />
+            <location filename="../zscaler_api_client.py" line="6468" />
+            <location filename="../zscaler_api_client.py" line="6490" />
             <source>Status</source>
-            <translation>Status</translation>
+            <translation>Statut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6154" />
+            <location filename="../zscaler_api_client.py" line="6196" />
             <source>Recent activity</source>
-            <translation>Recent activity</translation>
+            <translation>Activité récente</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6157" />
+            <location filename="../zscaler_api_client.py" line="6199" />
             <source>Refresh dashboard</source>
-            <translation>Refresh dashboard</translation>
+            <translation>Actualiser le tableau de bord</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6161" />
+            <location filename="../zscaler_api_client.py" line="6203" />
             <source>Dashboard</source>
-            <translation>Dashboard</translation>
+            <translation>Tableau de bord</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6164" />
+            <location filename="../zscaler_api_client.py" line="6206" />
             <source>Previous policy JSON</source>
-            <translation>Previous policy JSON</translation>
+            <translation>Politique précédente JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6165" />
+            <location filename="../zscaler_api_client.py" line="6207" />
             <source>Proposed policy JSON</source>
-            <translation>Proposed policy JSON</translation>
+            <translation>Politique proposée JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6172" />
+            <location filename="../zscaler_api_client.py" line="6214" />
             <source>Compare policies</source>
-            <translation>Compare policies</translation>
+            <translation>Comparez les politiques</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6174" />
+            <location filename="../zscaler_api_client.py" line="6216" />
             <source>Export policy as JSON</source>
-            <translation>Export policy as JSON</translation>
+            <translation>Politique d'exportation au format JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6175" />
+            <location filename="../zscaler_api_client.py" line="6217" />
             <source>Export policy as YAML</source>
-            <translation>Export policy as YAML</translation>
+            <translation>Politique d'exportation au format YAML</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6176" />
+            <location filename="../zscaler_api_client.py" line="6218" />
             <source>Run compliance checks</source>
-            <translation>Run compliance checks</translation>
+            <translation>Effectuer des contrôles de conformité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6177" />
-            <location filename="../zscaler_api_client.py" line="7569" />
+            <location filename="../zscaler_api_client.py" line="6219" />
+            <location filename="../zscaler_api_client.py" line="7611" />
             <source>Policy diff</source>
-            <translation>Policy diff</translation>
+            <translation>Différence de politique</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6180" />
+            <location filename="../zscaler_api_client.py" line="6222" />
             <source>Rules JSON: [{"name": "Allow staff", "conditions": {"group": "staff"}, "action": "allow"}]</source>
             <translation>Rules JSON: [{"name": "Allow staff", "conditions": {"group": "staff"}, "action": "allow"}]</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6181" />
+            <location filename="../zscaler_api_client.py" line="6223" />
             <source>Request context JSON: {"group": "staff"}</source>
             <translation>Request context JSON: {"group": "staff"}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6186" />
+            <location filename="../zscaler_api_client.py" line="6228" />
             <source>Simulate policy (local only)</source>
-            <translation>Simulate policy (local only)</translation>
+            <translation>Simuler la stratégie (local uniquement)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6187" />
-            <location filename="../zscaler_api_client.py" line="7617" />
+            <location filename="../zscaler_api_client.py" line="6229" />
+            <location filename="../zscaler_api_client.py" line="7659" />
             <source>Simulation</source>
-            <translation>Simulation</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6190" />
-            <source>CSV data, e.g. name,email
-Ada,ada@example.com</source>
-            <translation>CSV data, e.g. name,email
-Ada,ada@example.com</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6193" />
-            <source>Required columns (comma separated)</source>
-            <translation>Required columns (comma separated)</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6195" />
-            <source>Validate bulk import</source>
-            <translation>Validate bulk import</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6196" />
-            <source>Bulk operations</source>
-            <translation>Bulk operations</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6199" />
-            <source>Administrator</source>
-            <translation>Administrator</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6199" />
-            <source>Analyst</source>
-            <translation>Analyst</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6199" />
-            <location filename="../zscaler_api_client.py" line="7352" />
-            <source>Read only</source>
-            <translation>Read only</translation>
-        </message>
-        <message>
-            <source>Optional local automation script; never runs without approval</source>
-            <translation type="vanished">Optional local automation script; never runs without approval</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6206" />
-            <source>Local role:</source>
-            <translation>Local role:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6206" />
-            <source>Alert threshold (errors):</source>
-            <translation>Alert threshold (errors):</translation>
-        </message>
-        <message>
-            <source>Webhook endpoint (disabled until approved):</source>
-            <translation type="vanished">Webhook endpoint (disabled until approved):</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6206" />
-            <source>Local automation:</source>
-            <translation>Local automation:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6207" />
-            <source>Save governance settings</source>
-            <translation>Save governance settings</translation>
-        </message>
-        <message>
-            <source>Read-only mode blocks write requests. Webhooks and local automation are saved only; this app will ask before any execution.</source>
-            <translation type="vanished">Read-only mode blocks write requests. Webhooks and local automation are saved only; this app will ask before any execution.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6209" />
-            <location filename="../zscaler_api_client.py" line="7626" />
-            <location filename="../zscaler_api_client.py" line="7629" />
-            <location filename="../zscaler_api_client.py" line="7632" />
-            <location filename="../zscaler_api_client.py" line="7640" />
-            <source>Governance</source>
-            <translation>Governance</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6212" />
-            <source>Official integrations are optional. Credentials remain in the system keychain and no command runs automatically.</source>
-            <translation>Official integrations are optional. Credentials remain in the system keychain and no command runs automatically.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6213" />
-            <source>Integration</source>
-            <translation>Integration</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6213" />
-            <source>Recommended use</source>
-            <translation>Recommended use</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6216" />
-            <source>Check local integrations</source>
-            <translation>Check local integrations</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6217" />
-            <source>Prepare Terraform import</source>
-            <translation>Prepare Terraform import</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6218" />
-            <source>Prepare MCP connection</source>
-            <translation>Prepare MCP connection</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6219" />
-            <source>Prepare SDK configuration</source>
-            <translation>Prepare SDK configuration</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6220" />
-            <source>Send masked webhook test</source>
-            <translation>Send masked webhook test</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6222" />
-            <source>Copy reviewed command</source>
-            <translation>Copy reviewed command</translation>
+            <translation>Simulations</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6232" />
-            <location filename="../zscaler_api_client.py" line="7679" />
-            <location filename="../zscaler_api_client.py" line="7699" />
-            <source>Integrations</source>
-            <translation>Integrations</translation>
+            <source>CSV data, e.g. name,email
+Ada,ada@example.com</source>
+            <translation>Données CSV, par ex. nom, email
+Ada,ada@exemple.com</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6235" />
-            <source>Event</source>
-            <translation>Event</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6231" />
-            <location filename="../zscaler_api_client.py" line="6235" />
-            <location filename="../zscaler_api_client.py" line="6248" />
-            <source>Details</source>
-            <translation>Details</translation>
+            <source>Required columns (comma separated)</source>
+            <translation>Colonnes obligatoires (séparées par des virgules)</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6237" />
-            <source>Refresh audit trail</source>
-            <translation>Refresh audit trail</translation>
+            <source>Validate bulk import</source>
+            <translation>Valider l'importation groupée</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6238" />
-            <location filename="../zscaler_api_client.py" line="6433" />
-            <source>Schedule report</source>
-            <translation>Schedule report</translation>
+            <source>Bulk operations</source>
+            <translation>Opérations groupées</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6239" />
-            <source>Create redacted support bundle</source>
-            <translation>Create redacted support bundle</translation>
+            <location filename="../zscaler_api_client.py" line="6241" />
+            <source>Administrator</source>
+            <translation>Administrateur</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6240" />
-            <source>Audit &amp; automation</source>
-            <translation>Audit &amp; automation</translation>
+            <location filename="../zscaler_api_client.py" line="6241" />
+            <source>Analyst</source>
+            <translation>Analyste</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6243" />
-            <source>Local security posture uses redacted request history and audit integrity. It is an operational signal, not a tenant security assessment.</source>
-            <translation>Local security posture uses redacted request history and audit integrity. It is an operational signal, not a tenant security assessment.</translation>
+            <location filename="../zscaler_api_client.py" line="6241" />
+            <location filename="../zscaler_api_client.py" line="7394" />
+            <source>Read only</source>
+            <translation>Lecture seule</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6171" />
-            <location filename="../zscaler_api_client.py" line="6248" />
-            <location filename="../zscaler_api_client.py" line="6256" />
-            <location filename="../zscaler_api_client.py" line="6275" />
-            <location filename="../zscaler_api_client.py" line="6287" />
-            <location filename="../zscaler_api_client.py" line="6292" />
-            <location filename="../zscaler_api_client.py" line="6313" />
-            <location filename="../zscaler_api_client.py" line="6326" />
-            <location filename="../zscaler_api_client.py" line="6327" />
-            <location filename="../zscaler_api_client.py" line="6351" />
-            <location filename="../zscaler_api_client.py" line="6401" />
-            <location filename="../zscaler_api_client.py" line="6474" />
-            <source>Severity</source>
-            <translation>Severity</translation>
+            <source>Optional local automation script; never runs without approval</source>
+            <translation>Script d'automatisation local en option ; ne fonctionne jamais sans approbation</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6248" />
-            <location filename="../zscaler_api_client.py" line="6474" />
-            <source>Finding</source>
-            <translation>Finding</translation>
+            <source>Local role:</source>
+            <translation>Rôle local :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6248" />
+            <source>Alert threshold (errors):</source>
+            <translation>Seuil d'alerte (erreurs) :</translation>
+        </message>
+        <message>
+            <source>Webhook endpoint (disabled until approved):</source>
+            <translation>Point de terminaison Webhook (désactivé jusqu'à approbation) :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6248" />
+            <source>Local automation:</source>
+            <translation>Automatisation locale :</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6249" />
-            <source>Refresh security posture</source>
-            <translation>Refresh security posture</translation>
+            <source>Save governance settings</source>
+            <translation>Enregistrer les paramètres de gouvernance</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6250" />
+            <source>Read-only mode blocks write requests. Webhooks and local automation are saved only; this app will ask before any execution.</source>
+            <translation>Le mode lecture seule bloque les demandes d’écriture. Les webhooks et l'automatisation locale sont enregistrés uniquement ; cette application demandera avant toute exécution.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6251" />
+            <location filename="../zscaler_api_client.py" line="7668" />
+            <location filename="../zscaler_api_client.py" line="7671" />
+            <location filename="../zscaler_api_client.py" line="7674" />
+            <location filename="../zscaler_api_client.py" line="7682" />
+            <source>Governance</source>
+            <translation>Gouvernance</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6254" />
+            <source>Official integrations are optional. Credentials remain in the system keychain and no command runs automatically.</source>
+            <translation>Les intégrations officielles sont facultatives. Les informations d'identification restent dans le trousseau du système et aucune commande ne s'exécute automatiquement.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6255" />
+            <source>Integration</source>
+            <translation>Intégration</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6255" />
+            <source>Recommended use</source>
+            <translation>Utilisation recommandée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6258" />
+            <source>Check local integrations</source>
+            <translation>Vérifier les intégrations locales</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6259" />
+            <source>Prepare Terraform import</source>
+            <translation>Préparer l'importation Terraform</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6260" />
+            <source>Prepare MCP connection</source>
+            <translation>Préparer la connexion MCP</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6261" />
+            <source>Prepare SDK configuration</source>
+            <translation>Préparer la configuration du SDK</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6262" />
+            <source>Send masked webhook test</source>
+            <translation>Envoyer un test de webhook masqué</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6264" />
+            <source>Copy reviewed command</source>
+            <translation>Copier la commande révisée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6274" />
+            <location filename="../zscaler_api_client.py" line="7721" />
+            <location filename="../zscaler_api_client.py" line="7741" />
+            <source>Integrations</source>
+            <translation>Intégrations</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6277" />
+            <source>Event</source>
+            <translation>Événement</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6273" />
+            <location filename="../zscaler_api_client.py" line="6277" />
+            <location filename="../zscaler_api_client.py" line="6290" />
+            <source>Details</source>
+            <translation>Détails</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6279" />
+            <source>Refresh audit trail</source>
+            <translation>Actualiser la piste d'audit</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6280" />
+            <location filename="../zscaler_api_client.py" line="6475" />
+            <source>Schedule report</source>
+            <translation>Rapport de planification</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6281" />
+            <source>Create redacted support bundle</source>
+            <translation>Créer un package de support rédigé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6282" />
+            <source>Audit &amp; automation</source>
+            <translation>Audit et automatisation</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6285" />
+            <source>Local security posture uses redacted request history and audit integrity. It is an operational signal, not a tenant security assessment.</source>
+            <translation>La posture de sécurité locale utilise l’historique des demandes expurgé et l’intégrité de l’audit. Il s'agit d'un signal opérationnel et non d'une évaluation de la sécurité des locataires.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6213" />
+            <location filename="../zscaler_api_client.py" line="6290" />
+            <location filename="../zscaler_api_client.py" line="6298" />
+            <location filename="../zscaler_api_client.py" line="6317" />
+            <location filename="../zscaler_api_client.py" line="6329" />
+            <location filename="../zscaler_api_client.py" line="6334" />
+            <location filename="../zscaler_api_client.py" line="6355" />
+            <location filename="../zscaler_api_client.py" line="6368" />
+            <location filename="../zscaler_api_client.py" line="6369" />
+            <location filename="../zscaler_api_client.py" line="6393" />
+            <location filename="../zscaler_api_client.py" line="6443" />
+            <location filename="../zscaler_api_client.py" line="6516" />
+            <source>Severity</source>
+            <translation>Gravité</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6290" />
+            <location filename="../zscaler_api_client.py" line="6516" />
+            <source>Finding</source>
+            <translation>Trouver</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6291" />
+            <source>Refresh security posture</source>
+            <translation>Actualiser la posture de sécurité</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6292" />
             <source>Security posture</source>
-            <translation>Security posture</translation>
+            <translation>Posture de sécurité</translation>
         </message>
         <message>
             <source>Build a redacted local investigation timeline. Prepared chains never send API requests automatically.</source>
-            <translation type="vanished">Build a redacted local investigation timeline. Prepared chains never send API requests automatically.</translation>
+            <translation>Créez un calendrier d’enquête locale expurgé. Les chaînes préparées n’envoient jamais automatiquement de requêtes API.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6265" />
+            <location filename="../zscaler_api_client.py" line="6307" />
             <source>Investigation:</source>
-            <translation>Investigation:</translation>
+            <translation>Enquête :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6266" />
+            <location filename="../zscaler_api_client.py" line="6308" />
             <source>API failure investigation</source>
-            <translation>API failure investigation</translation>
+            <translation>Enquête sur les échecs de l'API</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6266" />
+            <location filename="../zscaler_api_client.py" line="6308" />
             <source>Change activity review</source>
-            <translation>Change activity review</translation>
+            <translation>Examen des activités de changement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6266" />
+            <location filename="../zscaler_api_client.py" line="6308" />
             <source>Slow response investigation</source>
-            <translation>Slow response investigation</translation>
+            <translation>Enquête à réponse lente</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6267" />
+            <location filename="../zscaler_api_client.py" line="6309" />
             <source>Prepare investigation chain</source>
-            <translation>Prepare investigation chain</translation>
+            <translation>Préparer la chaîne d'enquête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6275" />
-            <location filename="../zscaler_api_client.py" line="6287" />
+            <location filename="../zscaler_api_client.py" line="6317" />
+            <location filename="../zscaler_api_client.py" line="6329" />
             <source>Source</source>
             <translation>Source</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6256" />
-            <location filename="../zscaler_api_client.py" line="6275" />
-            <location filename="../zscaler_api_client.py" line="6401" />
+            <location filename="../zscaler_api_client.py" line="6298" />
+            <location filename="../zscaler_api_client.py" line="6317" />
+            <location filename="../zscaler_api_client.py" line="6443" />
             <source>Evidence</source>
-            <translation>Evidence</translation>
+            <translation>Preuve</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6118" />
+            <location filename="../zscaler_api_client.py" line="6160" />
             <source>Data scope:</source>
-            <translation>Data scope:</translation>
+            <translation>Portée des données :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6121" />
+            <location filename="../zscaler_api_client.py" line="6163" />
             <source>Active environment: {name}</source>
             <translation>Active environment: {name}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6125" />
+            <location filename="../zscaler_api_client.py" line="6167" />
             <source>All environments (cross-tenant overview)</source>
-            <translation>All environments (cross-tenant overview)</translation>
+            <translation>Tous les environnements (aperçu multi-locataires)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6127" />
+            <location filename="../zscaler_api_client.py" line="6169" />
             <source>Analytics are tenant-isolated by default. Cross-tenant scope is explicit and available in Advanced mode.</source>
-            <translation>Analytics are tenant-isolated by default. Cross-tenant scope is explicit and available in Advanced mode.</translation>
+            <translation>Les analyses sont isolées des locataires par défaut. La portée entre locataires est explicite et disponible en mode avancé.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6136" />
+            <location filename="../zscaler_api_client.py" line="6178" />
             <source>Open alerts</source>
-            <translation>Open alerts</translation>
+            <translation>Ouvrir les alertes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6151" />
+            <location filename="../zscaler_api_client.py" line="6193" />
             <source>Recent request latency (ms)</source>
-            <translation>Recent request latency (ms)</translation>
+            <translation>Latence des requêtes récentes (ms)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6153" />
-            <location filename="../zscaler_api_client.py" line="6235" />
-            <location filename="../zscaler_api_client.py" line="6348" />
-            <location filename="../zscaler_api_client.py" line="6426" />
+            <location filename="../zscaler_api_client.py" line="6195" />
+            <location filename="../zscaler_api_client.py" line="6277" />
+            <location filename="../zscaler_api_client.py" line="6390" />
+            <location filename="../zscaler_api_client.py" line="6468" />
             <source>Environment</source>
-            <translation>Environment</translation>
+            <translation>Environnement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6158" />
+            <location filename="../zscaler_api_client.py" line="6200" />
             <source>Auto-refresh local signals</source>
-            <translation>Auto-refresh local signals</translation>
+            <translation>Actualisation automatique des signaux locaux</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6159" />
+            <location filename="../zscaler_api_client.py" line="6201" />
             <source>Every 30 seconds</source>
-            <translation>Every 30 seconds</translation>
+            <translation>Toutes les 30 secondes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6159" />
+            <location filename="../zscaler_api_client.py" line="6201" />
             <source>Every minute</source>
-            <translation>Every minute</translation>
+            <translation>Chaque minute</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6159" />
+            <location filename="../zscaler_api_client.py" line="6201" />
             <source>Every 5 minutes</source>
-            <translation>Every 5 minutes</translation>
+            <translation>Toutes les 5 minutes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6168" />
+            <location filename="../zscaler_api_client.py" line="6210" />
             <source>Policy rule overview</source>
-            <translation>Policy rule overview</translation>
+            <translation>Présentation des règles de stratégie</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6170" />
-            <location filename="../zscaler_api_client.py" line="6171" />
-            <location filename="../zscaler_api_client.py" line="6185" />
+            <location filename="../zscaler_api_client.py" line="6212" />
+            <location filename="../zscaler_api_client.py" line="6213" />
+            <location filename="../zscaler_api_client.py" line="6227" />
             <source>Rule</source>
-            <translation>Rule</translation>
+            <translation>Règle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6170" />
-            <location filename="../zscaler_api_client.py" line="6185" />
+            <location filename="../zscaler_api_client.py" line="6212" />
+            <location filename="../zscaler_api_client.py" line="6227" />
             <source>Action</source>
             <translation>Action</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6170" />
+            <location filename="../zscaler_api_client.py" line="6212" />
             <source>Conditions</source>
             <translation>Conditions</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6170" />
+            <location filename="../zscaler_api_client.py" line="6212" />
             <source>State</source>
-            <translation>State</translation>
+            <translation>État</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6171" />
+            <location filename="../zscaler_api_client.py" line="6213" />
             <source>Best-practice finding</source>
-            <translation>Best-practice finding</translation>
+            <translation>Recherche de bonnes pratiques</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6185" />
+            <location filename="../zscaler_api_client.py" line="6227" />
             <source>Order</source>
-            <translation>Order</translation>
+            <translation>Commande</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6185" />
+            <location filename="../zscaler_api_client.py" line="6227" />
             <source>Decision</source>
-            <translation>Decision</translation>
+            <translation>Décision</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6203" />
+            <location filename="../zscaler_api_client.py" line="6245" />
             <source>Show webhook endpoint</source>
-            <translation>Show webhook endpoint</translation>
+            <translation>Afficher le point de terminaison du webhook</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6205" />
+            <location filename="../zscaler_api_client.py" line="6247" />
             <source>Absolute path to a reviewed local Python automation</source>
-            <translation>Absolute path to a reviewed local Python automation</translation>
+            <translation>Chemin absolu vers une automatisation Python locale révisée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6206" />
+            <location filename="../zscaler_api_client.py" line="6248" />
             <source>Webhook endpoint (stored in system keychain):</source>
-            <translation>Webhook endpoint (stored in system keychain):</translation>
+            <translation>Point de terminaison du Webhook (stocké dans le trousseau du système) :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6208" />
+            <location filename="../zscaler_api_client.py" line="6250" />
             <source>Read-only mode blocks write requests and local automation. Every webhook or local automation execution requires explicit approval.</source>
-            <translation>Read-only mode blocks write requests and local automation. Every webhook or local automation execution requires explicit approval.</translation>
+            <translation>Le mode lecture seule bloque les demandes d’écriture et l’automatisation locale. Chaque webhook ou exécution d'automatisation locale nécessite une approbation explicite.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6221" />
+            <location filename="../zscaler_api_client.py" line="6263" />
             <source>Run reviewed local automation</source>
-            <translation>Run reviewed local automation</translation>
+            <translation>Exécuter une automatisation locale révisée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6223" />
+            <location filename="../zscaler_api_client.py" line="6265" />
             <source>Send current masked alerts</source>
-            <translation>Send current masked alerts</translation>
+            <translation>Envoyer des alertes masquées actuelles</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6230" />
+            <location filename="../zscaler_api_client.py" line="6272" />
             <source>Webhook delivery history</source>
-            <translation>Webhook delivery history</translation>
+            <translation>Historique de diffusion des webhooks</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6231" />
+            <location filename="../zscaler_api_client.py" line="6273" />
             <source>Delivery</source>
-            <translation>Delivery</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6253" />
-            <source>Local alerts evaluate retained, redacted request history only. They do not monitor the tenant in real time or send data externally.</source>
-            <translation>Local alerts evaluate retained, redacted request history only. They do not monitor the tenant in real time or send data externally.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6256" />
-            <source>Alert</source>
-            <translation>Alert</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6256" />
-            <source>Count</source>
-            <translation>Count</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6257" />
-            <source>Refresh local alerts</source>
-            <translation>Refresh local alerts</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6258" />
-            <source>Copy masked alert summary</source>
-            <translation>Copy masked alert summary</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6259" />
-            <source>Export alerts as JSON</source>
-            <translation>Export alerts as JSON</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6260" />
-            <source>Export alerts as Markdown</source>
-            <translation>Export alerts as Markdown</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6261" />
-            <source>Alert Center</source>
-            <translation>Alert Center</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6274" />
-            <source>Security investigation evidence map</source>
-            <translation>Security investigation evidence map</translation>
+            <translation>Livraison</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6295" />
-            <source>Refresh investigation</source>
-            <translation>Refresh investigation</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6296" />
-            <location filename="../zscaler_api_client.py" line="6770" />
-            <source>Export incident evidence</source>
-            <translation>Export incident evidence</translation>
+            <source>Local alerts evaluate retained, redacted request history only. They do not monitor the tenant in real time or send data externally.</source>
+            <translation>Les alertes locales évaluent uniquement l’historique des demandes conservé et expurgé. Ils ne surveillent pas le locataire en temps réel et n'envoient pas de données à l'extérieur.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6298" />
+            <source>Alert</source>
+            <translation>Alerte</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6298" />
+            <source>Count</source>
+            <translation>Compter</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6299" />
+            <source>Refresh local alerts</source>
+            <translation>Actualiser les alertes locales</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6300" />
+            <source>Copy masked alert summary</source>
+            <translation>Copier le résumé des alertes masquées</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6301" />
+            <source>Export alerts as JSON</source>
+            <translation>Exporter les alertes au format JSON</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6302" />
+            <source>Export alerts as Markdown</source>
+            <translation>Exporter les alertes en tant que Markdown</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6303" />
+            <source>Alert Center</source>
+            <translation>Centre d'alerte</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6316" />
+            <source>Security investigation evidence map</source>
+            <translation>Carte des preuves des enquêtes de sécurité</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6337" />
+            <source>Refresh investigation</source>
+            <translation>Actualiser l'enquête</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6338" />
+            <location filename="../zscaler_api_client.py" line="6812" />
+            <source>Export incident evidence</source>
+            <translation>Exporter les preuves d'incident</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6340" />
             <source>Incident investigation</source>
-            <translation>Incident investigation</translation>
+            <translation>Enquête sur les incidents</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6375" />
+            <location filename="../zscaler_api_client.py" line="6417" />
             <source>Create a local review from Policy diff. Approval records intent only; no policy, Terraform, or Git change is applied automatically.</source>
-            <translation>Create a local review from Policy diff. Approval records intent only; no policy, Terraform, or Git change is applied automatically.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6376" />
-            <source>Change ticket or reference</source>
-            <translation>Change ticket or reference</translation>
-        </message>
-        <message>
-            <source>Reviewer name</source>
-            <translation type="vanished">Reviewer name</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6376" />
-            <source>Reference:</source>
-            <translation>Reference:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6376" />
-            <source>Reviewer:</source>
-            <translation>Reviewer:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6381" />
-            <source>Prepare change review</source>
-            <translation>Prepare change review</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6382" />
-            <source>Record local approval</source>
-            <translation>Record local approval</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6383" />
-            <location filename="../zscaler_api_client.py" line="7076" />
-            <source>Export Git review</source>
-            <translation>Export Git review</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6384" />
-            <location filename="../zscaler_api_client.py" line="7072" />
-            <source>Export rollback plan</source>
-            <translation>Export rollback plan</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6386" />
-            <location filename="../zscaler_api_client.py" line="7036" />
-            <location filename="../zscaler_api_client.py" line="7058" />
-            <location filename="../zscaler_api_client.py" line="7061" />
-            <location filename="../zscaler_api_client.py" line="7070" />
-            <source>Change control</source>
-            <translation>Change control</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6413" />
-            <source>Generate local, redacted reports for leadership, SOC, or operations. Reports contain no credentials and are not sent automatically.</source>
-            <translation>Generate local, redacted reports for leadership, SOC, or operations. Reports contain no credentials and are not sent automatically.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6414" />
-            <source>Report type:</source>
-            <translation>Report type:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6415" />
-            <location filename="../zscaler_api_client.py" line="7213" />
-            <location filename="../zscaler_api_client.py" line="7236" />
-            <location filename="../zscaler_api_client.py" line="7843" />
-            <location filename="../zscaler_api_client.py" line="7944" />
-            <source>CISO security summary</source>
-            <translation>CISO security summary</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6415" />
-            <location filename="../zscaler_api_client.py" line="7213" />
-            <location filename="../zscaler_api_client.py" line="7236" />
-            <location filename="../zscaler_api_client.py" line="7843" />
-            <source>SOC investigation summary</source>
-            <translation>SOC investigation summary</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6415" />
-            <location filename="../zscaler_api_client.py" line="7213" />
-            <location filename="../zscaler_api_client.py" line="7236" />
-            <location filename="../zscaler_api_client.py" line="7843" />
-            <source>Operations health summary</source>
-            <translation>Operations health summary</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6416" />
-            <source>Generate report</source>
-            <translation>Generate report</translation>
+            <translation>Créez un avis local à partir de Policy diff. L'approbation enregistre uniquement l'intention ; aucune modification de politique, Terraform ou Git n’est appliquée automatiquement.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6418" />
-            <source>Security posture report artwork</source>
-            <translation>Security posture report artwork</translation>
+            <source>Change ticket or reference</source>
+            <translation>Changer de billet ou de référence</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6421" />
-            <location filename="../zscaler_api_client.py" line="7279" />
-            <source>Export report as Markdown</source>
-            <translation>Export report as Markdown</translation>
+            <source>Reviewer name</source>
+            <translation>Nom de l'évaluateur</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6422" />
-            <location filename="../zscaler_api_client.py" line="7273" />
-            <source>Export report as JSON</source>
-            <translation>Export report as JSON</translation>
+            <location filename="../zscaler_api_client.py" line="6418" />
+            <source>Reference:</source>
+            <translation>Référence :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6418" />
+            <source>Reviewer:</source>
+            <translation>Réviseur :</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6423" />
-            <location filename="../zscaler_api_client.py" line="7276" />
-            <source>Export visual report as HTML</source>
-            <translation>Export visual report as HTML</translation>
+            <source>Prepare change review</source>
+            <translation>Préparer la révision des modifications</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6424" />
+            <source>Record local approval</source>
+            <translation>Enregistrer l’approbation locale</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6425" />
+            <location filename="../zscaler_api_client.py" line="7118" />
+            <source>Export Git review</source>
+            <translation>Exporter la revue Git</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6426" />
+            <location filename="../zscaler_api_client.py" line="7114" />
+            <source>Export rollback plan</source>
+            <translation>Plan de restauration des exportations</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6428" />
+            <location filename="../zscaler_api_client.py" line="7078" />
+            <location filename="../zscaler_api_client.py" line="7100" />
+            <location filename="../zscaler_api_client.py" line="7103" />
+            <location filename="../zscaler_api_client.py" line="7112" />
+            <source>Change control</source>
+            <translation>Changer le contrôle</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6455" />
+            <source>Generate local, redacted reports for leadership, SOC, or operations. Reports contain no credentials and are not sent automatically.</source>
+            <translation>Générez des rapports locaux rédigés pour la direction, le SOC ou les opérations. Les rapports ne contiennent aucune information d'identification et ne sont pas envoyés automatiquement.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6456" />
+            <source>Report type:</source>
+            <translation>Type de rapport :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6457" />
+            <location filename="../zscaler_api_client.py" line="7255" />
+            <location filename="../zscaler_api_client.py" line="7278" />
+            <location filename="../zscaler_api_client.py" line="7885" />
+            <location filename="../zscaler_api_client.py" line="7986" />
+            <source>CISO security summary</source>
+            <translation>Résumé de la sécurité du RSSI</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6457" />
+            <location filename="../zscaler_api_client.py" line="7255" />
+            <location filename="../zscaler_api_client.py" line="7278" />
+            <location filename="../zscaler_api_client.py" line="7885" />
+            <source>SOC investigation summary</source>
+            <translation>Résumé de l'enquête SOC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6457" />
+            <location filename="../zscaler_api_client.py" line="7255" />
+            <location filename="../zscaler_api_client.py" line="7278" />
+            <location filename="../zscaler_api_client.py" line="7885" />
+            <source>Operations health summary</source>
+            <translation>Résumé de l’état des opérations</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6458" />
+            <source>Generate report</source>
+            <translation>Générer un rapport</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6460" />
+            <source>Security posture report artwork</source>
+            <translation>Illustration du rapport sur la posture de sécurité</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6463" />
+            <location filename="../zscaler_api_client.py" line="7321" />
+            <source>Export report as Markdown</source>
+            <translation>Exporter le rapport en tant que Markdown</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6464" />
+            <location filename="../zscaler_api_client.py" line="7315" />
+            <source>Export report as JSON</source>
+            <translation>Exporter le rapport au format JSON</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6465" />
+            <location filename="../zscaler_api_client.py" line="7318" />
+            <source>Export visual report as HTML</source>
+            <translation>Exporter le rapport visuel au format HTML</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6466" />
             <source>Scheduled reports</source>
-            <translation>Scheduled reports</translation>
+            <translation>Rapports planifiés</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6426" />
+            <location filename="../zscaler_api_client.py" line="6468" />
             <source>Name</source>
-            <translation>Name</translation>
+            <translation>Nom</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6426" />
+            <location filename="../zscaler_api_client.py" line="6468" />
             <source>Type</source>
-            <translation>Type</translation>
+            <translation>Tapez</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6426" />
+            <location filename="../zscaler_api_client.py" line="6468" />
             <source>Cadence</source>
             <translation>Cadence</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6426" />
+            <location filename="../zscaler_api_client.py" line="6468" />
             <source>Next run</source>
-            <translation>Next run</translation>
+            <translation>Prochaine exécution</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6426" />
+            <location filename="../zscaler_api_client.py" line="6468" />
             <source>Mode</source>
             <translation>Mode</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6434" />
+            <location filename="../zscaler_api_client.py" line="6476" />
             <source>Run selected now</source>
-            <translation>Run selected now</translation>
+            <translation>Exécuter sélectionné maintenant</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6435" />
+            <location filename="../zscaler_api_client.py" line="6477" />
             <source>Enable or pause</source>
-            <translation>Enable or pause</translation>
+            <translation>Activer ou mettre en pause</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6436" />
+            <location filename="../zscaler_api_client.py" line="6478" />
             <source>Remove schedule</source>
-            <translation>Remove schedule</translation>
+            <translation>Supprimer le planning</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6437" />
+            <location filename="../zscaler_api_client.py" line="6479" />
             <source>Refresh schedules</source>
-            <translation>Refresh schedules</translation>
+            <translation>Actualiser les plannings</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6439" />
+            <location filename="../zscaler_api_client.py" line="6481" />
             <source>Reports</source>
-            <translation>Reports</translation>
+            <translation>Rapports</translation>
         </message>
         <message>
             <source>Run a reviewed sequence against the active authenticated environment. Chains are limited to 20 steps, stay on the selected product host, and every run requires approval.</source>
-            <translation type="vanished">Run a reviewed sequence against the active authenticated environment. Chains are limited to 20 steps, stay on the selected product host, and every run requires approval.</translation>
+            <translation>Exécutez une séquence révisée sur l’environnement authentifié actif. Les chaînes sont limitées à 20 étapes, restent sur l'hôte de produit sélectionné et chaque exécution nécessite une approbation.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6443" />
+            <location filename="../zscaler_api_client.py" line="6485" />
             <source>Chain JSON</source>
-            <translation>Chain JSON</translation>
+            <translation>Chaîne JSON</translation>
         </message>
         <message>
             <source>A JSON list of API requests. Relative paths use the active product host.</source>
-            <translation type="vanished">A JSON list of API requests. Relative paths use the active product host.</translation>
+            <translation>Une liste JSON de requêtes API. Les chemins relatifs utilisent l'hôte de produit actif.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6451" />
+            <location filename="../zscaler_api_client.py" line="6493" />
             <source>Stop after the first failed step</source>
-            <translation>Stop after the first failed step</translation>
+            <translation>Arrêtez-vous après la première étape échouée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6452" />
+            <location filename="../zscaler_api_client.py" line="6494" />
             <source>Validate chain</source>
-            <translation>Validate chain</translation>
+            <translation>Valider la chaîne</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6453" />
-            <location filename="../zscaler_api_client.py" line="7358" />
+            <location filename="../zscaler_api_client.py" line="6495" />
+            <location filename="../zscaler_api_client.py" line="7400" />
             <source>Run approved chain</source>
-            <translation>Run approved chain</translation>
+            <translation>Exécuter une chaîne approuvée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6454" />
+            <location filename="../zscaler_api_client.py" line="6496" />
             <source>Cancel chain</source>
-            <translation>Cancel chain</translation>
+            <translation>Annuler la chaîne</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6455" />
-            <location filename="../zscaler_api_client.py" line="7430" />
+            <location filename="../zscaler_api_client.py" line="6497" />
+            <location filename="../zscaler_api_client.py" line="7472" />
             <source>Export masked chain results</source>
-            <translation>Export masked chain results</translation>
+            <translation>Exporter les résultats de la chaîne masquée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6456" />
-            <location filename="../zscaler_api_client.py" line="7348" />
-            <location filename="../zscaler_api_client.py" line="7354" />
-            <location filename="../zscaler_api_client.py" line="7425" />
-            <location filename="../zscaler_api_client.py" line="7429" />
+            <location filename="../zscaler_api_client.py" line="6498" />
+            <location filename="../zscaler_api_client.py" line="7390" />
+            <location filename="../zscaler_api_client.py" line="7396" />
+            <location filename="../zscaler_api_client.py" line="7467" />
+            <location filename="../zscaler_api_client.py" line="7471" />
             <source>API chains</source>
-            <translation>API chains</translation>
+            <translation>Chaînes d'API</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6459" />
+            <location filename="../zscaler_api_client.py" line="6501" />
             <source>Build a local digital twin of policy order. It explains decisions, highlights overlap and shadowing, estimates change blast radius, and never applies a policy.</source>
-            <translation>Build a local digital twin of policy order. It explains decisions, highlights overlap and shadowing, estimates change blast radius, and never applies a policy.</translation>
+            <translation>Construisez un jumeau numérique local de l’ordre politique. Il explique les décisions, met en évidence les chevauchements et les ombres, estime les changements de rayon d'explosion et n'applique jamais de politique.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6461" />
+            <location filename="../zscaler_api_client.py" line="6503" />
             <source>Policy rules JSON or an object containing a rules list</source>
-            <translation>Policy rules JSON or an object containing a rules list</translation>
+            <translation>Règles de stratégie JSON ou un objet contenant une liste de règles</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6462" />
+            <location filename="../zscaler_api_client.py" line="6504" />
             <source>Analyze policy twin</source>
-            <translation>Analyze policy twin</translation>
+            <translation>Analyser le jumeau de politique</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6463" />
-            <location filename="../zscaler_api_client.py" line="7514" />
+            <location filename="../zscaler_api_client.py" line="6505" />
+            <location filename="../zscaler_api_client.py" line="7556" />
             <source>Export twin evidence</source>
-            <translation>Export twin evidence</translation>
+            <translation>Exporter des preuves de jumeaux</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6464" />
+            <location filename="../zscaler_api_client.py" line="6506" />
             <source>Load proposed policy</source>
-            <translation>Load proposed policy</translation>
+            <translation>Charger la stratégie proposée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6465" />
+            <location filename="../zscaler_api_client.py" line="6507" />
             <source>Test context:</source>
-            <translation>Test context:</translation>
+            <translation>Contexte du test :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6465" />
+            <location filename="../zscaler_api_client.py" line="6507" />
             <source>Request context JSON</source>
-            <translation>Request context JSON</translation>
+            <translation>Contexte de requête JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6466" />
+            <location filename="../zscaler_api_client.py" line="6508" />
             <source>Explain decision</source>
-            <translation>Explain decision</translation>
+            <translation>Expliquer la décision</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6468" />
+            <location filename="../zscaler_api_client.py" line="6510" />
             <source>Rules</source>
-            <translation>Rules</translation>
+            <translation>Règles</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6468" />
+            <location filename="../zscaler_api_client.py" line="6510" />
             <source>Conflicts</source>
-            <translation>Conflicts</translation>
+            <translation>Conflits</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6468" />
+            <location filename="../zscaler_api_client.py" line="6510" />
             <source>Shadowed</source>
-            <translation>Shadowed</translation>
+            <translation>Ombré</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6468" />
+            <location filename="../zscaler_api_client.py" line="6510" />
             <source>Blast radius</source>
-            <translation>Blast radius</translation>
+            <translation>Rayon de souffle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6472" />
+            <location filename="../zscaler_api_client.py" line="6514" />
             <source>Policy order and conflict graph</source>
-            <translation>Policy order and conflict graph</translation>
+            <translation>Ordre des politiques et graphique des conflits</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6474" />
+            <location filename="../zscaler_api_client.py" line="6516" />
             <source>Earlier rule</source>
-            <translation>Earlier rule</translation>
+            <translation>Règle antérieure</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6474" />
+            <location filename="../zscaler_api_client.py" line="6516" />
             <source>Later rule</source>
-            <translation>Later rule</translation>
+            <translation>Règle ultérieure</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6287" />
-            <location filename="../zscaler_api_client.py" line="6292" />
-            <location filename="../zscaler_api_client.py" line="6313" />
-            <location filename="../zscaler_api_client.py" line="6327" />
-            <location filename="../zscaler_api_client.py" line="6351" />
-            <location filename="../zscaler_api_client.py" line="6474" />
+            <location filename="../zscaler_api_client.py" line="6329" />
+            <location filename="../zscaler_api_client.py" line="6334" />
+            <location filename="../zscaler_api_client.py" line="6355" />
+            <location filename="../zscaler_api_client.py" line="6369" />
+            <location filename="../zscaler_api_client.py" line="6393" />
+            <location filename="../zscaler_api_client.py" line="6516" />
             <source>Explanation</source>
-            <translation>Explanation</translation>
+            <translation>Explication</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6150" />
-            <location filename="../zscaler_api_client.py" line="6303" />
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6192" />
+            <location filename="../zscaler_api_client.py" line="6345" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>Latency</source>
-            <translation>Latency</translation>
+            <translation>Latence</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6264" />
+            <location filename="../zscaler_api_client.py" line="6306" />
             <source>Correlate retained local activity with every object in the current masked REST or GraphQL response. Paths are investigation hypotheses, never proof of compromise, and prepared chains never run automatically.</source>
-            <translation>Correlate retained local activity with every object in the current masked REST or GraphQL response. Paths are investigation hypotheses, never proof of compromise, and prepared chains never run automatically.</translation>
+            <translation>Corrélez l’activité locale conservée avec chaque objet dans la réponse REST ou GraphQL masquée actuelle. Les chemins sont des hypothèses d’investigation, jamais une preuve de compromission, et les chaînes préparées ne fonctionnent jamais automatiquement.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6268" />
+            <location filename="../zscaler_api_client.py" line="6310" />
             <source>Include current API/GraphQL response</source>
-            <translation>Include current API/GraphQL response</translation>
+            <translation>Inclure la réponse API/GraphQL actuelle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6269" />
+            <location filename="../zscaler_api_client.py" line="6311" />
             <source>Correlate entities</source>
-            <translation>Correlate entities</translation>
+            <translation>Corréler les entités</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6276" />
+            <location filename="../zscaler_api_client.py" line="6318" />
             <source>Evidence timeline</source>
-            <translation>Evidence timeline</translation>
+            <translation>Chronologie des preuves</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6280" />
+            <location filename="../zscaler_api_client.py" line="6322" />
             <source>Entities</source>
-            <translation>Entities</translation>
+            <translation>Entités</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6280" />
+            <location filename="../zscaler_api_client.py" line="6322" />
             <source>Relationships</source>
-            <translation>Relationships</translation>
+            <translation>Relations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6280" />
+            <location filename="../zscaler_api_client.py" line="6322" />
             <source>Potential paths</source>
-            <translation>Potential paths</translation>
+            <translation>Chemins potentiels</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6280" />
+            <location filename="../zscaler_api_client.py" line="6322" />
             <source>High-risk entities</source>
-            <translation>High-risk entities</translation>
+            <translation>Entités à haut risque</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6284" />
+            <location filename="../zscaler_api_client.py" line="6326" />
             <source>Filter entities:</source>
-            <translation>Filter entities:</translation>
+            <translation>Filtrer les entités :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6284" />
+            <location filename="../zscaler_api_client.py" line="6326" />
             <source>Name, type, risk, or evidence source</source>
-            <translation>Name, type, risk, or evidence source</translation>
+            <translation>Nom, type, risque ou source de preuves</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6285" />
+            <location filename="../zscaler_api_client.py" line="6327" />
             <source>SOC entity and potential attack-path graph</source>
-            <translation>SOC entity and potential attack-path graph</translation>
+            <translation>Entité SOC et graphique du chemin d'attaque potentiel</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6286" />
-            <location filename="../zscaler_api_client.py" line="6716" />
+            <location filename="../zscaler_api_client.py" line="6328" />
+            <location filename="../zscaler_api_client.py" line="6758" />
             <source>Select an entity to inspect its local evidence.</source>
-            <translation>Select an entity to inspect its local evidence.</translation>
+            <translation>Sélectionnez une entité pour inspecter ses preuves locales.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6287" />
+            <location filename="../zscaler_api_client.py" line="6329" />
             <source>Target</source>
-            <translation>Target</translation>
+            <translation>Cible</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6287" />
+            <location filename="../zscaler_api_client.py" line="6329" />
             <source>Hops</source>
-            <translation>Hops</translation>
+            <translation>Houblon</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6288" />
+            <location filename="../zscaler_api_client.py" line="6330" />
             <source>Entity graph</source>
-            <translation>Entity graph</translation>
+            <translation>Graphique d'entité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6291" />
+            <location filename="../zscaler_api_client.py" line="6333" />
             <source>Explainable signals are derived only from retained local evidence and the selected response. Validate them against authoritative product telemetry.</source>
-            <translation>Explainable signals are derived only from retained local evidence and the selected response. Validate them against authoritative product telemetry.</translation>
+            <translation>Les signaux explicables sont dérivés uniquement des preuves locales retenues et de la réponse sélectionnée. Validez-les par rapport à la télémétrie des produits faisant autorité.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6292" />
+            <location filename="../zscaler_api_client.py" line="6334" />
             <source>Signal</source>
             <translation>Signal</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6292" />
+            <location filename="../zscaler_api_client.py" line="6334" />
             <source>Entity</source>
-            <translation>Entity</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6293" />
-            <source>Correlated signals</source>
-            <translation>Correlated signals</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6297" />
-            <location filename="../zscaler_api_client.py" line="6779" />
-            <source>Export entity graph</source>
-            <translation>Export entity graph</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6301" />
-            <source>Trace observed digital experience from user and device through network and service edge to the application. The parser consumes the complete current REST or GraphQL response, marks missing stages explicitly, and never queries the tenant automatically.</source>
-            <translation>Trace observed digital experience from user and device through network and service edge to the application. The parser consumes the complete current REST or GraphQL response, marks missing stages explicitly, and never queries the tenant automatically.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6303" />
-            <location filename="../zscaler_api_client.py" line="6822" />
-            <source>Experience score</source>
-            <translation>Experience score</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6303" />
-            <location filename="../zscaler_api_client.py" line="6822" />
-            <source>Packet loss</source>
-            <translation>Packet loss</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6303" />
-            <source>Journey issues</source>
-            <translation>Journey issues</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6307" />
-            <source>Observed user-to-application experience journey</source>
-            <translation>Observed user-to-application experience journey</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6310" />
-            <source>Trend metric:</source>
-            <translation>Trend metric:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6311" />
-            <source>Observed value</source>
-            <translation>Observed value</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6313" />
-            <source>Stage</source>
-            <translation>Stage</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6313" />
-            <source>Metric</source>
-            <translation>Metric</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6315" />
-            <source>Analyze current experience response</source>
-            <translation>Analyze current experience response</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6316" />
-            <location filename="../zscaler_api_client.py" line="6844" />
-            <source>Export masked journey</source>
-            <translation>Export masked journey</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6317" />
-            <source>Experience journey</source>
-            <translation>Experience journey</translation>
+            <translation>Entité</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6335" />
-            <source>Build and test explainable detections against retained local request history. Rules use a bounded declarative grammar—no Python, eval, tenant writes, network calls, or automatic remediation.</source>
-            <translation>Build and test explainable detections against retained local request history. Rules use a bounded declarative grammar—no Python, eval, tenant writes, network calls, or automatic remediation.</translation>
+            <source>Correlated signals</source>
+            <translation>Signaux corrélés</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6336" />
-            <source>Template:</source>
-            <translation>Template:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6337" />
-            <source>Server errors</source>
-            <translation>Server errors</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6337" />
-            <source>Rate-limit responses</source>
-            <translation>Rate-limit responses</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6337" />
-            <source>High request latency</source>
-            <translation>High request latency</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6337" />
-            <source>Write activity</source>
-            <translation>Write activity</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6337" />
-            <source>Authentication failures</source>
-            <translation>Authentication failures</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6340" />
-            <source>Anomaly sensitivity:</source>
-            <translation>Anomaly sensitivity:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6340" />
-            <source>Relaxed</source>
-            <translation>Relaxed</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6340" />
-            <source>Balanced</source>
-            <translation>Balanced</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6340" />
-            <source>Sensitive</source>
-            <translation>Sensitive</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6341" />
-            <source>Declarative detection rule JSON</source>
-            <translation>Declarative detection rule JSON</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6342" />
-            <source>Validate rule</source>
-            <translation>Validate rule</translation>
+            <location filename="../zscaler_api_client.py" line="6339" />
+            <location filename="../zscaler_api_client.py" line="6821" />
+            <source>Export entity graph</source>
+            <translation>Exporter le graphique d'entité</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6343" />
-            <source>Run local detection</source>
-            <translation>Run local detection</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6344" />
-            <source>Analyze adaptive anomalies</source>
-            <translation>Analyze adaptive anomalies</translation>
+            <source>Trace observed digital experience from user and device through network and service edge to the application. The parser consumes the complete current REST or GraphQL response, marks missing stages explicitly, and never queries the tenant automatically.</source>
+            <translation>Suivez l’expérience numérique observée depuis l’utilisateur et l’appareil jusqu’à l’application en passant par le réseau et le service. L'analyseur consomme la réponse REST ou GraphQL actuelle complète, marque explicitement les étapes manquantes et n'interroge jamais automatiquement le locataire.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6345" />
-            <location filename="../zscaler_api_client.py" line="6954" />
-            <source>Export masked detection evidence</source>
-            <translation>Export masked detection evidence</translation>
+            <location filename="../zscaler_api_client.py" line="6864" />
+            <source>Experience score</source>
+            <translation>Score d'expérience</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6348" />
-            <location filename="../zscaler_api_client.py" line="6371" />
+            <location filename="../zscaler_api_client.py" line="6345" />
+            <location filename="../zscaler_api_client.py" line="6864" />
+            <source>Packet loss</source>
+            <translation>Perte de paquets</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6345" />
+            <source>Journey issues</source>
+            <translation>Problèmes de voyage</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6349" />
+            <source>Observed user-to-application experience journey</source>
+            <translation>Parcours d’expérience utilisateur-application observé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6352" />
+            <source>Trend metric:</source>
+            <translation>Métrique de tendance :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6353" />
+            <source>Observed value</source>
+            <translation>Valeur observée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6355" />
+            <source>Stage</source>
+            <translation>Scène</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6355" />
+            <source>Metric</source>
+            <translation>Métrique</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6357" />
+            <source>Analyze current experience response</source>
+            <translation>Analyser la réponse de l'expérience actuelle</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6358" />
+            <location filename="../zscaler_api_client.py" line="6886" />
+            <source>Export masked journey</source>
+            <translation>Exporter le parcours masqué</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6359" />
+            <source>Experience journey</source>
+            <translation>Expérience de voyage</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6377" />
+            <source>Build and test explainable detections against retained local request history. Rules use a bounded declarative grammar—no Python, eval, tenant writes, network calls, or automatic remediation.</source>
+            <translation>Créez et testez des détections explicables par rapport à l’historique des requêtes locales conservé. Les règles utilisent une grammaire déclarative limitée : pas de Python, d'évaluation, d'écriture de locataire, d'appel réseau ou de correction automatique.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6378" />
+            <source>Template:</source>
+            <translation>Modèle :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6379" />
+            <source>Server errors</source>
+            <translation>Erreurs de serveur</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6379" />
+            <source>Rate-limit responses</source>
+            <translation>Réponses à limite de débit</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6379" />
+            <source>High request latency</source>
+            <translation>Latence de requête élevée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6379" />
+            <source>Write activity</source>
+            <translation>Activité d'écriture</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6379" />
+            <source>Authentication failures</source>
+            <translation>Échecs d'authentification</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6382" />
+            <source>Anomaly sensitivity:</source>
+            <translation>Sensibilité aux anomalies :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6382" />
+            <source>Relaxed</source>
+            <translation>Détendu</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6382" />
+            <source>Balanced</source>
+            <translation>Équilibré</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6382" />
+            <source>Sensitive</source>
+            <translation>Sensible</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6383" />
+            <source>Declarative detection rule JSON</source>
+            <translation>Règle de détection déclarative JSON</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6384" />
+            <source>Validate rule</source>
+            <translation>Valider la règle</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6385" />
+            <source>Run local detection</source>
+            <translation>Exécuter une détection locale</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6386" />
+            <source>Analyze adaptive anomalies</source>
+            <translation>Analyser les anomalies adaptatives</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6387" />
+            <location filename="../zscaler_api_client.py" line="6996" />
+            <source>Export masked detection evidence</source>
+            <translation>Exporter des preuves de détection masquées</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6390" />
+            <location filename="../zscaler_api_client.py" line="6413" />
             <source>URL</source>
             <translation>URL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6351" />
+            <location filename="../zscaler_api_client.py" line="6393" />
             <source>Endpoint</source>
-            <translation>Endpoint</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6351" />
-            <source>Observed</source>
-            <translation>Observed</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6352" />
-            <source>Detection lab</source>
-            <translation>Detection lab</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6389" />
-            <source>Continuously evaluate a transparent local evidence baseline. Framework mappings are navigational aids—not certification—and no tenant query or remediation runs automatically.</source>
-            <translation>Continuously evaluate a transparent local evidence baseline. Framework mappings are navigational aids—not certification—and no tenant query or remediation runs automatically.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6390" />
-            <source>Framework view:</source>
-            <translation>Framework view:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6391" />
-            <source>All local controls</source>
-            <translation>All local controls</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6391" />
-            <source>NIST CSF 2.0 functions</source>
-            <translation>NIST CSF 2.0 functions</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6391" />
-            <source>CISA Zero Trust pillars</source>
-            <translation>CISA Zero Trust pillars</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6392" />
-            <source>Include proposed policy from Policy diff</source>
-            <translation>Include proposed policy from Policy diff</translation>
+            <translation>Point de terminaison</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6393" />
+            <source>Observed</source>
+            <translation>Observé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6394" />
+            <source>Detection lab</source>
+            <translation>Laboratoire de détection</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6431" />
+            <source>Continuously evaluate a transparent local evidence baseline. Framework mappings are navigational aids—not certification—and no tenant query or remediation runs automatically.</source>
+            <translation>Évaluez en permanence une base de données locales transparente. Les mappages de framework sont des aides à la navigation (et non une certification) et aucune requête ou correction de locataire ne s'exécute automatiquement.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6432" />
+            <source>Framework view:</source>
+            <translation>Vue du cadre :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6433" />
+            <source>All local controls</source>
+            <translation>Tous les contrôles locaux</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6433" />
+            <source>NIST CSF 2.0 functions</source>
+            <translation>Fonctions NIST CSF 2.0</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6433" />
+            <source>CISA Zero Trust pillars</source>
+            <translation>Piliers CISA Zero Trust</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6434" />
+            <source>Include proposed policy from Policy diff</source>
+            <translation>Inclure la stratégie proposée à partir de la différence de stratégie</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6435" />
             <source>Evaluate now</source>
-            <translation>Evaluate now</translation>
+            <translation>Évaluez maintenant</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6395" />
-            <location filename="../zscaler_api_client.py" line="7248" />
+            <location filename="../zscaler_api_client.py" line="6437" />
+            <location filename="../zscaler_api_client.py" line="7290" />
             <source>Assurance score</source>
-            <translation>Assurance score</translation>
+            <translation>Score d'assurance</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6395" />
-            <location filename="../zscaler_api_client.py" line="7047" />
+            <location filename="../zscaler_api_client.py" line="6437" />
+            <location filename="../zscaler_api_client.py" line="7089" />
             <source>Passed</source>
-            <translation>Passed</translation>
+            <translation>Réussi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6395" />
-            <location filename="../zscaler_api_client.py" line="7146" />
+            <location filename="../zscaler_api_client.py" line="6437" />
+            <location filename="../zscaler_api_client.py" line="7188" />
             <source>Not evaluated</source>
-            <translation>Not evaluated</translation>
+            <translation>Non évalué</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6395" />
+            <location filename="../zscaler_api_client.py" line="6437" />
             <source>Evidence coverage</source>
-            <translation>Evidence coverage</translation>
+            <translation>Couverture des preuves</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6401" />
+            <location filename="../zscaler_api_client.py" line="6443" />
             <source>Control</source>
-            <translation>Control</translation>
+            <translation>Contrôle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6401" />
+            <location filename="../zscaler_api_client.py" line="6443" />
             <source>Control objective</source>
-            <translation>Control objective</translation>
+            <translation>Objectif du contrôle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6401" />
+            <location filename="../zscaler_api_client.py" line="6443" />
             <source>Framework mapping</source>
-            <translation>Framework mapping</translation>
+            <translation>Cartographie du cadre</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6401" />
+            <location filename="../zscaler_api_client.py" line="6443" />
             <source>Recommendation</source>
-            <translation>Recommendation</translation>
+            <translation>Recommandation</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6402" />
+            <location filename="../zscaler_api_client.py" line="6444" />
             <source>Leadership narrative</source>
-            <translation>Leadership narrative</translation>
+            <translation>Récit de leadership</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6371" />
-            <location filename="../zscaler_api_client.py" line="6404" />
+            <location filename="../zscaler_api_client.py" line="6413" />
+            <location filename="../zscaler_api_client.py" line="6446" />
             <source>Score</source>
             <translation>Score</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6224" />
+            <location filename="../zscaler_api_client.py" line="6266" />
             <source>JSON Lines (SIEM/SOAR)</source>
-            <translation>JSON Lines (SIEM/SOAR)</translation>
+            <translation>Lignes JSON (SIEM/SOAR)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6225" />
-            <location filename="../zscaler_api_client.py" line="7686" />
+            <location filename="../zscaler_api_client.py" line="6267" />
+            <location filename="../zscaler_api_client.py" line="7728" />
             <source>Export masked security events</source>
-            <translation>Export masked security events</translation>
+            <translation>Exporter les événements de sécurité masqués</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6226" />
-            <location filename="../zscaler_api_client.py" line="7692" />
+            <location filename="../zscaler_api_client.py" line="6268" />
+            <location filename="../zscaler_api_client.py" line="7734" />
             <source>Export read-only MCP manifest</source>
-            <translation>Export read-only MCP manifest</translation>
+            <translation>Exporter le manifeste MCP en lecture seule</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6227" />
-            <location filename="../zscaler_api_client.py" line="7700" />
+            <location filename="../zscaler_api_client.py" line="6269" />
+            <location filename="../zscaler_api_client.py" line="7742" />
             <source>Export Terraform review handoff</source>
-            <translation>Export Terraform review handoff</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6320" />
-            <source>Inspect the complete current REST or GraphQL response for explicit internet exposure, vulnerability severity and broad or write-capable access. Findings are local hypotheses and deception suggestions are never deployed automatically.</source>
-            <translation>Inspect the complete current REST or GraphQL response for explicit internet exposure, vulnerability severity and broad or write-capable access. Findings are local hypotheses and deception suggestions are never deployed automatically.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6322" />
-            <source>Exposure signals</source>
-            <translation>Exposure signals</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6322" />
-            <source>High-risk assets</source>
-            <translation>High-risk assets</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6322" />
-            <source>Access findings</source>
-            <translation>Access findings</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6322" />
-            <source>Broad privileges</source>
-            <translation>Broad privileges</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6326" />
-            <source>Asset</source>
-            <translation>Asset</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6326" />
-            <source>Risk score</source>
-            <translation>Risk score</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6326" />
-            <source>Observed factors</source>
-            <translation>Observed factors</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6327" />
-            <source>Subject</source>
-            <translation>Subject</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6327" />
-            <source>Permission field</source>
-            <translation>Permission field</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6328" />
-            <source>Defensive deception opportunities</source>
-            <translation>Defensive deception opportunities</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6329" />
-            <source>Analyze current exposure and access</source>
-            <translation>Analyze current exposure and access</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6329" />
-            <location filename="../zscaler_api_client.py" line="6877" />
-            <source>Export masked exposure evidence</source>
-            <translation>Export masked exposure evidence</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6330" />
-            <location filename="../zscaler_api_client.py" line="6895" />
-            <location filename="../zscaler_api_client.py" line="6897" />
-            <source>Investigation notebook</source>
-            <translation>Investigation notebook</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6330" />
-            <source>Note title</source>
-            <translation>Note title</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6330" />
-            <source>Comma-separated tags</source>
-            <translation>Comma-separated tags</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6330" />
-            <source>Masked investigation observations, decisions and follow-up</source>
-            <translation>Masked investigation observations, decisions and follow-up</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6331" />
-            <source>Save local note</source>
-            <translation>Save local note</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6331" />
-            <location filename="../zscaler_api_client.py" line="6902" />
-            <source>Export masked notebook</source>
-            <translation>Export masked notebook</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6331" />
-            <source>Title</source>
-            <translation>Title</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6331" />
-            <source>Tags</source>
-            <translation>Tags</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6331" />
-            <source>Preview</source>
-            <translation>Preview</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6332" />
-            <source>Exposure &amp; access</source>
-            <translation>Exposure &amp; access</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6356" />
-            <source>Use guided, locally tracked response and recovery checklists. A completed step records only operator intent in the local audit trail; it never changes a tenant or closes an authoritative incident.</source>
-            <translation>Use guided, locally tracked response and recovery checklists. A completed step records only operator intent in the local audit trail; it never changes a tenant or closes an authoritative incident.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6357" />
-            <source>Playbook:</source>
-            <translation>Playbook:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6358" />
-            <source>API/service disruption</source>
-            <translation>API/service disruption</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6358" />
-            <source>High-risk policy change</source>
-            <translation>High-risk policy change</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6358" />
-            <source>Digital experience degradation</source>
-            <translation>Digital experience degradation</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6358" />
-            <source>Possible credential exposure</source>
-            <translation>Possible credential exposure</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6358" />
-            <source>Ransomware containment support</source>
-            <translation>Ransomware containment support</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6361" />
-            <source>Mark selected step complete</source>
-            <translation>Mark selected step complete</translation>
+            <translation>Transfert de la révision d'exportation de Terraform</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6362" />
-            <location filename="../zscaler_api_client.py" line="6996" />
-            <source>Export masked playbook evidence</source>
-            <translation>Export masked playbook evidence</translation>
+            <source>Inspect the complete current REST or GraphQL response for explicit internet exposure, vulnerability severity and broad or write-capable access. Findings are local hypotheses and deception suggestions are never deployed automatically.</source>
+            <translation>Inspectez la réponse REST ou GraphQL actuelle complète pour détecter une exposition Internet explicite, la gravité de la vulnérabilité et un accès large ou capable d'écrire. Les résultats sont des hypothèses locales et les suggestions de tromperie ne sont jamais déployées automatiquement.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6364" />
-            <source>Guidance</source>
-            <translation>Guidance</translation>
+            <source>Exposure signals</source>
+            <translation>Signaux d'exposition</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6364" />
-            <source>Local evidence</source>
-            <translation>Local evidence</translation>
+            <source>High-risk assets</source>
+            <translation>Actifs à haut risque</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6365" />
-            <source>Smart API planner (review only)</source>
-            <translation>Smart API planner (review only)</translation>
+            <location filename="../zscaler_api_client.py" line="6364" />
+            <source>Access findings</source>
+            <translation>Accéder aux résultats</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6366" />
-            <source>Describe a goal to rank documented Automation Hub operations deterministically. Read operations are preferred; tenant values are never guessed and nothing runs automatically.</source>
-            <translation>Describe a goal to rank documented Automation Hub operations deterministically. Read operations are preferred; tenant values are never guessed and nothing runs automatically.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6367" />
-            <source>Example: investigate slow ZDX application experience</source>
-            <translation>Example: investigate slow ZDX application experience</translation>
+            <location filename="../zscaler_api_client.py" line="6364" />
+            <source>Broad privileges</source>
+            <translation>De larges privilèges</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6368" />
-            <source>Plan documented operations</source>
-            <translation>Plan documented operations</translation>
+            <source>Asset</source>
+            <translation>Actif</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6368" />
+            <source>Risk score</source>
+            <translation>Score de risque</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6368" />
+            <source>Observed factors</source>
+            <translation>Facteurs observés</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6369" />
-            <source>Copy safe reads to API Chains</source>
-            <translation>Copy safe reads to API Chains</translation>
+            <source>Subject</source>
+            <translation>Sujet</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6369" />
+            <source>Permission field</source>
+            <translation>Champ d'autorisation</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6370" />
+            <source>Defensive deception opportunities</source>
+            <translation>Opportunités de tromperie défensive</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6371" />
-            <source>Product</source>
-            <translation>Product</translation>
+            <source>Analyze current exposure and access</source>
+            <translation>Analyser l’exposition et l’accès actuels</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6371" />
-            <source>Operation</source>
-            <translation>Operation</translation>
+            <location filename="../zscaler_api_client.py" line="6919" />
+            <source>Export masked exposure evidence</source>
+            <translation>Exporter des preuves d'exposition masquée</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6372" />
-            <location filename="../zscaler_api_client.py" line="6988" />
-            <source>Response playbooks</source>
-            <translation>Response playbooks</translation>
+            <location filename="../zscaler_api_client.py" line="6937" />
+            <location filename="../zscaler_api_client.py" line="6939" />
+            <source>Investigation notebook</source>
+            <translation>Carnet d'enquête</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6376" />
-            <source>Change owner</source>
-            <translation>Change owner</translation>
+            <location filename="../zscaler_api_client.py" line="6372" />
+            <source>Note title</source>
+            <translation>Titre de la note</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6376" />
-            <source>Independent reviewer</source>
-            <translation>Independent reviewer</translation>
+            <location filename="../zscaler_api_client.py" line="6372" />
+            <source>Comma-separated tags</source>
+            <translation>Balises séparées par des virgules</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6376" />
-            <source>Owner:</source>
-            <translation>Owner:</translation>
+            <location filename="../zscaler_api_client.py" line="6372" />
+            <source>Masked investigation observations, decisions and follow-up</source>
+            <translation>Observations, décisions et suivi d'enquête masquée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6377" />
-            <location filename="../zscaler_api_client.py" line="7045" />
-            <source>Maintenance window confirmed</source>
-            <translation>Maintenance window confirmed</translation>
+            <location filename="../zscaler_api_client.py" line="6373" />
+            <source>Save local note</source>
+            <translation>Enregistrer la note locale</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6377" />
-            <source>Local simulation reviewed</source>
-            <translation>Local simulation reviewed</translation>
+            <location filename="../zscaler_api_client.py" line="6373" />
+            <location filename="../zscaler_api_client.py" line="6944" />
+            <source>Export masked notebook</source>
+            <translation>Exporter le bloc-notes masqué</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6377" />
-            <source>Rollback prepared</source>
-            <translation>Rollback prepared</translation>
+            <location filename="../zscaler_api_client.py" line="6373" />
+            <source>Title</source>
+            <translation>Titre</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6379" />
-            <source>Gate</source>
-            <translation>Gate</translation>
+            <location filename="../zscaler_api_client.py" line="6373" />
+            <source>Tags</source>
+            <translation>Balises</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6379" />
-            <source>Required</source>
-            <translation>Required</translation>
+            <location filename="../zscaler_api_client.py" line="6373" />
+            <source>Preview</source>
+            <translation>Aperçu</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6385" />
-            <location filename="../zscaler_api_client.py" line="7083" />
-            <location filename="../zscaler_api_client.py" line="7087" />
-            <location filename="../zscaler_api_client.py" line="7088" />
-            <source>Verify rollback artifact</source>
-            <translation>Verify rollback artifact</translation>
+            <location filename="../zscaler_api_client.py" line="6374" />
+            <source>Exposure &amp; access</source>
+            <translation>Exposition et accès</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6405" />
-            <source>Local baseline:</source>
-            <translation>Local baseline:</translation>
+            <location filename="../zscaler_api_client.py" line="6398" />
+            <source>Use guided, locally tracked response and recovery checklists. A completed step records only operator intent in the local audit trail; it never changes a tenant or closes an authoritative incident.</source>
+            <translation>Utilisez des listes de contrôle de réponse et de récupération guidées et suivies localement. Une étape terminée enregistre uniquement l'intention de l'opérateur dans la piste d'audit locale ; il ne change jamais de locataire ni ne clôture un incident faisant autorité.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6399" />
+            <source>Playbook:</source>
+            <translation>Livre de jeu :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6400" />
+            <source>API/service disruption</source>
+            <translation>Interruption des API/services</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6400" />
+            <source>High-risk policy change</source>
+            <translation>Un changement de politique à haut risque</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6400" />
+            <source>Digital experience degradation</source>
+            <translation>Dégradation de l'expérience numérique</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6400" />
+            <source>Possible credential exposure</source>
+            <translation>Exposition possible des titres de compétences</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6400" />
+            <source>Ransomware containment support</source>
+            <translation>Prise en charge du confinement des ransomwares</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6403" />
+            <source>Mark selected step complete</source>
+            <translation>Marquer l'étape sélectionnée comme terminée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6404" />
+            <location filename="../zscaler_api_client.py" line="7038" />
+            <source>Export masked playbook evidence</source>
+            <translation>Exporter les preuves masquées du playbook</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6406" />
-            <source>Save assessment baseline</source>
-            <translation>Save assessment baseline</translation>
+            <source>Guidance</source>
+            <translation>Conseils</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6406" />
+            <source>Local evidence</source>
+            <translation>Preuve locale</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6407" />
-            <location filename="../zscaler_api_client.py" line="7186" />
-            <source>Export signed evidence</source>
-            <translation>Export signed evidence</translation>
+            <source>Smart API planner (review only)</source>
+            <translation>Planificateur d'API intelligent (révision uniquement)</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6408" />
-            <location filename="../zscaler_api_client.py" line="7193" />
-            <source>Verify signed evidence</source>
-            <translation>Verify signed evidence</translation>
+            <source>Describe a goal to rank documented Automation Hub operations deterministically. Read operations are preferred; tenant values are never guessed and nothing runs automatically.</source>
+            <translation>Décrivez un objectif visant à classer les opérations documentées d'Automation Hub de manière déterministe. Les opérations de lecture sont préférées ; les valeurs des locataires ne sont jamais devinées et rien ne s'exécute automatiquement.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6409" />
+            <source>Example: investigate slow ZDX application experience</source>
+            <translation>Exemple : enquêter sur l'expérience lente de l'application ZDX</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6410" />
-            <location filename="../zscaler_api_client.py" line="7117" />
-            <location filename="../zscaler_api_client.py" line="7173" />
+            <source>Plan documented operations</source>
+            <translation>Planifier les opérations documentées</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6411" />
+            <source>Copy safe reads to API Chains</source>
+            <translation>Copier les lectures sécurisées dans les chaînes API</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6413" />
+            <source>Product</source>
+            <translation>Produit</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6413" />
+            <source>Operation</source>
+            <translation>Fonctionnement</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6414" />
+            <location filename="../zscaler_api_client.py" line="7030" />
+            <source>Response playbooks</source>
+            <translation>Manuels de réponse</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6418" />
+            <source>Change owner</source>
+            <translation>Changer de propriétaire</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6418" />
+            <source>Independent reviewer</source>
+            <translation>Examinateur indépendant</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6418" />
+            <source>Owner:</source>
+            <translation>Propriétaire :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6419" />
+            <location filename="../zscaler_api_client.py" line="7087" />
+            <source>Maintenance window confirmed</source>
+            <translation>Fenêtre de maintenance confirmée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6419" />
+            <source>Local simulation reviewed</source>
+            <translation>Simulation locale revue</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6419" />
+            <source>Rollback prepared</source>
+            <translation>Restauration préparée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6421" />
+            <source>Gate</source>
+            <translation>Porte</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6421" />
+            <source>Required</source>
+            <translation>Obligatoire</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6427" />
+            <location filename="../zscaler_api_client.py" line="7125" />
+            <location filename="../zscaler_api_client.py" line="7129" />
+            <location filename="../zscaler_api_client.py" line="7130" />
+            <source>Verify rollback artifact</source>
+            <translation>Vérifier l'artefact de restauration</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6447" />
+            <source>Local baseline:</source>
+            <translation>Base de référence locale :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6448" />
+            <source>Save assessment baseline</source>
+            <translation>Enregistrer la référence de l'évaluation</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6449" />
+            <location filename="../zscaler_api_client.py" line="7228" />
+            <source>Export signed evidence</source>
+            <translation>Exporter des preuves signées</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6450" />
+            <location filename="../zscaler_api_client.py" line="7235" />
+            <source>Verify signed evidence</source>
+            <translation>Vérifier les preuves signées</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6452" />
+            <location filename="../zscaler_api_client.py" line="7159" />
+            <location filename="../zscaler_api_client.py" line="7215" />
             <source>Continuous assurance</source>
-            <translation>Continuous assurance</translation>
+            <translation>Assurance continue</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6475" />
-            <location filename="../zscaler_api_client.py" line="7534" />
-            <location filename="../zscaler_api_client.py" line="7538" />
-            <location filename="../zscaler_api_client.py" line="7540" />
-            <location filename="../zscaler_api_client.py" line="7552" />
+            <location filename="../zscaler_api_client.py" line="6517" />
+            <location filename="../zscaler_api_client.py" line="7576" />
+            <location filename="../zscaler_api_client.py" line="7580" />
+            <location filename="../zscaler_api_client.py" line="7582" />
+            <location filename="../zscaler_api_client.py" line="7594" />
             <source>Policy time travel</source>
-            <translation>Policy time travel</translation>
+            <translation>Voyage dans le temps</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6477" />
+            <location filename="../zscaler_api_client.py" line="6519" />
             <source>Save snapshot</source>
-            <translation>Save snapshot</translation>
+            <translation>Enregistrer un instantané</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6478" />
+            <location filename="../zscaler_api_client.py" line="6520" />
             <source>Use as baseline</source>
-            <translation>Use as baseline</translation>
+            <translation>Utiliser comme référence</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6479" />
+            <location filename="../zscaler_api_client.py" line="6521" />
             <source>Load snapshot</source>
-            <translation>Load snapshot</translation>
+            <translation>Charger un instantané</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6480" />
+            <location filename="../zscaler_api_client.py" line="6522" />
             <source>Delete snapshot</source>
-            <translation>Delete snapshot</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6482" />
-            <location filename="../zscaler_api_client.py" line="7469" />
-            <location filename="../zscaler_api_client.py" line="7504" />
-            <location filename="../zscaler_api_client.py" line="7529" />
-            <source>Policy twin</source>
-            <translation>Policy twin</translation>
+            <translation>Supprimer l'instantané</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6524" />
-            <source>All environments</source>
-            <translation>All environments</translation>
+            <location filename="../zscaler_api_client.py" line="7511" />
+            <location filename="../zscaler_api_client.py" line="7546" />
+            <location filename="../zscaler_api_client.py" line="7571" />
+            <source>Policy twin</source>
+            <translation>Jumeau politique</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6540" />
+            <location filename="../zscaler_api_client.py" line="6566" />
+            <source>All environments</source>
+            <translation>Tous les environnements</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6582" />
             <source>Showing local evidence for: {name}</source>
             <translation>Showing local evidence for: {name}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6542" />
+            <location filename="../zscaler_api_client.py" line="6584" />
             <source>Cross-tenant overview is active. Exports and integrations will include all local environments.</source>
-            <translation>Cross-tenant overview is active. Exports and integrations will include all local environments.</translation>
+            <translation>La vue d’ensemble entre locataires est active. Les exportations et les intégrations incluront tous les environnements locaux.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6548" />
-            <location filename="../zscaler_api_client.py" line="6912" />
-            <location filename="../zscaler_api_client.py" line="7318" />
+            <location filename="../zscaler_api_client.py" line="6590" />
+            <location filename="../zscaler_api_client.py" line="6954" />
+            <location filename="../zscaler_api_client.py" line="7360" />
             <source>Invalid JSON: </source>
-            <translation>Invalid JSON: </translation>
+            <translation>JSON invalide : </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6568" />
+            <location filename="../zscaler_api_client.py" line="6610" />
             <source>Audit chain is valid</source>
-            <translation>Audit chain is valid</translation>
+            <translation>La chaîne d'audit est valide</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6568" />
+            <location filename="../zscaler_api_client.py" line="6610" />
             <source>Audit chain needs review</source>
-            <translation>Audit chain needs review</translation>
+            <translation>La chaîne d’audit doit être revue</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6574" />
+            <location filename="../zscaler_api_client.py" line="6616" />
             <source>Success</source>
-            <translation>Success</translation>
+            <translation>Succès</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6574" />
+            <location filename="../zscaler_api_client.py" line="6616" />
             <source>Other</source>
-            <translation>Other</translation>
+            <translation>Autre</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6588" />
-            <location filename="../zscaler_api_client.py" line="7214" />
+            <location filename="../zscaler_api_client.py" line="6630" />
+            <location filename="../zscaler_api_client.py" line="7256" />
             <source>Posture score: {score}/100</source>
             <translation>Posture score: {score}/100</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6590" />
-            <location filename="../zscaler_api_client.py" line="6621" />
-            <location filename="../zscaler_api_client.py" line="6688" />
-            <location filename="../zscaler_api_client.py" line="7147" />
-            <location filename="../zscaler_api_client.py" line="7228" />
-            <location filename="../zscaler_api_client.py" line="7580" />
+            <location filename="../zscaler_api_client.py" line="6632" />
+            <location filename="../zscaler_api_client.py" line="6663" />
+            <location filename="../zscaler_api_client.py" line="6730" />
+            <location filename="../zscaler_api_client.py" line="7189" />
+            <location filename="../zscaler_api_client.py" line="7270" />
+            <location filename="../zscaler_api_client.py" line="7622" />
             <source>Critical</source>
-            <translation>Critical</translation>
+            <translation>Critique</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6590" />
-            <location filename="../zscaler_api_client.py" line="6621" />
-            <location filename="../zscaler_api_client.py" line="6688" />
-            <location filename="../zscaler_api_client.py" line="6752" />
-            <location filename="../zscaler_api_client.py" line="7147" />
-            <location filename="../zscaler_api_client.py" line="7228" />
-            <location filename="../zscaler_api_client.py" line="7486" />
-            <location filename="../zscaler_api_client.py" line="7580" />
+            <location filename="../zscaler_api_client.py" line="6632" />
+            <location filename="../zscaler_api_client.py" line="6663" />
+            <location filename="../zscaler_api_client.py" line="6730" />
+            <location filename="../zscaler_api_client.py" line="6794" />
+            <location filename="../zscaler_api_client.py" line="7189" />
+            <location filename="../zscaler_api_client.py" line="7270" />
+            <location filename="../zscaler_api_client.py" line="7528" />
+            <location filename="../zscaler_api_client.py" line="7622" />
             <source>High</source>
-            <translation>High</translation>
+            <translation>Élevé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6590" />
-            <location filename="../zscaler_api_client.py" line="6621" />
-            <location filename="../zscaler_api_client.py" line="6688" />
-            <location filename="../zscaler_api_client.py" line="6752" />
-            <location filename="../zscaler_api_client.py" line="7147" />
-            <location filename="../zscaler_api_client.py" line="7228" />
-            <location filename="../zscaler_api_client.py" line="7486" />
-            <location filename="../zscaler_api_client.py" line="7580" />
+            <location filename="../zscaler_api_client.py" line="6632" />
+            <location filename="../zscaler_api_client.py" line="6663" />
+            <location filename="../zscaler_api_client.py" line="6730" />
+            <location filename="../zscaler_api_client.py" line="6794" />
+            <location filename="../zscaler_api_client.py" line="7189" />
+            <location filename="../zscaler_api_client.py" line="7270" />
+            <location filename="../zscaler_api_client.py" line="7528" />
+            <location filename="../zscaler_api_client.py" line="7622" />
             <source>Medium</source>
-            <translation>Medium</translation>
+            <translation>Moyen</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6590" />
-            <location filename="../zscaler_api_client.py" line="6621" />
-            <location filename="../zscaler_api_client.py" line="6688" />
-            <location filename="../zscaler_api_client.py" line="7147" />
-            <location filename="../zscaler_api_client.py" line="7228" />
-            <location filename="../zscaler_api_client.py" line="7486" />
-            <location filename="../zscaler_api_client.py" line="7580" />
+            <location filename="../zscaler_api_client.py" line="6632" />
+            <location filename="../zscaler_api_client.py" line="6663" />
+            <location filename="../zscaler_api_client.py" line="6730" />
+            <location filename="../zscaler_api_client.py" line="7189" />
+            <location filename="../zscaler_api_client.py" line="7270" />
+            <location filename="../zscaler_api_client.py" line="7528" />
+            <location filename="../zscaler_api_client.py" line="7622" />
             <source>Low</source>
-            <translation>Low</translation>
+            <translation>Faible</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6590" />
-            <location filename="../zscaler_api_client.py" line="6752" />
-            <location filename="../zscaler_api_client.py" line="7228" />
-            <location filename="../zscaler_api_client.py" line="7486" />
-            <location filename="../zscaler_api_client.py" line="7580" />
+            <location filename="../zscaler_api_client.py" line="6632" />
+            <location filename="../zscaler_api_client.py" line="6794" />
+            <location filename="../zscaler_api_client.py" line="7270" />
+            <location filename="../zscaler_api_client.py" line="7528" />
+            <location filename="../zscaler_api_client.py" line="7622" />
             <source>Info</source>
-            <translation>Info</translation>
+            <translation>Informations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6594" />
+            <location filename="../zscaler_api_client.py" line="6636" />
             <source>Audit integrity needs review</source>
-            <translation>Audit integrity needs review</translation>
+            <translation>L’intégrité de l’audit doit être revue</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6594" />
+            <location filename="../zscaler_api_client.py" line="6636" />
             <source>The local audit chain did not verify.</source>
-            <translation>The local audit chain did not verify.</translation>
+            <translation>La chaîne d'audit locale n'a pas vérifié.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6595" />
+            <location filename="../zscaler_api_client.py" line="6637" />
             <source>Repeated API failures</source>
-            <translation>Repeated API failures</translation>
+            <translation>Échecs répétés de l'API</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6595" />
+            <location filename="../zscaler_api_client.py" line="6637" />
             <source>{count} failed requests are in local history.</source>
             <translation>{count} failed requests are in local history.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6596" />
+            <location filename="../zscaler_api_client.py" line="6638" />
             <source>API failures observed</source>
-            <translation>API failures observed</translation>
+            <translation>Pannes d'API observées</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6596" />
+            <location filename="../zscaler_api_client.py" line="6638" />
             <source>{count} request(s) need review.</source>
             <translation>{count} request(s) need review.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6597" />
+            <location filename="../zscaler_api_client.py" line="6639" />
             <source>Change activity burst</source>
-            <translation>Change activity burst</translation>
+            <translation>Modifier l'activité en rafale</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6597" />
+            <location filename="../zscaler_api_client.py" line="6639" />
             <source>{count} write requests are in local history.</source>
             <translation>{count} write requests are in local history.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6598" />
+            <location filename="../zscaler_api_client.py" line="6640" />
             <source>Slow API responses</source>
-            <translation>Slow API responses</translation>
+            <translation>Réponses API lentes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6598" />
+            <location filename="../zscaler_api_client.py" line="6640" />
             <source>{count} request(s) took ten seconds or more.</source>
             <translation>{count} request(s) took ten seconds or more.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6599" />
+            <location filename="../zscaler_api_client.py" line="6641" />
             <source>No local telemetry yet</source>
-            <translation>No local telemetry yet</translation>
+            <translation>Pas encore de télémétrie locale</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6599" />
+            <location filename="../zscaler_api_client.py" line="6641" />
             <source>Send or import redacted requests to establish a local baseline.</source>
-            <translation>Send or import redacted requests to establish a local baseline.</translation>
+            <translation>Envoyez ou importez des demandes rédigées pour établir une référence locale.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6620" />
+            <location filename="../zscaler_api_client.py" line="6662" />
             <source>{count} local alert(s) · error threshold: {threshold}</source>
             <translation>{count} local alert(s) · error threshold: {threshold}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6626" />
+            <location filename="../zscaler_api_client.py" line="6668" />
             <source>The local audit chain needs review.</source>
-            <translation>The local audit chain needs review.</translation>
+            <translation>La chaîne d’audit locale doit être revue.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6627" />
+            <location filename="../zscaler_api_client.py" line="6669" />
             <source>Local failed requests reached the configured threshold.</source>
-            <translation>Local failed requests reached the configured threshold.</translation>
+            <translation>Les demandes locales ayant échoué ont atteint le seuil configuré.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6628" />
+            <location filename="../zscaler_api_client.py" line="6670" />
             <source>API rate limiting was observed in local history.</source>
-            <translation>API rate limiting was observed in local history.</translation>
+            <translation>Une limitation du débit de l’API a été observée dans l’histoire locale.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6629" />
+            <location filename="../zscaler_api_client.py" line="6671" />
             <source>A response reported no remaining API rate-limit capacity.</source>
-            <translation>A response reported no remaining API rate-limit capacity.</translation>
+            <translation>Une réponse n’a signalé aucune capacité restante de limite de débit API.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6630" />
+            <location filename="../zscaler_api_client.py" line="6672" />
             <source>The latest request failed after successful requests to the same endpoint.</source>
-            <translation>The latest request failed after successful requests to the same endpoint.</translation>
+            <translation>La dernière requête a échoué après des requêtes réussies vers le même point de terminaison.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6631" />
+            <location filename="../zscaler_api_client.py" line="6673" />
             <source>The latest endpoint response was much slower than its local baseline.</source>
-            <translation>The latest endpoint response was much slower than its local baseline.</translation>
+            <translation>La dernière réponse du point final a été beaucoup plus lente que sa référence locale.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6632" />
+            <location filename="../zscaler_api_client.py" line="6674" />
             <source>Three or more local requests took ten seconds or more.</source>
-            <translation>Three or more local requests took ten seconds or more.</translation>
+            <translation>Trois requêtes locales ou plus ont pris dix secondes ou plus.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6650" />
+            <location filename="../zscaler_api_client.py" line="6692" />
             <source>Local alert summary</source>
-            <translation>Local alert summary</translation>
+            <translation>Résumé des alertes locales</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6650" />
+            <location filename="../zscaler_api_client.py" line="6692" />
             <source>Error threshold: {threshold}</source>
             <translation>Error threshold: {threshold}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6650" />
-            <location filename="../zscaler_api_client.py" line="7214" />
-            <location filename="../zscaler_api_client.py" line="7742" />
-            <location filename="../zscaler_api_client.py" line="7803" />
+            <location filename="../zscaler_api_client.py" line="6692" />
+            <location filename="../zscaler_api_client.py" line="7256" />
+            <location filename="../zscaler_api_client.py" line="7784" />
+            <location filename="../zscaler_api_client.py" line="7845" />
             <source>Data scope: {name}</source>
             <translation>Data scope: {name}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6652" />
+            <location filename="../zscaler_api_client.py" line="6694" />
             <source>No local alerts.</source>
-            <translation>No local alerts.</translation>
+            <translation>Aucune alerte locale.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6654" />
+            <location filename="../zscaler_api_client.py" line="6696" />
             <source>Count: {count}</source>
             <translation>Count: {count}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6659" />
-            <source>Export local alerts</source>
-            <translation>Export local alerts</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6688" />
-            <source>Normal</source>
-            <translation>Normal</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6693" />
-            <source>Observed relationship chain across local evidence; validate before treating it as an exploitable attack path.</source>
-            <translation>Observed relationship chain across local evidence; validate before treating it as an exploitable attack path.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6699" />
-            <source>Endpoint failure evidence</source>
-            <translation>Endpoint failure evidence</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6699" />
-            <source>Relationship concentration</source>
-            <translation>Relationship concentration</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6699" />
-            <source>Security indicator observed</source>
-            <translation>Security indicator observed</translation>
-        </message>
-        <message>
             <location filename="../zscaler_api_client.py" line="6701" />
+            <source>Export local alerts</source>
+            <translation>Exporter les alertes locales</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6730" />
+            <source>Normal</source>
+            <translation>Normale</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6735" />
+            <source>Observed relationship chain across local evidence; validate before treating it as an exploitable attack path.</source>
+            <translation>Chaîne de relations observée à travers les preuves locales ; validez avant de le traiter comme un chemin d’attaque exploitable.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6741" />
+            <source>Endpoint failure evidence</source>
+            <translation>Preuve de défaillance du point de terminaison</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6741" />
+            <source>Relationship concentration</source>
+            <translation>Concentration des relations</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6741" />
+            <source>Security indicator observed</source>
+            <translation>Indicateur de sécurité observé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6743" />
             <source>The endpoint has locally retained server or network failure evidence.</source>
-            <translation>The endpoint has locally retained server or network failure evidence.</translation>
+            <translation>Le point de terminaison dispose de preuves de défaillance du serveur ou du réseau conservées localement.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6702" />
+            <location filename="../zscaler_api_client.py" line="6744" />
             <source>The entity is connected to an unusually broad set of locally observed relationships.</source>
-            <translation>The entity is connected to an unusually broad set of locally observed relationships.</translation>
+            <translation>L’entité est connectée à un ensemble inhabituellement large de relations observées localement.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6703" />
+            <location filename="../zscaler_api_client.py" line="6745" />
             <source>A threat, exposure, vulnerability, or indicator-like object was present in the response.</source>
-            <translation>A threat, exposure, vulnerability, or indicator-like object was present in the response.</translation>
+            <translation>Une menace, une exposition, une vulnérabilité ou un objet de type indicateur était présent dans la réponse.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6712" />
+            <location filename="../zscaler_api_client.py" line="6754" />
             <source>The graph reached its local safety limit; use the filter or export the evidence for complete review.</source>
-            <translation>The graph reached its local safety limit; use the filter or export the evidence for complete review.</translation>
+            <translation>Le graphique a atteint sa limite de sécurité locale ; utilisez le filtre ou exportez les preuves pour un examen complet.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6714" />
+            <location filename="../zscaler_api_client.py" line="6756" />
             <source>No correlatable entities are available in the selected local scope.</source>
-            <translation>No correlatable entities are available in the selected local scope.</translation>
+            <translation>Aucune entité corrélable n'est disponible dans la portée locale sélectionnée.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6736" />
+            <location filename="../zscaler_api_client.py" line="6778" />
             <source>{type}: {label} · risk {risk} · {evidence} evidence item(s) · {relationships} relationship(s) · sources: {sources}</source>
             <translation>{type}: {label} · risk {risk} · {evidence} evidence item(s) · {relationships} relationship(s) · sources: {sources}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6755" />
+            <location filename="../zscaler_api_client.py" line="6797" />
             <source>Request</source>
-            <translation>Request</translation>
+            <translation>Demande</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6755" />
+            <location filename="../zscaler_api_client.py" line="6797" />
             <source>Audit</source>
-            <translation>Audit</translation>
+            <translation>Vérification</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6761" />
+            <location filename="../zscaler_api_client.py" line="6803" />
             <source>1. Review failed requests in the local timeline.
 2. Select the matching product and endpoint in API Explorer.
 3. Run the read-only status or list operation.
 4. Compare the masked response with the audit trail.
 5. Export evidence or open a change review; no remediation is sent automatically.</source>
-            <translation>1. Review failed requests in the local timeline.
-2. Select the matching product and endpoint in API Explorer.
-3. Run the read-only status or list operation.
-4. Compare the masked response with the audit trail.
-5. Export evidence or open a change review; no remediation is sent automatically.</translation>
+            <translation>1. Examinez les demandes ayant échoué dans la chronologie locale.
+2. Sélectionnez le produit et le point de terminaison correspondants dans API Explorer.
+3. Exécutez l'opération d'état ou de liste en lecture seule.
+4. Comparez la réponse masquée avec la piste d'audit.
+5. Exportez des preuves ou ouvrez une révision des modifications ; aucune remédiation n’est envoyée automatiquement.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6762" />
+            <location filename="../zscaler_api_client.py" line="6804" />
             <source>1. Review recent write requests and audit events.
 2. Export or load the current policy object.
 3. Use Policy diff and local simulation.
 4. Run compliance checks.
 5. Prepare a reviewed Terraform or Git change; no apply is sent automatically.</source>
-            <translation>1. Review recent write requests and audit events.
-2. Export or load the current policy object.
-3. Use Policy diff and local simulation.
-4. Run compliance checks.
-5. Prepare a reviewed Terraform or Git change; no apply is sent automatically.</translation>
+            <translation>1. Examinez les demandes d’écriture et les événements d’audit récents.
+2. Exportez ou chargez l'objet de stratégie actuel.
+3. Utilisez la différence de politique et la simulation locale.
+4. Exécutez des contrôles de conformité.
+5. Préparez une modification Terraform ou Git révisée ; aucune candidature n’est envoyée automatiquement.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6763" />
+            <location filename="../zscaler_api_client.py" line="6805" />
             <source>1. Identify slow requests in the local timeline.
 2. Review response status, duration, and rate-limit headers.
 3. Query the relevant ZDX or product status endpoint.
 4. Compare against recent requests.
 5. Export the masked incident evidence for escalation.</source>
-            <translation>1. Identify slow requests in the local timeline.
-2. Review response status, duration, and rate-limit headers.
-3. Query the relevant ZDX or product status endpoint.
-4. Compare against recent requests.
-5. Export the masked incident evidence for escalation.</translation>
+            <translation>1. Identifiez les demandes lentes dans la chronologie locale.
+2. Vérifiez l'état de la réponse, la durée et les en-têtes de limite de débit.
+3. Recherchez le point de terminaison ZDX ou l'état du produit concerné.
+4. Comparez avec les demandes récentes.
+5. Exportez les preuves d'incident masquées pour escalade.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6812" />
+            <location filename="../zscaler_api_client.py" line="6854" />
             <source>{value:g} ms</source>
             <translation>{value:g} ms</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6818" />
+            <location filename="../zscaler_api_client.py" line="6860" />
             <source>User</source>
-            <translation>User</translation>
+            <translation>Utilisateur</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6818" />
+            <location filename="../zscaler_api_client.py" line="6860" />
             <source>Device</source>
-            <translation>Device</translation>
+            <translation>Appareil</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6818" />
+            <location filename="../zscaler_api_client.py" line="6860" />
             <source>Network</source>
-            <translation>Network</translation>
+            <translation>Réseau</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6818" />
+            <location filename="../zscaler_api_client.py" line="6860" />
             <source>Service edge</source>
-            <translation>Service edge</translation>
+            <translation>Bord de service</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6818" />
+            <location filename="../zscaler_api_client.py" line="6860" />
             <source>Application</source>
-            <translation>Application</translation>
+            <translation>Demande</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>Device score</source>
-            <translation>Device score</translation>
+            <translation>Score de l'appareil</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>Application score</source>
-            <translation>Application score</translation>
+            <translation>Note de candidature</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>Service-edge score</source>
-            <translation>Service-edge score</translation>
+            <translation>Score de service</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>Jitter</source>
-            <translation>Jitter</translation>
+            <translation>Gigue</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>DNS time</source>
-            <translation>DNS time</translation>
+            <translation>Heure DNS</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>TCP connect time</source>
-            <translation>TCP connect time</translation>
+            <translation>Temps de connexion TCP</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>Page fetch time</source>
-            <translation>Page fetch time</translation>
+            <translation>Temps de récupération de la page</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>Availability</source>
-            <translation>Availability</translation>
+            <translation>Disponibilité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>CPU</source>
-            <translation>CPU</translation>
+            <translation>Processeur</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6822" />
+            <location filename="../zscaler_api_client.py" line="6864" />
             <source>Memory</source>
-            <translation>Memory</translation>
+            <translation>Mémoire</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6826" />
+            <location filename="../zscaler_api_client.py" line="6868" />
             <source>Overall experience score is below 70</source>
-            <translation>Overall experience score is below 70</translation>
+            <translation>Le score d'expérience global est inférieur à 70</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6826" />
+            <location filename="../zscaler_api_client.py" line="6868" />
             <source>Device score is below 70</source>
-            <translation>Device score is below 70</translation>
+            <translation>Le score de l'appareil est inférieur à 70</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6826" />
+            <location filename="../zscaler_api_client.py" line="6868" />
             <source>Application score is below 70</source>
-            <translation>Application score is below 70</translation>
+            <translation>Le score de candidature est inférieur à 70</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6826" />
+            <location filename="../zscaler_api_client.py" line="6868" />
             <source>Service-edge score is below 70</source>
-            <translation>Service-edge score is below 70</translation>
+            <translation>Le score de service-edge est inférieur à 70</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6826" />
+            <location filename="../zscaler_api_client.py" line="6868" />
             <source>Observed latency exceeds 250 ms</source>
-            <translation>Observed latency exceeds 250 ms</translation>
+            <translation>La latence observée dépasse 250 ms</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6826" />
+            <location filename="../zscaler_api_client.py" line="6868" />
             <source>Observed packet loss exceeds 2%</source>
-            <translation>Observed packet loss exceeds 2%</translation>
+            <translation>La perte de paquets observée dépasse 2 %</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6826" />
+            <location filename="../zscaler_api_client.py" line="6868" />
             <source>Observed jitter exceeds 40 ms</source>
-            <translation>Observed jitter exceeds 40 ms</translation>
+            <translation>La gigue observée dépasse 40 ms</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6826" />
+            <location filename="../zscaler_api_client.py" line="6868" />
             <source>Observed availability is below 99%</source>
-            <translation>Observed availability is below 99%</translation>
+            <translation>La disponibilité observée est inférieure à 99%</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6832" />
+            <location filename="../zscaler_api_client.py" line="6874" />
             <source>Schema-tolerant local interpretation of observed API fields. Thresholds are transparent operational hints, not Zscaler health verdicts or SLA determinations.</source>
-            <translation>Schema-tolerant local interpretation of observed API fields. Thresholds are transparent operational hints, not Zscaler health verdicts or SLA determinations.</translation>
+            <translation>Interprétation locale tolérante aux schémas des champs d'API observés. Les seuils sont des indications opérationnelles transparentes, et non des verdicts de santé Zscaler ou des déterminations SLA.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6833" />
+            <location filename="../zscaler_api_client.py" line="6875" />
             <source>No current API or GraphQL response is available. Run or import a ZDX/OneAPI query, then analyze again.</source>
-            <translation>No current API or GraphQL response is available. Run or import a ZDX/OneAPI query, then analyze again.</translation>
+            <translation>Aucune réponse API ou GraphQL actuelle n’est disponible. Exécutez ou importez une requête ZDX/OneAPI, puis analysez à nouveau.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6833" />
+            <location filename="../zscaler_api_client.py" line="6875" />
             <source>Observed {stages} of 5 journey stages across {samples} metric sample(s). {disclaimer}</source>
             <translation>Observed {stages} of 5 journey stages across {samples} metric sample(s). {disclaimer}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6867" />
+            <location filename="../zscaler_api_client.py" line="6909" />
             <source>Explicit broad or write-capable access observed; validate least privilege and assignment context.</source>
-            <translation>Explicit broad or write-capable access observed; validate least privilege and assignment context.</translation>
+            <translation>Accès explicite large ou capable d’écriture observé ; valider le moindre privilège et le contexte d’affectation.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6872" />
+            <location filename="../zscaler_api_client.py" line="6914" />
             <source>Consider a monitored decoy resource near exposed paths</source>
-            <translation>Consider a monitored decoy resource near exposed paths</translation>
+            <translation>Envisagez une ressource leurre surveillée à proximité des chemins exposés</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6872" />
+            <location filename="../zscaler_api_client.py" line="6914" />
             <source>Consider a non-production canary permission for privileged-path monitoring</source>
-            <translation>Consider a non-production canary permission for privileged-path monitoring</translation>
+            <translation>Envisagez une autorisation Canary hors production pour la surveillance des chemins privilégiés</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6872" />
+            <location filename="../zscaler_api_client.py" line="6914" />
             <source>Maintain an exposure and least-privilege baseline</source>
-            <translation>Maintain an exposure and least-privilege baseline</translation>
+            <translation>Maintenir une base d’exposition et de moindre privilège</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6895" />
+            <location filename="../zscaler_api_client.py" line="6937" />
             <source>Select one environment before saving an investigation note.</source>
-            <translation>Select one environment before saving an investigation note.</translation>
+            <translation>Sélectionnez un environnement avant d’enregistrer une note d’enquête.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6920" />
+            <location filename="../zscaler_api_client.py" line="6962" />
             <source>Rule is valid and can be evaluated locally.</source>
-            <translation>Rule is valid and can be evaluated locally.</translation>
+            <translation>La règle est valide et peut être évaluée localement.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6920" />
+            <location filename="../zscaler_api_client.py" line="6962" />
             <source>Rule validation failed: {errors}</source>
             <translation>Rule validation failed: {errors}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6933" />
+            <location filename="../zscaler_api_client.py" line="6975" />
             <source>Matched events where {mode} of {conditions} declarative condition(s) were true.</source>
             <translation>Matched events where {mode} of {conditions} declarative condition(s) were true.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6934" />
+            <location filename="../zscaler_api_client.py" line="6976" />
             <source>Examined {examined} local event(s); {matched} matched. {explanation}</source>
             <translation>Examined {examined} local event(s); {matched} matched. {explanation}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6947" />
+            <location filename="../zscaler_api_client.py" line="6989" />
             <source>Endpoint {number} current</source>
             <translation>Endpoint {number} current</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6947" />
+            <location filename="../zscaler_api_client.py" line="6989" />
             <source>Endpoint {number} threshold</source>
             <translation>Endpoint {number} threshold</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6948" />
+            <location filename="../zscaler_api_client.py" line="6990" />
             <source>Median absolute deviation (MAD), scaled by 1.4826 with a 10%/10 ms noise floor</source>
-            <translation>Median absolute deviation (MAD), scaled by 1.4826 with a 10%/10 ms noise floor</translation>
+            <translation>Écart médian absolu (MAD), mis à l'échelle par 1,4826 avec un bruit de fond de 10 %/10 ms</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6949" />
+            <location filename="../zscaler_api_client.py" line="6991" />
             <source>Adaptive analysis evaluated {endpoints} endpoint(s) and found {findings} explainable anomaly hint(s). Method: {method}</source>
             <translation>Adaptive analysis evaluated {endpoints} endpoint(s) and found {findings} explainable anomaly hint(s). Method: {method}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6969" />
+            <location filename="../zscaler_api_client.py" line="7011" />
             <source>Confirm scope from retained failures</source>
-            <translation>Confirm scope from retained failures</translation>
+            <translation>Confirmer la portée des échecs conservés</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6969" />
+            <location filename="../zscaler_api_client.py" line="7011" />
             <source>Check rate-limit and service-health evidence</source>
-            <translation>Check rate-limit and service-health evidence</translation>
+            <translation>Vérifiez la limite de débit et les preuves de santé du service</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6969" />
+            <location filename="../zscaler_api_client.py" line="7011" />
             <source>Collect read-only product status</source>
-            <translation>Collect read-only product status</translation>
+            <translation>Collecter l'état du produit en lecture seule</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6969" />
+            <location filename="../zscaler_api_client.py" line="7011" />
             <source>Correlate affected entities</source>
-            <translation>Correlate affected entities</translation>
+            <translation>Corréler les entités concernées</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6969" />
+            <location filename="../zscaler_api_client.py" line="7011" />
             <source>Export masked incident evidence</source>
-            <translation>Export masked incident evidence</translation>
+            <translation>Exporter des preuves d'incidents masqués</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6969" />
+            <location filename="../zscaler_api_client.py" line="7011" />
             <source>Record closure decision</source>
-            <translation>Record closure decision</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6970" />
-            <source>Capture current policy baseline</source>
-            <translation>Capture current policy baseline</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6970" />
-            <source>Run policy diff and best-practice checks</source>
-            <translation>Run policy diff and best-practice checks</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6970" />
-            <source>Run Policy Twin and decision simulation</source>
-            <translation>Run Policy Twin and decision simulation</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6970" />
-            <source>Prepare rollback artifact</source>
-            <translation>Prepare rollback artifact</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6970" />
-            <source>Record independent review</source>
-            <translation>Record independent review</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6970" />
-            <source>Export change package</source>
-            <translation>Export change package</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6971" />
-            <source>Identify affected user and application scope</source>
-            <translation>Identify affected user and application scope</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6971" />
-            <source>Inspect device metrics</source>
-            <translation>Inspect device metrics</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6971" />
-            <source>Inspect network latency, loss and jitter</source>
-            <translation>Inspect network latency, loss and jitter</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6971" />
-            <source>Inspect service-edge path</source>
-            <translation>Inspect service-edge path</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6971" />
-            <source>Compare application response</source>
-            <translation>Compare application response</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6971" />
-            <source>Export masked journey evidence</source>
-            <translation>Export masked journey evidence</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6972" />
-            <source>Stop copying or exporting raw material</source>
-            <translation>Stop copying or exporting raw material</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6972" />
-            <source>Rotate the affected credential outside this client</source>
-            <translation>Rotate the affected credential outside this client</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6972" />
-            <source>Clear in-memory sessions</source>
-            <translation>Clear in-memory sessions</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6972" />
-            <source>Review masked audit evidence</source>
-            <translation>Review masked audit evidence</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6972" />
-            <source>Validate least-privilege access</source>
-            <translation>Validate least-privilege access</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6972" />
-            <source>Record containment and recovery</source>
-            <translation>Record containment and recovery</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6973" />
-            <source>Validate the alert in authoritative security tooling</source>
-            <translation>Validate the alert in authoritative security tooling</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6973" />
-            <source>Identify users, devices and applications</source>
-            <translation>Identify users, devices and applications</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6973" />
-            <source>Preserve masked evidence</source>
-            <translation>Preserve masked evidence</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6973" />
-            <source>Prepare containment changes for independent approval</source>
-            <translation>Prepare containment changes for independent approval</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6973" />
-            <source>Track recovery prerequisites</source>
-            <translation>Track recovery prerequisites</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6973" />
-            <source>Record lessons learned</source>
-            <translation>Record lessons learned</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6976" />
-            <source>Complete</source>
-            <translation>Complete</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6976" />
-            <source>Pending</source>
-            <translation>Pending</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6977" />
-            <source>Recorded in local audit trail</source>
-            <translation>Recorded in local audit trail</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6977" />
-            <source>No completion evidence</source>
-            <translation>No completion evidence</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6988" />
-            <source>Select a playbook step first.</source>
-            <translation>Select a playbook step first.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6992" />
-            <source>Mark step complete</source>
-            <translation>Mark step complete</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6992" />
-            <source>Record this step as completed in the local audit trail? This does not perform the action or update an authoritative incident.</source>
-            <translation>Record this step as completed in the local audit trail? This does not perform the action or update an authoritative incident.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7003" />
-            <source>Describe an administrative or investigation goal first.</source>
-            <translation>Describe an administrative or investigation goal first.</translation>
+            <translation>Décision de clôture du dossier</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="7012" />
+            <source>Capture current policy baseline</source>
+            <translation>Capturer la ligne de base de la politique actuelle</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7012" />
+            <source>Run policy diff and best-practice checks</source>
+            <translation>Exécuter des vérifications des différences de politique et des meilleures pratiques</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7012" />
+            <source>Run Policy Twin and decision simulation</source>
+            <translation>Exécuter Policy Twin et simulation de décision</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7012" />
+            <source>Prepare rollback artifact</source>
+            <translation>Préparer l'artefact de restauration</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7012" />
+            <source>Record independent review</source>
+            <translation>Enregistrer un examen indépendant</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7012" />
+            <source>Export change package</source>
+            <translation>Exporter le package de modifications</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7013" />
+            <source>Identify affected user and application scope</source>
+            <translation>Identifier l'utilisateur concerné et la portée de l'application</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7013" />
+            <source>Inspect device metrics</source>
+            <translation>Inspecter les métriques de l'appareil</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7013" />
+            <source>Inspect network latency, loss and jitter</source>
+            <translation>Inspecter la latence, la perte et la gigue du réseau</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7013" />
+            <source>Inspect service-edge path</source>
+            <translation>Inspecter le chemin de bord du service</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7013" />
+            <source>Compare application response</source>
+            <translation>Comparer la réponse de l'application</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7013" />
+            <source>Export masked journey evidence</source>
+            <translation>Exporter les preuves de voyage masqué</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7014" />
+            <source>Stop copying or exporting raw material</source>
+            <translation>Arrêtez de copier ou d’exporter des matières premières</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7014" />
+            <source>Rotate the affected credential outside this client</source>
+            <translation>Faire pivoter les informations d'identification concernées en dehors de ce client</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7014" />
+            <source>Clear in-memory sessions</source>
+            <translation>Effacer les sessions en mémoire</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7014" />
+            <source>Review masked audit evidence</source>
+            <translation>Examiner les éléments probants masqués</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7014" />
+            <source>Validate least-privilege access</source>
+            <translation>Valider l'accès avec le moindre privilège</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7014" />
+            <source>Record containment and recovery</source>
+            <translation>Record de confinement et de récupération</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7015" />
+            <source>Validate the alert in authoritative security tooling</source>
+            <translation>Valider l'alerte dans des outils de sécurité faisant autorité</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7015" />
+            <source>Identify users, devices and applications</source>
+            <translation>Identifier les utilisateurs, les appareils et les applications</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7015" />
+            <source>Preserve masked evidence</source>
+            <translation>Préserver les preuves masquées</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7015" />
+            <source>Prepare containment changes for independent approval</source>
+            <translation>Préparer les modifications de confinement pour approbation indépendante</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7015" />
+            <source>Track recovery prerequisites</source>
+            <translation>Suivre les conditions préalables à la récupération</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7015" />
+            <source>Record lessons learned</source>
+            <translation>Enregistrer les leçons apprises</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7018" />
+            <source>Complete</source>
+            <translation>Terminé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7018" />
+            <source>Pending</source>
+            <translation>En attente</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7019" />
+            <source>Recorded in local audit trail</source>
+            <translation>Enregistré dans la piste d'audit locale</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7019" />
+            <source>No completion evidence</source>
+            <translation>Aucune preuve d'achèvement</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7030" />
+            <source>Select a playbook step first.</source>
+            <translation>Sélectionnez d’abord une étape du playbook.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7034" />
+            <source>Mark step complete</source>
+            <translation>Marquer l'étape comme terminée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7034" />
+            <source>Record this step as completed in the local audit trail? This does not perform the action or update an authoritative incident.</source>
+            <translation>Enregistrer cette étape comme terminée dans la piste d'audit locale ? Cela n’effectue pas l’action ni ne met à jour un incident faisant autorité.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7045" />
+            <source>Describe an administrative or investigation goal first.</source>
+            <translation>Décrivez d’abord un objectif administratif ou d’enquête.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7054" />
             <source>Found {matches} documented match(es); proposed {proposed}, including {writes} write operation(s). Review parameters and documentation before creating a chain.</source>
             <translation>Found {matches} documented match(es); proposed {proposed}, including {writes} write operation(s). Review parameters and documentation before creating a chain.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7018" />
+            <location filename="../zscaler_api_client.py" line="7060" />
             <source>Smart API planner</source>
-            <translation>Smart API planner</translation>
+            <translation>Planificateur d'API intelligent</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7018" />
+            <location filename="../zscaler_api_client.py" line="7060" />
             <source>Create a plan with at least one read operation first.</source>
-            <translation>Create a plan with at least one read operation first.</translation>
+            <translation>Créez d'abord un plan avec au moins une opération de lecture.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7020" />
+            <location filename="../zscaler_api_client.py" line="7062" />
             <source>Planner output copied for review. Validate the chain, supply required path values, and approve it separately before execution.</source>
-            <translation>Planner output copied for review. Validate the chain, supply required path values, and approve it separately before execution.</translation>
+            <translation>Sortie du planificateur copiée pour révision. Validez la chaîne, fournissez les valeurs de chemin requises et approuvez-la séparément avant l'exécution.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7040" />
+            <location filename="../zscaler_api_client.py" line="7082" />
             <source>Review policy diff</source>
-            <translation>Review policy diff</translation>
+            <translation>Examiner les différences avec les règles</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7040" />
+            <location filename="../zscaler_api_client.py" line="7082" />
             <source>Run local simulation</source>
-            <translation>Run local simulation</translation>
+            <translation>Exécuter une simulation locale</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7040" />
+            <location filename="../zscaler_api_client.py" line="7082" />
             <source>Record reviewer approval</source>
-            <translation>Record reviewer approval</translation>
+            <translation>Approbation du réviseur de dossiers</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7040" />
+            <location filename="../zscaler_api_client.py" line="7082" />
             <source>Export Git/Terraform review</source>
-            <translation>Export Git/Terraform review</translation>
+            <translation>Examen de l'exportation de Git/Terraform</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7040" />
+            <location filename="../zscaler_api_client.py" line="7082" />
             <source>Apply outside this client only after approval</source>
-            <translation>Apply outside this client only after approval</translation>
+            <translation>Postuler en dehors de ce client seulement après approbation</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7042" />
+            <location filename="../zscaler_api_client.py" line="7084" />
             <source>Change risk: {risk} · {score}/100 · {blocking} blocking gate(s)</source>
             <translation>Change risk: {risk} · {score}/100 · {blocking} blocking gate(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7045" />
+            <location filename="../zscaler_api_client.py" line="7087" />
             <source>Change reference recorded</source>
-            <translation>Change reference recorded</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7045" />
-            <source>Change owner recorded</source>
-            <translation>Change owner recorded</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7045" />
-            <source>Independent reviewer recorded</source>
-            <translation>Independent reviewer recorded</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7045" />
-            <source>Local policy simulation reviewed</source>
-            <translation>Local policy simulation reviewed</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7045" />
-            <source>Rollback artifact prepared</source>
-            <translation>Rollback artifact prepared</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7045" />
-            <source>Local approval recorded</source>
-            <translation>Local approval recorded</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7047" />
-            <source>Yes</source>
-            <translation>Yes</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7047" />
-            <source>No</source>
-            <translation>No</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7047" />
-            <source>Blocked</source>
-            <translation>Blocked</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7047" />
-            <source>Optional</source>
-            <translation>Optional</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7061" />
-            <source>Enter a reviewer before recording approval.</source>
-            <translation>Enter a reviewer before recording approval.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7063" />
-            <source>Local approval recorded. External apply remains disabled.</source>
-            <translation>Local approval recorded. External apply remains disabled.</translation>
+            <translation>Changement de référence enregistré</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="7087" />
-            <source>Rollback artifact integrity verified. This does not authorize applying it.</source>
-            <translation>Rollback artifact integrity verified. This does not authorize applying it.</translation>
+            <source>Change owner recorded</source>
+            <translation>Changement de propriétaire enregistré</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7088" />
+            <location filename="../zscaler_api_client.py" line="7087" />
+            <source>Independent reviewer recorded</source>
+            <translation>Un évaluateur indépendant enregistré</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7087" />
+            <source>Local policy simulation reviewed</source>
+            <translation>La simulation des politiques locales revue</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7087" />
+            <source>Rollback artifact prepared</source>
+            <translation>Artefact de restauration préparé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7087" />
+            <source>Local approval recorded</source>
+            <translation>Approbation locale enregistrée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7089" />
+            <source>Yes</source>
+            <translation>Oui</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7089" />
+            <source>No</source>
+            <translation>Non</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7089" />
+            <source>Blocked</source>
+            <translation>Bloqué</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7089" />
+            <source>Optional</source>
+            <translation>Facultatif</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7103" />
+            <source>Enter a reviewer before recording approval.</source>
+            <translation>Entrez un réviseur avant d’enregistrer l’approbation.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7105" />
+            <source>Local approval recorded. External apply remains disabled.</source>
+            <translation>Approbation locale enregistrée. L'application externe reste désactivée.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7129" />
+            <source>Rollback artifact integrity verified. This does not authorize applying it.</source>
+            <translation>Intégrité des artefacts de restauration vérifiée. Cela n'autorise pas son application.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7130" />
             <source>Rollback verification failed: {reason}</source>
             <translation>Rollback verification failed: {reason}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7098" />
+            <location filename="../zscaler_api_client.py" line="7140" />
             <source>No comparison baseline</source>
-            <translation>No comparison baseline</translation>
+            <translation>Aucune référence de comparaison</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7103" />
+            <location filename="../zscaler_api_client.py" line="7145" />
             <source>{time} · score {score}/100</source>
             <translation>{time} · score {score}/100</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7126" />
+            <location filename="../zscaler_api_client.py" line="7168" />
             <source>Audit evidence integrity</source>
-            <translation>Audit evidence integrity</translation>
+            <translation>Intégrité des éléments probants</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7126" />
+            <location filename="../zscaler_api_client.py" line="7168" />
             <source>Review and restore the local hash-linked audit trail.</source>
-            <translation>Review and restore the local hash-linked audit trail.</translation>
+            <translation>Examinez et restaurez la piste d’audit locale liée au hachage.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7127" />
+            <location filename="../zscaler_api_client.py" line="7169" />
             <source>Operational evidence available</source>
-            <translation>Operational evidence available</translation>
+            <translation>Preuves opérationnelles disponibles</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7127" />
+            <location filename="../zscaler_api_client.py" line="7169" />
             <source>Collect or import masked read-only evidence for the selected environment.</source>
-            <translation>Collect or import masked read-only evidence for the selected environment.</translation>
+            <translation>Collectez ou importez des preuves masquées en lecture seule pour l’environnement sélectionné.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7128" />
+            <location filename="../zscaler_api_client.py" line="7170" />
             <source>API health and anomaly monitoring</source>
-            <translation>API health and anomaly monitoring</translation>
+            <translation>Surveillance de la santé et des anomalies des API</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7128" />
+            <location filename="../zscaler_api_client.py" line="7170" />
             <source>Investigate repeated failures, latency regressions, and rate limiting.</source>
-            <translation>Investigate repeated failures, latency regressions, and rate limiting.</translation>
+            <translation>Examinez les échecs répétés, les régressions de latence et les limitations de débit.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7129" />
+            <location filename="../zscaler_api_client.py" line="7171" />
             <source>Least-privilege policy baseline</source>
-            <translation>Least-privilege policy baseline</translation>
+            <translation>Base de référence de la politique de moindre privilège</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7129" />
+            <location filename="../zscaler_api_client.py" line="7171" />
             <source>Constrain unconditional allow rules and validate order in Policy Twin.</source>
-            <translation>Constrain unconditional allow rules and validate order in Policy Twin.</translation>
+            <translation>Contraindre les règles d’autorisation inconditionnelle et valider l’ordre dans Policy Twin.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7130" />
+            <location filename="../zscaler_api_client.py" line="7172" />
             <source>Reviewed write activity</source>
-            <translation>Reviewed write activity</translation>
+            <translation>Activité d'écriture révisée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7130" />
+            <location filename="../zscaler_api_client.py" line="7172" />
             <source>Require a recorded review and rollback artifact for write activity.</source>
-            <translation>Require a recorded review and rollback artifact for write activity.</translation>
+            <translation>Exiger un artefact de révision et d’annulation enregistré pour l’activité d’écriture.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7131" />
+            <location filename="../zscaler_api_client.py" line="7173" />
             <source>Incident evidence readiness</source>
-            <translation>Incident evidence readiness</translation>
+            <translation>Préparation des preuves d'incident</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7131" />
+            <location filename="../zscaler_api_client.py" line="7173" />
             <source>Prepare and export masked investigation evidence for unresolved failures.</source>
-            <translation>Prepare and export masked investigation evidence for unresolved failures.</translation>
+            <translation>Préparez et exportez des preuves d’enquête masquées pour les échecs non résolus.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7132" />
+            <location filename="../zscaler_api_client.py" line="7174" />
             <source>Recovery evidence available</source>
-            <translation>Recovery evidence available</translation>
+            <translation>Preuve de récupération disponible</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7132" />
+            <location filename="../zscaler_api_client.py" line="7174" />
             <source>Save a policy snapshot or reviewed rollback artifact before change.</source>
-            <translation>Save a policy snapshot or reviewed rollback artifact before change.</translation>
+            <translation>Enregistrez un instantané de stratégie ou un artefact de restauration examiné avant toute modification.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7146" />
+            <location filename="../zscaler_api_client.py" line="7188" />
             <source>Pass</source>
-            <translation>Pass</translation>
+            <translation>Passer</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7146" />
+            <location filename="../zscaler_api_client.py" line="7188" />
             <source>Fail</source>
-            <translation>Fail</translation>
+            <translation>Échec</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7159" />
-            <location filename="../zscaler_api_client.py" line="7216" />
-            <location filename="../zscaler_api_client.py" line="7262" />
+            <location filename="../zscaler_api_client.py" line="7201" />
+            <location filename="../zscaler_api_client.py" line="7258" />
+            <location filename="../zscaler_api_client.py" line="7304" />
             <source>Local assurance requires attention</source>
-            <translation>Local assurance requires attention</translation>
+            <translation>L’assurance locale nécessite une attention particulière</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7159" />
-            <location filename="../zscaler_api_client.py" line="7216" />
-            <location filename="../zscaler_api_client.py" line="7262" />
+            <location filename="../zscaler_api_client.py" line="7201" />
+            <location filename="../zscaler_api_client.py" line="7258" />
+            <location filename="../zscaler_api_client.py" line="7304" />
             <source>No failing controls in the evaluated local scope</source>
-            <translation>No failing controls in the evaluated local scope</translation>
+            <translation>Aucun contrôle défaillant dans le périmètre local évalué</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7160" />
-            <location filename="../zscaler_api_client.py" line="7217" />
-            <location filename="../zscaler_api_client.py" line="7263" />
+            <location filename="../zscaler_api_client.py" line="7202" />
+            <location filename="../zscaler_api_client.py" line="7259" />
+            <location filename="../zscaler_api_client.py" line="7305" />
             <source>{passed} evaluated control(s) passed and {failed} failed.</source>
             <translation>{passed} evaluated control(s) passed and {failed} failed.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7160" />
-            <location filename="../zscaler_api_client.py" line="7263" />
+            <location filename="../zscaler_api_client.py" line="7202" />
+            <location filename="../zscaler_api_client.py" line="7305" />
             <source>Evidence coverage is {coverage}% and local posture is {posture}/100.</source>
             <translation>Evidence coverage is {coverage}% and local posture is {posture}/100.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7161" />
-            <location filename="../zscaler_api_client.py" line="7264" />
+            <location filename="../zscaler_api_client.py" line="7203" />
+            <location filename="../zscaler_api_client.py" line="7306" />
             <source>The assurance score changed by {delta:+d} points versus the selected baseline.</source>
             <translation>The assurance score changed by {delta:+d} points versus the selected baseline.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7162" />
+            <location filename="../zscaler_api_client.py" line="7204" />
             <source>Prioritized actions</source>
-            <translation>Prioritized actions</translation>
+            <translation>Actions prioritaires</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7165" />
+            <location filename="../zscaler_api_client.py" line="7207" />
             <source>Local evidence limitation: validate results against authoritative tenant and governance records.</source>
-            <translation>Local evidence limitation: validate results against authoritative tenant and governance records.</translation>
+            <translation>Limitation des preuves locales : validez les résultats par rapport aux dossiers de locataires et de gouvernance faisant autorité.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7169" />
+            <location filename="../zscaler_api_client.py" line="7211" />
             <source>Now</source>
-            <translation>Now</translation>
+            <translation>Maintenant</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7170" />
+            <location filename="../zscaler_api_client.py" line="7212" />
             <source>Assessment {identifier} · {frameworks} · local evidence only, not certification.</source>
             <translation>Assessment {identifier} · {frameworks} · local evidence only, not certification.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7173" />
+            <location filename="../zscaler_api_client.py" line="7215" />
             <source>Select one environment before saving an assurance baseline.</source>
-            <translation>Select one environment before saving an assurance baseline.</translation>
+            <translation>Sélectionnez un environnement avant d’enregistrer une référence d’assurance.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7183" />
-            <location filename="../zscaler_api_client.py" line="7185" />
-            <location filename="../zscaler_api_client.py" line="7202" />
-            <location filename="../zscaler_api_client.py" line="7204" />
+            <location filename="../zscaler_api_client.py" line="7225" />
+            <location filename="../zscaler_api_client.py" line="7227" />
+            <location filename="../zscaler_api_client.py" line="7244" />
+            <location filename="../zscaler_api_client.py" line="7246" />
             <source>Signed evidence</source>
-            <translation>Signed evidence</translation>
+            <translation>Preuve signée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7183" />
+            <location filename="../zscaler_api_client.py" line="7225" />
             <source>The system keychain could not store the evidence signing key.</source>
-            <translation>The system keychain could not store the evidence signing key.</translation>
+            <translation>Le trousseau du système n'a pas pu stocker la clé de signature des preuves.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7185" />
+            <location filename="../zscaler_api_client.py" line="7227" />
             <source>The protected evidence signing key is invalid. Rotate it in Settings before signing.</source>
-            <translation>The protected evidence signing key is invalid. Rotate it in Settings before signing.</translation>
+            <translation>La clé de signature des preuves protégées n’est pas valide. Faites-le pivoter dans les paramètres avant de signer.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7189" />
+            <location filename="../zscaler_api_client.py" line="7231" />
             <source>Signed evidence exported · public-key fingerprint {fingerprint}</source>
             <translation>Signed evidence exported · public-key fingerprint {fingerprint}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7201" />
+            <location filename="../zscaler_api_client.py" line="7243" />
             <source>Signature verified. Payload digest {digest}; public-key fingerprint {fingerprint}.</source>
             <translation>Signature verified. Payload digest {digest}; public-key fingerprint {fingerprint}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7204" />
+            <location filename="../zscaler_api_client.py" line="7246" />
             <source>Signature verification failed: {reason}</source>
             <translation>Signature verification failed: {reason}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7214" />
+            <location filename="../zscaler_api_client.py" line="7256" />
             <source>Assurance score: {score}/100 · evidence coverage {coverage}%</source>
             <translation>Assurance score: {score}/100 · evidence coverage {coverage}%</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7216" />
+            <location filename="../zscaler_api_client.py" line="7258" />
             <source>Executive assurance narrative</source>
-            <translation>Executive assurance narrative</translation>
+            <translation>Récit de l’assurance des dirigeants</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7244" />
+            <location filename="../zscaler_api_client.py" line="7286" />
             <source>Posture score</source>
-            <translation>Posture score</translation>
+            <translation>Score de posture</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7245" />
+            <location filename="../zscaler_api_client.py" line="7287" />
             <source>Local requests</source>
-            <translation>Local requests</translation>
+            <translation>Demandes locales</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7246" />
+            <location filename="../zscaler_api_client.py" line="7288" />
             <source>Failed requests</source>
-            <translation>Failed requests</translation>
+            <translation>Demandes ayant échoué</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7375" />
+            <location filename="../zscaler_api_client.py" line="7417" />
             <source>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</source>
             <translation>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7381" />
+            <location filename="../zscaler_api_client.py" line="7423" />
             <source>Cancellation requested; the current HTTP request will finish and no new chain step will start.</source>
-            <translation>Cancellation requested; the current HTTP request will finish and no new chain step will start.</translation>
+            <translation>Annulation demandée ; la requête HTTP en cours se terminera et aucune nouvelle étape de la chaîne ne démarrera.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6931" />
-            <location filename="../zscaler_api_client.py" line="7405" />
+            <location filename="../zscaler_api_client.py" line="6973" />
+            <location filename="../zscaler_api_client.py" line="7447" />
             <source>{duration} ms</source>
             <translation>{duration} ms</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7422" />
+            <location filename="../zscaler_api_client.py" line="7464" />
             <source>The chain was cancelled before all steps started; completed results were retained.</source>
-            <translation>The chain was cancelled before all steps started; completed results were retained.</translation>
+            <translation>La chaîne a été annulée avant le début de toutes les étapes ; les résultats complétés ont été conservés.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7429" />
+            <location filename="../zscaler_api_client.py" line="7471" />
             <source>Run a chain before exporting its masked results.</source>
-            <translation>Run a chain before exporting its masked results.</translation>
+            <translation>Exécutez une chaîne avant d’exporter ses résultats masqués.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7453" />
+            <location filename="../zscaler_api_client.py" line="7495" />
             <source>No baseline (analyze current policy only)</source>
-            <translation>No baseline (analyze current policy only)</translation>
+            <translation>Aucune référence (analyser la politique actuelle uniquement)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7479" />
+            <location filename="../zscaler_api_client.py" line="7521" />
             <source>Unconditional allow</source>
-            <translation>Unconditional allow</translation>
+            <translation>Autorisation inconditionnelle</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7479" />
+            <location filename="../zscaler_api_client.py" line="7521" />
             <source>Shadowed conflict</source>
-            <translation>Shadowed conflict</translation>
+            <translation>Conflit obscur</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7479" />
+            <location filename="../zscaler_api_client.py" line="7521" />
             <source>Redundant shadow</source>
-            <translation>Redundant shadow</translation>
+            <translation>Ombre redondante</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7479" />
+            <location filename="../zscaler_api_client.py" line="7521" />
             <source>Overlapping actions</source>
-            <translation>Overlapping actions</translation>
+            <translation>Actions superposées</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7479" />
+            <location filename="../zscaler_api_client.py" line="7521" />
             <source>Duplicate rule name</source>
-            <translation>Duplicate rule name</translation>
+            <translation>Nom de règle en double</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7481" />
+            <location filename="../zscaler_api_client.py" line="7523" />
             <source>An unconditional allow rule can expose every later matching scope.</source>
-            <translation>An unconditional allow rule can expose every later matching scope.</translation>
+            <translation>Une règle d'autorisation inconditionnelle peut exposer chaque étendue correspondante ultérieure.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7482" />
+            <location filename="../zscaler_api_client.py" line="7524" />
             <source>The later rule can never decide because an earlier rule covers all of its matches.</source>
-            <translation>The later rule can never decide because an earlier rule covers all of its matches.</translation>
+            <translation>La règle la plus récente ne peut jamais décider car une règle antérieure couvre toutes ses correspondances.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7483" />
+            <location filename="../zscaler_api_client.py" line="7525" />
             <source>The rules can match the same context but have different actions; order decides the outcome.</source>
-            <translation>The rules can match the same context but have different actions; order decides the outcome.</translation>
+            <translation>Les règles peuvent correspondre au même contexte mais avoir des actions différentes ; l’ordre décide du résultat.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7484" />
+            <location filename="../zscaler_api_client.py" line="7526" />
             <source>Duplicate rule names make reviews, evidence, and rollback ambiguous.</source>
-            <translation>Duplicate rule names make reviews, evidence, and rollback ambiguous.</translation>
+            <translation>Les noms de règles en double rendent les révisions, les preuves et les restaurations ambiguës.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7493" />
+            <location filename="../zscaler_api_client.py" line="7535" />
             <source>Policy twin: {rules} rule(s), {findings} finding(s), blast radius {score}/100, {changed} changed rule(s) versus baseline.</source>
             <translation>Policy twin: {rules} rule(s), {findings} finding(s), blast radius {score}/100, {changed} changed rule(s) versus baseline.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7500" />
+            <location filename="../zscaler_api_client.py" line="7542" />
             <source>Request context must be a JSON object.</source>
-            <translation>Request context must be a JSON object.</translation>
+            <translation>Le contexte de la requête doit être un objet JSON.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7506" />
+            <location filename="../zscaler_api_client.py" line="7548" />
             <source>Decision: {action}. Rule “{name}” matched after evaluating {count} rule(s).</source>
             <translation>Decision: {action}. Rule “{name}” matched after evaluating {count} rule(s).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7508" />
+            <location filename="../zscaler_api_client.py" line="7550" />
             <source>Decision: no match after evaluating {count} rule(s).</source>
             <translation>Decision: no match after evaluating {count} rule(s).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7534" />
+            <location filename="../zscaler_api_client.py" line="7576" />
             <source>Select one environment before saving a policy snapshot.</source>
-            <translation>Select one environment before saving a policy snapshot.</translation>
+            <translation>Sélectionnez un environnement avant d’enregistrer un instantané de stratégie.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7540" />
+            <location filename="../zscaler_api_client.py" line="7582" />
             <source>Policy snapshots are limited to 2 MB.</source>
-            <translation>Policy snapshots are limited to 2 MB.</translation>
+            <translation>Les instantanés de stratégie sont limités à 2 Mo.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7541" />
+            <location filename="../zscaler_api_client.py" line="7583" />
             <source>Save policy snapshot</source>
-            <translation>Save policy snapshot</translation>
+            <translation>Enregistrer l'instantané de la stratégie</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7541" />
+            <location filename="../zscaler_api_client.py" line="7583" />
             <source>Snapshot name:</source>
-            <translation>Snapshot name:</translation>
+            <translation>Nom de l'instantané :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7552" />
+            <location filename="../zscaler_api_client.py" line="7594" />
             <source>Select a saved policy snapshot first.</source>
-            <translation>Select a saved policy snapshot first.</translation>
+            <translation>Sélectionnez d’abord un instantané de stratégie enregistré.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7558" />
+            <location filename="../zscaler_api_client.py" line="7600" />
             <source>Delete policy snapshot</source>
-            <translation>Delete policy snapshot</translation>
+            <translation>Supprimer l'instantané de la stratégie</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7558" />
+            <location filename="../zscaler_api_client.py" line="7600" />
             <source>Delete the selected local policy snapshot?</source>
-            <translation>Delete the selected local policy snapshot?</translation>
+            <translation>Supprimer l'instantané de stratégie locale sélectionné ?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7629" />
+            <location filename="../zscaler_api_client.py" line="7671" />
             <source>Local automation must be an existing absolute path to a non-symlinked .py file no larger than 1 MiB.</source>
-            <translation>Local automation must be an existing absolute path to a non-symlinked .py file no larger than 1 MiB.</translation>
+            <translation>L'automatisation locale doit être un chemin absolu existant vers un fichier .py sans lien symbolique ne dépassant pas 1 Mio.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7632" />
-            <location filename="../zscaler_api_client.py" line="7796" />
+            <location filename="../zscaler_api_client.py" line="7674" />
+            <location filename="../zscaler_api_client.py" line="7838" />
             <source>Webhook endpoints must use HTTPS (or local HTTP) and must not contain credentials in the URL.</source>
-            <translation>Webhook endpoints must use HTTPS (or local HTTP) and must not contain credentials in the URL.</translation>
+            <translation>Les points de terminaison du webhook doivent utiliser HTTPS (ou HTTP local) et ne doivent pas contenir d'informations d'identification dans l'URL.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7636" />
+            <location filename="../zscaler_api_client.py" line="7678" />
             <source>Secure storage</source>
-            <translation>Secure storage</translation>
+            <translation>Stockage sécurisé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7636" />
+            <location filename="../zscaler_api_client.py" line="7678" />
             <source>The system keychain could not save the webhook endpoint. Check the keychain service and try again.</source>
-            <translation>The system keychain could not save the webhook endpoint. Check the keychain service and try again.</translation>
+            <translation>Le trousseau système n’a pas pu enregistrer le point de terminaison du webhook. Vérifiez le service de trousseau et réessayez.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7652" />
+            <location filename="../zscaler_api_client.py" line="7694" />
             <source>Connectivity test</source>
-            <translation>Connectivity test</translation>
+            <translation>Test de connectivité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7652" />
+            <location filename="../zscaler_api_client.py" line="7694" />
             <source>Alert snapshot</source>
-            <translation>Alert snapshot</translation>
+            <translation>Instantané d'alerte</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7653" />
+            <location filename="../zscaler_api_client.py" line="7695" />
             <source>Started</source>
-            <translation>Started</translation>
+            <translation>Commencé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7413" />
-            <location filename="../zscaler_api_client.py" line="7653" />
+            <location filename="../zscaler_api_client.py" line="7455" />
+            <location filename="../zscaler_api_client.py" line="7695" />
             <source>Succeeded</source>
-            <translation>Succeeded</translation>
+            <translation>Réussi</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6442" />
+            <location filename="../zscaler_api_client.py" line="6484" />
             <source>Run a reviewed sequence against the active authenticated environment. Chains are limited to 20 steps, stay on the selected product host, and can reference earlier JSON values with {{stepId.path.0.value}}. Every run requires approval.</source>
             <translation>Run a reviewed sequence against the active authenticated environment. Chains are limited to 20 steps, stay on the selected product host, and can reference earlier JSON values with {{stepId.path.0.value}}. Every run requires approval.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6445" />
+            <location filename="../zscaler_api_client.py" line="6487" />
             <source>A JSON list of API requests. Relative paths use the active product host; references can use only completed step IDs.</source>
-            <translation>A JSON list of API requests. Relative paths use the active product host; references can use only completed step IDs.</translation>
+            <translation>Une liste JSON de requêtes API. Les chemins relatifs utilisent l'hôte de produit actif ; les références ne peuvent utiliser que les ID d’étape terminés.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6364" />
-            <location filename="../zscaler_api_client.py" line="6448" />
+            <location filename="../zscaler_api_client.py" line="6406" />
+            <location filename="../zscaler_api_client.py" line="6490" />
             <source>Step</source>
-            <translation>Step</translation>
+            <translation>Étape</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6348" />
-            <location filename="../zscaler_api_client.py" line="6371" />
-            <location filename="../zscaler_api_client.py" line="6448" />
+            <location filename="../zscaler_api_client.py" line="6390" />
+            <location filename="../zscaler_api_client.py" line="6413" />
+            <location filename="../zscaler_api_client.py" line="6490" />
             <source>Method</source>
-            <translation>Method</translation>
+            <translation>Méthode</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6448" />
+            <location filename="../zscaler_api_client.py" line="6490" />
             <source>Records</source>
-            <translation>Records</translation>
+            <translation>Enregistrements</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6348" />
-            <location filename="../zscaler_api_client.py" line="6448" />
+            <location filename="../zscaler_api_client.py" line="6390" />
+            <location filename="../zscaler_api_client.py" line="6490" />
             <source>Duration</source>
-            <translation>Duration</translation>
+            <translation>Durée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6395" />
-            <location filename="../zscaler_api_client.py" line="7413" />
-            <location filename="../zscaler_api_client.py" line="7653" />
+            <location filename="../zscaler_api_client.py" line="6437" />
+            <location filename="../zscaler_api_client.py" line="7455" />
+            <location filename="../zscaler_api_client.py" line="7695" />
             <source>Failed</source>
-            <translation>Failed</translation>
+            <translation>Échec</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7686" />
+            <location filename="../zscaler_api_client.py" line="7728" />
             <source>All files (*)</source>
-            <translation>All files (*)</translation>
+            <translation>Tous les fichiers (*)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7689" />
+            <location filename="../zscaler_api_client.py" line="7731" />
             <source>Exported {count} masked local event(s) as {format}. No data was sent automatically.</source>
             <translation>Exported {count} masked local event(s) as {format}. No data was sent automatically.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7705" />
+            <location filename="../zscaler_api_client.py" line="7747" />
             <source>Created a non-executable Terraform review handoff. Run terraformer and terraform plan only after independent review; this client never applies it.</source>
-            <translation>Created a non-executable Terraform review handoff. Run terraformer and terraform plan only after independent review; this client never applies it.</translation>
+            <translation>Création d'un transfert de révision Terraform non exécutable. Exécutez le terraformer et le plan terraform uniquement après un examen indépendant ; ce client ne l'applique jamais.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7731" />
-            <location filename="../zscaler_api_client.py" line="7734" />
-            <location filename="../zscaler_api_client.py" line="7736" />
-            <location filename="../zscaler_api_client.py" line="7741" />
-            <location filename="../zscaler_api_client.py" line="7770" />
-            <location filename="../zscaler_api_client.py" line="7780" />
-            <location filename="../zscaler_api_client.py" line="7785" />
+            <location filename="../zscaler_api_client.py" line="7773" />
+            <location filename="../zscaler_api_client.py" line="7776" />
+            <location filename="../zscaler_api_client.py" line="7778" />
+            <location filename="../zscaler_api_client.py" line="7783" />
+            <location filename="../zscaler_api_client.py" line="7812" />
+            <location filename="../zscaler_api_client.py" line="7822" />
+            <location filename="../zscaler_api_client.py" line="7827" />
             <source>Local automation</source>
-            <translation>Local automation</translation>
+            <translation>Automatisation locale</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7731" />
+            <location filename="../zscaler_api_client.py" line="7773" />
             <source>Read-only mode blocks local automation.</source>
-            <translation>Read-only mode blocks local automation.</translation>
+            <translation>Le mode lecture seule bloque l'automatisation locale.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7734" />
+            <location filename="../zscaler_api_client.py" line="7776" />
             <source>Configure a valid local Python automation in Governance first.</source>
-            <translation>Configure a valid local Python automation in Governance first.</translation>
+            <translation>Configurez d’abord une automatisation Python locale valide dans Governance.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7736" />
+            <location filename="../zscaler_api_client.py" line="7778" />
             <source>Local automation is already running.</source>
-            <translation>Local automation is already running.</translation>
+            <translation>L'automatisation locale est déjà en cours.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7742" />
+            <location filename="../zscaler_api_client.py" line="7784" />
             <source>Run the reviewed Python file with masked local posture and alert data? The process receives no API credentials.</source>
-            <translation>Run the reviewed Python file with masked local posture and alert data? The process receives no API credentials.</translation>
+            <translation>Exécuter le fichier Python examiné avec une posture locale masquée et des données d'alerte ? Le processus ne reçoit aucune information d'identification API.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7770" />
+            <location filename="../zscaler_api_client.py" line="7812" />
             <source>Local automation exceeded the 15-second limit and was stopped.</source>
-            <translation>Local automation exceeded the 15-second limit and was stopped.</translation>
+            <translation>L'automatisation locale a dépassé la limite de 15 secondes et a été arrêtée.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7780" />
+            <location filename="../zscaler_api_client.py" line="7822" />
             <source>Local automation completed with exit code {code}.</source>
             <translation>Local automation completed with exit code {code}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7785" />
+            <location filename="../zscaler_api_client.py" line="7827" />
             <source>Local automation failed to start.</source>
-            <translation>Local automation failed to start.</translation>
+            <translation>L'automatisation locale n'a pas pu démarrer.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7791" />
+            <location filename="../zscaler_api_client.py" line="7833" />
             <source>Send the current masked local alert snapshot to the configured webhook endpoint?</source>
-            <translation>Send the current masked local alert snapshot to the configured webhook endpoint?</translation>
+            <translation>Envoyer l'instantané d'alerte locale masquée actuel au point de terminaison du webhook configuré ?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7797" />
-            <location filename="../zscaler_api_client.py" line="7799" />
-            <location filename="../zscaler_api_client.py" line="7803" />
-            <location filename="../zscaler_api_client.py" line="7823" />
-            <location filename="../zscaler_api_client.py" line="7830" />
+            <location filename="../zscaler_api_client.py" line="7839" />
+            <location filename="../zscaler_api_client.py" line="7841" />
+            <location filename="../zscaler_api_client.py" line="7845" />
+            <location filename="../zscaler_api_client.py" line="7865" />
+            <location filename="../zscaler_api_client.py" line="7872" />
             <source>Webhook delivery</source>
-            <translation>Webhook delivery</translation>
+            <translation>Livraison de webhooks</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7799" />
+            <location filename="../zscaler_api_client.py" line="7841" />
             <source>A webhook delivery is already running.</source>
-            <translation>A webhook delivery is already running.</translation>
+            <translation>Une livraison de webhook est déjà en cours.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7823" />
+            <location filename="../zscaler_api_client.py" line="7865" />
             <source>Masked webhook delivery succeeded (HTTP {status}).</source>
             <translation>Masked webhook delivery succeeded (HTTP {status}).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7830" />
+            <location filename="../zscaler_api_client.py" line="7872" />
             <source>Masked webhook delivery failed: {error}</source>
             <translation>Masked webhook delivery failed: {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7859" />
+            <location filename="../zscaler_api_client.py" line="7901" />
             <source>Background</source>
-            <translation>Background</translation>
+            <translation>Contexte</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7859" />
+            <location filename="../zscaler_api_client.py" line="7901" />
             <source>App only</source>
-            <translation>App only</translation>
+            <translation>Application uniquement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7860" />
+            <location filename="../zscaler_api_client.py" line="7902" />
             <source>Paused</source>
-            <translation>Paused</translation>
+            <translation>En pause</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7872" />
+            <location filename="../zscaler_api_client.py" line="7914" />
             <source>Select a scheduled report first.</source>
-            <translation>Select a scheduled report first.</translation>
+            <translation>Sélectionnez d'abord un rapport planifié.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7890" />
+            <location filename="../zscaler_api_client.py" line="7932" />
             <source>The scheduled report was generated locally.</source>
-            <translation>The scheduled report was generated locally.</translation>
+            <translation>Le rapport planifié a été généré localement.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7892" />
+            <location filename="../zscaler_api_client.py" line="7934" />
             <source>The scheduled report could not be generated. Check its output folder and the audit trail.</source>
-            <translation>The scheduled report could not be generated. Check its output folder and the audit trail.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7906" />
-            <source>The operating-system schedule could not be updated. No state was changed.</source>
-            <translation>The operating-system schedule could not be updated. No state was changed.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7922" />
-            <source>The report is paused and cannot generate output, but the operating-system job cleanup needs manual review.</source>
-            <translation>The report is paused and cannot generate output, but the operating-system job cleanup needs manual review.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7928" />
-            <source>Remove the selected scheduled report?</source>
-            <translation>Remove the selected scheduled report?</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7941" />
-            <source>The report was removed, but the operating-system job could not be removed. It can no longer generate a report because its schedule ID is no longer active.</source>
-            <translation>The report was removed, but the operating-system job could not be removed. It can no longer generate a report because its schedule ID is no longer active.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7944" />
-            <source>Report name:</source>
-            <translation>Report name:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7957" />
-            <source>Run this report even when ZS API Client is closed? This creates a user-level operating-system schedule and requires no administrator privileges.</source>
-            <translation>Run this report even when ZS API Client is closed? This creates a user-level operating-system schedule and requires no administrator privileges.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7971" />
-            <source>The operating-system schedule could not be created. The report was not scheduled.</source>
-            <translation>The operating-system schedule could not be created. The report was not scheduled.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7979" />
-            <source>Scheduled report saved. It will run in the background even when the application is closed.</source>
-            <translation>Scheduled report saved. It will run in the background even when the application is closed.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7979" />
-            <source>Scheduled report saved. It will run locally while the application is open.</source>
-            <translation>Scheduled report saved. It will run locally while the application is open.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7844" />
-            <location filename="../zscaler_api_client.py" line="7947" />
-            <source>Hourly</source>
-            <translation>Hourly</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7844" />
-            <location filename="../zscaler_api_client.py" line="7947" />
-            <source>Daily</source>
-            <translation>Daily</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7844" />
-            <location filename="../zscaler_api_client.py" line="7947" />
-            <source>Weekly</source>
-            <translation>Weekly</translation>
+            <translation>Le rapport planifié n'a pas pu être généré. Vérifiez son dossier de sortie et la piste d'audit.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="7948" />
-            <source>Report cadence:</source>
-            <translation>Report cadence:</translation>
+            <source>The operating-system schedule could not be updated. No state was changed.</source>
+            <translation>La planification du système d'exploitation n'a pas pu être mise à jour. Aucun état n'a été modifié.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7951" />
+            <location filename="../zscaler_api_client.py" line="7964" />
+            <source>The report is paused and cannot generate output, but the operating-system job cleanup needs manual review.</source>
+            <translation>Le rapport est suspendu et ne peut pas générer de sortie, mais le nettoyage de la tâche du système d'exploitation nécessite une révision manuelle.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7970" />
+            <source>Remove the selected scheduled report?</source>
+            <translation>Supprimer le rapport planifié sélectionné ?</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7983" />
+            <source>The report was removed, but the operating-system job could not be removed. It can no longer generate a report because its schedule ID is no longer active.</source>
+            <translation>Le rapport a été supprimé, mais la tâche du système d'exploitation n'a pas pu être supprimée. Il ne peut plus générer de rapport car son ID de planification n'est plus actif.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7986" />
+            <source>Report name:</source>
+            <translation>Nom du rapport :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7999" />
+            <source>Run this report even when ZS API Client is closed? This creates a user-level operating-system schedule and requires no administrator privileges.</source>
+            <translation>Exécuter ce rapport même lorsque le client API ZS est fermé ? Cela crée une planification du système d'exploitation au niveau de l'utilisateur et ne nécessite aucun privilège d'administrateur.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8013" />
+            <source>The operating-system schedule could not be created. The report was not scheduled.</source>
+            <translation>La planification du système d'exploitation n'a pas pu être créée. Le reportage n'était pas programmé.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8021" />
+            <source>Scheduled report saved. It will run in the background even when the application is closed.</source>
+            <translation>Rapport planifié enregistré. Il fonctionnera en arrière-plan même lorsque l'application est fermée.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8021" />
+            <source>Scheduled report saved. It will run locally while the application is open.</source>
+            <translation>Rapport planifié enregistré. Il s'exécutera localement pendant que l'application est ouverte.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7886" />
+            <location filename="../zscaler_api_client.py" line="7989" />
+            <source>Hourly</source>
+            <translation>Horaire</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7886" />
+            <location filename="../zscaler_api_client.py" line="7989" />
+            <source>Daily</source>
+            <translation>Quotidiennement</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7886" />
+            <location filename="../zscaler_api_client.py" line="7989" />
+            <source>Weekly</source>
+            <translation>Hebdomadaire</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7990" />
+            <source>Report cadence:</source>
+            <translation>Cadence des rapports :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7993" />
             <source>Choose report output folder</source>
-            <translation>Choose report output folder</translation>
+            <translation>Choisir le dossier de sortie du rapport</translation>
         </message>
         <message>
             <source>Scheduled report saved. Reports run locally while the application is open.</source>
-            <translation type="vanished">Scheduled report saved. Reports run locally while the application is open.</translation>
+            <translation>Rapport planifié enregistré. Les rapports sont exécutés localement lorsque l'application est ouverte.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6650" />
-            <location filename="../zscaler_api_client.py" line="7214" />
+            <location filename="../zscaler_api_client.py" line="6692" />
+            <location filename="../zscaler_api_client.py" line="7256" />
             <source>Local requests: {count}</source>
             <translation>Local requests: {count}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6650" />
-            <location filename="../zscaler_api_client.py" line="7214" />
+            <location filename="../zscaler_api_client.py" line="6692" />
+            <location filename="../zscaler_api_client.py" line="7256" />
             <source>Failed requests: {count}</source>
             <translation>Failed requests: {count}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7214" />
+            <location filename="../zscaler_api_client.py" line="7256" />
             <source>Audit integrity: {status}</source>
             <translation>Audit integrity: {status}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7214" />
-            <location filename="../zscaler_api_client.py" line="7247" />
+            <location filename="../zscaler_api_client.py" line="7256" />
+            <location filename="../zscaler_api_client.py" line="7289" />
             <source>Valid</source>
-            <translation>Valid</translation>
+            <translation>Valide</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7214" />
-            <location filename="../zscaler_api_client.py" line="7247" />
+            <location filename="../zscaler_api_client.py" line="7256" />
+            <location filename="../zscaler_api_client.py" line="7289" />
             <source>Needs review</source>
-            <translation>Needs review</translation>
+            <translation>Besoin d'un examen</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7214" />
+            <location filename="../zscaler_api_client.py" line="7256" />
             <source>Incident signals</source>
-            <translation>Incident signals</translation>
+            <translation>Signaux d'incident</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7218" />
+            <location filename="../zscaler_api_client.py" line="7260" />
             <source>Executive actions</source>
-            <translation>Executive actions</translation>
+            <translation>Actions exécutives</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7218" />
+            <location filename="../zscaler_api_client.py" line="7260" />
             <source>Review high-risk findings and approval records.</source>
-            <translation>Review high-risk findings and approval records.</translation>
+            <translation>Examinez les résultats à haut risque et les dossiers d’approbation.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7218" />
+            <location filename="../zscaler_api_client.py" line="7260" />
             <source>Use the Security Posture and Change Control workspaces for evidence.</source>
-            <translation>Use the Security Posture and Change Control workspaces for evidence.</translation>
+            <translation>Utilisez les espaces de travail Posture de sécurité et Contrôle des modifications comme preuve.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7220" />
+            <location filename="../zscaler_api_client.py" line="7262" />
             <source>SOC next steps</source>
-            <translation>SOC next steps</translation>
+            <translation>Prochaines étapes du SOC</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7220" />
+            <location filename="../zscaler_api_client.py" line="7262" />
             <source>Use Incident Investigation to prepare a review chain.</source>
-            <translation>Use Incident Investigation to prepare a review chain.</translation>
+            <translation>Utilisez l’enquête sur les incidents pour préparer une chaîne de révision.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7220" />
+            <location filename="../zscaler_api_client.py" line="7262" />
             <source>Export masked evidence before escalation.</source>
-            <translation>Export masked evidence before escalation.</translation>
+            <translation>Exportez les preuves masquées avant l’escalade.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7222" />
+            <location filename="../zscaler_api_client.py" line="7264" />
             <source>Operations next steps</source>
-            <translation>Operations next steps</translation>
+            <translation>Prochaines étapes des opérations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7222" />
+            <location filename="../zscaler_api_client.py" line="7264" />
             <source>Review slow responses and API failures.</source>
-            <translation>Review slow responses and API failures.</translation>
+            <translation>Examinez les réponses lentes et les échecs de l'API.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7222" />
+            <location filename="../zscaler_api_client.py" line="7264" />
             <source>Confirm rate limits and service health with read-only queries.</source>
-            <translation>Confirm rate limits and service health with read-only queries.</translation>
+            <translation>Confirmez les limites de débit et l’état du service avec des requêtes en lecture seule.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7322" />
+            <location filename="../zscaler_api_client.py" line="7364" />
             <source>Configure a host for the active product before running a chain.</source>
-            <translation>Configure a host for the active product before running a chain.</translation>
+            <translation>Configurez un hôte pour le produit actif avant d'exécuter une chaîne.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7332" />
+            <location filename="../zscaler_api_client.py" line="7374" />
             <source>Each chain step must stay on the active product host.</source>
-            <translation>Each chain step must stay on the active product host.</translation>
+            <translation>Chaque étape de la chaîne doit rester sur l'hôte de produit actif.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7348" />
+            <location filename="../zscaler_api_client.py" line="7390" />
             <source>Fix the chain validation errors before running it.</source>
-            <translation>Fix the chain validation errors before running it.</translation>
+            <translation>Corrigez les erreurs de validation de la chaîne avant de l'exécuter.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7352" />
+            <location filename="../zscaler_api_client.py" line="7394" />
             <source>Read-only mode blocks write requests. Change the local role in Operations Center to continue.</source>
-            <translation>Read-only mode blocks write requests. Change the local role in Operations Center to continue.</translation>
+            <translation>Le mode lecture seule bloque les demandes d’écriture. Modifiez le rôle local dans le Centre d’opérations pour continuer.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7354" />
+            <location filename="../zscaler_api_client.py" line="7396" />
             <source>Authenticate the active product before running a chain.</source>
-            <translation>Authenticate the active product before running a chain.</translation>
+            <translation>Authentifiez le produit actif avant d'exécuter une chaîne.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7355" />
+            <location filename="../zscaler_api_client.py" line="7397" />
             <source>Run {count} API step(s) sequentially against the active environment?</source>
             <translation>Run {count} API step(s) sequentially against the active environment?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7357" />
+            <location filename="../zscaler_api_client.py" line="7399" />
             <source>The chain contains write operations; review and approve before continuing.</source>
-            <translation>The chain contains write operations; review and approve before continuing.</translation>
+            <translation>La chaîne contient des opérations d'écriture ; examiner et approuver avant de continuer.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7372" />
+            <location filename="../zscaler_api_client.py" line="7414" />
             <source>Running API chain step {completed} of {total}...</source>
             <translation>Running API chain step {completed} of {total}...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7420" />
+            <location filename="../zscaler_api_client.py" line="7462" />
             <source>API chain completed: {successful} succeeded, {failed} failed.</source>
             <translation>API chain completed: {successful} succeeded, {failed} failed.</translation>
         </message>
         <message>
             <source>Metrics are local and contain no credentials.</source>
-            <translation type="vanished">Metrics are local and contain no credentials.</translation>
+            <translation>Les métriques sont locales et ne contiennent aucune information d'identification.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7592" />
+            <location filename="../zscaler_api_client.py" line="7634" />
             <source>Policy export</source>
-            <translation>Policy export</translation>
+            <translation>Exportation de règles</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7593" />
+            <location filename="../zscaler_api_client.py" line="7635" />
             <source>Export policy</source>
-            <translation>Export policy</translation>
+            <translation>Politique d'exportation</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7602" />
+            <location filename="../zscaler_api_client.py" line="7644" />
             <source>Compliance</source>
-            <translation>Compliance</translation>
+            <translation>Conformité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7626" />
+            <location filename="../zscaler_api_client.py" line="7668" />
             <source>Alert threshold must be a positive integer.</source>
-            <translation>Alert threshold must be a positive integer.</translation>
+            <translation>Le seuil d'alerte doit être un entier positif.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7640" />
-            <source>Governance settings saved.</source>
-            <translation>Governance settings saved.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7644" />
-            <source>Use OneAPI or legacy clients locally</source>
-            <translation>Use OneAPI or legacy clients locally</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7644" />
-            <source>AI-assisted, tool-scoped exploration</source>
-            <translation>AI-assisted, tool-scoped exploration</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7644" />
-            <source>Export existing ZIA/ZPA configuration to Terraform</source>
-            <translation>Export existing ZIA/ZPA configuration to Terraform</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7647" />
-            <source>Available</source>
-            <translation>Available</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7647" />
-            <source>Not installed</source>
-            <translation>Not installed</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="7679" />
-            <source>Prepare an integration first.</source>
-            <translation>Prepare an integration first.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6644" />
             <location filename="../zscaler_api_client.py" line="7682" />
+            <source>Governance settings saved.</source>
+            <translation>Paramètres de gouvernance enregistrés.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7686" />
+            <source>Use OneAPI or legacy clients locally</source>
+            <translation>Utilisez OneAPI ou des clients existants localement</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7686" />
+            <source>AI-assisted, tool-scoped exploration</source>
+            <translation>Exploration assistée par l'IA et à l'échelle des outils</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7686" />
+            <source>Export existing ZIA/ZPA configuration to Terraform</source>
+            <translation>Exporter la configuration ZIA/ZPA existante vers Terraform</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7689" />
+            <source>Available</source>
+            <translation>Disponible</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7689" />
+            <source>Not installed</source>
+            <translation>Non installé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7721" />
+            <source>Prepare an integration first.</source>
+            <translation>Préparez d’abord une intégration.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6686" />
+            <location filename="../zscaler_api_client.py" line="7724" />
             <source>Copied to clipboard</source>
-            <translation>Copied to clipboard</translation>
+            <translation>Copié dans le presse-papiers</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7424" />
+            <location filename="../zscaler_api_client.py" line="7466" />
             <source>The chain stopped after the first failed step.</source>
-            <translation>The chain stopped after the first failed step.</translation>
+            <translation>La chaîne s'est arrêtée après l'échec du premier pas.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7576" />
-            <location filename="../zscaler_api_client.py" line="7860" />
+            <location filename="../zscaler_api_client.py" line="7618" />
+            <location filename="../zscaler_api_client.py" line="7902" />
             <source>Enabled</source>
-            <translation>Enabled</translation>
+            <translation>Activé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7576" />
+            <location filename="../zscaler_api_client.py" line="7618" />
             <source>Disabled</source>
-            <translation>Disabled</translation>
+            <translation>Désactivé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7582" />
+            <location filename="../zscaler_api_client.py" line="7624" />
             <source>Allow rule has no conditions</source>
-            <translation>Allow rule has no conditions</translation>
+            <translation>La règle d'autorisation n'a aucune condition</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7582" />
+            <location filename="../zscaler_api_client.py" line="7624" />
             <source>Rule is disabled</source>
-            <translation>Rule is disabled</translation>
+            <translation>La règle est désactivée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7583" />
+            <location filename="../zscaler_api_client.py" line="7625" />
             <source>Rule name is duplicated</source>
-            <translation>Rule name is duplicated</translation>
+            <translation>Le nom de la règle est dupliqué</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7583" />
+            <location filename="../zscaler_api_client.py" line="7625" />
             <source>Rule action is unspecified</source>
-            <translation>Rule action is unspecified</translation>
+            <translation>L'action de la règle n'est pas spécifiée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7612" />
+            <location filename="../zscaler_api_client.py" line="7654" />
             <source>Rules evaluated</source>
-            <translation>Rules evaluated</translation>
+            <translation>Règles évaluées</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7612" />
+            <location filename="../zscaler_api_client.py" line="7654" />
             <source>Matched rule</source>
-            <translation>Matched rule</translation>
+            <translation>Règle correspondante</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7615" />
+            <location filename="../zscaler_api_client.py" line="7657" />
             <source>Matched</source>
-            <translation>Matched</translation>
+            <translation>Correspondant</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7615" />
+            <location filename="../zscaler_api_client.py" line="7657" />
             <source>Not matched</source>
-            <translation>Not matched</translation>
+            <translation>Ne correspond pas</translation>
         </message>
         <message>
             <source>Webhook test</source>
-            <translation type="vanished">Webhook test</translation>
+            <translation>Test de webhook</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7796" />
+            <location filename="../zscaler_api_client.py" line="7838" />
             <source>Configure a webhook endpoint in Governance first.</source>
-            <translation>Configure a webhook endpoint in Governance first.</translation>
+            <translation>Configurez d’abord un point de terminaison webhook dans Governance.</translation>
         </message>
         <message>
             <source>Webhook endpoints must use HTTPS unless they are local.</source>
-            <translation type="vanished">Webhook endpoints must use HTTPS unless they are local.</translation>
+            <translation>Les points de terminaison du webhook doivent utiliser HTTPS, sauf s'ils sont locaux.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7788" />
+            <location filename="../zscaler_api_client.py" line="7830" />
             <source>Send a masked connectivity test to the configured webhook endpoint?</source>
-            <translation>Send a masked connectivity test to the configured webhook endpoint?</translation>
+            <translation>Envoyer un test de connectivité masqué au point de terminaison du webhook configuré ?</translation>
         </message>
         <message>
             <source>Masked webhook test succeeded (HTTP {status}).</source>
-            <translation type="vanished">Masked webhook test succeeded (HTTP {status}).</translation>
+            <translation>Masked webhook test succeeded (HTTP {status}).</translation>
         </message>
         <message>
             <source>Masked webhook test failed: {error}</source>
-            <translation type="vanished">Masked webhook test failed: {error}</translation>
+            <translation>Masked webhook test failed: {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7872" />
-            <location filename="../zscaler_api_client.py" line="7890" />
-            <location filename="../zscaler_api_client.py" line="7892" />
-            <location filename="../zscaler_api_client.py" line="7906" />
-            <location filename="../zscaler_api_client.py" line="7922" />
-            <location filename="../zscaler_api_client.py" line="7928" />
-            <location filename="../zscaler_api_client.py" line="7941" />
-            <location filename="../zscaler_api_client.py" line="7944" />
+            <location filename="../zscaler_api_client.py" line="7914" />
+            <location filename="../zscaler_api_client.py" line="7932" />
+            <location filename="../zscaler_api_client.py" line="7934" />
             <location filename="../zscaler_api_client.py" line="7948" />
-            <location filename="../zscaler_api_client.py" line="7957" />
-            <location filename="../zscaler_api_client.py" line="7971" />
-            <location filename="../zscaler_api_client.py" line="7980" />
+            <location filename="../zscaler_api_client.py" line="7964" />
+            <location filename="../zscaler_api_client.py" line="7970" />
+            <location filename="../zscaler_api_client.py" line="7983" />
+            <location filename="../zscaler_api_client.py" line="7986" />
+            <location filename="../zscaler_api_client.py" line="7990" />
+            <location filename="../zscaler_api_client.py" line="7999" />
+            <location filename="../zscaler_api_client.py" line="8013" />
+            <location filename="../zscaler_api_client.py" line="8022" />
             <source>Scheduled report</source>
-            <translation>Scheduled report</translation>
+            <translation>Rapport planifié</translation>
         </message>
         <message>
             <source>Report name and cadence:</source>
-            <translation type="vanished">Report name and cadence:</translation>
+            <translation>Nom et cadence du rapport :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7983" />
+            <location filename="../zscaler_api_client.py" line="8025" />
             <source>Save support bundle</source>
-            <translation>Save support bundle</translation>
+            <translation>Enregistrer le pack de support</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7988" />
+            <location filename="../zscaler_api_client.py" line="8030" />
             <source>Support bundle</source>
-            <translation>Support bundle</translation>
+            <translation>Offre groupée d'assistance</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7988" />
+            <location filename="../zscaler_api_client.py" line="8030" />
             <source>A redacted support bundle was created.</source>
-            <translation>A redacted support bundle was created.</translation>
+            <translation>Un ensemble de support rédigé a été créé.</translation>
+        </message>
+    </context>
+    <context>
+        <name>PacWorkspaceDialog</name>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8072" />
+            <location filename="../zscaler_api_client.py" line="8352" />
+            <source>PAC Workspace</source>
+            <translation>Espace de travail PAC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8076" />
+            <source>Create and verify PAC files locally. API operations are prepared in the request editor and are never sent or deployed automatically.</source>
+            <translation>Créez et vérifiez les fichiers PAC localement. Les opérations API sont préparées dans l'éditeur de requêtes et ne sont jamais envoyées ou déployées automatiquement.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8081" />
+            <source>PAC experience:</source>
+            <translation>Expérience PAC :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8083" />
+            <source>Guided (recommended)</source>
+            <translation>Guidé (recommandé)</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8084" />
+            <source>Advanced</source>
+            <translation>Avancé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8101" />
+            <source>PAC name:</source>
+            <translation>Nom du CAP :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8102" />
+            <source>Change note:</source>
+            <translation>Remarque sur le changement :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8103" />
+            <source>Hosted PAC URL (optional for ZCC):</source>
+            <translation>URL du PAC hébergé (facultatif pour ZCC) :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8104" />
+            <source>Existing ZIA PAC ID (for lifecycle actions):</source>
+            <translation>ID ZIA PAC existant (pour les actions de cycle de vie) :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8105" />
+            <source>ZIA PAC version:</source>
+            <translation>Version ZIAPAC :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8106" />
+            <source>ZIA version action:</source>
+            <translation>Action de version ZIA :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8113" />
+            <source>Start with a safe baseline. Enter only internal destinations that must bypass Zscaler; all other traffic uses the selected gateway and failover.</source>
+            <translation>Commencez avec une base de référence sûre. Entrez uniquement les destinations internes qui doivent contourner Zscaler ; tout le reste du trafic utilise la passerelle et le basculement sélectionnés.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8121" />
+            <source>Direct-bypass host patterns (one per line):</source>
+            <translation>Modèles d'hôte à contournement direct (un par ligne) :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8122" />
+            <source>Primary gateway:</source>
+            <translation>Passerelle principale :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8123" />
+            <source>Secondary gateway:</source>
+            <translation>Passerelle secondaire :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8126" />
+            <source>Create guided PAC</source>
+            <translation>Créer un PAC guidé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8127" />
+            <source>Load safe example</source>
+            <translation>Exemple de chargement sécurisé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8131" />
+            <source>Guided setup</source>
+            <translation>Configuration guidée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8133" />
+            <source>PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.</source>
+            <translation>PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8139" />
+            <source>Load PAC…</source>
+            <translation>Charger PAC…</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8140" />
+            <source>Save PAC…</source>
+            <translation>Enregistrer le PAC…</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8141" />
+            <source>Save local draft</source>
+            <translation>Enregistrer le brouillon local</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8144" />
+            <source>Author</source>
+            <translation>Auteur</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8147" />
+            <source>Variables (JSON). Standard Zscaler names: </source>
+            <translation>Variables (JSON). Noms Zscaler standard : </translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8151" />
+            <source>Test URL:</source>
+            <translation>URL de test :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8153" />
+            <source>Apply variables</source>
+            <translation>Appliquer des variables</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8154" />
+            <source>Run static verification</source>
+            <translation>Exécuter une vérification statique</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8155" />
+            <source>Preview decision</source>
+            <translation>Aperçu de la décision</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8158" />
+            <source>Verify</source>
+            <translation>Vérifier</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8161" />
+            <source>PAC reference and review help. The verifier never executes JavaScript; validate in ZIA and test a pilot group before deployment.</source>
+            <translation>Aide à la référence et à la révision du PAC. Le vérificateur n'exécute jamais JavaScript ; valider dans ZIA et tester un groupe pilote avant déploiement.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8162" />
+            <source>Variable or function</source>
+            <translation>Variable ou fonction</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8162" />
+            <source>Purpose / guidance</source>
+            <translation>Objectif/orientation</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8170" />
+            <source>Roll out in stages: validate, test representative URLs, stage to a small pilot group, then deploy. Prefer host-pattern checks; avoid DNS helpers in Client Connector PAC files where possible.</source>
+            <translation>Déployez par étapes : validez, testez les URL représentatives, passez à un petit groupe pilote, puis déployez. Préférez les vérifications de modèle d’hôte ; évitez les assistants DNS dans les fichiers PAC du connecteur client lorsque cela est possible.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8172" />
+            <source>Help and reference</source>
+            <translation>Aide et référence</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8175" />
+            <source>Map supplied ZIA PAC metadata to ZCC forwarding-profile actions. Matches use hosted PAC URLs or an inline PAC content fingerprint; names alone are never treated as a match.</source>
+            <translation>Mapper les métadonnées ZIA PAC fournies aux actions de profil de transfert ZCC. Les correspondances utilisent des URL PAC hébergées ou une empreinte digitale de contenu PAC en ligne ; les noms seuls ne sont jamais traités comme une correspondance.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8178" />
+            <source>ZIA PAC list JSON</source>
+            <translation>Liste ZIA PAC JSON</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8180" />
+            <source>ZCC forwarding-profile list JSON</source>
+            <translation>Liste de profils de transfert ZCC JSON</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8184" />
+            <source>Build PAC mappings</source>
+            <translation>Créer des mappages PAC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8185" />
+            <location filename="../zscaler_api_client.py" line="8220" />
+            <source>Prepare ZIA PAC list</source>
+            <translation>Préparer la liste ZIA PAC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8186" />
+            <location filename="../zscaler_api_client.py" line="8212" />
+            <source>Prepare ZCC profile list</source>
+            <translation>Préparer la liste de profils ZCC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8189" />
+            <source>ZCC profile</source>
+            <translation>Profil ZCC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8189" />
+            <source>Action / network</source>
+            <translation>Actions/réseau</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8189" />
+            <source>PAC type</source>
+            <translation>Type de CAP</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8189" />
+            <source>PAC reference</source>
+            <translation>Référence PAC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8189" />
+            <source>ZIA status</source>
+            <translation>Statut ZIA</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8189" />
+            <source>Mapping result</source>
+            <translation>Résultat du mappage</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8189" />
+            <source>Profile ID</source>
+            <translation>Identifiant du profil</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8192" />
+            <location filename="../zscaler_api_client.py" line="8265" />
+            <source>PAC mappings</source>
+            <translation>Mappages PAC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8195" />
+            <source>Search the bundled Zscaler Configuration Center index of Cloud Enforcement Node ranges, proxy/VPN hostnames, GRE and extranet virtual IP addresses. The PAC editor shows a help balloon when a line references an indexed endpoint.</source>
+            <translation>Recherchez dans l'index fourni du centre de configuration Zscaler les plages de nœuds Cloud Enforcement, les noms d'hôtes proxy/VPN, les adresses IP virtuelles GRE et extranet. L'éditeur PAC affiche une bulle d'aide lorsqu'une ligne fait référence à un point de terminaison indexé.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8199" />
+            <source>Search city, CIDR, hostname, GRE or VPN address</source>
+            <translation>Rechercher une ville, un CIDR, un nom d'hôte, une adresse GRE ou VPN</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8200" />
+            <source>Search data centers</source>
+            <translation>Rechercher des centres de données</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8203" />
+            <source>Continent</source>
+            <translation>Continent</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8203" />
+            <source>Data center</source>
+            <translation>Centre de données</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8203" />
+            <source>CIDR range</source>
+            <translation>Plage CIDR</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8203" />
+            <source>Proxy hostname</source>
+            <translation>Nom d'hôte du proxy</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8203" />
+            <source>VPN hostname</source>
+            <translation>Nom d'hôte VPN</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8203" />
+            <source>GRE VIP</source>
+            <translation>GRE VIP</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8203" />
+            <source>Extranet VIP</source>
+            <translation>Extranet VIP</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8203" />
+            <source>Coordinates</source>
+            <translation>Coordonnées</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8206" />
+            <source>Zscaler data centers</source>
+            <translation>Centres de données Zscaler</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8209" />
+            <source>Paste a forwarding profile returned by ZCC, or first prepare the profile-list request. Existing profile fields are preserved when PAC fields are updated.</source>
+            <translation>Collez un profil de transfert renvoyé par ZCC ou préparez d'abord la demande de liste de profils. Les champs de profil existants sont conservés lorsque les champs PAC sont mis à jour.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8213" />
+            <source>Prepare ZCC update</source>
+            <translation>Préparer la mise à jour ZCC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8215" />
+            <source>ZCC / Mobile Portal</source>
+            <translation>ZCC / Portail mobile</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8218" />
+            <source>Prepare ZIA validation</source>
+            <translation>Préparer la validation ZIA</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8219" />
+            <source>Prepare ZIA hosted PAC upload</source>
+            <translation>Préparer le téléchargement du PAC hébergé par ZIA</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8221" />
+            <source>Prepare ZIA version action</source>
+            <translation>Préparer l'action de version ZIA</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8222" />
+            <source>Close</source>
+            <translation>Fermer</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8240" />
+            <source>Guided mode creates a minimal, reviewable PAC. Switch to Advanced to edit JavaScript, update ZCC profiles, or prepare ZIA lifecycle actions.</source>
+            <translation>Le mode guidé crée un PAC minimal et révisable. Passez à Avancé pour modifier JavaScript, mettre à jour les profils ZCC ou préparer les actions du cycle de vie ZIA.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8241" />
+            <source>Advanced mode exposes the PAC editor, ZCC profile patching, and ZIA version lifecycle actions. Every write remains explicit.</source>
+            <translation>Le mode avancé expose l'éditeur PAC, les correctifs du profil ZCC et les actions du cycle de vie de la version ZIA. Chaque écriture reste explicite.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8254" />
+            <source>Guided PAC</source>
+            <translation>CAP guidé</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8257" />
+            <source>Guided PAC created. Review the verification findings, test a URL, then prepare ZIA validation.</source>
+            <translation>PAC guidé créé. Examinez les résultats de la vérification, testez une URL, puis préparez la validation ZIA.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8265" />
+            <source>Both mapping inputs must be valid JSON: </source>
+            <translation>Les deux entrées de mappage doivent être un JSON valide : </translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8274" />
+            <source>Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.</source>
+            <translation>Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8295" />
+            <source>{matches} matching endpoint records from {total} indexed Zscaler data-center records. Source: {source}</source>
+            <translation>{matches} matching endpoint records from {total} indexed Zscaler data-center records. Source: {source}</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8304" />
+            <location filename="../zscaler_api_client.py" line="8306" />
+            <location filename="../zscaler_api_client.py" line="8333" />
+            <source>PAC variables</source>
+            <translation>Variables PAC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8304" />
+            <source>Variables must be valid JSON: </source>
+            <translation>Les variables doivent être du JSON valide : </translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8306" />
+            <source>Variables must be a JSON object with text or numeric values.</source>
+            <translation>Les variables doivent être un objet JSON avec du texte ou des valeurs numériques.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8315" />
+            <source>none</source>
+            <translation>aucun</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8316" />
+            <source>Detected variables: </source>
+            <translation>Variables détectées : </translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8320" />
+            <source>Improvement tips:</source>
+            <translation>Conseils d'amélioration :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8332" />
+            <source>Variables applied.</source>
+            <translation>Variables appliquées.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8332" />
+            <source>Variables applied; missing values were retained: </source>
+            <translation>Variables appliquées ; les valeurs manquantes ont été retenues : </translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8337" />
+            <source>Preview</source>
+            <translation>Aperçu</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8352" />
+            <source>PAC draft saved locally.</source>
+            <translation>Brouillon PAC enregistré localement.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8355" />
+            <location filename="../zscaler_api_client.py" line="8360" />
+            <source>Load PAC</source>
+            <translation>Charger le PAC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8363" />
+            <location filename="../zscaler_api_client.py" line="8368" />
+            <source>Save PAC</source>
+            <translation>Enregistrer le PAC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8376" />
+            <source>PAC request prepared</source>
+            <translation>Demande de PAC préparée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8376" />
+            <source>The request was placed in the main editor. Review it and explicitly select Send Request; no deployment action has been performed.</source>
+            <translation>La demande a été placée dans l'éditeur principal. Examinez-le et sélectionnez explicitement Envoyer la demande ; aucune action de déploiement n'a été effectuée.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8381" />
+            <source>PAC verification</source>
+            <translation>Vérification PAC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8381" />
+            <source>Resolve PAC errors before preparing an API write.</source>
+            <translation>Résolvez les erreurs PAC avant de préparer une écriture API.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8397" />
+            <source>ZIA PAC lifecycle</source>
+            <translation>Cycle de vie du ZIA PAC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8397" />
+            <source>Enter a numeric PAC ID and version before preparing a lifecycle action.</source>
+            <translation>Entrez un ID PAC numérique et une version avant de préparer une action de cycle de vie.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8411" />
+            <location filename="../zscaler_api_client.py" line="8413" />
+            <source>ZCC forwarding profile</source>
+            <translation>Profil de transfert ZCC</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8411" />
+            <source>Profile must be valid JSON: </source>
+            <translation>Le profil doit être un JSON valide : </translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8413" />
+            <source>Paste one ZCC forwarding profile object with its id before preparing an update.</source>
+            <translation>Collez un objet de profil de transfert ZCC avec son identifiant avant de préparer une mise à jour.</translation>
         </message>
     </context>
     <context>
         <name>PolicyTwinGraph</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="3814" />
+            <location filename="../zscaler_api_client.py" line="3856" />
             <source>{count} condition(s)</source>
             <translation>{count} condition(s)</translation>
         </message>
@@ -5605,159 +6097,159 @@ Ada,ada@example.com</translation>
     <context>
         <name>ResponseComparisonDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="5998" />
-            <location filename="../zscaler_api_client.py" line="6058" />
+            <location filename="../zscaler_api_client.py" line="6040" />
+            <location filename="../zscaler_api_client.py" line="6100" />
             <source>Response drift comparison</source>
-            <translation>Response drift comparison</translation>
+            <translation>Comparaison de dérive de réponse</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6000" />
+            <location filename="../zscaler_api_client.py" line="6042" />
             <source>Compare the active masked response with a local ZS API Exchange baseline. Matching records are aligned by id, UUID, resourceId, key, or name. No API request is sent.</source>
-            <translation>Compare the active masked response with a local ZS API Exchange baseline. Matching records are aligned by id, UUID, resourceId, key, or name. No API request is sent.</translation>
+            <translation>Comparez la réponse masquée active avec une référence locale ZS API Exchange. Les enregistrements correspondants sont alignés par identifiant, UUID, resourceId, clé ou nom. Aucune requête API n'est envoyée.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6003" />
+            <location filename="../zscaler_api_client.py" line="6045" />
             <source>Baseline:</source>
-            <translation>Baseline:</translation>
+            <translation>Base de référence :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6004" />
+            <location filename="../zscaler_api_client.py" line="6046" />
             <source>Choose a masked response exchange file</source>
-            <translation>Choose a masked response exchange file</translation>
+            <translation>Choisir un fichier d'échange de réponses masqué</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6005" />
+            <location filename="../zscaler_api_client.py" line="6047" />
             <source>Open baseline…</source>
-            <translation>Open baseline…</translation>
+            <translation>Base de référence ouverte…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6008" />
+            <location filename="../zscaler_api_client.py" line="6050" />
             <source>Ignore volatile fields:</source>
-            <translation>Ignore volatile fields:</translation>
+            <translation>Ignorer les champs volatiles :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6010" />
+            <location filename="../zscaler_api_client.py" line="6052" />
             <source>Comma-separated field names ignored at every JSON depth. Secrets are always masked independently.</source>
-            <translation>Comma-separated field names ignored at every JSON depth. Secrets are always masked independently.</translation>
+            <translation>Noms de champs séparés par des virgules ignorés à chaque profondeur JSON. Les secrets sont toujours masqués indépendamment.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6011" />
+            <location filename="../zscaler_api_client.py" line="6053" />
             <source>Compare responses</source>
-            <translation>Compare responses</translation>
+            <translation>Comparez les réponses</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6013" />
+            <location filename="../zscaler_api_client.py" line="6055" />
             <source>Open a baseline to calculate drift.</source>
-            <translation>Open a baseline to calculate drift.</translation>
+            <translation>Ouvrez une ligne de base pour calculer la dérive.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6016" />
+            <location filename="../zscaler_api_client.py" line="6058" />
             <source>Impact</source>
             <translation>Impact</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6016" />
+            <location filename="../zscaler_api_client.py" line="6058" />
             <source>Change</source>
-            <translation>Change</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6016" />
-            <source>JSON path</source>
-            <translation>JSON path</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6016" />
-            <source>Identity</source>
-            <translation>Identity</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6016" />
-            <source>Baseline value</source>
-            <translation>Baseline value</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6016" />
-            <source>Current value</source>
-            <translation>Current value</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6020" />
-            <source>Export masked drift…</source>
-            <translation>Export masked drift…</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6021" />
-            <source>Close</source>
-            <translation>Close</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="6030" />
-            <location filename="../zscaler_api_client.py" line="6035" />
-            <source>Open response baseline</source>
-            <translation>Open response baseline</translation>
+            <translation>Changement</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6058" />
+            <source>JSON path</source>
+            <translation>Chemin JSON</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6058" />
+            <source>Identity</source>
+            <translation>Identité</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6058" />
+            <source>Baseline value</source>
+            <translation>Valeur de référence</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6058" />
+            <source>Current value</source>
+            <translation>Valeur actuelle</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6062" />
+            <source>Export masked drift…</source>
+            <translation>Exporter la dérive masquée…</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6063" />
+            <source>Close</source>
+            <translation>Fermer</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6072" />
+            <location filename="../zscaler_api_client.py" line="6077" />
+            <source>Open response baseline</source>
+            <translation>Base de référence de réponse ouverte</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="6100" />
             <source>Open a baseline response exchange first.</source>
-            <translation>Open a baseline response exchange first.</translation>
+            <translation>Ouvrez d’abord un échange de réponses de base.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6065" />
+            <location filename="../zscaler_api_client.py" line="6107" />
             <source>No drift found in the compared scope.</source>
-            <translation>No drift found in the compared scope.</translation>
+            <translation>Aucune dérive trouvée dans le périmètre comparé.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6067" />
+            <location filename="../zscaler_api_client.py" line="6109" />
             <source>{total} change(s): {added} added, {removed} removed, {changed} changed · {high} high-impact</source>
             <translation>{total} change(s): {added} added, {removed} removed, {changed} changed · {high} high-impact</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6070" />
+            <location filename="../zscaler_api_client.py" line="6112" />
             <source>Result truncated at {maximum} changes</source>
             <translation>Result truncated at {maximum} changes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6071" />
+            <location filename="../zscaler_api_client.py" line="6113" />
             <source>Baseline {baseline} · current {current}</source>
             <translation>Baseline {baseline} · current {current}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6072" />
+            <location filename="../zscaler_api_client.py" line="6114" />
             <source>Added</source>
-            <translation>Added</translation>
+            <translation>Ajouté</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6072" />
+            <location filename="../zscaler_api_client.py" line="6114" />
             <source>Removed</source>
-            <translation>Removed</translation>
+            <translation>Supprimé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6072" />
+            <location filename="../zscaler_api_client.py" line="6114" />
             <source>Changed</source>
-            <translation>Changed</translation>
+            <translation>Changé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6072" />
+            <location filename="../zscaler_api_client.py" line="6114" />
             <source>High impact</source>
-            <translation>High impact</translation>
+            <translation>Fort impact</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="6088" />
+            <location filename="../zscaler_api_client.py" line="6130" />
             <source>Export masked drift</source>
-            <translation>Export masked drift</translation>
+            <translation>Exporter la dérive masquée</translation>
         </message>
     </context>
     <context>
         <name>SettingsDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="4569" />
+            <location filename="../zscaler_api_client.py" line="4611" />
             <source>Settings</source>
             <translation>Paramètres</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4595" />
+            <location filename="../zscaler_api_client.py" line="4637" />
             <source>ZIA (Zscaler Internet Access)</source>
-            <translation>ZIA (Zscaler Internet Access)</translation>
+            <translation>ZIA (accès Internet Zscaler)</translation>
         </message>
         <message>
             <source>Cloud:</source>
@@ -5776,9 +6268,9 @@ Ada,ada@example.com</translation>
             <translation type="vanished">Mot de passe :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4629" />
+            <location filename="../zscaler_api_client.py" line="4671" />
             <source>ZPA (Zscaler Private Access)</source>
-            <translation>ZPA (Zscaler Private Access)</translation>
+            <translation>ZPA (accès privé Zscaler)</translation>
         </message>
         <message>
             <source>Client ID:</source>
@@ -5793,9 +6285,9 @@ Ada,ada@example.com</translation>
             <translation type="vanished">ID client :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4661" />
+            <location filename="../zscaler_api_client.py" line="4703" />
             <source>ZDX (Zscaler Digital Experience)</source>
-            <translation>ZDX (Zscaler Digital Experience)</translation>
+            <translation>ZDX (expérience numérique Zscaler)</translation>
         </message>
         <message>
             <source>Key ID:</source>
@@ -5806,12 +6298,12 @@ Ada,ada@example.com</translation>
             <translation type="vanished">Secret de clé :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4695" />
+            <location filename="../zscaler_api_client.py" line="4737" />
             <source>ZCC (Client Connector)</source>
-            <translation>ZCC (Client Connector)</translation>
+            <translation>ZCC (connecteur client)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4760" />
+            <location filename="../zscaler_api_client.py" line="4802" />
             <source>ZIdentity (Identity &amp; Access)</source>
             <translation>ZIdentity (Identité et accès)</translation>
         </message>
@@ -5820,914 +6312,914 @@ Ada,ada@example.com</translation>
             <translation type="vanished">Domaine personnalisé :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4787" />
+            <location filename="../zscaler_api_client.py" line="4829" />
             <source>ZTW (Zero Trust Workloads)</source>
-            <translation>ZTW (Zero Trust Workloads)</translation>
+            <translation>ZTW (charges de travail Zero Trust)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4814" />
+            <location filename="../zscaler_api_client.py" line="4856" />
             <source>ZWA (Workflow Automation)</source>
-            <translation>ZWA (Workflow Automation)</translation>
+            <translation>ZWA (automatisation du flux de travail)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4841" />
+            <location filename="../zscaler_api_client.py" line="4883" />
             <source>EASM (Attack Surface Management)</source>
-            <translation>EASM (Attack Surface Management)</translation>
+            <translation>EASM (gestion de la surface d'attaque)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4873" />
-            <location filename="../zscaler_api_client.py" line="5148" />
+            <location filename="../zscaler_api_client.py" line="4915" />
+            <location filename="../zscaler_api_client.py" line="5190" />
             <source>Credentials</source>
             <translation>Identifiants</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4880" />
+            <location filename="../zscaler_api_client.py" line="4922" />
             <source>Network</source>
             <translation>Réseau</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4888" />
+            <location filename="../zscaler_api_client.py" line="4930" />
             <source>Request Timeout (seconds):</source>
             <translation>Délai d'attente (secondes) :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4601" />
-            <location filename="../zscaler_api_client.py" line="4635" />
-            <location filename="../zscaler_api_client.py" line="4667" />
-            <location filename="../zscaler_api_client.py" line="4701" />
-            <location filename="../zscaler_api_client.py" line="4729" />
-            <location filename="../zscaler_api_client.py" line="4766" />
-            <location filename="../zscaler_api_client.py" line="4793" />
-            <location filename="../zscaler_api_client.py" line="4820" />
-            <location filename="../zscaler_api_client.py" line="4847" />
-            <location filename="../zscaler_api_client.py" line="4896" />
-            <location filename="../zscaler_api_client.py" line="4912" />
-            <location filename="../zscaler_api_client.py" line="4960" />
-            <location filename="../zscaler_api_client.py" line="4966" />
-            <location filename="../zscaler_api_client.py" line="4984" />
+            <location filename="../zscaler_api_client.py" line="4643" />
+            <location filename="../zscaler_api_client.py" line="4677" />
+            <location filename="../zscaler_api_client.py" line="4709" />
+            <location filename="../zscaler_api_client.py" line="4743" />
+            <location filename="../zscaler_api_client.py" line="4771" />
+            <location filename="../zscaler_api_client.py" line="4808" />
+            <location filename="../zscaler_api_client.py" line="4835" />
+            <location filename="../zscaler_api_client.py" line="4862" />
+            <location filename="../zscaler_api_client.py" line="4889" />
+            <location filename="../zscaler_api_client.py" line="4938" />
+            <location filename="../zscaler_api_client.py" line="4954" />
+            <location filename="../zscaler_api_client.py" line="5002" />
             <location filename="../zscaler_api_client.py" line="5008" />
+            <location filename="../zscaler_api_client.py" line="5026" />
+            <location filename="../zscaler_api_client.py" line="5050" />
             <source>Enabled</source>
             <translation>Activé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4723" />
+            <location filename="../zscaler_api_client.py" line="4765" />
             <source>OneAPI (Unified v3 Framework)</source>
-            <translation>OneAPI (Unified v3 Framework)</translation>
+            <translation>OneAPI (cadre unifié v3)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4896" />
-            <location filename="../zscaler_api_client.py" line="4912" />
-            <location filename="../zscaler_api_client.py" line="4960" />
-            <location filename="../zscaler_api_client.py" line="4966" />
-            <location filename="../zscaler_api_client.py" line="4984" />
+            <location filename="../zscaler_api_client.py" line="4938" />
+            <location filename="../zscaler_api_client.py" line="4954" />
+            <location filename="../zscaler_api_client.py" line="5002" />
             <location filename="../zscaler_api_client.py" line="5008" />
+            <location filename="../zscaler_api_client.py" line="5026" />
+            <location filename="../zscaler_api_client.py" line="5050" />
             <source>Disabled</source>
             <translation>Désactivé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4913" />
+            <location filename="../zscaler_api_client.py" line="4955" />
             <source>&lt;small&gt;&lt;i&gt;⚠️ Only disable for testing&lt;/i&gt;&lt;/small&gt;</source>
-            <translation>&lt;small&gt;&lt;i&gt;⚠️ Désactiver uniquement pour les tests&lt;/i&gt;&lt;/small&gt;</translation>
+            <translation>&lt;small&gt;&lt;i&gt;⚠️ Only disable for testing&lt;/i&gt;&lt;/small&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4918" />
+            <location filename="../zscaler_api_client.py" line="4960" />
             <source>SSL Verification:</source>
             <translation>Vérification SSL :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4923" />
+            <location filename="../zscaler_api_client.py" line="4965" />
             <source>Proxy</source>
-            <translation>Proxy</translation>
+            <translation>Procuration</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4929" />
+            <location filename="../zscaler_api_client.py" line="4971" />
             <source>No Proxy</source>
             <translation>Pas de proxy</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4929" />
+            <location filename="../zscaler_api_client.py" line="4971" />
             <source>System Proxy</source>
             <translation>Proxy système</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4929" />
+            <location filename="../zscaler_api_client.py" line="4971" />
             <source>Manual</source>
             <translation>Manuel</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4931" />
+            <location filename="../zscaler_api_client.py" line="4973" />
             <source>Proxy Mode:</source>
             <translation>Mode proxy :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4935" />
+            <location filename="../zscaler_api_client.py" line="4977" />
             <source>Proxy Host:</source>
             <translation>Hôte proxy :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4940" />
+            <location filename="../zscaler_api_client.py" line="4982" />
             <source>Proxy Port:</source>
             <translation>Port proxy :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4943" />
-            <location filename="../zscaler_api_client.py" line="4948" />
+            <location filename="../zscaler_api_client.py" line="4985" />
+            <location filename="../zscaler_api_client.py" line="4990" />
             <source>Optional</source>
             <translation>Optionnel</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4944" />
+            <location filename="../zscaler_api_client.py" line="4986" />
             <source>Proxy Username:</source>
             <translation>Utilisateur proxy :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4949" />
+            <location filename="../zscaler_api_client.py" line="4991" />
             <source>Proxy Password:</source>
             <translation>Mot de passe proxy :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4954" />
+            <location filename="../zscaler_api_client.py" line="4996" />
             <source>Behavior</source>
             <translation>Comportement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4961" />
+            <location filename="../zscaler_api_client.py" line="5003" />
             <source>Auto-authenticate on startup:</source>
             <translation>Auto-authentification au démarrage :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4967" />
+            <location filename="../zscaler_api_client.py" line="5009" />
             <source>Save request history:</source>
             <translation>Sauvegarder l'historique :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4973" />
+            <location filename="../zscaler_api_client.py" line="5015" />
             <source>History limit:</source>
             <translation>Limite d'historique :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4979" />
+            <location filename="../zscaler_api_client.py" line="5021" />
             <source>Default API:</source>
             <translation>API par défaut :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4985" />
+            <location filename="../zscaler_api_client.py" line="5027" />
             <source>Check for updates on startup:</source>
             <translation>Vérifier les mises à jour au démarrage :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4576" />
-            <location filename="../zscaler_api_client.py" line="4990" />
+            <location filename="../zscaler_api_client.py" line="4618" />
+            <location filename="../zscaler_api_client.py" line="5032" />
             <source>Advanced</source>
             <translation>Avancé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4575" />
+            <location filename="../zscaler_api_client.py" line="4617" />
             <source>Basic</source>
-            <translation>Basic</translation>
+            <translation>De base</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4578" />
+            <location filename="../zscaler_api_client.py" line="4620" />
             <source>Interface mode:</source>
-            <translation>Interface mode:</translation>
+            <translation>Mode d'interface :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4685" />
+            <location filename="../zscaler_api_client.py" line="4727" />
             <source>API version:</source>
-            <translation>API version:</translation>
+            <translation>Version API :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4893" />
+            <location filename="../zscaler_api_client.py" line="4935" />
             <source>Maximum upload/download (MB):</source>
-            <translation>Maximum upload/download (MB):</translation>
+            <translation>Téléchargement/téléchargement maximum (Mo) :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4897" />
+            <location filename="../zscaler_api_client.py" line="4939" />
             <source>Retry only GET, HEAD, and OPTIONS after transient network errors or HTTP 408, 429, 502, 503, and 504. Write requests are never retried automatically.</source>
-            <translation>Retry only GET, HEAD, and OPTIONS after transient network errors or HTTP 408, 429, 502, 503, and 504. Write requests are never retried automatically.</translation>
+            <translation>Réessayez uniquement GET, HEAD et OPTIONS après des erreurs réseau passagères ou HTTP 408, 429, 502, 503 et 504. Les demandes d'écriture ne sont jamais réessayées automatiquement.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4898" />
+            <location filename="../zscaler_api_client.py" line="4940" />
             <source>Retry safe reads:</source>
-            <translation>Retry safe reads:</translation>
+            <translation>Réessayez les lectures sécurisées :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4902" />
+            <location filename="../zscaler_api_client.py" line="4944" />
             <source>Maximum read retries:</source>
-            <translation>Maximum read retries:</translation>
+            <translation>Nombre maximal de tentatives de lecture :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4906" />
+            <location filename="../zscaler_api_client.py" line="4948" />
             <source>Maximum seconds to honor from Retry-After; shorter exponential backoff is used when the server omits it.</source>
-            <translation>Maximum seconds to honor from Retry-After; shorter exponential backoff is used when the server omits it.</translation>
+            <translation>Nombre maximum de secondes à honorer après une nouvelle tentative ; un intervalle exponentiel plus court est utilisé lorsque le serveur l'omet.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4907" />
+            <location filename="../zscaler_api_client.py" line="4949" />
             <source>Maximum retry wait (seconds):</source>
-            <translation>Maximum retry wait (seconds):</translation>
+            <translation>Attente maximale de nouvelle tentative (secondes) :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4996" />
+            <location filename="../zscaler_api_client.py" line="5038" />
             <source>Response Display</source>
             <translation>Affichage de la réponse</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5003" />
+            <location filename="../zscaler_api_client.py" line="5045" />
             <source>JSON Indentation:</source>
             <translation>Indentation JSON :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5009" />
+            <location filename="../zscaler_api_client.py" line="5051" />
             <source>Word Wrap:</source>
             <translation>Retour à la ligne :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5015" />
+            <location filename="../zscaler_api_client.py" line="5057" />
             <source>Font Size:</source>
             <translation>Taille de police :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5020" />
+            <location filename="../zscaler_api_client.py" line="5062" />
             <source>Light</source>
             <translation>Clair</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5020" />
+            <location filename="../zscaler_api_client.py" line="5062" />
             <source>Dark</source>
             <translation>Sombre</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5020" />
+            <location filename="../zscaler_api_client.py" line="5062" />
             <source>System</source>
             <translation>Système</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5021" />
+            <location filename="../zscaler_api_client.py" line="5063" />
             <source>Theme:</source>
             <translation>Thème :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5026" />
+            <location filename="../zscaler_api_client.py" line="5068" />
             <source>Display</source>
             <translation>Affichage</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5031" />
-            <location filename="../zscaler_api_client.py" line="5066" />
-            <location filename="../zscaler_api_client.py" line="5143" />
-            <location filename="../zscaler_api_client.py" line="5148" />
-            <source>Privacy</source>
-            <translation>Privacy</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5034" />
-            <source>Secrets only (identifiers visible)</source>
-            <translation>Secrets only (identifiers visible)</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5035" />
-            <source>Obfuscate exports and external integrations (recommended)</source>
-            <translation>Obfuscate exports and external integrations (recommended)</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5036" />
-            <source>Obfuscate exports, integrations, and on-screen data</source>
-            <translation>Obfuscate exports, integrations, and on-screen data</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5038" />
-            <source>Identifier obfuscation:</source>
-            <translation>Identifier obfuscation:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5039" />
-            <source>Credentials and authentication material are always masked. Identifier pseudonyms are stable until the local pseudonym key is rotated; no original-to-pseudonym mapping is stored.</source>
-            <translation>Credentials and authentication material are always masked. Identifier pseudonyms are stable until the local pseudonym key is rotated; no original-to-pseudonym mapping is stored.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5041" />
-            <source>Usernames, display names, and email addresses</source>
-            <translation>Usernames, display names, and email addresses</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5042" />
-            <source>IPv4 and IPv6 addresses</source>
-            <translation>IPv4 and IPv6 addresses</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5043" />
-            <source>Hostnames, domains, and URL hosts</source>
-            <translation>Hostnames, domains, and URL hosts</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5044" />
-            <source>Tenant, customer, organization, and environment names</source>
-            <translation>Tenant, customer, organization, and environment names</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5045" />
-            <source>Object IDs, UUIDs, GUIDs, and client identifiers</source>
-            <translation>Object IDs, UUIDs, GUIDs, and client identifiers</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5046" />
-            <source>Policy, application, group, location, and resource names</source>
-            <translation>Policy, application, group, location, and resource names</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5053" />
-            <source>Rotate local pseudonym key</source>
-            <translation>Rotate local pseudonym key</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5054" />
-            <source>Creates new pseudonyms for future views and exports. Existing files are not modified.</source>
-            <translation>Creates new pseudonyms for future views and exports. Existing files are not modified.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5057" />
-            <location filename="../zscaler_api_client.py" line="5179" />
+            <location filename="../zscaler_api_client.py" line="5073" />
+            <location filename="../zscaler_api_client.py" line="5108" />
             <location filename="../zscaler_api_client.py" line="5185" />
-            <source>Rotate evidence signing key</source>
-            <translation>Rotate evidence signing key</translation>
+            <location filename="../zscaler_api_client.py" line="5190" />
+            <source>Privacy</source>
+            <translation>Confidentialité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5058" />
-            <source>Creates a new Ed25519 key in the system keychain. Existing signed packages remain verifiable with their embedded public keys.</source>
-            <translation>Creates a new Ed25519 key in the system keychain. Existing signed packages remain verifiable with their embedded public keys.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5061" />
-            <location filename="../zscaler_api_client.py" line="5143" />
-            <source>Obfuscation preview</source>
-            <translation>Obfuscation preview</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5063" />
-            <source>Preview of exported or externally shared data using synthetic examples:</source>
-            <translation>Preview of exported or externally shared data using synthetic examples:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5071" />
-            <location filename="../zscaler_api_client.py" line="5110" />
-            <location filename="../zscaler_api_client.py" line="5143" />
-            <location filename="../zscaler_api_client.py" line="5148" />
-            <source>Language</source>
-            <translation>Language</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5074" />
-            <source>System default</source>
-            <translation>System default</translation>
+            <location filename="../zscaler_api_client.py" line="5076" />
+            <source>Secrets only (identifiers visible)</source>
+            <translation>Secrets uniquement (identifiants visibles)</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5077" />
-            <source>Application language:</source>
-            <translation>Application language:</translation>
+            <source>Obfuscate exports and external integrations (recommended)</source>
+            <translation>Masquer les exportations et les intégrations externes (recommandé)</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5078" />
-            <source>System default follows your operating system language. Restart after saving to apply a change.</source>
-            <translation>System default follows your operating system language. Restart after saving to apply a change.</translation>
+            <source>Obfuscate exports, integrations, and on-screen data</source>
+            <translation>Masquer les exportations, les intégrations et les données à l'écran</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5080" />
+            <source>Identifier obfuscation:</source>
+            <translation>Obscurcissement de l'identifiant :</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5081" />
-            <location filename="../zscaler_api_client.py" line="5143" />
-            <source>AI / LLM</source>
-            <translation>AI / LLM</translation>
+            <source>Credentials and authentication material are always masked. Identifier pseudonyms are stable until the local pseudonym key is rotated; no original-to-pseudonym mapping is stored.</source>
+            <translation>Les informations d’identification et le matériel d’authentification sont toujours masqués. Les pseudonymes d'identification sont stables jusqu'à ce que la clé de pseudonyme locale soit alternée ; aucun mappage original-pseudonyme n'est stocké.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5083" />
+            <source>Usernames, display names, and email addresses</source>
+            <translation>Noms d'utilisateur, noms d'affichage et adresses e-mail</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5084" />
-            <source>Local catalog assistant</source>
-            <translation>Local catalog assistant</translation>
+            <source>IPv4 and IPv6 addresses</source>
+            <translation>Adresses IPv4 et IPv6</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5085" />
-            <source>OpenAI-compatible cloud</source>
-            <translation>OpenAI-compatible cloud</translation>
+            <source>Hostnames, domains, and URL hosts</source>
+            <translation>Noms d'hôte, domaines et hôtes d'URL</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5086" />
-            <source>Local OpenAI-compatible server</source>
-            <translation>Local OpenAI-compatible server</translation>
+            <source>Tenant, customer, organization, and environment names</source>
+            <translation>Noms du locataire, du client, de l’organisation et de l’environnement</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5087" />
-            <source>AI provider:</source>
-            <translation>AI provider:</translation>
+            <source>Object IDs, UUIDs, GUIDs, and client identifiers</source>
+            <translation>ID d'objet, UUID, GUID et identifiants client</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5090" />
-            <source>AI endpoint:</source>
-            <translation>AI endpoint:</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5092" />
-            <source>Model:</source>
-            <translation>Model:</translation>
+            <location filename="../zscaler_api_client.py" line="5088" />
+            <source>Policy, application, group, location, and resource names</source>
+            <translation>Noms de stratégie, d'application, de groupe, d'emplacement et de ressource</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5095" />
-            <source>Stored securely in your system keychain</source>
-            <translation>Stored securely in your system keychain</translation>
+            <source>Rotate local pseudonym key</source>
+            <translation>Faire pivoter la clé de pseudonyme locale</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5096" />
-            <source>API key:</source>
-            <translation>API key:</translation>
+            <source>Creates new pseudonyms for future views and exports. Existing files are not modified.</source>
+            <translation>Crée de nouveaux pseudonymes pour les vues et exportations futures. Les fichiers existants ne sont pas modifiés.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5097" />
-            <source>Allow this app to send the masked question and catalog metadata to an external AI service</source>
-            <translation>Allow this app to send the masked question and catalog metadata to an external AI service</translation>
+            <location filename="../zscaler_api_client.py" line="5099" />
+            <location filename="../zscaler_api_client.py" line="5221" />
+            <location filename="../zscaler_api_client.py" line="5227" />
+            <source>Rotate evidence signing key</source>
+            <translation>Rotation de la clé de signature des preuves</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5100" />
-            <source>Clear AI key</source>
-            <translation>Clear AI key</translation>
+            <source>Creates a new Ed25519 key in the system keychain. Existing signed packages remain verifiable with their embedded public keys.</source>
+            <translation>Crée une nouvelle clé Ed25519 dans le trousseau système. Les packages signés existants restent vérifiables grâce à leurs clés publiques intégrées.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="5103" />
-            <source>Test AI connection</source>
-            <translation>Test AI connection</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5167" />
-            <location filename="../zscaler_api_client.py" line="5176" />
-            <source>Rotate pseudonym key</source>
-            <translation>Rotate pseudonym key</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5168" />
-            <source>Rotate the local pseudonym key? Future pseudonyms will change and will no longer correlate with previous exports.</source>
-            <translation>Rotate the local pseudonym key? Future pseudonyms will change and will no longer correlate with previous exports.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5176" />
-            <source>The local pseudonym key was rotated. No credentials or source identifiers were stored.</source>
-            <translation>The local pseudonym key was rotated. No credentials or source identifiers were stored.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5179" />
-            <source>Create a new local evidence signing identity? Existing signed packages remain verifiable, but future packages will have a different public-key fingerprint.</source>
-            <translation>Create a new local evidence signing identity? Existing signed packages remain verifiable, but future packages will have a different public-key fingerprint.</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5182" />
-            <source>Signed evidence</source>
-            <translation>Signed evidence</translation>
-        </message>
-        <message>
-            <location filename="../zscaler_api_client.py" line="5182" />
-            <source>The system keychain could not store the evidence signing key.</source>
-            <translation>The system keychain could not store the evidence signing key.</translation>
-        </message>
-        <message>
             <location filename="../zscaler_api_client.py" line="5185" />
+            <source>Obfuscation preview</source>
+            <translation>Aperçu de l'obscurcissement</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5105" />
+            <source>Preview of exported or externally shared data using synthetic examples:</source>
+            <translation>Aperçu des données exportées ou partagées en externe à l'aide d'exemples synthétiques :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5113" />
+            <location filename="../zscaler_api_client.py" line="5152" />
+            <location filename="../zscaler_api_client.py" line="5185" />
+            <location filename="../zscaler_api_client.py" line="5190" />
+            <source>Language</source>
+            <translation>Langue</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5116" />
+            <source>System default</source>
+            <translation>Valeur par défaut du système</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5119" />
+            <source>Application language:</source>
+            <translation>Langue de candidature :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5120" />
+            <source>System default follows your operating system language. Restart after saving to apply a change.</source>
+            <translation>La valeur par défaut du système suit la langue de votre système d'exploitation. Redémarrez après avoir enregistré pour appliquer une modification.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5123" />
+            <location filename="../zscaler_api_client.py" line="5185" />
+            <source>AI / LLM</source>
+            <translation>IA / LLM</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5126" />
+            <source>Local catalog assistant</source>
+            <translation>Assistante catalogue local</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5127" />
+            <source>OpenAI-compatible cloud</source>
+            <translation>Cloud compatible OpenAI</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5128" />
+            <source>Local OpenAI-compatible server</source>
+            <translation>Serveur local compatible OpenAI</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5129" />
+            <source>AI provider:</source>
+            <translation>Fournisseur d'IA :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5132" />
+            <source>AI endpoint:</source>
+            <translation>Point de terminaison de l'IA :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5134" />
+            <source>Model:</source>
+            <translation>Modèle :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5137" />
+            <source>Stored securely in your system keychain</source>
+            <translation>Stocké en toute sécurité dans le trousseau de votre système</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5138" />
+            <source>API key:</source>
+            <translation>Clé API :</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5139" />
+            <source>Allow this app to send the masked question and catalog metadata to an external AI service</source>
+            <translation>Autoriser cette application à envoyer la question masquée et les métadonnées du catalogue à un service d'IA externe</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5142" />
+            <source>Clear AI key</source>
+            <translation>Effacer la clé AI</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5145" />
+            <source>Test AI connection</source>
+            <translation>Tester la connexion IA</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5209" />
+            <location filename="../zscaler_api_client.py" line="5218" />
+            <source>Rotate pseudonym key</source>
+            <translation>Rotation de la clé du pseudonyme</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5210" />
+            <source>Rotate the local pseudonym key? Future pseudonyms will change and will no longer correlate with previous exports.</source>
+            <translation>Faire pivoter la clé du pseudonyme local ? Les futurs pseudonymes changeront et ne seront plus en corrélation avec les exportations précédentes.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5218" />
+            <source>The local pseudonym key was rotated. No credentials or source identifiers were stored.</source>
+            <translation>La clé du pseudonyme local a été alternée. Aucune information d'identification ou identifiant de source n'a été stockée.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5221" />
+            <source>Create a new local evidence signing identity? Existing signed packages remain verifiable, but future packages will have a different public-key fingerprint.</source>
+            <translation>Créer une nouvelle identité locale de signature de preuves ? Les packages signés existants restent vérifiables, mais les futurs packages auront une empreinte de clé publique différente.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5224" />
+            <source>Signed evidence</source>
+            <translation>Preuve signée</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5224" />
+            <source>The system keychain could not store the evidence signing key.</source>
+            <translation>Le trousseau du système n'a pas pu stocker la clé de signature des preuves.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="5227" />
             <source>A new signing key was stored in the system keychain. Public-key fingerprint: {fingerprint}</source>
             <translation>A new signing key was stored in the system keychain. Public-key fingerprint: {fingerprint}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5191" />
+            <location filename="../zscaler_api_client.py" line="5233" />
             <source>Restore Defaults</source>
-            <translation>Restore Defaults</translation>
+            <translation>Restaurer les paramètres par défaut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5192" />
+            <location filename="../zscaler_api_client.py" line="5234" />
             <source>This will reset all advanced settings to defaults. Continue?</source>
-            <translation>This will reset all advanced settings to defaults. Continue?</translation>
+            <translation>Cela réinitialisera tous les paramètres avancés aux valeurs par défaut. Continuer?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5314" />
+            <location filename="../zscaler_api_client.py" line="5356" />
             <source>Configured securely in your system keychain</source>
-            <translation>Configured securely in your system keychain</translation>
+            <translation>Configuré en toute sécurité dans le trousseau de votre système</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5321" />
+            <location filename="../zscaler_api_client.py" line="5363" />
             <source>AI key cleared</source>
-            <translation>AI key cleared</translation>
+            <translation>Clé IA effacée</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5327" />
-            <location filename="../zscaler_api_client.py" line="5330" />
-            <location filename="../zscaler_api_client.py" line="5338" />
-            <location filename="../zscaler_api_client.py" line="5339" />
+            <location filename="../zscaler_api_client.py" line="5369" />
+            <location filename="../zscaler_api_client.py" line="5372" />
+            <location filename="../zscaler_api_client.py" line="5380" />
+            <location filename="../zscaler_api_client.py" line="5381" />
             <source>AI connection</source>
-            <translation>AI connection</translation>
+            <translation>Connexion IA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5327" />
+            <location filename="../zscaler_api_client.py" line="5369" />
             <source>Local catalog assistant is ready.</source>
-            <translation>Local catalog assistant is ready.</translation>
+            <translation>L'assistant de catalogue local est prêt.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5330" />
+            <location filename="../zscaler_api_client.py" line="5372" />
             <source>Enter an AI endpoint first.</source>
-            <translation>Enter an AI endpoint first.</translation>
+            <translation>Entrez d’abord un point de terminaison IA.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5336" />
+            <location filename="../zscaler_api_client.py" line="5378" />
             <source>AI connection succeeded.</source>
-            <translation>AI connection succeeded.</translation>
+            <translation>La connexion IA a réussi.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5339" />
+            <location filename="../zscaler_api_client.py" line="5381" />
             <source>AI connection failed: {error}</source>
             <translation>AI connection failed: {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5353" />
+            <location filename="../zscaler_api_client.py" line="5395" />
             <source>ZIA Cloud: Removed URL prefix (only hostname needed)</source>
-            <translation>ZIA Cloud: Removed URL prefix (only hostname needed)</translation>
+            <translation>ZIA Cloud : suppression du préfixe d'URL (uniquement le nom d'hôte est requis)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5360" />
+            <location filename="../zscaler_api_client.py" line="5402" />
             <source>ZPA Cloud: Removed URL prefix (only hostname needed)</source>
-            <translation>ZPA Cloud: Removed URL prefix (only hostname needed)</translation>
+            <translation>ZPA Cloud : préfixe d'URL supprimé (uniquement le nom d'hôte est requis)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5366" />
+            <location filename="../zscaler_api_client.py" line="5408" />
             <source>{product} Cloud: Removed URL prefix (only hostname needed)</source>
             <translation>{product} Cloud: Removed URL prefix (only hostname needed)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5371" />
+            <location filename="../zscaler_api_client.py" line="5413" />
             <source>ZPA: Customer ID is empty — required for most ZPA endpoints</source>
-            <translation>ZPA: Customer ID is empty — required for most ZPA endpoints</translation>
+            <translation>ZPA : l'ID client est vide – requis pour la plupart des points de terminaison ZPA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5373" />
+            <location filename="../zscaler_api_client.py" line="5415" />
             <source>ZPA: Customer ID should be numeric (got '{value}')</source>
             <translation>ZPA: Customer ID should be numeric (got '{value}')</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5381" />
+            <location filename="../zscaler_api_client.py" line="5423" />
             <source>OneAPI: Removed URL prefix from vanity domain</source>
-            <translation>OneAPI: Removed URL prefix from vanity domain</translation>
+            <translation>OneAPI : suppression du préfixe d'URL du domaine personnalisé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5385" />
+            <location filename="../zscaler_api_client.py" line="5427" />
             <source>OneAPI: Removed .zslogin.net suffix — only the prefix is needed (e.g. 'acme')</source>
-            <translation>OneAPI: Removed .zslogin.net suffix — only the prefix is needed (e.g. 'acme')</translation>
+            <translation>OneAPI : suppression du suffixe .zslogin.net — seul le préfixe est nécessaire (par exemple « acme »)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5387" />
+            <location filename="../zscaler_api_client.py" line="5429" />
             <source>OneAPI: Vanity domain usually has no dots (e.g. 'acme', not '{value}')</source>
             <translation>OneAPI: Vanity domain usually has no dots (e.g. 'acme', not '{value}')</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5393" />
+            <location filename="../zscaler_api_client.py" line="5435" />
             <source>OneAPI: Cloud should be empty (production) or a simple name like 'beta'/'alpha'. Got '{value}' — this looks like a full domain. Leave empty for production.</source>
             <translation>OneAPI: Cloud should be empty (production) or a simple name like 'beta'/'alpha'. Got '{value}' — this looks like a full domain. Leave empty for production.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5401" />
+            <location filename="../zscaler_api_client.py" line="5443" />
             <source>OneAPI: Customer ID should be numeric (got '{value}')</source>
             <translation>OneAPI: Customer ID should be numeric (got '{value}')</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5409" />
+            <location filename="../zscaler_api_client.py" line="5451" />
             <source>ZIdentity: Removed URL prefix from domain</source>
-            <translation>ZIdentity: Removed URL prefix from domain</translation>
+            <translation>ZIdentity : préfixe d'URL supprimé du domaine</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5413" />
+            <location filename="../zscaler_api_client.py" line="5455" />
             <source>ZIA is enabled but Cloud is empty</source>
-            <translation>ZIA is enabled but Cloud is empty</translation>
+            <translation>ZIA est activé mais Cloud est vide</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5415" />
+            <location filename="../zscaler_api_client.py" line="5457" />
             <source>ZCC is enabled but Cloud host is empty</source>
-            <translation>ZCC is enabled but Cloud host is empty</translation>
+            <translation>ZCC est activé mais l'hôte Cloud est vide</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5417" />
+            <location filename="../zscaler_api_client.py" line="5459" />
             <source>OneAPI is enabled but Vanity Domain is empty</source>
-            <translation>OneAPI is enabled but Vanity Domain is empty</translation>
+            <translation>OneAPI est activé mais Vanity Domain est vide</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5419" />
+            <location filename="../zscaler_api_client.py" line="5461" />
             <source>OneAPI is enabled but Client ID is empty</source>
-            <translation>OneAPI is enabled but Client ID is empty</translation>
+            <translation>OneAPI est activé mais l'ID client est vide</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5434" />
+            <location filename="../zscaler_api_client.py" line="5476" />
             <source>Settings Validation</source>
-            <translation>Settings Validation</translation>
+            <translation>Validation des paramètres</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5435" />
+            <location filename="../zscaler_api_client.py" line="5477" />
             <source>Some settings were adjusted or may need attention:</source>
-            <translation>Some settings were adjusted or may need attention:</translation>
+            <translation>Certains paramètres ont été modifiés ou peuvent nécessiter une attention :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5439" />
+            <location filename="../zscaler_api_client.py" line="5481" />
             <source>Save Anyway</source>
-            <translation>Save Anyway</translation>
+            <translation>Enregistrer quand même</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5440" />
+            <location filename="../zscaler_api_client.py" line="5482" />
             <source>Go Back</source>
-            <translation>Go Back</translation>
+            <translation>Retourner</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5465" />
+            <location filename="../zscaler_api_client.py" line="5507" />
             <source>Secure storage</source>
-            <translation>Secure storage</translation>
+            <translation>Stockage sécurisé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="5465" />
+            <location filename="../zscaler_api_client.py" line="5507" />
             <source>The system keychain could not save one or more secrets. No secret changes were applied.</source>
-            <translation>The system keychain could not save one or more secrets. No secret changes were applied.</translation>
+            <translation>Le trousseau système n’a pas pu enregistrer un ou plusieurs secrets. Aucune modification secrète n'a été appliquée.</translation>
         </message>
     </context>
     <context>
         <name>SetupWizard</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="4115" />
+            <location filename="../zscaler_api_client.py" line="4157" />
             <source>Getting Started Wizard</source>
-            <translation>Getting Started Wizard</translation>
+            <translation>Assistant de démarrage</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4134" />
+            <location filename="../zscaler_api_client.py" line="4176" />
             <source>Back</source>
-            <translation>Back</translation>
+            <translation>Retour</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4138" />
+            <location filename="../zscaler_api_client.py" line="4180" />
             <source>Open full settings</source>
-            <translation>Open full settings</translation>
+            <translation>Ouvrir les paramètres complets</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4141" />
-            <location filename="../zscaler_api_client.py" line="4264" />
+            <location filename="../zscaler_api_client.py" line="4183" />
+            <location filename="../zscaler_api_client.py" line="4306" />
             <source>Continue</source>
-            <translation>Continue</translation>
+            <translation>Continuer</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4152" />
+            <location filename="../zscaler_api_client.py" line="4194" />
             <source>Abstract zero trust security network</source>
-            <translation>Abstract zero trust security network</translation>
+            <translation>Réseau de sécurité abstrait zéro confiance</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4154" />
+            <location filename="../zscaler_api_client.py" line="4196" />
             <source>&lt;h1&gt;Welcome to ZS API Client&lt;/h1&gt;</source>
             <translation>&lt;h1&gt;Welcome to ZS API Client&lt;/h1&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4157" />
+            <location filename="../zscaler_api_client.py" line="4199" />
             <source>&lt;p&gt;This guide sets up secure OneAPI access and prepares common requests. Credentials are stored in your system keychain; you can change any setting later.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Recommended:&lt;/b&gt; use OneAPI for a unified token across supported Zscaler services.&lt;/p&gt;</source>
             <translation>&lt;p&gt;This guide sets up secure OneAPI access and prepares common requests. Credentials are stored in your system keychain; you can change any setting later.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Recommended:&lt;/b&gt; use OneAPI for a unified token across supported Zscaler services.&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4165" />
+            <location filename="../zscaler_api_client.py" line="4207" />
             <source>Basic</source>
-            <translation>Basic</translation>
+            <translation>De base</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4166" />
+            <location filename="../zscaler_api_client.py" line="4208" />
             <source>Advanced</source>
-            <translation>Advanced</translation>
+            <translation>Avancé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4168" />
+            <location filename="../zscaler_api_client.py" line="4210" />
             <source>Setup mode:</source>
-            <translation>Setup mode:</translation>
+            <translation>Mode de configuration :</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4176" />
+            <location filename="../zscaler_api_client.py" line="4218" />
             <source>&lt;h2&gt;Connect your Zscaler tenant&lt;/h2&gt;</source>
             <translation>&lt;h2&gt;Connect your Zscaler tenant&lt;/h2&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4177" />
+            <location filename="../zscaler_api_client.py" line="4219" />
             <source>Create an API client with the required roles in ZIdentity, then enter its details below.</source>
-            <translation>Create an API client with the required roles in ZIdentity, then enter its details below.</translation>
+            <translation>Créez un client API avec les rôles requis dans ZIdentity, puis saisissez ses détails ci-dessous.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4183" />
+            <location filename="../zscaler_api_client.py" line="4225" />
             <source>Vanity domain</source>
-            <translation>Vanity domain</translation>
+            <translation>Domaine de vanité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4185" />
+            <location filename="../zscaler_api_client.py" line="4227" />
             <source>Client ID</source>
-            <translation>Client ID</translation>
+            <translation>Identifiant client</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4188" />
+            <location filename="../zscaler_api_client.py" line="4230" />
             <source>Client secret</source>
-            <translation>Client secret</translation>
+            <translation>Secret client</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4190" />
+            <location filename="../zscaler_api_client.py" line="4232" />
             <source>Leave empty for production; use beta or alpha when applicable</source>
-            <translation>Leave empty for production; use beta or alpha when applicable</translation>
+            <translation>Laisser vide pour la production ; utiliser la version bêta ou alpha le cas échéant</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4191" />
+            <location filename="../zscaler_api_client.py" line="4233" />
             <source>Cloud</source>
-            <translation>Cloud</translation>
+            <translation>Nuage</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4193" />
+            <location filename="../zscaler_api_client.py" line="4235" />
             <source>Optional; required for many ZPA requests</source>
-            <translation>Optional; required for many ZPA requests</translation>
+            <translation>Facultatif ; requis pour de nombreuses demandes ZPA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4194" />
+            <location filename="../zscaler_api_client.py" line="4236" />
             <source>ZPA customer ID</source>
-            <translation>ZPA customer ID</translation>
+            <translation>Numéro client ZPA</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4224" />
+            <location filename="../zscaler_api_client.py" line="4266" />
             <source>&lt;h2&gt;What would you like to do first?&lt;/h2&gt;</source>
             <translation>&lt;h2&gt;What would you like to do first?&lt;/h2&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4225" />
+            <location filename="../zscaler_api_client.py" line="4267" />
             <source>Choose a common operation. The wizard will load it into the request builder with required path variables highlighted.</source>
-            <translation>Choose a common operation. The wizard will load it into the request builder with required path variables highlighted.</translation>
+            <translation>Choisissez une opération courante. L'assistant le chargera dans le générateur de requêtes avec les variables de chemin requises mises en surbrillance.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4283" />
+            <location filename="../zscaler_api_client.py" line="4325" />
             <source>Secure storage</source>
-            <translation>Secure storage</translation>
+            <translation>Stockage sécurisé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4283" />
+            <location filename="../zscaler_api_client.py" line="4325" />
             <source>The system keychain could not save the secret. Check the keychain service and try again.</source>
-            <translation>The system keychain could not save the secret. Check the keychain service and try again.</translation>
+            <translation>Le trousseau système n’a pas pu enregistrer le secret. Vérifiez le service de trousseau et réessayez.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4215" />
-            <location filename="../zscaler_api_client.py" line="4229" />
+            <location filename="../zscaler_api_client.py" line="4257" />
+            <location filename="../zscaler_api_client.py" line="4271" />
             <source>Just explore the API catalog</source>
-            <translation>Just explore the API catalog</translation>
+            <translation>Explorez simplement le catalogue API</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4096" />
+            <location filename="../zscaler_api_client.py" line="4138" />
             <source>ZIA · List users</source>
-            <translation>ZIA · List users</translation>
+            <translation>ZIA · Liste des utilisateurs</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4097" />
+            <location filename="../zscaler_api_client.py" line="4139" />
             <source>ZIA · List URL categories</source>
-            <translation>ZIA · List URL categories</translation>
+            <translation>ZIA · Liste des catégories d'URL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4098" />
+            <location filename="../zscaler_api_client.py" line="4140" />
             <source>ZIA · Check activation status</source>
-            <translation>ZIA · Check activation status</translation>
+            <translation>ZIA · Vérifier l'état d'activation</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4099" />
+            <location filename="../zscaler_api_client.py" line="4141" />
             <source>ZIA · List cloud firewall policies</source>
-            <translation>ZIA · List cloud firewall policies</translation>
+            <translation>ZIA · Répertorier les politiques de pare-feu cloud</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4100" />
+            <location filename="../zscaler_api_client.py" line="4142" />
             <source>ZPA · List application segments</source>
-            <translation>ZPA · List application segments</translation>
+            <translation>ZPA · Liste des segments d'application</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4101" />
+            <location filename="../zscaler_api_client.py" line="4143" />
             <source>ZPA · List segment groups</source>
-            <translation>ZPA · List segment groups</translation>
+            <translation>ZPA · Liste des groupes de segments</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4102" />
+            <location filename="../zscaler_api_client.py" line="4144" />
             <source>ZPA · List connectors</source>
-            <translation>ZPA · List connectors</translation>
+            <translation>ZPA · Liste des connecteurs</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4103" />
+            <location filename="../zscaler_api_client.py" line="4145" />
             <source>ZDX · List devices and experience scores</source>
-            <translation>ZDX · List devices and experience scores</translation>
+            <translation>ZDX · Répertorier les appareils et les scores d'expérience</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4104" />
+            <location filename="../zscaler_api_client.py" line="4146" />
             <source>ZDX · List active alerts</source>
-            <translation>ZDX · List active alerts</translation>
+            <translation>ZDX · Liste des alertes actives</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4105" />
+            <location filename="../zscaler_api_client.py" line="4147" />
             <source>ZDX · List monitored applications</source>
-            <translation>ZDX · List monitored applications</translation>
+            <translation>ZDX · Liste des applications surveillées</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4106" />
+            <location filename="../zscaler_api_client.py" line="4148" />
             <source>Client Connector · List devices</source>
-            <translation>Client Connector · List devices</translation>
+            <translation>Connecteur client · Liste des appareils</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4107" />
+            <location filename="../zscaler_api_client.py" line="4149" />
             <source>ZIdentity · List users</source>
-            <translation>ZIdentity · List users</translation>
+            <translation>ZIdentity · Liste des utilisateurs</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4108" />
+            <location filename="../zscaler_api_client.py" line="4150" />
             <source>ZIdentity · List groups</source>
-            <translation>ZIdentity · List groups</translation>
+            <translation>ZIdentity · Liste des groupes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4109" />
+            <location filename="../zscaler_api_client.py" line="4151" />
             <source>AI Security · List workloads</source>
-            <translation>AI Security · List workloads</translation>
+            <translation>Sécurité IA · Répertorier les charges de travail</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4233" />
+            <location filename="../zscaler_api_client.py" line="4275" />
             <source>Authenticate immediately after finishing</source>
-            <translation>Authenticate immediately after finishing</translation>
+            <translation>Authentifiez-vous immédiatement après avoir terminé</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4242" />
+            <location filename="../zscaler_api_client.py" line="4284" />
             <source>&lt;h2&gt;You are ready to make your first request&lt;/h2&gt;</source>
             <translation>&lt;h2&gt;You are ready to make your first request&lt;/h2&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4244" />
+            <location filename="../zscaler_api_client.py" line="4286" />
             <source>The API Explorer contains the complete bundled catalog. Use the Documentation tab for endpoint details, the Console tab for request activity, and Request History to replay safe, redacted requests.</source>
-            <translation>The API Explorer contains the complete bundled catalog. Use the Documentation tab for endpoint details, the Console tab for request activity, and Request History to replay safe, redacted requests.</translation>
+            <translation>L'API Explorer contient le catalogue groupé complet. Utilisez l'onglet Documentation pour les détails du point de terminaison, l'onglet Console pour l'activité des demandes et l'historique des demandes pour relire les demandes sécurisées et expurgées.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4262" />
+            <location filename="../zscaler_api_client.py" line="4304" />
             <source>Step {current} of {total}</source>
             <translation>Step {current} of {total}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4264" />
+            <location filename="../zscaler_api_client.py" line="4306" />
             <source>Finish</source>
-            <translation>Finish</translation>
+            <translation>Terminer</translation>
         </message>
     </context>
     <context>
         <name>SocEntityGraph</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Identity</source>
-            <translation>Identity</translation>
+            <translation>Identité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Address</source>
-            <translation>Address</translation>
+            <translation>Adresse</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Device</source>
-            <translation>Device</translation>
+            <translation>Appareil</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Application</source>
-            <translation>Application</translation>
+            <translation>Demande</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Policy</source>
-            <translation>Policy</translation>
+            <translation>Politique</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Service</source>
             <translation>Service</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Endpoint</source>
-            <translation>Endpoint</translation>
+            <translation>Point de terminaison</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Infrastructure</source>
-            <translation>Infrastructure</translation>
+            <translation>Infrastructures</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Indicator</source>
-            <translation>Indicator</translation>
+            <translation>Indicateur</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Activity</source>
-            <translation>Activity</translation>
+            <translation>Activité</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Environment</source>
-            <translation>Environment</translation>
+            <translation>Environnement</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3859" />
+            <location filename="../zscaler_api_client.py" line="3901" />
             <source>Resource</source>
-            <translation>Resource</translation>
+            <translation>Ressource</translation>
         </message>
     </context>
     <context>
         <name>SplashScreen</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="4338" />
+            <location filename="../zscaler_api_client.py" line="4380" />
             <source>Loading...</source>
             <translation>Chargement...</translation>
         </message>
@@ -6735,62 +7227,62 @@ Ada,ada@example.com</translation>
     <context>
         <name>WelcomeDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="3940" />
+            <location filename="../zscaler_api_client.py" line="3982" />
             <source>Welcome to ZS API Client</source>
             <translation>Bienvenue dans ZS API Client</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3952" />
+            <location filename="../zscaler_api_client.py" line="3994" />
             <source>&lt;p style='font-size: 14px; color: #666;'&gt;A Postman-like tool for exploring Zscaler APIs&lt;/p&gt;</source>
-            <translation>&lt;p style='font-size: 14px; color: #666;'&gt;Un outil de type facteur pour explorer les API Zscaler&lt;/p&gt;</translation>
+            <translation>&lt;p style='font-size: 14px; color: #666;'&gt;A Postman-like tool for exploring Zscaler APIs&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3965" />
+            <location filename="../zscaler_api_client.py" line="4007" />
             <source>Supported APIs</source>
             <translation>APIs prises en charge</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3968" />
+            <location filename="../zscaler_api_client.py" line="4010" />
             <source>&lt;table cellspacing='10'&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;🌐 ZIA&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Zscaler Internet Access – Web security, URL filtering, firewall&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;🔒 ZPA&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Zscaler Private Access – Zero trust application access&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;📊 ZDX&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Zscaler Digital Experience – User experience monitoring&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;💻 ZCC&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Client Connector – Device management and compliance&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;🔑 ZIdentity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Identity &amp; Access Management – Users, groups, SCIM, IdPs&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;🌿 ZTW&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Zero Trust Workloads – Branch connectors, service edges&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;⚡ ZWA&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Workflow Automation – Automated policies and triggers&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;🔍 EASM&lt;/b&gt;&lt;/td&gt;&lt;td&gt;External Attack Surface Management – Asset discovery, vulnerabilities&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</source>
             <translation>&lt;table cellspacing='10'&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;🌐 ZIA&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Zscaler Internet Access – Web security, URL filtering, firewall&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;🔒 ZPA&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Zscaler Private Access – Zero trust application access&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;📊 ZDX&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Zscaler Digital Experience – User experience monitoring&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;💻 ZCC&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Client Connector – Device management and compliance&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;🔑 ZIdentity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Identity &amp; Access Management – Users, groups, SCIM, IdPs&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;🌿 ZTW&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Zero Trust Workloads – Branch connectors, service edges&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;⚡ ZWA&lt;/b&gt;&lt;/td&gt;&lt;td&gt;Workflow Automation – Automated policies and triggers&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;🔍 EASM&lt;/b&gt;&lt;/td&gt;&lt;td&gt;External Attack Surface Management – Asset discovery, vulnerabilities&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3984" />
+            <location filename="../zscaler_api_client.py" line="4026" />
             <source>Getting Started</source>
             <translation>Prise en main</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="3987" />
+            <location filename="../zscaler_api_client.py" line="4029" />
             <source>&lt;ol&gt;&lt;li&gt;&lt;b&gt;Configure Credentials&lt;/b&gt; – Go to &lt;i&gt;File → Settings&lt;/i&gt; and enter your API credentials&lt;/li&gt;&lt;li&gt;&lt;b&gt;Select API&lt;/b&gt; – Choose from ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA, or EASM&lt;/li&gt;&lt;li&gt;&lt;b&gt;Browse Endpoints&lt;/b&gt; – Click on an endpoint in the tree to load it&lt;/li&gt;&lt;li&gt;&lt;b&gt;Send Request&lt;/b&gt; – Modify parameters if needed, then click Send&lt;/li&gt;&lt;li&gt;&lt;b&gt;View Response&lt;/b&gt; – JSON response will appear with syntax highlighting&lt;/li&gt;&lt;/ol&gt;</source>
-            <translation>&lt;ol&gt;&lt;li&gt;&lt;b&gt;Configurer les identifiants&lt;/b&gt; – Allez dans &lt;i&gt;Fichier → Paramètres&lt;/i&gt; et entrez vos identifiants API&lt;/li&gt;&lt;li&gt;&lt;b&gt;Sélectionner l'API&lt;/b&gt; – Choisissez parmi ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA ou EASM&lt;/li&gt;&lt;li&gt;&lt;b&gt;Parcourir les endpoints&lt;/b&gt; – Cliquez sur un endpoint dans l'arbre&lt;/li&gt;&lt;li&gt;&lt;b&gt;Envoyer la requête&lt;/b&gt; – Modifiez les paramètres puis cliquez sur Envoyer&lt;/li&gt;&lt;li&gt;&lt;b&gt;Voir la réponse&lt;/b&gt; – Réponse JSON avec coloration syntaxique&lt;/li&gt;&lt;/ol&gt;</translation>
+            <translation>&lt;ol&gt;&lt;li&gt;&lt;b&gt;Configure Credentials&lt;/b&gt; – Go to &lt;i&gt;File → Settings&lt;/i&gt; and enter your API credentials&lt;/li&gt;&lt;li&gt;&lt;b&gt;Select API&lt;/b&gt; – Choose from ZIA, ZPA, ZDX, ZCC, ZIdentity, ZTW, ZWA, or EASM&lt;/li&gt;&lt;li&gt;&lt;b&gt;Browse Endpoints&lt;/b&gt; – Click on an endpoint in the tree to load it&lt;/li&gt;&lt;li&gt;&lt;b&gt;Send Request&lt;/b&gt; – Modify parameters if needed, then click Send&lt;/li&gt;&lt;li&gt;&lt;b&gt;View Response&lt;/b&gt; – JSON response will appear with syntax highlighting&lt;/li&gt;&lt;/ol&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4000" />
+            <location filename="../zscaler_api_client.py" line="4042" />
             <source>Tips for Advanced Users</source>
             <translation>Conseils pour utilisateurs avancés</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4003" />
+            <location filename="../zscaler_api_client.py" line="4045" />
             <source>&lt;ul&gt;&lt;li&gt;&lt;b&gt;Ctrl+Enter&lt;/b&gt; – Send request quickly&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+Shift+C&lt;/b&gt; – Copy request as cURL command&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+H&lt;/b&gt; – View request history&lt;/li&gt;&lt;li&gt;&lt;b&gt;Batch Operations&lt;/b&gt; – Import CSV for bulk API calls&lt;/li&gt;&lt;li&gt;&lt;b&gt;Request menu&lt;/b&gt; – Quick authentication helpers for each API&lt;/li&gt;&lt;li&gt;&lt;b&gt;Themes&lt;/b&gt; – Switch between Light/Dark/System in Settings&lt;/li&gt;&lt;/ul&gt;</source>
-            <translation>&lt;ul&gt;&lt;li&gt;&lt;b&gt;Ctrl+Entrée&lt;/b&gt; – Envoyer rapidement&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+Maj+C&lt;/b&gt; – Copier en commande cURL&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+H&lt;/b&gt; – Voir l'historique&lt;/li&gt;&lt;li&gt;&lt;b&gt;Opérations par lots&lt;/b&gt; – Importer CSV pour appels en masse&lt;/li&gt;&lt;li&gt;&lt;b&gt;Menu Requête&lt;/b&gt; – Aides d'authentification rapides&lt;/li&gt;&lt;li&gt;&lt;b&gt;Thèmes&lt;/b&gt; – Clair/Sombre/Système dans Paramètres&lt;/li&gt;&lt;/ul&gt;</translation>
+            <translation>&lt;ul&gt;&lt;li&gt;&lt;b&gt;Ctrl+Enter&lt;/b&gt; – Send request quickly&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+Shift+C&lt;/b&gt; – Copy request as cURL command&lt;/li&gt;&lt;li&gt;&lt;b&gt;Ctrl+H&lt;/b&gt; – View request history&lt;/li&gt;&lt;li&gt;&lt;b&gt;Batch Operations&lt;/b&gt; – Import CSV for bulk API calls&lt;/li&gt;&lt;li&gt;&lt;b&gt;Request menu&lt;/b&gt; – Quick authentication helpers for each API&lt;/li&gt;&lt;li&gt;&lt;b&gt;Themes&lt;/b&gt; – Switch between Light/Dark/System in Settings&lt;/li&gt;&lt;/ul&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4017" />
+            <location filename="../zscaler_api_client.py" line="4059" />
             <source>Documentation</source>
             <translation>Documentation</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4038" />
+            <location filename="../zscaler_api_client.py" line="4080" />
             <source>Show this dialog on startup</source>
             <translation>Afficher cette boîte de dialogue au démarrage</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4046" />
+            <location filename="../zscaler_api_client.py" line="4088" />
             <source>Open Settings</source>
             <translation>Ouvrir les paramètres</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="4050" />
+            <location filename="../zscaler_api_client.py" line="4092" />
             <source>Get Started</source>
             <translation>Commencer</translation>
         </message>
@@ -6798,47 +7290,47 @@ Ada,ada@example.com</translation>
     <context>
         <name>owner</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="389" />
+            <location filename="../zscaler_api_client.py" line="431" />
             <source>Default</source>
-            <translation>Default</translation>
+            <translation>Par défaut</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="602" />
+            <location filename="../zscaler_api_client.py" line="644" />
             <source>The response export is unavailable, is a symbolic link, or exceeds the configured transfer limit.</source>
-            <translation>The response export is unavailable, is a symbolic link, or exceeds the configured transfer limit.</translation>
+            <translation>L'exportation de la réponse n'est pas disponible, est un lien symbolique ou dépasse la limite de transfert configurée.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="603" />
+            <location filename="../zscaler_api_client.py" line="645" />
             <source>The response export is not valid UTF-8 JSON.</source>
-            <translation>The response export is not valid UTF-8 JSON.</translation>
+            <translation>L’exportation de la réponse n’est pas un JSON UTF-8 valide.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="604" />
+            <location filename="../zscaler_api_client.py" line="646" />
             <source>This is not a supported ZS API response exchange file.</source>
-            <translation>This is not a supported ZS API response exchange file.</translation>
+            <translation>Il ne s'agit pas d'un fichier d'échange de réponses API ZS pris en charge.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="605" />
+            <location filename="../zscaler_api_client.py" line="647" />
             <source>The response exchange file is incomplete.</source>
-            <translation>The response exchange file is incomplete.</translation>
+            <translation>Le fichier d'échange de réponses est incomplet.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="607" />
+            <location filename="../zscaler_api_client.py" line="649" />
             <source>The response exchange file could not be opened.</source>
-            <translation>The response exchange file could not be opened.</translation>
+            <translation>Le fichier d'échange de réponses n'a pas pu être ouvert.</translation>
         </message>
     </context>
     <context>
         <name>window</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="11602" />
+            <location filename="../zscaler_api_client.py" line="12040" />
             <source>Automatic Update Check</source>
             <translation>Activer la vérification automatique de mise à jour</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11604" />
+            <location filename="../zscaler_api_client.py" line="12042" />
             <source>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</source>
-            <translation>&lt;p&gt;Souhaitez-vous vérifier automatiquement les mises à jour lorsque l'application démarre&amp;nbsp;?&lt;/p&gt;&lt;p&gt;Cela se connectera à GitHub pour vérifier les nouvelles versions.&lt;/p&gt;</translation>
+            <translation>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</translation>
         </message>
     </context>
 </TS>

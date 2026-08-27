@@ -298,15 +298,13 @@ The current `main` branch has the following localization status:
 | Status | Languages |
 |--------|-----------|
 | Complete source language | English |
-| Complete manually reviewed catalog (98.9% measured coverage; remaining identical text is invariant product names and technical terminology) | Arabic (`ar`) |
 | Complete reviewed catalog (97.6% measured coverage; remaining identical text is invariant product names and technical terminology) | Swedish (`sv`) |
-| Translation catalogs in progress | Czech, Danish, Dutch, Finnish, French, German, Hungarian, Italian, Japanese, Korean, Norwegian Bokmål, Persian, Polish, Portuguese (Brazil), Simplified Chinese, Spanish, Turkish |
+| AI-assisted catalog; linguistic review pending | Arabic, Czech, Danish, Dutch, Finnish, French, German, Hungarian, Italian, Japanese, Korean, Norwegian Bokmål, Persian, Polish, Portuguese (Brazil), Simplified Chinese, Spanish, Turkish |
 
-The application exposes all 20 language profiles, but untranslated text safely
-falls back to English. A catalog is compiled into a `.qm` file only when more than
-20% of its messages contain genuine translations. Generated `.qm` files are build
-artifacts and are intentionally not committed; CI creates them from the reviewable
-Qt `.ts` sources in [`translations/`](translations/).
+The application exposes all 20 language profiles. A catalog is compiled into a
+`.qm` file only when more than 20% of its messages contain genuine translations.
+Generated `.qm` files are build artifacts and are intentionally not committed; CI
+creates them from the reviewable Qt `.ts` sources in [`translations/`](translations/).
 
 To inspect current coverage or build eligible catalogs locally:
 

@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import html
+import json
 import re
 import time
 import urllib.parse
@@ -22,7 +23,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TRANSLATIONS = ROOT / "translations"
 PROVIDER_URL = "https://api.mymemory.translated.net/get"
-PROTECTED = re.compile(r"<[^>]+>|&[A-Za-z0-9#]+;|\{[^}]+\}|%\d+|%n")
+GOOGLE_TRANSLATE_URL = "https://clients5.google.com/translate_a/t"
+GOOGLE_BATCH_SEPARATOR = "\n__ZS_API_CLIENT_TRANSLATION_SEPARATOR_{index:04d}__\n"
+# HTML-rich help text is kept as its English source fallback by the batch
+# translator. Translating markup through a public endpoint risks malformed Qt
+# rich text. For ordinary UI text, preserve runtime values and Qt placeholders.
+PROTECTED = re.compile(r"&[A-Za-z0-9#]+;|\{[^}]+\}|%\d+|%n")
 SWEDISH_REVIEW = {
     "Operation:": "Åtgärd:", "API Error Codes Reference": "Referens för API-felkoder", "Code": "Kod", "Name": "Namn", "Description": "Beskrivning", "Close": "Stäng", "Status": "Status", "Auth": "Autentisering", "Variable": "Variabel", "Path Variables": "Sökvägsvariabler", "Pretty": "Formatera", "Console": "Konsol", "API Explorer": "API-utforskaren", "Product": "Produkt", "Request Builder": "Begärandebyggare", "Missing Path Variables": "Saknade sökvägsvariabler", "Batch": "Batch", "Proxy": "Proxy", "System": "System", "Settings Validation": "Inställningsvalidering", "Save Anyway": "Spara ändå", "Go Back": "Gå tillbaka", "Getting Started Wizard": "Kom igång-guiden", "Back": "Tillbaka", "Open full settings": "Öppna fullständiga inställningar", "Continue": "Fortsätt", "Vanity domain": "Vanity-domän", "Client ID": "Klient-ID", "Client secret": "Klienthemlighet", "Cloud": "Moln", "ZPA customer ID": "ZPA-kund-ID", "Just explore the API catalog": "Utforska bara API-katalogen", "Authenticate immediately after finishing": "Autentisera direkt när du är klar", "Finish": "Slutför", "Language": "Språk", "System default": "Systemstandard", "Application language:": "Programspråk:", "System default follows your operating system language. Restart after saving to apply a change.": "Systemstandard följer operativsystemets språk. Starta om efter sparning för att tillämpa ändringen.", "Basic": "Grundläggande", "Advanced": "Avancerat", "Interface mode:": "Gränssnittsläge:", "Setup mode:": "Installationsläge:", "Export response": "Exportera svar", "Export AI result": "Exportera AI-resultat", "No chart data is available to export.": "Det finns inga diagramdata att exportera.", "Masked cURL command copied to clipboard": "Maskerat cURL-kommando kopierat till urklipp",
     "Common error codes and their meanings for each API.": "Vanliga felkoder och deras betydelse för varje API.", "Toggle pretty-print JSON (Ctrl+P)": "Växla formaterad JSON (Ctrl+P)", "Authenticate with selected API (Ctrl+Shift+A)": "Autentisera med valt API (Ctrl+Shift+A)", "🔍 Filter endpoints...": "🔍 Filtrera slutpunkter...", "Send request (Ctrl+Return)": "Skicka begäran (Ctrl+Retur)", "Copy request as cURL command (Ctrl+Shift+C)": "Kopiera begäran som cURL-kommando (Ctrl+Skift+C)", "Enter values for: {names}": "Ange värden för: {names}", "OneAPI authenticated successfully": "OneAPI har autentiserats", "OneAPI credentials not configured. Please go to Settings.": "OneAPI-autentiseringsuppgifter är inte konfigurerade. Gå till Inställningar.", "{count} operations · {groups} groups": "{count} åtgärder · {groups} grupper", "{count} matching operations": "{count} matchande åtgärder", "{count} operations": "{count} åtgärder", "Step {current} of {total}": "Steg {current} av {total}",
@@ -567,14 +573,20 @@ def protect(text: str) -> tuple[str, list[str]]:
 
     def replace(match: re.Match[str]) -> str:
         values.append(match.group(0))
-        return f"ZXPH{len(values) - 1}ZZ"
+        index = len(values) - 1
+        return f'<span translate="no" data-zs-placeholder="{index}">{match.group(0)}</span>'
 
     return PROTECTED.sub(replace, text), values
 
 
 def restore(text: str, values: list[str]) -> str:
     for index, value in enumerate(values):
-        text = text.replace(f"ZXPH{index}ZZ", value)
+        token = re.compile(
+            rf'<span\b(?=[^>]*\bdata-zs-placeholder="{index}")[^>]*>.*?</span>', re.DOTALL,
+        )
+        text, replacements = token.subn(value, text)
+        if replacements != 1:
+            raise RuntimeError(f"Translation provider did not preserve placeholder {index}")
     return text
 
 
@@ -598,6 +610,49 @@ def translate(text: str, target: str, email: str) -> str:
     return result
 
 
+def translate_batch(texts: list[str], target: str) -> list[str]:
+    """Translate a bounded batch while keeping record boundaries intact.
+
+    The public Google translation endpoint is intentionally used only for UI
+    source text. Authentication values, customer data, and user responses never
+    enter this script. Separators are verified after translation so a malformed
+    response can never be assigned to the wrong Qt message.
+    """
+    if not texts:
+        return []
+    combined = texts[0]
+    for index, value in enumerate(texts[1:]):
+        combined += GOOGLE_BATCH_SEPARATOR.format(index=index) + value
+    query = urllib.parse.urlencode({
+        "client": "dict-chrome-ex", "sl": "en", "tl": target, "q": combined,
+    })
+    request = urllib.request.Request(
+        GOOGLE_TRANSLATE_URL + "?" + query,
+        headers={"User-Agent": "ZS-API-Client-l10n"},
+    )
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                payload = json.load(response)
+            break
+        except HTTPError as error:
+            if error.code != 429 or attempt == 3:
+                raise
+            time.sleep(2 ** attempt)
+    translated = html.unescape(payload[0])
+    parts = [translated]
+    for index in range(len(texts) - 1):
+        marker = GOOGLE_BATCH_SEPARATOR.format(index=index)
+        if marker not in parts[-1]:
+            raise RuntimeError("Translation provider did not preserve batch boundaries")
+        head, tail = parts[-1].split(marker, 1)
+        parts[-1] = head
+        parts.append(tail)
+    if len(parts) != len(texts):
+        raise RuntimeError("Translation provider returned an incomplete batch")
+    return parts
+
+
 def fill_catalog(path: Path, target: str, email: str, workers: int, delay: float, translate_fallbacks: bool) -> tuple[int, int]:
     tree = ET.parse(path)
     root = tree.getroot()
@@ -613,25 +668,70 @@ def fill_catalog(path: Path, target: str, email: str, workers: int, delay: float
         if translation.text and translation.get("type") != "unfinished" and not (translate_fallbacks and translation.text == source):
             skipped += 1
             continue
+        # Rich-text instructional blocks and dynamic templates contain nested
+        # tags or runtime tokens. Keep their known-good English fallback rather
+        # than risk malformed markup or an altered parameter in a public
+        # translation service.
+        if "<" in source or PROTECTED.search(source):
+            translation.text = source
+            translation.attrib.pop("type", None)
+            translated += 1
+            continue
         safe_source, protected = protect(source)
         pending.append((translation, safe_source, protected))
 
-    # Parallel independent requests avoid corrupting markup: batched machine
-    # translation can move XML tags and placeholders between source strings.
-    def request(item: tuple[ET.Element, str, list[str]]) -> tuple[ET.Element, str]:
-        translation, safe_source, protected = item
-        value = restore(translate(safe_source, target, email), protected)
+    # Batch text below the endpoint's conservative query-size limit. The unique
+    # separators are checked by translate_batch before values are assigned.
+    batches: list[list[tuple[ET.Element, str, list[str]]]] = []
+    batch: list[tuple[ET.Element, str, list[str]]] = []
+    size = 0
+    for item in pending:
+        extra = len(item[1]) + len(GOOGLE_BATCH_SEPARATOR.format(index=len(batch)))
+        if batch and size + extra > 4200:
+            batches.append(batch)
+            batch, size = [], 0
+        batch.append(item)
+        size += extra
+    if batch:
+        batches.append(batch)
+
+    def request(items: list[tuple[ET.Element, str, list[str]]]) -> list[tuple[ET.Element, str]]:
+        values = translate_batch([safe_source for _, safe_source, _ in items], target)
         time.sleep(delay)
-        return translation, value
+        return [
+            (translation, restore(value, protected))
+            for (translation, _, protected), value in zip(items, values, strict=True)
+        ]
 
     with ThreadPoolExecutor(max_workers=workers) as executor:
-        for translation, value in executor.map(request, pending):
-            translation.text = value
-            translation.attrib.pop("type", None)
-            translated += 1
+        for results in executor.map(request, batches):
+            for translation, value in results:
+                translation.text = value
+                translation.attrib.pop("type", None)
+                translated += 1
     ET.indent(tree, space="    ")
     tree.write(path, encoding="utf-8", xml_declaration=True)
     return translated, skipped
+
+
+def apply_safe_fallbacks(path: Path) -> int:
+    """Keep rich text and any corrupted legacy marker as safe source text."""
+    tree = ET.parse(path)
+    changed = 0
+    for message in tree.findall(".//message"):
+        source = message.findtext("source", default="")
+        translation = message.find("translation")
+        value = "".join(translation.itertext()) if translation is not None else ""
+        if translation is None or not source:
+            continue
+        if "<" in source or any(marker in value for marker in ("ZXPH", "data-zs-placeholder", "__ZS_API_CLIENT")):
+            if value != source:
+                translation.text = source
+                translation.attrib.pop("type", None)
+                changed += 1
+    ET.indent(tree, space="    ")
+    tree.write(path, encoding="utf-8", xml_declaration=True)
+    return changed
 
 
 def main() -> int:
@@ -643,14 +743,18 @@ def main() -> int:
     parser.add_argument("--fallback-source", action="store_true", help="fill remaining messages with English for offline review")
     parser.add_argument("--translate-fallbacks", action="store_true", help="replace English review fallbacks")
     parser.add_argument("--swedish-review", action="store_true", help="apply reviewed Swedish UI translations")
+    parser.add_argument("--safe-fallbacks", action="store_true", help="restore rich text and corrupted legacy markers to English source")
     args = parser.parse_args()
-    if not (args.fallback_source or args.swedish_review) and not args.email:
-        parser.error("--email is required unless --fallback-source is used")
+    if not (args.fallback_source or args.swedish_review or args.safe_fallbacks) and not args.email:
+        parser.error("--email is required unless a local fallback mode is used")
     target_codes = {"pt": "pt-BR", "nb": "no", "zh": "zh-CN"}
     for code in args.language:
         path = TRANSLATIONS / f"zscaler_api_client_{code}.ts"
         if not path.exists():
             raise FileNotFoundError(path)
+        if args.safe_fallbacks:
+            print(f"{code}: restored {apply_safe_fallbacks(path)} safe source fallbacks")
+            continue
         if args.fallback_source:
             tree = ET.parse(path)
             fallback_count = 0
