@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.2] - 2026-08-27
+
+### Fixed
+- Explicitly bundle `feature_services` and the other local service modules in every PyInstaller package, fixing the macOS startup failure caused by a missing `feature_services` module.
+
 ## [2.8.1] - 2026-08-27
 
 ### Added

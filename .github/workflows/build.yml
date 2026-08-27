@@ -31,7 +31,7 @@ jobs:
       - name: Build
         run: |
           python scripts/compile_translations.py
-          pyinstaller --noconfirm --name "ZS API Client" --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" --add-data "CHANGELOG.md:." --hidden-import keyring.backends.SecretService zscaler_api_client.py
+          pyinstaller --noconfirm --name "ZS API Client" --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" --add-data "CHANGELOG.md:." --hidden-import keyring.backends.SecretService --hidden-import feature_services --hidden-import evidence_signing --hidden-import schedule_services zscaler_api_client.py
           cd dist
           tar czf ZS-API-Client-linux-x64.tar.gz "ZS API Client"
           cd ..
@@ -67,7 +67,7 @@ jobs:
       - name: Build
         run: |
           python scripts/compile_translations.py
-          pyinstaller --noconfirm --name "ZS API Client" --add-data "translations;translations" --add-data "data;data" --add-data "assets;assets" --add-data "CHANGELOG.md;." --hidden-import keyring.backends.Windows zscaler_api_client.py
+          pyinstaller --noconfirm --name "ZS API Client" --add-data "translations;translations" --add-data "data;data" --add-data "assets;assets" --add-data "CHANGELOG.md;." --hidden-import keyring.backends.Windows --hidden-import feature_services --hidden-import evidence_signing --hidden-import schedule_services zscaler_api_client.py
 
       - name: Install Inno Setup
         run: choco install innosetup --no-progress --yes
@@ -128,7 +128,7 @@ jobs:
         run: |
           test "$(uname -m)" = "${{ matrix.architecture }}"
           python scripts/compile_translations.py
-          pyinstaller --noconfirm --windowed --name "ZS API Client" --osx-bundle-identifier com.yeager.zscaler-api-client --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" --add-data "CHANGELOG.md:." --hidden-import keyring.backends.macOS zscaler_api_client.py
+          pyinstaller --noconfirm --windowed --name "ZS API Client" --osx-bundle-identifier com.yeager.zscaler-api-client --add-data "translations:translations" --add-data "data:data" --add-data "assets:assets" --add-data "CHANGELOG.md:." --hidden-import keyring.backends.macOS --hidden-import feature_services --hidden-import evidence_signing --hidden-import schedule_services zscaler_api_client.py
           test "$(lipo -archs 'dist/ZS API Client.app/Contents/MacOS/ZS API Client')" = "${{ matrix.architecture }}"
           cd dist
           zip -ry "ZS-API-Client-macos-${{ matrix.artifact_suffix }}.zip" "ZS API Client.app"
