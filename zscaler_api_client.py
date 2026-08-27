@@ -8299,7 +8299,7 @@ class PacWorkspaceDialog(QDialog):
             self.guided_preview.setPlainText(self.tr("Fix the guided input to generate a PAC preview: ") + str(error)); return
         self.guided_preview.setPlainText(content)
         references = pac_config_references(content, self.cenr_index)
-        self.guided_preview.set_line_help({number: pac_line_explanation(line, references.get(number, ())) for number, line in enumerate(content.splitlines(), 1)})
+        self.guided_preview.set_line_help({number: pac_line_explanation(line, references.get(number, ()), self.tr) for number, line in enumerate(content.splitlines(), 1)})
 
     def _build_guided_pac(self):
         patterns = self.guided_bypass_input.toPlainText().splitlines()
@@ -8334,7 +8334,7 @@ class PacWorkspaceDialog(QDialog):
         content = self._content()
         references = pac_config_references(content, self.cenr_index)
         self.pac_editor.set_line_help({
-            number: pac_line_explanation(line, references.get(number, ()))
+            number: pac_line_explanation(line, references.get(number, ()), self.tr)
             for number, line in enumerate(content.splitlines(), 1)
         })
 

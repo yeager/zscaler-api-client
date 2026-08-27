@@ -6,7 +6,7 @@ import ipaddress
 import json
 import re
 from pathlib import Path
-from typing import Iterable
+from typing import Callable, Iterable
 
 
 CONFIG_SOURCE_URL = "https://config.zscaler.com/api/zscaler.net/cenr/json"
@@ -89,31 +89,37 @@ def pac_config_references(text: str, index: dict) -> dict[int, list[dict[str, st
     return by_line
 
 
-def pac_line_explanation(line: str, records: Iterable[dict[str, str]] = ()) -> str:
+def pac_line_explanation(line: str, records: Iterable[dict[str, str]] = (), translate: Callable[[str], str] | None = None) -> str:
     """Create a concise help balloon for a PAC source line."""
+    tr = translate or (lambda text: text)
     text = str(line or "").strip()
     if not text:
-        explanation = "Blank line: use it to separate rule groups for review."
+        explanation = tr("Blank line: use it to separate rule groups for review.")
     elif text.startswith("//"):
-        explanation = "Comment: documents intent and is ignored by PAC execution."
+        explanation = tr("Comment: documents intent and is ignored by PAC execution.")
     elif "FindProxyForURL" in text:
-        explanation = "Required PAC entry point. Browsers call it with the URL and host and expect a proxy decision."
+        explanation = tr("Required PAC entry point. Browsers call it with the URL and host and expect a proxy decision.")
     elif "shExpMatch" in text:
-        explanation = "Wildcard host comparison. Keep patterns specific so unintended destinations are not bypassed."
+        explanation = tr("Wildcard host comparison. Keep patterns specific so unintended destinations are not bypassed.")
     elif "isPlainHostName" in text:
-        explanation = "Matches single-label internal host names. This is commonly evaluated before external proxy rules."
+        explanation = tr("Matches single-label internal host names. This is commonly evaluated before external proxy rules.")
     elif "DIRECT" in text and "return" in text:
-        explanation = "DIRECT bypasses Zscaler for this matching destination. Confirm that bypass is intentional and scoped."
+        explanation = tr("DIRECT bypasses Zscaler for this matching destination. Confirm that bypass is intentional and scoped.")
     elif "PROXY" in text and "return" in text:
-        explanation = "PROXY sends matching traffic to the listed service edge. A secondary gateway and DIRECT provide controlled fallback."
+        explanation = tr("PROXY sends matching traffic to the listed service edge. A secondary gateway and DIRECT provide controlled fallback.")
     elif "return" in text:
-        explanation = "PAC return decision. Return values must be quoted and rule order determines which decision wins."
+        explanation = tr("PAC return decision. Return values must be quoted and rule order determines which decision wins.")
     elif "if" in text:
-        explanation = "Conditional PAC rule. Earlier matching conditions take precedence over later rules."
+        explanation = tr("Conditional PAC rule. Earlier matching conditions take precedence over later rules.")
     else:
-        explanation = "PAC JavaScript. Keep expressions deterministic and avoid slow DNS helpers unless specifically required."
+        explanation = tr("PAC JavaScript. Keep expressions deterministic and avoid slow DNS helpers unless specifically required.")
     locations = list(records)
     if locations:
-        names = ", ".join(f"{row.get('city', 'Unknown')} ({row.get('continent', '')})" for row in locations[:3])
-        explanation += f" Zscaler Configuration match: {names}."
+        details = []
+        for row in locations[:3]:
+            location = f"{row.get('city', 'Unknown')} ({row.get('continent', '')})"
+            network = row.get("range", "")
+            endpoints = ", ".join(value for value in (row.get("hostname", ""), row.get("vpn", ""), row.get("gre", ""), row.get("ext", "")) if value)
+            details.append(tr("{location}; network {network}; endpoints {endpoints}.").format(location=location, network=network or tr("not published"), endpoints=endpoints or tr("not published")))
+        explanation += tr(" Zscaler Configuration match: {details} Network owner: Zscaler Cloud Enforcement Node (bundled official index).").format(details=" ".join(details))
     return explanation
