@@ -6929,6 +6929,19 @@ Ada,ada@example.com</translation>
         <message><source>Profile ID</source><translation>Profil-ID</translation></message>
         <message><source>Both mapping inputs must be valid JSON: </source><translation>Båda mappningsindata måste vara giltig JSON: </translation></message>
         <message><source>Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.</source><translation>Mappade åtgärder: {total}; bekräftade mappningar: {matched}; olösta URL:er för hostad PAC: {unresolved}.</translation></message>
+        <message><source>Search the bundled Zscaler Configuration Center index of Cloud Enforcement Node ranges, proxy/VPN hostnames, GRE and extranet virtual IP addresses. The PAC editor shows a help balloon when a line references an indexed endpoint.</source><translation>Sök i det medföljande Zscaler Configuration Center-indexet med Cloud Enforcement Node-ranges, proxy-/VPN-värdnamn samt GRE- och extranet-virtuella IP-adresser. PAC-redigeraren visar en hjälpbubbla när en rad refererar till en indexerad endpoint.</translation></message>
+        <message><source>Search city, CIDR, hostname, GRE or VPN address</source><translation>Sök stad, CIDR, värdnamn, GRE- eller VPN-adress</translation></message>
+        <message><source>Search data centers</source><translation>Sök datacenter</translation></message>
+        <message><source>Continent</source><translation>Kontinent</translation></message>
+        <message><source>Data center</source><translation>Datacenter</translation></message>
+        <message><source>CIDR range</source><translation>CIDR-intervall</translation></message>
+        <message><source>Proxy hostname</source><translation>Proxy-värdnamn</translation></message>
+        <message><source>VPN hostname</source><translation>VPN-värdnamn</translation></message>
+        <message><source>GRE VIP</source><translation>GRE VIP</translation></message>
+        <message><source>Extranet VIP</source><translation>Extranet VIP</translation></message>
+        <message><source>Coordinates</source><translation>Koordinater</translation></message>
+        <message><source>Zscaler data centers</source><translation>Zscaler-datacenter</translation></message>
+        <message><source>{matches} matching endpoint records from {total} indexed Zscaler data-center records. Source: {source}</source><translation>{matches} matchande endpointposter av {total} indexerade Zscaler-datacenterposter. Källa: {source}</translation></message>
     </context>
     <context>
         <name>MainWindow</name>

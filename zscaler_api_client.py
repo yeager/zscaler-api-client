@@ -65,7 +65,7 @@ from PySide6.QtWidgets import (
     QGroupBox, QFormLayout, QDialog, QDialogButtonBox, QProgressBar,
     QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
     QCheckBox, QScrollArea, QFrame, QStackedWidget, QGridLayout, QSizePolicy
-    , QInputDialog
+    , QInputDialog, QToolTip
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
@@ -78,6 +78,7 @@ from feature_services import AuditTrail, policy_diff, response_drift, simulate_p
 from evidence_signing import generate_private_key, public_key, sign_evidence, verify_evidence
 from pac_services import PAC_TEMPLATE, PAC_VARIABLES, PAC_FUNCTIONS, build_guided_pac, lint_pac, pac_improvements, pac_profile_mappings, pac_variables, preview_pac_decision, substitute_pac_variables, zia_pac_payload, zcc_pac_patch
 from schedule_services import register_background_schedule, unregister_background_schedule
+from zscaler_config_services import CONFIG_SOURCE_URL, load_cenr_index, pac_config_references, pac_line_explanation, search_cenr
 QT_BINDINGS = "PySide6"
 
 __version__ = "2.8.5"
@@ -8029,6 +8030,29 @@ body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}
             QMessageBox.information(self, self.tr("Support bundle"), self.tr("A redacted support bundle was created."))
 
 
+class PacCodeEditor(QPlainTextEdit):
+    """PAC editor that explains the code beneath the pointer without execution."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._line_help: dict[int, str] = {}
+        self.setMouseTracking(True)
+        self.viewport().setMouseTracking(True)
+
+    def set_line_help(self, line_help: dict[int, str]):
+        self._line_help = dict(line_help)
+
+    def mouseMoveEvent(self, event):
+        cursor = self.cursorForPosition(event.position().toPoint())
+        line = cursor.blockNumber() + 1
+        explanation = self._line_help.get(line)
+        if explanation:
+            QToolTip.showText(event.globalPosition().toPoint(), explanation, self)
+        else:
+            QToolTip.hideText()
+        super().mouseMoveEvent(event)
+
+
 class PacWorkspaceDialog(QDialog):
     """Create, validate and safely prepare ZIA/ZCC PAC updates."""
 
@@ -8041,6 +8065,10 @@ class PacWorkspaceDialog(QDialog):
         super().__init__(window)
         self.window = window
         self.settings = QSettings("Zscaler", "APIClient")
+        try:
+            self.cenr_index = load_cenr_index(Path(__file__).parent / "data" / "zscaler_config_cenr.json")
+        except (OSError, ValueError, json.JSONDecodeError):
+            self.cenr_index = {"source": CONFIG_SOURCE_URL, "data_centers": []}
         self.setWindowTitle(self.tr("PAC Workspace"))
         self.resize(1120, 760)
 
@@ -8103,8 +8131,9 @@ class PacWorkspaceDialog(QDialog):
         self.tabs.addTab(guided_tab, self.tr("Guided setup"))
         author_tab = QWidget(); author_layout = QVBoxLayout(author_tab)
         author_layout.addWidget(QLabel(self.tr("PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.")))
-        self.pac_editor = QPlainTextEdit(self.settings.value("pac/workspace/draft", PAC_TEMPLATE))
+        self.pac_editor = PacCodeEditor(self.settings.value("pac/workspace/draft", PAC_TEMPLATE))
         pac_font = QFont("Monospace"); pac_font.setStyleHint(QFont.StyleHint.Monospace); self.pac_editor.setFont(pac_font)
+        self.pac_editor.textChanged.connect(self._refresh_pac_line_help)
         author_layout.addWidget(self.pac_editor, 1)
         author_buttons = QHBoxLayout()
         load_button = QPushButton(self.tr("Load PAC…")); load_button.clicked.connect(self._load_pac)
@@ -8162,6 +8191,20 @@ class PacWorkspaceDialog(QDialog):
         mapping_layout.addWidget(self.mapping_table, 1)
         self.tabs.addTab(mapping_tab, self.tr("PAC mappings"))
 
+        config_tab = QWidget(); config_layout = QVBoxLayout(config_tab)
+        config_intro = QLabel(self.tr("Search the bundled Zscaler Configuration Center index of Cloud Enforcement Node ranges, proxy/VPN hostnames, GRE and extranet virtual IP addresses. The PAC editor shows a help balloon when a line references an indexed endpoint."))
+        config_intro.setWordWrap(True); config_layout.addWidget(config_intro)
+        config_search = QHBoxLayout()
+        self.cenr_search_input = QLineEdit("Stockholm")
+        self.cenr_search_input.setPlaceholderText(self.tr("Search city, CIDR, hostname, GRE or VPN address"))
+        cenr_search_button = QPushButton(self.tr("Search data centers")); cenr_search_button.clicked.connect(self._search_cenr)
+        config_search.addWidget(self.cenr_search_input, 1); config_search.addWidget(cenr_search_button); config_layout.addLayout(config_search)
+        self.cenr_summary = QLabel(); config_layout.addWidget(self.cenr_summary)
+        self.cenr_table = QTableWidget(0, 8); self.cenr_table.setHorizontalHeaderLabels((self.tr("Continent"), self.tr("Data center"), self.tr("CIDR range"), self.tr("Proxy hostname"), self.tr("VPN hostname"), self.tr("GRE VIP"), self.tr("Extranet VIP"), self.tr("Coordinates")))
+        self.cenr_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents); self.cenr_table.horizontalHeader().setStretchLastSection(True)
+        config_layout.addWidget(self.cenr_table, 1)
+        self.tabs.addTab(config_tab, self.tr("Zscaler data centers"))
+
         zcc_tab = QWidget(); zcc_layout = QVBoxLayout(zcc_tab)
         zcc_layout.addWidget(QLabel(self.tr("Paste a forwarding profile returned by ZCC, or first prepare the profile-list request. Existing profile fields are preserved when PAC fields are updated.")))
         self.zcc_profile_editor = QPlainTextEdit(self.settings.value("pac/workspace/zcc_profile", "{}")); self.zcc_profile_editor.setFont(pac_font); zcc_layout.addWidget(self.zcc_profile_editor, 1)
@@ -8181,16 +8224,17 @@ class PacWorkspaceDialog(QDialog):
         layout.addLayout(actions)
         self._set_pac_mode()
         self._verify()
+        self._search_cenr()
 
     def _set_pac_mode(self, *_unused):
         """Keep the beginner flow small while preserving advanced capabilities."""
         advanced = self.pac_mode_combo.currentData() == "advanced"
         self.tabs.setTabVisible(1, advanced)  # Author
         self.tabs.setTabVisible(4, advanced)  # PAC mappings
-        self.tabs.setTabVisible(5, advanced)  # ZCC / Mobile Portal
+        self.tabs.setTabVisible(6, advanced)  # ZCC / Mobile Portal
         for widget in self.advanced_metadata_widgets:
             widget.setVisible(advanced)
-        if not advanced and self.tabs.currentIndex() in {1, 4, 5}:
+        if not advanced and self.tabs.currentIndex() in {1, 4, 6}:
             self.tabs.setCurrentIndex(0)
         self.guided_status.setText(
             self.tr("Guided mode creates a minimal, reviewable PAC. Switch to Advanced to edit JavaScript, update ZCC profiles, or prepare ZIA lifecycle actions.")
@@ -8229,6 +8273,27 @@ class PacWorkspaceDialog(QDialog):
         unresolved = sum(1 for item in mappings if "not found" in item["relation"].lower())
         self.mapping_summary.setText(self.tr("Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.").format(total=len(mappings), matched=matched, unresolved=unresolved))
 
+    def _refresh_pac_line_help(self):
+        """Explain every PAC line and enrich explicit Zscaler references locally."""
+        content = self._content()
+        references = pac_config_references(content, self.cenr_index)
+        self.pac_editor.set_line_help({
+            number: pac_line_explanation(line, references.get(number, ()))
+            for number, line in enumerate(content.splitlines(), 1)
+        })
+
+    def _search_cenr(self):
+        records = search_cenr(self.cenr_index, self.cenr_search_input.text())
+        self.cenr_table.setRowCount(len(records))
+        columns = ("continent", "city", "range", "hostname", "vpn", "gre", "ext")
+        for row, record in enumerate(records):
+            for column, key in enumerate(columns):
+                self.cenr_table.setItem(row, column, QTableWidgetItem(record.get(key, "")))
+            coordinates = ", ".join(part for part in (record.get("latitude", ""), record.get("longitude", "")) if part)
+            self.cenr_table.setItem(row, 7, QTableWidgetItem(coordinates))
+        total = len(self.cenr_index.get("data_centers", []))
+        self.cenr_summary.setText(self.tr("{matches} matching endpoint records from {total} indexed Zscaler data-center records. Source: {source}").format(matches=len(records), total=total, source=self.cenr_index.get("source", CONFIG_SOURCE_URL)))
+
     def _content(self) -> str:
         return self.pac_editor.toPlainText()
 
@@ -8245,6 +8310,7 @@ class PacWorkspaceDialog(QDialog):
         return lint_pac(self._content())
 
     def _verify(self) -> bool:
+        self._refresh_pac_line_help()
         findings = self._findings()
         variables = ", ".join(sorted(pac_variables(self._content()))) or self.tr("none")
         lines = [self.tr("Detected variables: ") + variables, ""]
