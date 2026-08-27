@@ -67,7 +67,7 @@ from PySide6.QtWidgets import (
     QCheckBox, QScrollArea, QFrame, QStackedWidget, QGridLayout, QSizePolicy
     , QInputDialog, QToolTip
 )
-from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment
+from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment, QSize
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
 
 try:
@@ -3014,6 +3014,13 @@ class VisualAssetLabel(QLabel):
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setStyleSheet("background: transparent; border: none;")
         self.setVisible(not self._source.isNull())
+
+    def sizeHint(self):
+        """Never let the source artwork dictate a dialog's width."""
+        return QSize(640, self.height())
+
+    def minimumSizeHint(self):
+        return QSize(0, self.height())
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
