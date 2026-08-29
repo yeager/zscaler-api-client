@@ -523,6 +523,17 @@ class MainWindowTests(unittest.TestCase):
         self.assertGreaterEqual(dialog.language_choice.findData("sv"), 0)
         dialog.close()
 
+    def test_settings_loads_boolean_external_ai_opt_in(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("ai/allow_external", None)
+        try:
+            settings.setValue("ai/allow_external", True)
+            dialog = client.SettingsDialog(self.window)
+            self.assertTrue(dialog.ai_allow_external.isChecked())
+            dialog.close()
+        finally:
+            settings.remove("ai/allow_external") if previous is None else settings.setValue("ai/allow_external", previous)
+
     def test_privacy_settings_default_to_safe_external_obfuscation(self):
         settings = client.QSettings("Zscaler", "APIClient")
         keys = ["privacy/mode", *client.PRIVACY_CATEGORY_KEYS.values()]

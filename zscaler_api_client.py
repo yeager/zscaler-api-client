@@ -5433,7 +5433,7 @@ class SettingsDialog(QDialog):
         self.ai_model.setText(settings.value("ai/model", ""))
         if secure_get("ai_api_key"):
             self.ai_api_key.setPlaceholderText(self.tr("Configured securely in your system keychain"))
-        self.ai_allow_external.setChecked(settings.value("ai/allow_external", "false") == "true")
+        self.ai_allow_external.setChecked(setting_enabled(settings, "ai/allow_external", default=False))
         self._update_privacy_preview()
 
     def _clear_ai_key(self):
