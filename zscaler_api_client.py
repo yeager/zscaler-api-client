@@ -7343,13 +7343,25 @@ class OperationsDialog(QDialog):
         data = privacy_safe(self._report_data(), self.settings, "display")
         posture = data["posture"]
         severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
-        self.report_chart.set_style("pie"); self.report_chart.set_values([(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()])
+        if data["kind"] == "user_risk":
+            risk_levels: dict[str, float] = {}
+            for user in data["user_risk"]["users"]:
+                level = str(user.get("risk_level") or "observed").strip().lower()
+                label = severity_labels.get(level, level.title())
+                risk_levels[label] = risk_levels.get(label, 0.0) + 1.0
+            self.report_chart.set_style("pie"); self.report_chart.set_values(list(risk_levels.items()))
+        else:
+            self.report_chart.set_style("pie"); self.report_chart.set_values([(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()])
         self.report_preview.setPlainText("\n".join(self._report_lines(data)))
 
     def _drill_into_report_metric(self, label: str, value: float):
         """Turn a visual report metric into a local, reviewable evidence view."""
         data = privacy_safe(self._report_data(), self.settings, "display")
-        detail = {"metric": label, "value": value, "scope": data["scope"], "findings": [item for item in data["posture"].get("findings", []) if str(item.get("severity", "")).lower() == str(label).lower()]}
+        if data["kind"] == "user_risk":
+            selected = [item for item in data["user_risk"]["users"] if str(item.get("risk_level") or "observed").strip().lower() == str(label).strip().lower()]
+            detail = {"metric": label, "value": value, "scope": data["scope"], "users": selected, "disclaimer": data["user_risk"]["disclaimer"]}
+        else:
+            detail = {"metric": label, "value": value, "scope": data["scope"], "findings": [item for item in data["posture"].get("findings", []) if str(item.get("severity", "")).lower() == str(label).lower()]}
         dialog = QDialog(self); dialog.setWindowTitle(self.tr("Report detail")); dialog.resize(700, 440)
         layout = QVBoxLayout(dialog); intro = QLabel(self.tr("Local evidence behind the selected report metric. It is not a tenant-wide assessment.")); intro.setWordWrap(True); layout.addWidget(intro)
         output = QPlainTextEdit(json.dumps(detail, indent=2, ensure_ascii=False)); output.setReadOnly(True); layout.addWidget(output, 1)
@@ -7359,7 +7371,7 @@ class OperationsDialog(QDialog):
         """Create a self-contained visual report with embedded, offline artwork."""
         posture, incidents = data["posture"], data["incident_summary"]
         assurance = data.get("assurance", {"summary": {"score": 0, "coverage_percent": 0}, "controls": []})
-        title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}[data["kind"]]
+        title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary"), "user_risk": self.tr("User risk report")}[data["kind"]]
         try:
             banner = base64.b64encode(_resource_path("assets/visuals/security-report-banner.png").read_bytes()).decode("ascii")
             banner_style = f"background-image:linear-gradient(90deg,rgba(4,12,27,.15),rgba(4,12,27,.05)),url(data:image/png;base64,{banner});"
@@ -7389,9 +7401,17 @@ class OperationsDialog(QDialog):
         narrative_observations = [self.tr("{passed} evaluated control(s) passed and {failed} failed.").format(passed=assurance_summary.get("passed", 0), failed=assurance_summary.get("failed", 0)), self.tr("Evidence coverage is {coverage}% and local posture is {posture}/100.").format(coverage=assurance_summary.get("coverage_percent", 0), posture=posture["score"])]
         if assurance_summary.get("delta") is not None: narrative_observations.append(self.tr("The assurance score changed by {delta:+d} points versus the selected baseline.").format(delta=int(assurance_summary["delta"])))
         narrative_items = "".join(f"<li>{html.escape(str(item))}</li>" for item in narrative_observations)
+        risk_section = ""
+        if data["kind"] == "user_risk":
+            risk = data["user_risk"]
+            risk_rows = "".join(
+                f"<tr><td>{html.escape(str(item.get('identity', '')))}</td><td>{html.escape(str(item.get('risk_level', 'observed')))}</td><td>{html.escape(str(item.get('risk_score', 0)))}</td><td>{html.escape(json.dumps(item.get('evidence', {}), ensure_ascii=False))}</td></tr>"
+                for item in risk["users"][:50]
+            ) or f"<tr><td colspan='4'>{html.escape(self.tr('No user records with explicit risk evidence were found in the current response.'))}</td></tr>"
+            risk_section = f"<section class='panel'><h2>{html.escape(self.tr('User risk evidence'))}</h2><p>{html.escape(self.tr('Observed users: {count}; explicit risk signals: {signals}.').format(count=risk['summary']['observed_users'], signals=risk['summary']['explicit_risk_signals']))}</p><p>{html.escape(self.tr('Only explicit fields in the current response are reported; identity alone is never treated as risk.'))}</p><table><thead><tr><th>{html.escape(self.tr('User'))}</th><th>{html.escape(self.tr('Risk'))}</th><th>{html.escape(self.tr('Risk score'))}</th><th>{html.escape(self.tr('Evidence'))}</th></tr></thead><tbody>{risk_rows}</tbody></table></section>"
         return f"""<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>{html.escape(title)}</title><style>
 body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}main{{max-width:1100px;margin:auto;padding:28px}}.hero{{min-height:260px;border:1px solid #17375b;border-radius:22px;background-color:#0a1830;background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:32px;box-sizing:border-box}}h1{{font-size:34px;margin:0}}.scope{{color:#9db4cc;margin-top:8px}}.metrics{{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:20px 0}}.metric{{background:#0d1e33;border:1px solid #1c3b5d;border-radius:16px;padding:18px}}.metric span{{display:block;color:#9db4cc}}.metric strong{{display:block;font-size:26px;margin-top:7px}}.good strong{{color:#34d399}}.warn strong{{color:#fbbf24}}.risk strong{{color:#fb7185}}.panel{{background:#0d1e33;border:1px solid #1c3b5d;border-radius:16px;padding:20px;margin-top:16px}}table{{width:100%;border-collapse:collapse}}th,td{{text-align:left;padding:10px;border-bottom:1px solid #1c3b5d}}th{{color:#7dd3fc}}.severity{{font-weight:700}}.critical,.high{{color:#fb7185}}.medium{{color:#fbbf24}}.low,.info{{color:#7dd3fc}}footer{{color:#7890a8;margin-top:24px;font-size:12px}}@media(max-width:760px){{.metrics{{grid-template-columns:1fr 1fr}}}}
-</style></head><body><main><header class='hero' style='{banner_style}'><div><h1>{html.escape(title)}</h1><div class='scope'>{html.escape(self.tr('Data scope: {name}').format(name=data['scope']['environment']))}</div></div></header><div class='metrics'>{card_html}</div><section class='panel'><h2>{html.escape(self.tr('Executive assurance narrative'))}</h2><h3>{html.escape(narrative_headline)}</h3><ul>{narrative_items}</ul><p>{html.escape(self.tr('Local evidence limitation: validate results against authoritative tenant and governance records.'))}</p></section><section class='panel'><h2>{html.escape(self.tr('Continuous assurance'))}</h2><p>{html.escape(self.tr('Evidence coverage: {coverage}%').format(coverage=assurance['summary']['coverage_percent']))}</p><table><thead><tr><th>{html.escape(self.tr('Control'))}</th><th>{html.escape(self.tr('Status'))}</th><th>{html.escape(self.tr('Control objective'))}</th><th>{html.escape(self.tr('Framework mapping'))}</th></tr></thead><tbody>{assurance_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Security findings'))}</h2><table><thead><tr><th>{html.escape(self.tr('Severity'))}</th><th>{html.escape(self.tr('Finding'))}</th><th>{html.escape(self.tr('Count'))}</th></tr></thead><tbody>{finding_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Recent evidence'))}</h2><table><thead><tr><th>{html.escape(self.tr('Time'))}</th><th>{html.escape(self.tr('Source'))}</th><th>{html.escape(self.tr('Evidence'))}</th></tr></thead><tbody>{event_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Incident signals'))}</h2><p>{html.escape(self.tr('High'))}: {int(incidents['high'])} · {html.escape(self.tr('Medium'))}: {int(incidents['medium'])}</p></section><footer>ZS API Client · {html.escape(self.tr('Generated locally; credentials are never included.'))}</footer></main></body></html>"""
+</style></head><body><main><header class='hero' style='{banner_style}'><div><h1>{html.escape(title)}</h1><div class='scope'>{html.escape(self.tr('Data scope: {name}').format(name=data['scope']['environment']))}</div></div></header><div class='metrics'>{card_html}</div><section class='panel'><h2>{html.escape(self.tr('Executive assurance narrative'))}</h2><h3>{html.escape(narrative_headline)}</h3><ul>{narrative_items}</ul><p>{html.escape(self.tr('Local evidence limitation: validate results against authoritative tenant and governance records.'))}</p></section><section class='panel'><h2>{html.escape(self.tr('Continuous assurance'))}</h2><p>{html.escape(self.tr('Evidence coverage: {coverage}%').format(coverage=assurance['summary']['coverage_percent']))}</p><table><thead><tr><th>{html.escape(self.tr('Control'))}</th><th>{html.escape(self.tr('Status'))}</th><th>{html.escape(self.tr('Control objective'))}</th><th>{html.escape(self.tr('Framework mapping'))}</th></tr></thead><tbody>{assurance_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Security findings'))}</h2><table><thead><tr><th>{html.escape(self.tr('Severity'))}</th><th>{html.escape(self.tr('Finding'))}</th><th>{html.escape(self.tr('Count'))}</th></tr></thead><tbody>{finding_rows}</tbody></table></section>{risk_section}<section class='panel'><h2>{html.escape(self.tr('Recent evidence'))}</h2><table><thead><tr><th>{html.escape(self.tr('Time'))}</th><th>{html.escape(self.tr('Source'))}</th><th>{html.escape(self.tr('Evidence'))}</th></tr></thead><tbody>{event_rows}</tbody></table></section><section class='panel'><h2>{html.escape(self.tr('Incident signals'))}</h2><p>{html.escape(self.tr('High'))}: {int(incidents['high'])} · {html.escape(self.tr('Medium'))}: {int(incidents['medium'])}</p></section><footer>ZS API Client · {html.escape(self.tr('Generated locally; credentials are never included.'))}</footer></main></body></html>"""
 
     def export_report(self, format_name):
         data = privacy_safe(self._report_data(), self.settings, "export")

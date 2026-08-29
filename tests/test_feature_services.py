@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, exposure_access_analysis, investigation_note
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, policy_as_code, compliance_findings, build_batch_plan, security_posture, operational_alerts, request_latency_trend, endpoint_anomalies, incident_evidence, soc_investigation_graph, change_control_plan, security_report_data, user_risk_report, compliance_assessment, executive_security_narrative, validate_request_chain, chain_lookup, resolve_chain_templates, environment_scope, environment_scope_metadata, obfuscate_identifiers, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, exposure_access_analysis, investigation_note
 
 
 class MemorySettings:
@@ -280,6 +280,16 @@ class FeatureServicesTests(unittest.TestCase):
         report = security_report_data("ciso", [{"method": "GET", "status": 500, "url": "https://example.test?token=hidden"}], [], True)
         self.assertEqual("ciso", report["kind"])
         self.assertEqual(1, report["posture"]["metrics"]["failed"])
+        self.assertNotIn("hidden", json.dumps(report))
+
+    def test_user_risk_report_uses_explicit_evidence_only(self):
+        report = user_risk_report({"users": [
+            {"email": "observed@example.test"},
+            {"email": "risk@example.test", "riskLevel": "high", "riskScore": 80, "mfa": False, "token": "hidden"},
+        ]})
+        self.assertEqual(2, report["summary"]["observed_users"])
+        self.assertEqual(1, report["summary"]["explicit_risk_signals"])
+        self.assertEqual("high", report["users"][0]["risk_level"])
         self.assertNotIn("hidden", json.dumps(report))
 
     def test_continuous_compliance_is_explicit_scoped_and_comparable(self):
