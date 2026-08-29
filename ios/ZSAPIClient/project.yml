@@ -16,3 +16,15 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: NO
         INFOPLIST_FILE: Sources/Info.plist
+  ZSAPIClientTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Tests
+    dependencies:
+      - target: ZSAPIClient
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.yeager.zs-api-client.tests
+        SWIFT_VERSION: "5.0"

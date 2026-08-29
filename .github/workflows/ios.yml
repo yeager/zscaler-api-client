@@ -28,3 +28,4 @@ jobs:
         run: |
           xcodegen generate
           xcodebuild -project ZSAPIClient.xcodeproj -scheme ZSAPIClient -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+          xcodebuild -project ZSAPIClient.xcodeproj -scheme ZSAPIClient -destination 'platform=iOS Simulator,name=iPhone 16 Pro' CODE_SIGNING_ALLOWED=NO test

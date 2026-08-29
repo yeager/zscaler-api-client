@@ -41,8 +41,16 @@ class IOSProjectTests(unittest.TestCase):
         self.assertIn("runs-on: macos-15", workflow)
         self.assertIn("xcodegen generate", workflow)
         self.assertIn("iphonesimulator", workflow)
+        self.assertIn(" CODE_SIGNING_ALLOWED=NO test", workflow)
         self.assertIn("CODE_SIGNING_ALLOWED=NO", workflow)
         self.assertNotIn("action-gh-release", workflow)
+
+    def test_native_project_has_oneapi_xctests(self):
+        project = (ROOT / "project.yml").read_text(encoding="utf-8")
+        tests = (ROOT / "Tests/OneAPIProfileTests.swift").read_text(encoding="utf-8")
+        self.assertIn("type: bundle.unit-test", project)
+        self.assertIn("@testable import ZS_API_Client", tests)
+        self.assertIn("zslogin.net/oauth2/v1/token", tests)
 
 
 if __name__ == "__main__":
