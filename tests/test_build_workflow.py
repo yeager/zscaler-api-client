@@ -63,6 +63,14 @@ class BuildWorkflowTests(unittest.TestCase):
         self.assertIn("pip install -r requirements.txt ruff", workflow)
         self.assertIn("ruff check --select F", workflow)
 
+    def test_spec_runtime_hook_targets_the_active_pyside6_runtime(self):
+        root = Path(__file__).parent.parent
+        hook = (root / "runtime_hook.py").read_text(encoding="utf-8")
+        spec = (root / "zscaler_api_client.spec").read_text(encoding="utf-8")
+        self.assertIn("PySide6", hook)
+        self.assertNotIn("PyQt6", hook)
+        self.assertIn("runtime_hooks=['runtime_hook.py']", spec)
+
 
 if __name__ == "__main__":
     unittest.main()

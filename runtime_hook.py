@@ -1,56 +1,43 @@
-# runtime_hook.py - PyInstaller runtime hook
-# This runs BEFORE the main script and BEFORE PyQt6 is imported
-# Fixes Qt plugin path issues in bundled macOS apps
+"""PyInstaller runtime hook for the PySide6 Qt platform plugins.
+
+It runs before the application imports PySide6 and supports one-folder
+Windows/Linux distributions as well as the macOS ``.app`` layout.
+"""
+
+from __future__ import annotations
 
 import os
+from pathlib import Path
 import sys
 
-def setup_qt_environment():
-    """Set up Qt environment variables for bundled app."""
-    if not getattr(sys, 'frozen', False):
-        return  # Not running as bundled app
-    
-    # Get the bundle directory
-    if sys.platform == 'darwin':
-        # macOS: executable is in .app/Contents/MacOS/
-        bundle_dir = os.path.dirname(sys.executable)
-        frameworks_dir = os.path.join(bundle_dir, '..', 'Frameworks')
-        resources_dir = os.path.join(bundle_dir, '..', 'Resources')
-        
-        # Possible Qt plugin locations
-        plugin_paths = [
-            os.path.join(frameworks_dir, 'PyQt6', 'Qt6', 'plugins'),
-            os.path.join(resources_dir, 'PyQt6', 'Qt6', 'plugins'),
-            os.path.join(frameworks_dir, 'PyQt6', 'Qt', 'plugins'),
-            os.path.join(resources_dir, 'PyQt6', 'Qt', 'plugins'),
-            os.path.join(bundle_dir, 'PyQt6', 'Qt6', 'plugins'),
-            os.path.join(bundle_dir, 'PyQt6', 'Qt', 'plugins'),
-        ]
-        
-        # Find valid plugin path
-        for path in plugin_paths:
-            if os.path.isdir(path):
-                os.environ['QT_PLUGIN_PATH'] = path
-                platforms_path = os.path.join(path, 'platforms')
-                if os.path.isdir(platforms_path):
-                    os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = platforms_path
-                break
-        
-        # Disable problematic features
-        os.environ['QT_MAC_DISABLE_FOREGROUND_APPLICATION_TRANSFORM'] = '1'
-        
-    elif sys.platform == 'win32':
-        # Windows
-        bundle_dir = os.path.dirname(sys.executable)
-        plugin_paths = [
-            os.path.join(bundle_dir, 'PyQt6', 'Qt6', 'plugins'),
-            os.path.join(bundle_dir, 'PyQt6', 'Qt', 'plugins'),
-        ]
-        
-        for path in plugin_paths:
-            if os.path.isdir(path):
-                os.environ['QT_PLUGIN_PATH'] = path
-                break
 
-# Run setup immediately
+def _plugin_candidates(executable: Path) -> list[Path]:
+    """Return possible PySide6 plugin directories for the active bundle."""
+    bundle_dir = executable.parent
+    candidates = [
+        bundle_dir / "PySide6" / "Qt" / "plugins",
+        bundle_dir / "PySide6" / "Qt6" / "plugins",
+    ]
+    if sys.platform == "darwin":
+        contents = bundle_dir.parent
+        for base in (contents / "Frameworks", contents / "Resources"):
+            candidates.extend((
+                base / "PySide6" / "Qt" / "plugins",
+                base / "PySide6" / "Qt6" / "plugins",
+            ))
+    return candidates
+
+
+def setup_qt_environment() -> None:
+    """Expose the first valid bundled platform-plugin directory to Qt."""
+    if not getattr(sys, "frozen", False):
+        return
+    for path in _plugin_candidates(Path(sys.executable).resolve()):
+        platforms = path / "platforms"
+        if platforms.is_dir():
+            os.environ.setdefault("QT_PLUGIN_PATH", str(path))
+            os.environ.setdefault("QT_QPA_PLATFORM_PLUGIN_PATH", str(platforms))
+            break
+
+
 setup_qt_environment()
