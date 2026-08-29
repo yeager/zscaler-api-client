@@ -14,7 +14,7 @@ struct OneAPIProfile: Codable, Equatable {
     }
 }
 
-struct APIRequest: Codable, Identifiable {
+struct APIRequest: Identifiable {
     let id = UUID()
     var method = "GET"
     var path = "https://api.zsapi.net/zia/api/v1/users"

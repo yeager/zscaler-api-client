@@ -15,6 +15,4 @@ targets:
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: NO
-        INFOPLIST_KEY_CFBundleDisplayName: ZS API Client
-        INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads: NO
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_FILE: Sources/Info.plist

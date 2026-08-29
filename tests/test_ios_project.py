@@ -12,7 +12,7 @@ class IOSProjectTests(unittest.TestCase):
         project = (ROOT / "project.yml").read_text(encoding="utf-8")
         self.assertIn("platform: iOS", project)
         self.assertIn("TARGETED_DEVICE_FAMILY: \"1,2\"", project)
-        self.assertIn("NSAllowsArbitraryLoads: NO", project)
+        self.assertIn("INFOPLIST_FILE: Sources/Info.plist", project)
 
     def test_secret_and_token_handling_use_keychain_and_https(self):
         keychain = (ROOT / "Sources/Services/KeychainStore.swift").read_text(encoding="utf-8")
@@ -23,6 +23,12 @@ class IOSProjectTests(unittest.TestCase):
         self.assertIn('"audience": "https://api.zscaler.com"', client)
         self.assertIn('KeychainStore.save(self.secret', view_model)
         self.assertNotIn("UserDefaults", keychain + client + view_model)
+
+    def test_info_plist_enforces_app_transport_security(self):
+        info = (ROOT / "Sources/Info.plist").read_text(encoding="utf-8")
+        self.assertIn("NSAppTransportSecurity", info)
+        self.assertIn("NSAllowsArbitraryLoads", info)
+        self.assertIn("<false/>", info)
 
     def test_readme_is_clear_that_xcode_on_macos_builds_the_ipa(self):
         readme = (ROOT.parent / "README.md").read_text(encoding="utf-8")
