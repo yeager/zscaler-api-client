@@ -37,3 +37,5 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.yeager.zs-api-client.tests
         SWIFT_VERSION: "5.0"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/ZS API Client.app/ZS API Client"
+        BUNDLE_LOADER: "$(TEST_HOST)"
