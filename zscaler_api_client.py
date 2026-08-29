@@ -6599,8 +6599,8 @@ class OperationsDialog(QDialog):
         self.api_chain_input = QPlainTextEdit('[\n  {"id": "users", "method": "GET", "url": "/api/v1/users"}\n]')
         self.api_chain_input.setPlaceholderText(self.tr("A JSON list of API requests. Relative paths use the active product host; references can use only completed step IDs.")); chain_layout.addWidget(self.api_chain_input)
         self.api_chain_preview = QPlainTextEdit(); self.api_chain_preview.setReadOnly(True); self.api_chain_preview.setMaximumHeight(130); chain_layout.addWidget(self.api_chain_preview)
-        self.api_chain_chart = NumericBarChart(); self.api_chain_chart.setMaximumHeight(120); chain_layout.addWidget(self.api_chain_chart)
-        self.api_chain_table = QTableWidget(0, 5); self.api_chain_table.setHorizontalHeaderLabels([self.tr("Step"), self.tr("Method"), self.tr("Status"), self.tr("Records"), self.tr("Duration")]); self.api_chain_table.horizontalHeader().setStretchLastSection(True); self.api_chain_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); chain_layout.addWidget(self.api_chain_table)
+        self.api_chain_chart = NumericBarChart(); self.api_chain_chart.setMaximumHeight(120); self.api_chain_chart.activated.connect(self._drill_into_api_chain_metric); chain_layout.addWidget(self.api_chain_chart)
+        self.api_chain_table = QTableWidget(0, 5); self.api_chain_table.setHorizontalHeaderLabels([self.tr("Step"), self.tr("Method"), self.tr("Status"), self.tr("Records"), self.tr("Duration")]); self.api_chain_table.horizontalHeader().setStretchLastSection(True); self.api_chain_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.api_chain_table.cellDoubleClicked.connect(self._drill_into_api_chain_row); chain_layout.addWidget(self.api_chain_table)
         self.api_chain_result = QPlainTextEdit(); self.api_chain_result.setReadOnly(True); chain_layout.addWidget(self.api_chain_result)
         self._last_chain_results = []
         self.api_chain_stop_on_error = QCheckBox(self.tr("Stop after the first failed step")); self.api_chain_stop_on_error.setChecked(True); chain_layout.addWidget(self.api_chain_stop_on_error)
@@ -7677,6 +7677,16 @@ body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}
         elif stopped_early:
             message += "\n\n" + self.tr("The chain stopped after the first failed step.")
         QMessageBox.information(self, self.tr("API chains"), message)
+
+    def _drill_into_api_chain_row(self, row: int, _column: int):
+        results = getattr(self, "_last_chain_results", [])
+        if 0 <= row < len(results):
+            self._open_local_evidence_detail({"scope": self._scope_metadata(), "step": results[row]})
+
+    def _drill_into_api_chain_metric(self, label: str, value: float):
+        successful = label == self.tr("Succeeded")
+        results = [item for item in getattr(self, "_last_chain_results", []) if bool(item.get("success")) == successful]
+        self._open_local_evidence_detail({"metric": label, "value": value, "scope": self._scope_metadata(), "steps": results})
 
     def export_api_chain(self):
         if not self._last_chain_results:

@@ -2073,6 +2073,11 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual("1", dialog.api_chain_table.item(0, 3).text())
         self.assertEqual([("Succeeded", 1.0), ("Failed", 1.0)], dialog.api_chain_chart.values)
         self.assertNotIn("hidden", dialog.api_chain_result.toPlainText())
+        with patch.object(dialog, "_open_local_evidence_detail") as detail:
+            dialog._drill_into_api_chain_row(1, 0)
+            dialog._drill_into_api_chain_metric(dialog.api_chain_chart.values[1][0], dialog.api_chain_chart.values[1][1])
+        self.assertEqual(2, detail.call_count)
+        self.assertNotIn("hidden", json.dumps(detail.call_args_list))
         dialog.close()
 
     def test_llm_failure_masks_secret_like_text(self):
