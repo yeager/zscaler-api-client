@@ -34,6 +34,26 @@ class MainWindowTests(unittest.TestCase):
         )
         self.assertEqual(visible, len(client.AUTOMATION_HUB_CATALOG))
 
+    def test_bundled_qt_plugin_resolver_prefers_current_pyside_layout(self):
+        previous_plugin = os.environ.get("QT_PLUGIN_PATH")
+        previous_platform = os.environ.get("QT_QPA_PLATFORM_PLUGIN_PATH")
+        try:
+            with TemporaryDirectory() as directory:
+                root = Path(directory) / "ZS API Client.app" / "Contents"
+                executable = root / "MacOS" / "ZS API Client"
+                executable.parent.mkdir(parents=True); executable.touch()
+                platforms = root / "Frameworks" / "PySide6" / "Qt" / "plugins" / "platforms"
+                platforms.mkdir(parents=True)
+                resolved = client.configure_bundled_qt_plugin_paths(str(executable))
+                self.assertEqual(str(platforms.parent), resolved)
+                self.assertEqual(str(platforms.parent), os.environ["QT_PLUGIN_PATH"])
+                self.assertEqual(str(platforms), os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"])
+        finally:
+            if previous_plugin is None: os.environ.pop("QT_PLUGIN_PATH", None)
+            else: os.environ["QT_PLUGIN_PATH"] = previous_plugin
+            if previous_platform is None: os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH", None)
+            else: os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = previous_platform
+
     def test_path_variables_are_extracted(self):
         self.window._populate_path_variables(
             "https://api.zsapi.net/zpa/customers/:customerId/apps/{appId}"

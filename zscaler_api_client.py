@@ -3015,6 +3015,25 @@ def _resource_path(relative_path: str) -> Path:
     return bundle_root / relative_path
 
 
+def configure_bundled_qt_plugin_paths(executable: str) -> str | None:
+    """Configure the first valid PySide6 plugin directory in a macOS bundle.
+
+    PyInstaller's current PySide6 layout uses ``PySide6/Qt``. ``Qt6`` remains
+    only as a compatibility fallback for older bundles.
+    """
+    contents = Path(executable).resolve().parent.parent
+    for container in (contents / "Frameworks", contents / "Resources"):
+        for qt_directory in ("Qt", "Qt6"):
+            plugins = container / "PySide6" / qt_directory / "plugins"
+            if plugins.is_dir():
+                os.environ["QT_PLUGIN_PATH"] = str(plugins)
+                platform_plugins = plugins / "platforms"
+                if platform_plugins.is_dir():
+                    os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = str(platform_plugins)
+                return str(plugins)
+    return None
+
+
 class VisualAssetLabel(QLabel):
     """Responsive bundled artwork that degrades cleanly when an asset is absent."""
     def __init__(self, relative_path: str, height: int, *, crop: bool = False, parent=None):
@@ -12236,22 +12255,8 @@ def main():
         generated = run_report_schedules(settings, persisted_request_history(), selected_id=schedule_id)
         raise SystemExit(0 if generated else 1)
 
-    # Fix for bundled macOS apps (PyInstaller/py2app)
-    # Must be done BEFORE QApplication is created
     if getattr(sys, 'frozen', False):
-        bundle_dir = os.path.dirname(sys.executable)
-        # Set Qt plugin path for bundled app (PySide6)
-        plugin_path = os.path.join(bundle_dir, '..', 'Frameworks', 'PySide6', 'Qt6', 'plugins')
-        if os.path.exists(plugin_path):
-            os.environ['QT_PLUGIN_PATH'] = plugin_path
-        # Also try alternative locations
-        alt_plugin_path = os.path.join(bundle_dir, '..', 'Resources', 'PySide6', 'Qt6', 'plugins')
-        if os.path.exists(alt_plugin_path):
-            os.environ['QT_PLUGIN_PATH'] = alt_plugin_path
-        # Set library path for Qt
-        lib_path = os.path.join(bundle_dir, '..', 'Frameworks')
-        if os.path.exists(lib_path):
-            os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = os.path.join(lib_path, 'PySide6', 'Qt6', 'plugins', 'platforms')
+        configure_bundled_qt_plugin_paths(sys.executable)
     
     app = QApplication(sys.argv)
     app.setApplicationName("ZS API Client")
