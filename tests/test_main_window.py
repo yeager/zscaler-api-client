@@ -1586,6 +1586,26 @@ class MainWindowTests(unittest.TestCase):
             else:
                 settings.setValue("ui/mode", previous)
 
+    def test_user_risk_report_has_visual_evidence_table_and_html_export(self):
+        previous_exchange = getattr(self.window, "_last_response_exchange", None)
+        try:
+            self.window._last_response_exchange = {"response": {"body": {"users": [
+                {"email": "review@example.test", "riskLevel": "high", "riskScore": 80, "mfa": False},
+                {"email": "observed@example.test"},
+            ]}}}
+            dialog = client.OperationsDialog(self.window)
+            dialog.report_type.setCurrentIndex(dialog.report_type.findData("user_risk"))
+            dialog.generate_report()
+            self.assertFalse(dialog.report_evidence.isHidden())
+            self.assertEqual(2, dialog.report_evidence.rowCount())
+            self.assertEqual(2, len(dialog.report_chart.values))
+            exported = dialog._report_html(client.privacy_safe(dialog._report_data(), dialog.settings, "export"))
+            self.assertIn("User risk evidence", exported)
+            self.assertIn("Risk score", exported)
+            dialog.close()
+        finally:
+            self.window._last_response_exchange = previous_exchange
+
     def test_policy_twin_is_guided_in_basic_and_explains_conflicts(self):
         settings = client.QSettings("Zscaler", "APIClient")
         previous = settings.value("ui/mode", None)

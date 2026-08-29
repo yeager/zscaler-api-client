@@ -6526,6 +6526,15 @@ class OperationsDialog(QDialog):
         report_banner.setAccessibleName(self.tr("Security posture report artwork")); reports_layout.addWidget(report_banner)
         self.report_chart = NumericBarChart(); reports_layout.addWidget(self.report_chart)
         self.report_chart.activated.connect(self._drill_into_report_metric)
+        self.report_evidence = QTableWidget(0, 4)
+        self.report_evidence.setHorizontalHeaderLabels([self.tr("User"), self.tr("Risk"), self.tr("Risk score"), self.tr("Evidence")])
+        self.report_evidence.horizontalHeader().setStretchLastSection(True)
+        self.report_evidence.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.report_evidence.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.report_evidence.setMaximumHeight(190)
+        self.report_evidence.setVisible(False)
+        self.report_evidence.cellDoubleClicked.connect(self._drill_into_user_risk_row)
+        reports_layout.addWidget(self.report_evidence)
         self.report_preview = QPlainTextEdit(); self.report_preview.setReadOnly(True); reports_layout.addWidget(self.report_preview)
         report_actions = QHBoxLayout(); report_markdown = QPushButton(self.tr("Export report as Markdown")); report_markdown.clicked.connect(lambda: self.export_report("markdown")); report_actions.addWidget(report_markdown)
         report_json = QPushButton(self.tr("Export report as JSON")); report_json.clicked.connect(lambda: self.export_report("json")); report_actions.addWidget(report_json); report_actions.addStretch(); reports_layout.addLayout(report_actions)
@@ -7341,6 +7350,7 @@ class OperationsDialog(QDialog):
 
     def generate_report(self):
         data = privacy_safe(self._report_data(), self.settings, "display")
+        self._active_report_data = data
         posture = data["posture"]
         severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
         if data["kind"] == "user_risk":
@@ -7350,9 +7360,28 @@ class OperationsDialog(QDialog):
                 label = severity_labels.get(level, level.title())
                 risk_levels[label] = risk_levels.get(label, 0.0) + 1.0
             self.report_chart.set_style("pie"); self.report_chart.set_values(list(risk_levels.items()))
+            self.report_evidence.setRowCount(len(data["user_risk"]["users"]))
+            for row, user in enumerate(data["user_risk"]["users"]):
+                values = (user.get("identity", ""), user.get("risk_level", "observed"), user.get("risk_score", 0), json.dumps(user.get("evidence", {}), ensure_ascii=False))
+                for column, item in enumerate(values):
+                    self.report_evidence.setItem(row, column, QTableWidgetItem(str(item)))
+            self.report_evidence.resizeColumnsToContents(); self.report_evidence.setVisible(True)
         else:
             self.report_chart.set_style("pie"); self.report_chart.set_values([(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()])
+            self.report_evidence.setRowCount(0); self.report_evidence.setVisible(False)
         self.report_preview.setPlainText("\n".join(self._report_lines(data)))
+
+    def _drill_into_user_risk_row(self, row: int, _column: int):
+        """Open the exact masked evidence represented by a selected User Risk row."""
+        report = getattr(self, "_active_report_data", {})
+        users = report.get("user_risk", {}).get("users", [])
+        if not 0 <= row < len(users):
+            return
+        detail = {"scope": report.get("scope", {}), "user": users[row], "disclaimer": report["user_risk"].get("disclaimer", "")}
+        dialog = QDialog(self); dialog.setWindowTitle(self.tr("Report detail")); dialog.resize(700, 440)
+        layout = QVBoxLayout(dialog); intro = QLabel(self.tr("Local evidence behind the selected report metric. It is not a tenant-wide assessment.")); intro.setWordWrap(True); layout.addWidget(intro)
+        output = QPlainTextEdit(json.dumps(detail, indent=2, ensure_ascii=False)); output.setReadOnly(True); layout.addWidget(output, 1)
+        close = QPushButton(self.tr("Close")); close.clicked.connect(dialog.accept); layout.addWidget(close, alignment=Qt.AlignmentFlag.AlignRight); dialog.exec()
 
     def _drill_into_report_metric(self, label: str, value: float):
         """Turn a visual report metric into a local, reviewable evidence view."""
