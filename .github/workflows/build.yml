@@ -78,12 +78,16 @@ jobs:
         shell: pwsh
         run: |
           $bundle = "dist\ZS API Client"
+          # PyInstaller 6 uses _internal for the onedir runtime; older
+          # versions place resources directly beside the executable.
+          $runtimeRoot = Join-Path $bundle "_internal"
+          if (-not (Test-Path $runtimeRoot)) { $runtimeRoot = $bundle }
           $resources = @(
             "feature_services.py", "evidence_signing.py", "schedule_services.py",
             "pac_services.py", "zscaler_config_services.py", "assets\branding\zs-api-client-logo.png"
           )
           foreach ($resource in $resources) {
-            if (-not (Test-Path (Join-Path $bundle $resource))) {
+            if (-not (Test-Path (Join-Path $runtimeRoot $resource))) {
               throw "Missing bundled runtime resource: $resource"
             }
           }

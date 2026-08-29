@@ -60,6 +60,8 @@ class BuildWorkflowTests(unittest.TestCase):
             "pac_services.py", "zscaler_config_services.py", "zs-api-client-logo.png",
         ):
             self.assertIn(resource, windows)
+        self.assertIn('$runtimeRoot = Join-Path $bundle "_internal"', windows)
+        self.assertIn("Join-Path $runtimeRoot $resource", windows)
         self.assertIn("scripts/smoke_frozen_app.py", windows)
 
     def test_all_native_builds_smoke_test_the_frozen_application(self):

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.11] - 2026-08-29
+
+### Fixed
+- Corrected the Windows packaged-resource verification for PyInstaller 6's `_internal` runtime directory so the Inno Setup installer, SPDX SBOM, and attestations can proceed after the frozen-bundle check.
+
 ## [2.8.10] - 2026-08-29
 
 ### Added

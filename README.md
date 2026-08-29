@@ -10,7 +10,7 @@
 
 ![Screenshot](screenshots/main.png)
 
-Current release: [v2.8.10](https://github.com/yeager/zscaler-api-client/releases/tag/v2.8.10).
+Current release: [v2.8.11](https://github.com/yeager/zscaler-api-client/releases/tag/v2.8.11).
 
 ## 🛡️ Security First
 
