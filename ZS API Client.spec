@@ -58,6 +58,6 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='ZS API Client.app',
-    icon=None,
+    icon='assets/icons/zs-api-client.icns' if sys.platform == 'darwin' else 'assets/icons/zs-api-client.ico',
     bundle_identifier=None,
 )

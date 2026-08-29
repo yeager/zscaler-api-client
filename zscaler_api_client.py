@@ -69,7 +69,7 @@ from PySide6.QtWidgets import (
     , QInputDialog, QToolTip
 )
 from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment, QSize, QPoint
-from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
+from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen, QIcon
 
 try:
     import pyqtgraph as pg
@@ -12256,6 +12256,7 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName("ZS API Client")
     app.setOrganizationName("Zscaler")
+    app.setWindowIcon(QIcon(str(_resource_path("assets/branding/zs-api-client-logo.png"))))
     
     # Load settings
     settings = QSettings("Zscaler", "APIClient")

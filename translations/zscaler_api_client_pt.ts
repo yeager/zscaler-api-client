@@ -3676,6 +3676,11 @@ Ada,ada@exemplo.com</translation>
             <translation>Ativo</translation>
         </message>
         <message>
+            <location filename="../zscaler_api_client.py" line="6530" />
+            <source>Risk</source>
+            <translation>Risco</translation>
+        </message>
+        <message>
             <location filename="../zscaler_api_client.py" line="6434" />
             <source>Risk score</source>
             <translation>Pontuação de risco</translation>

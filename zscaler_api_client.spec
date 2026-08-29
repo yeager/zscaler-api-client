@@ -113,7 +113,7 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='Zscaler API Client.app',
-    icon=None,  # Add icon path here: 'icon.icns'
+    icon='assets/icons/zs-api-client.icns' if sys.platform == 'darwin' else 'assets/icons/zs-api-client.ico',
     bundle_identifier='com.zscaler.apiclient',
     info_plist={
         'CFBundleName': 'Zscaler API Client',

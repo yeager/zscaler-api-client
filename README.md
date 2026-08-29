@@ -1,5 +1,7 @@
 # ZS API Client
 
+<img src="assets/branding/zs-api-client-logo.png" alt="ZS API Client" width="128" align="right">
+
 🔐 A Postman-like desktop application for all Zscaler APIs
 
 [![Latest Release](https://img.shields.io/github/v/release/yeager/zscaler-api-client)](https://github.com/yeager/zscaler-api-client/releases)
@@ -152,6 +154,12 @@ python3 -m PyInstaller --noconfirm --name "ZS API Client" \
 This example targets Linux and other POSIX source environments. The release
 workflow contains the platform-specific Keychain backend and packaging options
 for Windows and macOS.
+
+### Linux desktop launcher
+
+The Linux release bundle includes `packaging/linux/install.sh`. Run it from the
+extracted bundle to install a per-user menu entry, application icon, and
+`zs-api-client` launcher without administrator privileges.
 
 ## 🚀 Quick Start
 

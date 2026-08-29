@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=ZS API Client
+Comment=Secure, visual client for Zscaler APIs and Zero Trust operations
+Exec=zs-api-client
+Icon=zs-api-client
+Terminal=false
+Categories=Network;Security;Development;
+Keywords=Zscaler;Zero Trust;API;Security;PAC;
+StartupWMClass=ZS API Client
+StartupNotify=true

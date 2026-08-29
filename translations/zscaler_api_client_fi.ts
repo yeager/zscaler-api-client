@@ -3676,6 +3676,11 @@ Ada,ada@example.com</translation>
             <translation>Omaisuus</translation>
         </message>
         <message>
+            <location filename="../zscaler_api_client.py" line="6530" />
+            <source>Risk</source>
+            <translation>Riski</translation>
+        </message>
+        <message>
             <location filename="../zscaler_api_client.py" line="6434" />
             <source>Risk score</source>
             <translation>Riskipisteet</translation>
