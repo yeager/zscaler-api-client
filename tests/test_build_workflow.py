@@ -44,6 +44,18 @@ class BuildWorkflowTests(unittest.TestCase):
         ):
             self.assertIn(resource, macos)
 
+    def test_windows_build_checks_bundled_runtime_resources(self):
+        workflow = (Path(__file__).parent.parent / ".github/workflows/build.yml").read_text(
+            encoding="utf-8"
+        )
+        windows = workflow.split("  build-windows:", 1)[1].split("  build-macos:", 1)[0]
+        self.assertIn("Verify Windows bundle runtime resources", windows)
+        for resource in (
+            "feature_services.py", "evidence_signing.py", "schedule_services.py",
+            "pac_services.py", "zscaler_config_services.py", "zs-api-client-logo.png",
+        ):
+            self.assertIn(resource, windows)
+
 
 if __name__ == "__main__":
     unittest.main()

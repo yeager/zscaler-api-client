@@ -79,6 +79,20 @@ jobs:
           python scripts/compile_translations.py
           pyinstaller --noconfirm --name "ZS API Client" --icon assets/icons/zs-api-client.ico --add-data "translations;translations" --add-data "data;data" --add-data "assets;assets" --add-data "CHANGELOG.md;." --add-data "feature_services.py;." --add-data "evidence_signing.py;." --add-data "schedule_services.py;." --add-data "pac_services.py;." --add-data "zscaler_config_services.py;." --collect-all cryptography --hidden-import keyring.backends.Windows --hidden-import feature_services --hidden-import evidence_signing --hidden-import schedule_services --hidden-import pac_services --hidden-import zscaler_config_services zscaler_api_client.py
 
+      - name: Verify Windows bundle runtime resources
+        shell: pwsh
+        run: |
+          $bundle = "dist\ZS API Client"
+          $resources = @(
+            "feature_services.py", "evidence_signing.py", "schedule_services.py",
+            "pac_services.py", "zscaler_config_services.py", "assets\branding\zs-api-client-logo.png"
+          )
+          foreach ($resource in $resources) {
+            if (-not (Test-Path (Join-Path $bundle $resource))) {
+              throw "Missing bundled runtime resource: $resource"
+            }
+          }
+
       - name: Install Inno Setup
         run: choco install innosetup --no-progress --yes
 
