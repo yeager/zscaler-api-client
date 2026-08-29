@@ -25,6 +25,8 @@ class MainWindowTests(unittest.TestCase):
 
     def tearDown(self):
         self.window.close()
+        self.window.deleteLater()
+        self.app.processEvents()
 
     def test_complete_catalog_is_visible(self):
         self.window._update_endpoint_tree("OneAPI")
@@ -1886,6 +1888,21 @@ class MainWindowTests(unittest.TestCase):
             dialog._drill_into_posture_finding(0, 0)
             dialog._drill_into_posture_metric(dialog.posture_chart.values[0][0], dialog.posture_chart.values[0][1])
         self.assertEqual(2, detail.call_count)
+        self.assertNotIn("hidden", json.dumps(detail.call_args_list))
+        dialog.close()
+
+    def test_dashboard_outcomes_and_activity_open_masked_local_detail(self):
+        self.window.request_history = [
+            {"status": 200, "url": "https://example.test/ok?token=hidden"},
+            {"status": 503, "url": "https://example.test/fail?token=hidden"},
+        ]
+        dialog = client.OperationsDialog(self.window)
+        self.assertTrue(dialog.dashboard_chart.values)
+        with patch.object(dialog, "_open_local_evidence_detail") as detail:
+            dialog._drill_into_dashboard_outcome(dialog.dashboard_chart.values[0][0], dialog.dashboard_chart.values[0][1])
+            if dialog.dashboard_events.rowCount():
+                dialog._drill_into_dashboard_event(0, 0)
+        self.assertGreaterEqual(detail.call_count, 1)
         self.assertNotIn("hidden", json.dumps(detail.call_args_list))
         dialog.close()
 

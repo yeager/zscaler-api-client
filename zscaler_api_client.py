@@ -6289,13 +6289,13 @@ class OperationsDialog(QDialog):
         for column in range(3):
             cards.setColumnStretch(column, 1)
         dashboard_layout.addLayout(cards)
-        self.dashboard_chart = NumericBarChart(); self.dashboard_chart.set_style("pie")
+        self.dashboard_chart = NumericBarChart(); self.dashboard_chart.set_style("pie"); self.dashboard_chart.activated.connect(self._drill_into_dashboard_outcome)
         dashboard_layout.addWidget(QLabel(self.tr("Recent request outcomes")))
         dashboard_layout.addWidget(self.dashboard_chart)
         self.dashboard_trend = HighPerformanceLineChart(axis_label=self.tr("Latency"), units="ms")
         dashboard_layout.addWidget(QLabel(self.tr("Recent request latency (ms)")))
         dashboard_layout.addWidget(self.dashboard_trend)
-        self.dashboard_events = QTableWidget(0, 4); self.dashboard_events.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Environment"), self.tr("Activity"), self.tr("Status")]); self.dashboard_events.horizontalHeader().setStretchLastSection(True); self.dashboard_events.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.dashboard_events = QTableWidget(0, 4); self.dashboard_events.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Environment"), self.tr("Activity"), self.tr("Status")]); self.dashboard_events.horizontalHeader().setStretchLastSection(True); self.dashboard_events.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.dashboard_events.cellDoubleClicked.connect(self._drill_into_dashboard_event)
         dashboard_layout.addWidget(QLabel(self.tr("Recent activity")))
         dashboard_layout.addWidget(self.dashboard_events)
         dashboard_controls = QHBoxLayout()
@@ -6713,6 +6713,8 @@ class OperationsDialog(QDialog):
     def refresh_dashboard(self):
         history = self._scoped_history()
         events = privacy_safe(self._scoped_events(), self.settings, "display")
+        self._dashboard_history = privacy_safe(history, self.settings, "display")
+        self._dashboard_events = events
         successful = sum(1 for item in history if str(item.get("status", "")).startswith("2"))
         total = len(history)
         self.dashboard_cards["requests"].setText(str(total))
@@ -6737,6 +6739,17 @@ class OperationsDialog(QDialog):
             self.dashboard_events.setItem(row, 1, QTableWidgetItem(str(event.get("environment") or "Default")))
             self.dashboard_events.setItem(row, 2, QTableWidgetItem(event.get("action", "")))
             self.dashboard_events.setItem(row, 3, QTableWidgetItem("✓" if valid else "!"))
+
+    def _drill_into_dashboard_outcome(self, label: str, value: float):
+        """Open the masked requests represented by a dashboard outcome segment."""
+        success = label == self.tr("Success")
+        requests = [item for item in getattr(self, "_dashboard_history", []) if str(item.get("status", "")).startswith("2") == success]
+        self._open_local_evidence_detail({"metric": label, "value": value, "scope": self._scope_metadata(), "requests": requests[-100:]})
+
+    def _drill_into_dashboard_event(self, row: int, _column: int):
+        events = list(reversed(getattr(self, "_dashboard_events", [])))[:12]
+        if 0 <= row < len(events):
+            self._open_local_evidence_detail({"scope": self._scope_metadata(), "event": events[row]})
 
     def refresh_posture(self):
         posture = security_posture(self._scoped_history(), AuditTrail(self.settings).verify())
