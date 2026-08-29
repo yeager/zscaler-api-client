@@ -32,6 +32,18 @@ class BuildWorkflowTests(unittest.TestCase):
         self.assertIsNotNone(version)
         self.assertIn(f"releases/tag/v{version.group(1)}", readme)
 
+    def test_macos_build_checks_bundled_runtime_resources(self):
+        workflow = (Path(__file__).parent.parent / ".github/workflows/build.yml").read_text(
+            encoding="utf-8"
+        )
+        macos = workflow.split("  build-macos:", 1)[1].split("  release:", 1)[0]
+        self.assertIn('Contents/Resources', macos)
+        for resource in (
+            "feature_services.py", "evidence_signing.py", "schedule_services.py",
+            "pac_services.py", "zscaler_config_services.py", "assets/branding/zs-api-client-logo.png",
+        ):
+            self.assertIn(resource, macos)
+
 
 if __name__ == "__main__":
     unittest.main()
