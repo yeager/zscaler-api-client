@@ -2,7 +2,7 @@ import SwiftUI
 
 @MainActor
 final class ClientViewModel: ObservableObject {
-    @Published var profile = OneAPIProfile()
+    @Published var profile = OneAPIProfile() { didSet { ProfileStore.save(profile) } }
     @Published var secret = ""
     @Published var request = APIRequest()
     @Published var response = "Connect to OneAPI, then run a reviewed HTTPS request."
@@ -13,6 +13,7 @@ final class ClientViewModel: ObservableObject {
     private let client = OneAPIClient()
 
     init() {
+        profile = ProfileStore.load()
         secret = (try? KeychainStore.read(account: "oneapi-client-secret")) ?? ""
     }
 

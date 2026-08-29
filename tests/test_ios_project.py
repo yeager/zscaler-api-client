@@ -22,7 +22,10 @@ class IOSProjectTests(unittest.TestCase):
         self.assertIn('url.scheme?.lowercased() == "https"', client)
         self.assertIn('"audience": "https://api.zscaler.com"', client)
         self.assertIn('KeychainStore.save(self.secret', view_model)
-        self.assertNotIn("UserDefaults", keychain + client + view_model)
+        profile_store = (ROOT / "Sources/Services/ProfileStore.swift").read_text(encoding="utf-8")
+        self.assertNotIn("UserDefaults", keychain + client)
+        self.assertIn("UserDefaults.standard", profile_store)
+        self.assertNotIn("oneapi-client-secret", profile_store)
 
     def test_info_plist_enforces_app_transport_security(self):
         info = (ROOT / "Sources/Info.plist").read_text(encoding="utf-8")
