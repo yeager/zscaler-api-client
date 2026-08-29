@@ -1622,6 +1622,11 @@ class MainWindowTests(unittest.TestCase):
         self.assertEqual([("Allow", 1.0), ("Block", 1.0)], dialog.policy_chart.values)
         dialog.run_compliance()
         self.assertGreaterEqual(dialog.best_practices.rowCount(), 1)
+        with patch.object(dialog, "_open_local_evidence_detail") as detail:
+            dialog._drill_into_policy_rule(0, 0)
+            dialog._drill_into_policy_action(dialog.policy_chart.values[0][0], dialog.policy_chart.values[0][1])
+            dialog._drill_into_best_practice(0, 0)
+        self.assertEqual(3, detail.call_count)
         dialog.rules_input.setPlainText('[{"name":"Guest","action":"allow","conditions":{"group":"guest"}}, {"name":"Staff","action":"block","conditions":{"group":"staff"}}]')
         dialog.context_input.setPlainText('{"group":"staff"}')
         dialog.run_simulation()

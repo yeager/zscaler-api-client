@@ -6311,9 +6311,9 @@ class OperationsDialog(QDialog):
         self.diff_result = QPlainTextEdit(); self.diff_result.setReadOnly(True)
         for widget in (self.before_policy, self.after_policy, self.diff_result): diff_layout.addWidget(widget)
         diff_layout.addWidget(QLabel(self.tr("Policy rule overview")))
-        self.policy_chart = NumericBarChart(); self.policy_chart.setMaximumHeight(145); diff_layout.addWidget(self.policy_chart)
-        self.policy_rules = QTableWidget(0, 4); self.policy_rules.setHorizontalHeaderLabels([self.tr("Rule"), self.tr("Action"), self.tr("Conditions"), self.tr("State")]); self.policy_rules.horizontalHeader().setStretchLastSection(True); self.policy_rules.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.policy_rules.setMaximumHeight(160); diff_layout.addWidget(self.policy_rules)
-        self.best_practices = QTableWidget(0, 3); self.best_practices.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Rule"), self.tr("Best-practice finding")]); self.best_practices.horizontalHeader().setStretchLastSection(True); self.best_practices.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.best_practices.setMaximumHeight(130); diff_layout.addWidget(self.best_practices)
+        self.policy_chart = NumericBarChart(); self.policy_chart.setMaximumHeight(145); self.policy_chart.activated.connect(self._drill_into_policy_action); diff_layout.addWidget(self.policy_chart)
+        self.policy_rules = QTableWidget(0, 4); self.policy_rules.setHorizontalHeaderLabels([self.tr("Rule"), self.tr("Action"), self.tr("Conditions"), self.tr("State")]); self.policy_rules.horizontalHeader().setStretchLastSection(True); self.policy_rules.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.policy_rules.cellDoubleClicked.connect(self._drill_into_policy_rule); self.policy_rules.setMaximumHeight(160); diff_layout.addWidget(self.policy_rules)
+        self.best_practices = QTableWidget(0, 3); self.best_practices.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Rule"), self.tr("Best-practice finding")]); self.best_practices.horizontalHeader().setStretchLastSection(True); self.best_practices.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.best_practices.cellDoubleClicked.connect(self._drill_into_best_practice); self.best_practices.setMaximumHeight(130); diff_layout.addWidget(self.best_practices)
         diff_btn = QPushButton(self.tr("Compare policies")); diff_btn.clicked.connect(self.compare_policies)
         policy_actions = QHBoxLayout(); policy_actions.addWidget(diff_btn)
         export_json = QPushButton(self.tr("Export policy as JSON")); export_json.clicked.connect(lambda: self.export_policy("json")); policy_actions.addWidget(export_json)
@@ -7834,6 +7834,7 @@ body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}
 
     def _render_policy_overview(self, policy):
         overview = privacy_safe(policy_overview(policy), self.settings, "display")
+        self._policy_overview = overview
         self.policy_chart.set_style("pie"); self.policy_chart.set_values([(action.title(), float(count)) for action, count in overview["actions"].items()])
         self.policy_rules.setRowCount(len(overview["rules"]))
         for row, rule in enumerate(overview["rules"]):
@@ -7846,10 +7847,25 @@ body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}
             "Allow rule has no conditions": self.tr("Allow rule has no conditions"), "Rule is disabled": self.tr("Rule is disabled"),
             "Rule name is duplicated": self.tr("Rule name is duplicated"), "Rule action is unspecified": self.tr("Rule action is unspecified"),
         }
+        self._best_practice_findings = findings
         self.best_practices.setRowCount(len(findings))
         for row, finding in enumerate(findings):
             values = (labels.get(finding["severity"], finding["severity"]), finding["rule"], messages.get(finding["message"], finding["message"]))
             for column, value in enumerate(values): self.best_practices.setItem(row, column, QTableWidgetItem(value))
+
+    def _drill_into_policy_rule(self, row: int, _column: int):
+        rules = getattr(self, "_policy_overview", {}).get("rules", [])
+        if 0 <= row < len(rules):
+            self._open_local_evidence_detail({"scope": self._scope_metadata(), "rule": rules[row]})
+
+    def _drill_into_policy_action(self, label: str, value: float):
+        rules = [rule for rule in getattr(self, "_policy_overview", {}).get("rules", []) if str(rule.get("action", "")).casefold() == label.casefold()]
+        self._open_local_evidence_detail({"metric": label, "value": value, "scope": self._scope_metadata(), "rules": rules})
+
+    def _drill_into_best_practice(self, row: int, _column: int):
+        findings = getattr(self, "_best_practice_findings", [])
+        if 0 <= row < len(findings):
+            self._open_local_evidence_detail({"scope": self._scope_metadata(), "best_practice": findings[row]})
 
     def export_policy(self, format_name):
         try: payload = policy_as_code(privacy_safe(self._json(self.after_policy, {}), self.settings, "export"), format_name)
