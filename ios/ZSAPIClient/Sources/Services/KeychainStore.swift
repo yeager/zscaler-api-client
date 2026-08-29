@@ -16,7 +16,7 @@ enum KeychainStore {
         item[kSecValueData as String] = data
         item[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         let status = SecItemAdd(item as CFDictionary, nil)
-        guard status == errSecSuccess else { throw KeychainError(status) }
+        guard status == errSecSuccess else { throw KeychainError(status: status) }
     }
 
     static func read(account: String) throws -> String? {
@@ -30,7 +30,7 @@ enum KeychainStore {
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
         if status == errSecItemNotFound { return nil }
-        guard status == errSecSuccess, let data = item as? Data else { throw KeychainError(status) }
+        guard status == errSecSuccess, let data = item as? Data else { throw KeychainError(status: status) }
         return String(data: data, encoding: .utf8)
     }
 
