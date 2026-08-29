@@ -1,8 +1,13 @@
 """Regression checks for required modules in packaged application builds."""
 
 from pathlib import Path
+import os
 import re
+import runpy
+import sys
+from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 
 class BuildWorkflowTests(unittest.TestCase):
@@ -70,6 +75,19 @@ class BuildWorkflowTests(unittest.TestCase):
         self.assertIn("PySide6", hook)
         self.assertNotIn("PyQt6", hook)
         self.assertIn("runtime_hooks=['runtime_hook.py']", spec)
+
+    def test_runtime_hook_configures_a_frozen_pyside6_plugin_path(self):
+        root = Path(__file__).parent.parent
+        namespace = runpy.run_path(root / "runtime_hook.py")
+        with TemporaryDirectory() as directory, patch.dict(os.environ, {}, clear=True):
+            executable = Path(directory) / "ZS API Client"
+            platforms = Path(directory) / "PySide6" / "Qt" / "plugins" / "platforms"
+            platforms.mkdir(parents=True)
+            executable.touch()
+            with patch.object(sys, "frozen", True, create=True), patch.object(sys, "executable", str(executable)):
+                namespace["setup_qt_environment"]()
+            self.assertEqual(str(platforms.parent), os.environ["QT_PLUGIN_PATH"])
+            self.assertEqual(str(platforms), os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"])
 
     def test_translation_build_contract_is_enforced_on_every_platform(self):
         root = Path(__file__).parent.parent
