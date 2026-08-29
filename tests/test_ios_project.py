@@ -42,6 +42,7 @@ class IOSProjectTests(unittest.TestCase):
         self.assertIn("xcodegen generate", workflow)
         self.assertIn("iphonesimulator", workflow)
         self.assertIn(" CODE_SIGNING_ALLOWED=NO test", workflow)
+        self.assertIn("simctl bootstatus", workflow)
         self.assertIn("CODE_SIGNING_ALLOWED=NO", workflow)
         self.assertNotIn("action-gh-release", workflow)
 
