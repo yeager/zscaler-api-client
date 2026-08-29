@@ -49,6 +49,7 @@ class IOSProjectTests(unittest.TestCase):
         project = (ROOT / "project.yml").read_text(encoding="utf-8")
         tests = (ROOT / "Tests/OneAPIProfileTests.swift").read_text(encoding="utf-8")
         self.assertIn("type: bundle.unit-test", project)
+        self.assertIn("ZSAPIClientTests: [test]", project)
         self.assertIn("@testable import ZS_API_Client", tests)
         self.assertIn("zslogin.net/oauth2/v1/token", tests)
 

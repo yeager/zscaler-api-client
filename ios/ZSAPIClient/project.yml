@@ -1,6 +1,15 @@
 name: ZSAPIClient
 options:
   bundleIdPrefix: com.yeager
+schemes:
+  ZSAPIClient:
+    build:
+      targets:
+        ZSAPIClient: all
+        ZSAPIClientTests: [test]
+    test:
+      targets:
+        - ZSAPIClientTests
 targets:
   ZSAPIClient:
     type: application
