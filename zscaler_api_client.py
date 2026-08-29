@@ -6492,8 +6492,8 @@ class OperationsDialog(QDialog):
         detection_split = QSplitter(Qt.Orientation.Horizontal)
         self.detection_matches = QTableWidget(0, 6); self.detection_matches.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Method"), self.tr("URL"), self.tr("Status"), self.tr("Duration"), self.tr("Environment")]); self.detection_matches.horizontalHeader().setStretchLastSection(True); self.detection_matches.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); detection_split.addWidget(self.detection_matches)
         anomaly_panel = QWidget(); anomaly_layout = QVBoxLayout(anomaly_panel); anomaly_layout.setContentsMargins(0, 0, 0, 0)
-        self.anomaly_chart = NumericBarChart(); self.anomaly_chart.setMaximumHeight(160); anomaly_layout.addWidget(self.anomaly_chart)
-        self.anomaly_findings = QTableWidget(0, 4); self.anomaly_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Endpoint"), self.tr("Observed"), self.tr("Explanation")]); self.anomaly_findings.horizontalHeader().setStretchLastSection(True); self.anomaly_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); anomaly_layout.addWidget(self.anomaly_findings); detection_split.addWidget(anomaly_panel); detection_split.setSizes([600, 480]); detection_layout.addWidget(detection_split)
+        self.anomaly_chart = NumericBarChart(); self.anomaly_chart.setMaximumHeight(160); self.anomaly_chart.activated.connect(self._drill_into_anomaly_metric); anomaly_layout.addWidget(self.anomaly_chart)
+        self.anomaly_findings = QTableWidget(0, 4); self.anomaly_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Endpoint"), self.tr("Observed"), self.tr("Explanation")]); self.anomaly_findings.horizontalHeader().setStretchLastSection(True); self.anomaly_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.anomaly_findings.cellDoubleClicked.connect(self._drill_into_anomaly_finding); anomaly_layout.addWidget(self.anomaly_findings); detection_split.addWidget(anomaly_panel); detection_split.setSizes([600, 480]); detection_layout.addWidget(detection_split)
         self.detection_tab_index = self.tabs.addTab(detection_page, self.tr("Detection lab"))
         self._last_detection_result = {}; self._last_adaptive_result = {}; self.load_detection_template(); self.refresh_adaptive_anomalies(record_audit=False)
 
@@ -7140,11 +7140,25 @@ class OperationsDialog(QDialog):
             for column, value in enumerate(values): self.anomaly_findings.setItem(row, column, self._severity_item(str(value), finding["severity"]) if column == 0 else QTableWidgetItem(str(value)))
         self.anomaly_findings.resizeColumnsToContents()
         values = []
+        self._anomaly_chart_evidence = {}
         for index, baseline in enumerate(data["baselines"][:8], 1):
-            values.extend([(self.tr("Endpoint {number} current").format(number=index), float(baseline["current_ms"])), (self.tr("Endpoint {number} threshold").format(number=index), float(baseline["threshold_ms"]))])
+            current_label = self.tr("Endpoint {number} current").format(number=index)
+            threshold_label = self.tr("Endpoint {number} threshold").format(number=index)
+            values.extend([(current_label, float(baseline["current_ms"])), (threshold_label, float(baseline["threshold_ms"]))])
+            self._anomaly_chart_evidence[current_label] = {"metric": "current_ms", "baseline": baseline}
+            self._anomaly_chart_evidence[threshold_label] = {"metric": "threshold_ms", "baseline": baseline}
         method = self.tr("Median absolute deviation (MAD), scaled by 1.4826 with a 10%/10 ms noise floor")
         self.anomaly_chart.set_values(values); self.detection_status.setText(self.tr("Adaptive analysis evaluated {endpoints} endpoint(s) and found {findings} explainable anomaly hint(s). Method: {method}").format(endpoints=data["summary"]["endpoints_evaluated"], findings=data["summary"]["findings"], method=method))
         if record_audit: self._scope_audit().append("adaptive_anomalies_evaluated", {"sensitivity": data["sensitivity"], **data["summary"]})
+
+    def _drill_into_anomaly_finding(self, row: int, _column: int):
+        findings = getattr(self, "_last_adaptive_result", {}).get("findings", [])
+        if 0 <= row < len(findings):
+            self._open_local_evidence_detail({"scope": self._scope_metadata(), "anomaly": privacy_safe(findings[row], self.settings, "display")})
+
+    def _drill_into_anomaly_metric(self, label: str, value: float):
+        evidence = getattr(self, "_anomaly_chart_evidence", {}).get(label, {})
+        self._open_local_evidence_detail({"metric": label, "value": value, "scope": self._scope_metadata(), "evidence": evidence})
 
     def export_detection_lab(self):
         evidence = {"scope": self._scope_metadata(), "detection": self._last_detection_result, "adaptive_anomalies": self._last_adaptive_result}

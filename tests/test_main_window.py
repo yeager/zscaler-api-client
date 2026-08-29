@@ -1510,6 +1510,10 @@ class MainWindowTests(unittest.TestCase):
             dialog.refresh_adaptive_anomalies(record_audit=False)
             self.assertGreaterEqual(dialog.anomaly_findings.rowCount(), 2)
             self.assertIn("median", dialog.detection_status.text().casefold())
+            with patch.object(dialog, "_open_local_evidence_detail") as detail:
+                dialog._drill_into_anomaly_finding(0, 0)
+                dialog._drill_into_anomaly_metric(dialog.anomaly_chart.values[0][0], dialog.anomaly_chart.values[0][1])
+            self.assertEqual(2, detail.call_count)
             dialog.detection_rule.setPlainText('{"conditions":[{"field":"status","operator":"eval","value":"danger"}]}'); validation = dialog.validate_detection_lab()
             self.assertFalse(validation["valid"])
             with TemporaryDirectory() as output_dir:
