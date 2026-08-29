@@ -36,10 +36,9 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import zipfile
-from dataclasses import dataclass, field
 from email.utils import parsedate_to_datetime
 from pathlib import Path
-from typing import Optional, Dict, List, Any
+from typing import Dict, List, Any
 from xml.sax.saxutils import escape as xml_escape
 
 # PyInstaller's import analysis can miss project-local modules on some macOS
@@ -64,7 +63,7 @@ from PySide6.QtWidgets import (
     QComboBox, QPushButton, QLabel, QTabWidget, QTableWidget,
     QTableWidgetItem, QHeaderView, QFileDialog, QMessageBox,
     QGroupBox, QFormLayout, QDialog, QDialogButtonBox, QProgressBar,
-    QStatusBar, QMenuBar, QMenu, QToolBar, QPlainTextEdit, QSplashScreen,
+    QStatusBar, QMenu, QPlainTextEdit, QSplashScreen,
     QCheckBox, QScrollArea, QFrame, QStackedWidget, QGridLayout, QSizePolicy
     , QInputDialog, QToolTip
 )
@@ -4518,7 +4517,7 @@ class AboutDialog(QDialog):
         content_layout.setSpacing(10)
         
         # Title and version
-        title_label = QLabel(f"<h1>ZS API Client</h1>")
+        title_label = QLabel("<h1>ZS API Client</h1>")
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         content_layout.addWidget(title_label)
         
@@ -10593,7 +10592,6 @@ class MainWindow(QMainWindow):
     @staticmethod
     def _chart_svg(values: list[tuple[str, float]], style: str) -> str:
         """Export masked chart values as a portable, dependency-free SVG."""
-        width, height = 800, 360
         maximum = max((value for _, value in values), default=1) or 1
         palette = ("#0078d4", "#2e7d32", "#e65100", "#6a1b9a", "#c62828")
         content = ['<rect width="800" height="360" fill="#252526"/>']
@@ -11961,7 +11959,6 @@ class MainWindow(QMainWindow):
             return
         
         # Generate obfuscated API key
-        import hashlib
         timestamp = str(int(time.time() * 1000))
         obf_key = self._obfuscate_api_key(api_key, timestamp)
         
@@ -12147,7 +12144,7 @@ class MainWindow(QMainWindow):
             
             # Verify the release URL points to our trusted repository
             if not html_url.startswith(f"https://github.com/{TRUSTED_REPO}/"):
-                raise ValueError(f"Security: Release URL does not match trusted repository")
+                raise ValueError("Security: Release URL does not match trusted repository")
             
             # Verify the author
             if author_login.lower() != TRUSTED_AUTHOR.lower():

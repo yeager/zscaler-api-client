@@ -1105,7 +1105,6 @@ def executive_security_narrative(assessment: dict[str, Any], posture: dict[str, 
     """Create a deterministic leadership narrative from explicit local facts."""
     summary = assessment.get("summary", {})
     failed = [item for item in assessment.get("controls", []) if item.get("status") == "fail"]
-    score = int(summary.get("score", 0))
     headline = "Local assurance requires attention" if failed else "No failing controls in the evaluated local scope"
     observations = [f"{summary.get('passed', 0)} evaluated controls passed and {summary.get('failed', 0)} failed.",
                     f"Evidence coverage is {summary.get('coverage_percent', 0)}% and local posture is {posture.get('score', 0)}/100."]

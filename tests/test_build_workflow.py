@@ -56,6 +56,13 @@ class BuildWorkflowTests(unittest.TestCase):
         ):
             self.assertIn(resource, windows)
 
+    def test_security_workflow_runs_runtime_symbol_check(self):
+        workflow = (Path(__file__).parent.parent / ".github/workflows/security.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("pip install -r requirements.txt ruff", workflow)
+        self.assertIn("ruff check --select F", workflow)
+
 
 if __name__ == "__main__":
     unittest.main()

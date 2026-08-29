@@ -24,7 +24,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libegl1 libxcb-cursor0 libxkbcommon0
       - name: Install test dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt ruff
+      - name: Check runtime code for undefined and unused symbols
+        run: python -m ruff check --select F zscaler_api_client.py feature_services.py pac_services.py schedule_services.py zscaler_config_services.py evidence_signing.py scripts tests
       - name: Run tests
         env:
           QT_QPA_PLATFORM: offscreen
