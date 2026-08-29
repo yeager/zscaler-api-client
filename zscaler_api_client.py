@@ -5460,6 +5460,17 @@ class SettingsDialog(QDialog):
         if not endpoint:
             QMessageBox.warning(self, self.tr("AI connection"), self.tr("Enter an AI endpoint first."))
             return
+        parsed_endpoint = urllib.parse.urlsplit(endpoint)
+        local_host = parsed_endpoint.hostname in {"localhost", "127.0.0.1", "::1"}
+        if parsed_endpoint.scheme not in {"http", "https"}:
+            QMessageBox.warning(self, self.tr("AI connection"), self.tr("AI endpoint must use HTTP or HTTPS."))
+            return
+        if not local_host and not setting_enabled(QSettings("Zscaler", "APIClient"), "ai/allow_external", default=False):
+            QMessageBox.warning(self, self.tr("AI connection"), self.tr("External AI is disabled. Enable it explicitly in Settings."))
+            return
+        if not local_host and parsed_endpoint.scheme != "https":
+            QMessageBox.warning(self, self.tr("AI connection"), self.tr("External AI endpoints must use HTTPS."))
+            return
         def check_connection():
             headers = {"Authorization": f"Bearer {secure_get('ai_api_key')}"} if secure_get("ai_api_key") else {}
             if provider == "anthropic" and secure_get("ai_api_key"):
@@ -10102,7 +10113,7 @@ class MainWindow(QMainWindow):
         request_item.setData(0, Qt.ItemDataRole.UserRole, _automation_entry_details(best))
         self._on_endpoint_selected(request_item, 0)
         summary = self.tr("Suggested request: {method} {name}. Review the attached API Guide and all template values before running.").format(method=best["method"], name=best["name"])
-        if provider in {"openai", "local"}:
+        if provider != "catalog":
             summary = f"{summary}\n\n{self.tr('Asking configured LLM…') }"
             self.ai_llm_worker = LlmWorker(lambda: self._ask_configured_llm(question, matches[:5]))
             self.ai_llm_worker.completed.connect(self._on_llm_completed)
@@ -10191,7 +10202,7 @@ class MainWindow(QMainWindow):
         local_host = parsed_endpoint.hostname in {"localhost", "127.0.0.1", "::1"}
         if parsed_endpoint.scheme not in {"http", "https"}:
             raise ValueError(self.tr("AI endpoint must use HTTP or HTTPS."))
-        if not local_host and settings.value("ai/allow_external", "false") != "true":
+        if not local_host and not setting_enabled(settings, "ai/allow_external", default=False):
             raise PermissionError(self.tr("External AI is disabled. Enable it explicitly in Settings."))
         if not local_host and parsed_endpoint.scheme != "https":
             raise ValueError(self.tr("External AI endpoints must use HTTPS."))

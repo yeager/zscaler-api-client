@@ -1088,6 +1088,33 @@ class MainWindowTests(unittest.TestCase):
         with self.assertRaises(PermissionError):
             self.window._ask_configured_llm("list users", [])
 
+    def test_every_configured_ai_provider_uses_the_guarded_llm_path(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("ai/provider", None)
+        try:
+            settings.setValue("ai/provider", "anthropic")
+            self.window.ai_question.setText("list zia users")
+            with patch.object(client, "LlmWorker") as worker_type:
+                self.window._run_ai_assistant()
+            worker_type.assert_called_once()
+        finally:
+            settings.remove("ai/provider") if previous is None else settings.setValue("ai/provider", previous)
+
+    def test_external_ai_connection_test_is_opt_in(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        previous = settings.value("ai/allow_external", None)
+        try:
+            settings.setValue("ai/allow_external", False)
+            dialog = client.SettingsDialog(self.window)
+            dialog.ai_provider.setCurrentIndex(dialog.ai_provider.findData("openai"))
+            dialog.ai_endpoint.setText("https://api.example.test/v1")
+            with patch.object(client.QMessageBox, "warning") as warning:
+                dialog._test_ai_connection()
+            warning.assert_called_once()
+            dialog.close()
+        finally:
+            settings.remove("ai/allow_external") if previous is None else settings.setValue("ai/allow_external", previous)
+
     def test_manual_proxy_is_attached_to_api_requests(self):
         settings = client.QSettings("Zscaler", "APIClient")
         settings.setValue("advanced/proxy_mode", "2")
