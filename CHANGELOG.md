@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.10] - 2026-08-29
+
+### Added
+- Native SwiftUI iPad client foundation for OneAPI connections, secure Keychain secret storage, non-secret connection-profile persistence, and HTTPS-only API exploration.
+- Shared ZS API Client branding across application windows, macOS/Windows packages, Linux desktop launchers, and all required iPad AppIcon sizes.
+
+### Changed
+- Linux desktop installation now publishes the application icon at every standard hicolor size and refreshes the icon cache when available.
+
+### Security
+- iPad secrets use `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`; access tokens remain in memory and connection profiles never store a client secret.
+
 ## [2.8.9] - 2026-08-27
 
 ### Added

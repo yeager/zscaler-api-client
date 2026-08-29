@@ -81,7 +81,7 @@ from schedule_services import register_background_schedule, unregister_backgroun
 from zscaler_config_services import CONFIG_SOURCE_URL, load_cenr_index, pac_config_references, pac_line_explanation, search_cenr
 QT_BINDINGS = "PySide6"
 
-__version__ = "2.8.9"
+__version__ = "2.8.10"
 RESPONSE_EXCHANGE_SCHEMA = "https://github.com/yeager/zscaler-api-client/schemas/response-exchange/v1"
 
 # Locale registry. App translations are loaded from translations/ at startup;
