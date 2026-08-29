@@ -1507,6 +1507,10 @@ class MainWindowTests(unittest.TestCase):
             self.assertTrue(dialog.tabs.isTabVisible(dialog.detection_tab_index))
             dialog.detection_template.setCurrentIndex(dialog.detection_template.findData("server_errors")); dialog.run_detection_lab()
             self.assertEqual(1, dialog.detection_matches.rowCount())
+            with patch.object(dialog, "_open_local_evidence_detail") as detail:
+                dialog._drill_into_detection_match(0, 0)
+            self.assertEqual(1, detail.call_count)
+            self.assertNotIn("hidden", json.dumps(detail.call_args_list))
             dialog.refresh_adaptive_anomalies(record_audit=False)
             self.assertGreaterEqual(dialog.anomaly_findings.rowCount(), 2)
             self.assertIn("median", dialog.detection_status.text().casefold())

@@ -6490,7 +6490,7 @@ class OperationsDialog(QDialog):
         export_detection = QPushButton(self.tr("Export masked detection evidence")); export_detection.clicked.connect(self.export_detection_lab); detection_actions.addWidget(export_detection); detection_actions.addStretch(); detection_layout.addLayout(detection_actions)
         self.detection_status = QLabel(); self.detection_status.setWordWrap(True); self.detection_status.setObjectName("mutedLabel"); detection_layout.addWidget(self.detection_status)
         detection_split = QSplitter(Qt.Orientation.Horizontal)
-        self.detection_matches = QTableWidget(0, 6); self.detection_matches.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Method"), self.tr("URL"), self.tr("Status"), self.tr("Duration"), self.tr("Environment")]); self.detection_matches.horizontalHeader().setStretchLastSection(True); self.detection_matches.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); detection_split.addWidget(self.detection_matches)
+        self.detection_matches = QTableWidget(0, 6); self.detection_matches.setHorizontalHeaderLabels([self.tr("Time"), self.tr("Method"), self.tr("URL"), self.tr("Status"), self.tr("Duration"), self.tr("Environment")]); self.detection_matches.horizontalHeader().setStretchLastSection(True); self.detection_matches.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.detection_matches.cellDoubleClicked.connect(self._drill_into_detection_match); detection_split.addWidget(self.detection_matches)
         anomaly_panel = QWidget(); anomaly_layout = QVBoxLayout(anomaly_panel); anomaly_layout.setContentsMargins(0, 0, 0, 0)
         self.anomaly_chart = NumericBarChart(); self.anomaly_chart.setMaximumHeight(160); self.anomaly_chart.activated.connect(self._drill_into_anomaly_metric); anomaly_layout.addWidget(self.anomaly_chart)
         self.anomaly_findings = QTableWidget(0, 4); self.anomaly_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Endpoint"), self.tr("Observed"), self.tr("Explanation")]); self.anomaly_findings.horizontalHeader().setStretchLastSection(True); self.anomaly_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.anomaly_findings.cellDoubleClicked.connect(self._drill_into_anomaly_finding); anomaly_layout.addWidget(self.anomaly_findings); detection_split.addWidget(anomaly_panel); detection_split.setSizes([600, 480]); detection_layout.addWidget(detection_split)
@@ -7123,6 +7123,7 @@ class OperationsDialog(QDialog):
         if not validation["valid"]: return
         raw = evaluate_detection_rule(validation["rule"], self._scoped_history()); self._last_detection_result = raw
         data = privacy_safe(raw, self.settings, "display"); matches = data["matches"]
+        self._detection_matches = matches
         self.detection_matches.setRowCount(len(matches))
         for row, event in enumerate(matches):
             values = (event.get("timestamp", ""), event.get("method", ""), event.get("url", ""), event.get("status", ""), self.tr("{duration} ms").format(duration=event.get("duration_ms", "—")), event.get("environment_id", ""))
@@ -7130,6 +7131,11 @@ class OperationsDialog(QDialog):
         explanation = self.tr("Matched events where {mode} of {conditions} declarative condition(s) were true.").format(mode=self.tr(data["rule"]["match"].title()), conditions=len(data["rule"]["conditions"]))
         self.detection_matches.resizeColumnsToContents(); self.detection_status.setText(self.tr("Examined {examined} local event(s); {matched} matched. {explanation}").format(examined=data["summary"]["examined"], matched=data["summary"]["matched"], explanation=explanation))
         self._scope_audit().append("local_detection_evaluated", {"rule": data["rule"]["name"], **data["summary"]})
+
+    def _drill_into_detection_match(self, row: int, _column: int):
+        matches = getattr(self, "_detection_matches", [])
+        if 0 <= row < len(matches):
+            self._open_local_evidence_detail({"scope": self._scope_metadata(), "detection_match": matches[row]})
 
     def refresh_adaptive_anomalies(self, _checked=False, record_audit=True):
         raw = adaptive_anomalies(self._scoped_history(), self.detection_sensitivity.currentData() or "balanced"); self._last_adaptive_result = raw
