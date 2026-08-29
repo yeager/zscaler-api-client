@@ -30,6 +30,14 @@ class IOSProjectTests(unittest.TestCase):
         self.assertIn("Xcode", readme)
         self.assertIn("IPA", readme)
 
+    def test_ios_workflow_builds_without_signing_or_releasing(self):
+        workflow = (Path(__file__).parent.parent / ".github/workflows/ios.yml").read_text(encoding="utf-8")
+        self.assertIn("runs-on: macos-15", workflow)
+        self.assertIn("xcodegen generate", workflow)
+        self.assertIn("iphonesimulator", workflow)
+        self.assertIn("CODE_SIGNING_ALLOWED=NO", workflow)
+        self.assertNotIn("action-gh-release", workflow)
+
 
 if __name__ == "__main__":
     unittest.main()

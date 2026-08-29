@@ -1,0 +1,30 @@
+name: iOS source build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios.yml'
+  pull_request:
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-ios-simulator:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen >/dev/null; then brew install xcodegen; fi
+      - name: Generate and build iPad client
+        working-directory: ios/ZSAPIClient
+        run: |
+          xcodegen generate
+          xcodebuild -project ZSAPIClient.xcodeproj -scheme ZSAPIClient -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
