@@ -143,6 +143,14 @@ def resolve_language(language: str | None, system_locale: str | None = None) -> 
     return base if base in LANGUAGE_CODES else "en"
 
 
+def setting_enabled(settings: QSettings, key: str, default: bool = True) -> bool:
+    """Read a persisted boolean safely across Qt backends and legacy values."""
+    value = settings.value(key, "true" if default else "false")
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().casefold() in {"1", "true", "yes", "on"}
+
+
 def resolve_startup_language(
     language_preference: str | None, system_locale: str | None = None,
 ) -> str:
@@ -3471,7 +3479,7 @@ class ApiWorker(QThread):
         
         # Build SSL context based on settings
         import ssl
-        verify_ssl = settings.value("advanced/verify_ssl", "true") == "true"
+        verify_ssl = setting_enabled(settings, "advanced/verify_ssl", default=True)
         timeout = int(settings.value("advanced/timeout", "30"))
         
         ssl_context = None
@@ -5398,7 +5406,7 @@ class SettingsDialog(QDialog):
         self.retry_reads.setCurrentIndex(0 if settings.value("advanced/retry_reads", "true") == "true" else 1)
         self.max_read_retries.setCurrentText(settings.value("advanced/max_read_retries", "2"))
         self.retry_max_wait.setCurrentText(settings.value("advanced/retry_max_wait", "60"))
-        self.verify_ssl.setCurrentIndex(0 if settings.value("advanced/verify_ssl", "true") == "true" else 1)
+        self.verify_ssl.setCurrentIndex(0 if setting_enabled(settings, "advanced/verify_ssl", default=True) else 1)
         self.proxy_enabled.setCurrentIndex(int(settings.value("advanced/proxy_mode", "0")))
         self.proxy_host.setText(settings.value("advanced/proxy_host", ""))
         self.proxy_port.setText(settings.value("advanced/proxy_port", ""))

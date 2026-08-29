@@ -54,6 +54,17 @@ class MainWindowTests(unittest.TestCase):
             if previous_platform is None: os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH", None)
             else: os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = previous_platform
 
+    def test_setting_enabled_accepts_boolean_and_legacy_forms(self):
+        settings = MagicMock()
+        settings.value.return_value = True
+        self.assertTrue(client.setting_enabled(settings, "advanced/verify_ssl"))
+        settings.value.return_value = False
+        self.assertFalse(client.setting_enabled(settings, "advanced/verify_ssl"))
+        settings.value.return_value = "YES"
+        self.assertTrue(client.setting_enabled(settings, "advanced/verify_ssl"))
+        settings.value.return_value = "false"
+        self.assertFalse(client.setting_enabled(settings, "advanced/verify_ssl"))
+
     def test_path_variables_are_extracted(self):
         self.window._populate_path_variables(
             "https://api.zsapi.net/zpa/customers/:customerId/apps/{appId}"
