@@ -101,6 +101,19 @@ QT_LANGUAGE_CODES = {
     "zh_CN": "zh_CN",
 }
 RTL_LANGUAGE_CODES = frozenset({"ar", "fa"})
+AI_PROVIDER_PRESETS = (
+    ("Local catalog assistant", "catalog", "", ""),
+    ("OpenAI", "openai", "https://api.openai.com/v1", "gpt-4.1-mini"),
+    ("Claude (Anthropic)", "anthropic", "https://api.anthropic.com/v1", "claude-sonnet-4-5"),
+    ("Qwen", "qwen", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1", "qwen-plus"),
+    ("Kimi (Moonshot AI)", "kimi", "https://api.moonshot.ai/v1", "moonshot-v1-8k"),
+    ("DeepSeek", "deepseek", "https://api.deepseek.com/v1", "deepseek-chat"),
+    ("Groq", "groq", "https://api.groq.com/openai/v1", "llama-3.3-70b-versatile"),
+    ("Mistral AI", "mistral", "https://api.mistral.ai/v1", "mistral-small-latest"),
+    ("Ollama (local)", "ollama", "http://localhost:11434/v1", "llama3.2"),
+    ("LM Studio (local)", "lmstudio", "http://localhost:1234/v1", "local-model"),
+    ("Custom OpenAI-compatible", "custom", "", ""),
+)
 
 
 def language_layout_direction(language: str) -> Qt.LayoutDirection:
@@ -5138,14 +5151,15 @@ class SettingsDialog(QDialog):
         ai_group = QGroupBox(self.tr("AI / LLM"))
         ai_form = QFormLayout(ai_group)
         self.ai_provider = QComboBox()
-        self.ai_provider.addItem(self.tr("Local catalog assistant"), "catalog")
-        self.ai_provider.addItem(self.tr("OpenAI-compatible cloud"), "openai")
-        self.ai_provider.addItem(self.tr("Local OpenAI-compatible server"), "local")
+        for label, code, _endpoint, _model in AI_PROVIDER_PRESETS:
+            self.ai_provider.addItem(self.tr(label), code)
+        self.ai_provider.currentIndexChanged.connect(self._apply_ai_provider_preset)
         ai_form.addRow(self.tr("AI provider:"), self.ai_provider)
         self.ai_endpoint = QLineEdit()
         self.ai_endpoint.setPlaceholderText("http://localhost:11434/v1")
         ai_form.addRow(self.tr("AI endpoint:"), self.ai_endpoint)
         self.ai_model = QLineEdit()
+        self.ai_model.setPlaceholderText(self.tr("Select a provider to prefill a recommended model"))
         ai_form.addRow(self.tr("Model:"), self.ai_model)
         self.ai_api_key = QLineEdit()
         self.ai_api_key.setEchoMode(QLineEdit.EchoMode.Password)
@@ -5161,6 +5175,8 @@ class SettingsDialog(QDialog):
         test_ai.clicked.connect(self._test_ai_connection)
         ai_buttons.addWidget(test_ai)
         ai_form.addRow(ai_buttons)
+        ai_note = QLabel(self.tr("Provider profiles prefill public endpoints and recommended models. Review model availability, pricing, and your organization’s data policy before enabling an external service."))
+        ai_note.setWordWrap(True); ai_form.addRow(ai_note)
         language_layout.addWidget(ai_group)
         language_layout.addWidget(language_hint)
         language_layout.addStretch()
@@ -5377,6 +5393,16 @@ class SettingsDialog(QDialog):
         self.ai_api_key.clear()
         self.ai_api_key.setPlaceholderText(self.tr("AI key cleared"))
 
+    def _apply_ai_provider_preset(self, *_unused):
+        """Prefill only public provider metadata; credentials always remain untouched."""
+        provider = self.ai_provider.currentData()
+        preset = next((item for item in AI_PROVIDER_PRESETS if item[1] == provider), None)
+        if preset is None:
+            return
+        _label, _code, endpoint, model = preset
+        self.ai_endpoint.setText(endpoint)
+        self.ai_model.setText(model)
+
     def _test_ai_connection(self):
         endpoint = self.ai_endpoint.text().strip().rstrip("/")
         provider = self.ai_provider.currentData()
@@ -5387,7 +5413,10 @@ class SettingsDialog(QDialog):
             QMessageBox.warning(self, self.tr("AI connection"), self.tr("Enter an AI endpoint first."))
             return
         def check_connection():
-            request = urllib.request.Request(f"{endpoint}/models", headers={"Authorization": f"Bearer {secure_get('ai_api_key')}"} if secure_get("ai_api_key") else {})
+            headers = {"Authorization": f"Bearer {secure_get('ai_api_key')}"} if secure_get("ai_api_key") else {}
+            if provider == "anthropic" and secure_get("ai_api_key"):
+                headers = {"x-api-key": secure_get("ai_api_key"), "anthropic-version": "2023-06-01"}
+            request = urllib.request.Request(f"{endpoint}/models", headers=headers)
             with build_network_opener(QSettings("Zscaler", "APIClient")).open(request, timeout=10) as response:
                 response.read(1)
             return self.tr("AI connection succeeded.")
@@ -10053,7 +10082,7 @@ class MainWindow(QMainWindow):
             raise ValueError(self.tr("External AI endpoints must use HTTPS."))
         if len(question) > 2000:
             raise ValueError(self.tr("AI question is too long (maximum 2000 characters)."))
-        url = endpoint if endpoint.endswith("/chat/completions") else f"{endpoint}/chat/completions"
+        provider = str(settings.value("ai/provider", "catalog"))
         catalog = [{key: item[key] for key in ("product", "name", "method", "url", "description")} for item in candidates]
         safe_question = privacy_safe({"question": question}, settings, "external")["question"]
         safe_catalog = privacy_safe(catalog, settings, "external")
@@ -10063,12 +10092,19 @@ class MainWindow(QMainWindow):
             f"Question: {safe_question}\nCandidates: {json.dumps(safe_catalog)}"
         )
         headers = {"Content-Type": "application/json"}
-        if key:
-            headers["Authorization"] = f"Bearer {key}"
-        payload = json.dumps({"model": model, "messages": [{"role": "user", "content": prompt}], "temperature": 0.1}).encode("utf-8")
+        if provider == "anthropic":
+            url = endpoint if endpoint.endswith("/messages") else f"{endpoint}/messages"
+            if key: headers.update({"x-api-key": key, "anthropic-version": "2023-06-01"})
+            payload = json.dumps({"model": model, "max_tokens": 700, "messages": [{"role": "user", "content": prompt}]}).encode("utf-8")
+        else:
+            url = endpoint if endpoint.endswith("/chat/completions") else f"{endpoint}/chat/completions"
+            if key: headers["Authorization"] = f"Bearer {key}"
+            payload = json.dumps({"model": model, "messages": [{"role": "user", "content": prompt}], "temperature": 0.1}).encode("utf-8")
         request = urllib.request.Request(url, data=payload, headers=headers, method="POST")
         with build_network_opener(QSettings("Zscaler", "APIClient")).open(request, timeout=30) as response:
             result = json.loads(response.read().decode("utf-8"))
+        if provider == "anthropic":
+            return str(result["content"][0]["text"]).strip()
         return str(result["choices"][0]["message"]["content"]).strip()
 
     def _export_full_response(self):
