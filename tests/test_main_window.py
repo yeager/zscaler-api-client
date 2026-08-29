@@ -1865,6 +1865,10 @@ class MainWindowTests(unittest.TestCase):
             self.assertIn("1 local alert", dialog.alert_summary.text())
             self.assertGreaterEqual(dialog.alert_table.rowCount(), 1)
             self.assertTrue(dialog.alert_chart.values)
+            with patch.object(dialog, "_open_local_evidence_detail") as detail:
+                dialog._drill_into_alert_row(0, 0)
+                dialog._drill_into_alert_metric(dialog.alert_chart.values[0][0], dialog.alert_chart.values[0][1])
+            self.assertEqual(2, detail.call_count)
             dialog.close()
         finally:
             for key, value in (("ui/mode", old_mode), ("monitoring/error_threshold", old_threshold), ("audit/events", old_audit)):
@@ -1872,6 +1876,18 @@ class MainWindowTests(unittest.TestCase):
                     settings.remove(key)
                 else:
                     settings.setValue(key, value)
+
+    def test_security_posture_findings_and_chart_open_masked_local_detail(self):
+        self.window.request_history = [{"status": 500, "url": "https://example.test?token=hidden"}] * 2
+        dialog = client.OperationsDialog(self.window)
+        self.assertGreaterEqual(dialog.posture_findings.rowCount(), 1)
+        self.assertTrue(dialog.posture_chart.values)
+        with patch.object(dialog, "_open_local_evidence_detail") as detail:
+            dialog._drill_into_posture_finding(0, 0)
+            dialog._drill_into_posture_metric(dialog.posture_chart.values[0][0], dialog.posture_chart.values[0][1])
+        self.assertEqual(2, detail.call_count)
+        self.assertNotIn("hidden", json.dumps(detail.call_args_list))
+        dialog.close()
 
     def test_webhook_test_payload_is_local_and_masked(self):
         self.window.request_history = [{"method": "GET", "status": 500, "headers": {"Authorization": "hidden"}}]

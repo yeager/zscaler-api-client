@@ -6389,16 +6389,16 @@ class OperationsDialog(QDialog):
         self.posture_score = QLabel("—"); self.posture_score.setObjectName("sectionTitle")
         score_font = self.posture_score.font(); score_font.setPointSize(28); score_font.setBold(True); self.posture_score.setFont(score_font)
         posture_visual = QHBoxLayout(); self.posture_gauge = PostureGauge(); posture_visual.addWidget(self.posture_gauge); posture_visual.addWidget(self.posture_score); posture_visual.addStretch(); posture_layout.addLayout(posture_visual)
-        self.posture_chart = NumericBarChart(); posture_layout.addWidget(self.posture_chart)
-        self.posture_findings = QTableWidget(0, 3); self.posture_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Finding"), self.tr("Details")]); self.posture_findings.horizontalHeader().setStretchLastSection(True); self.posture_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); posture_layout.addWidget(self.posture_findings)
+        self.posture_chart = NumericBarChart(); self.posture_chart.activated.connect(self._drill_into_posture_metric); posture_layout.addWidget(self.posture_chart)
+        self.posture_findings = QTableWidget(0, 3); self.posture_findings.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Finding"), self.tr("Details")]); self.posture_findings.horizontalHeader().setStretchLastSection(True); self.posture_findings.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.posture_findings.cellDoubleClicked.connect(self._drill_into_posture_finding); posture_layout.addWidget(self.posture_findings)
         posture_refresh = QPushButton(self.tr("Refresh security posture")); posture_refresh.clicked.connect(self.refresh_posture); posture_layout.addWidget(posture_refresh)
         self.posture_tab_index = self.tabs.addTab(posture_page, self.tr("Security posture"))
 
         alerts_page = QWidget(); alerts_layout = QVBoxLayout(alerts_page)
         alerts_intro = QLabel(self.tr("Local alerts evaluate retained, redacted request history only. They do not monitor the tenant in real time or send data externally.")); alerts_intro.setWordWrap(True); alerts_layout.addWidget(alerts_intro)
         self.alert_summary = QLabel(); self.alert_summary.setObjectName("sectionTitle"); alerts_layout.addWidget(self.alert_summary)
-        self.alert_chart = NumericBarChart(); self.alert_chart.setStyleSheet("background: transparent;"); self.alert_chart.setMaximumHeight(145); alerts_layout.addWidget(self.alert_chart)
-        self.alert_table = QTableWidget(0, 4); self.alert_table.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Alert"), self.tr("Count"), self.tr("Evidence")]); self.alert_table.horizontalHeader().setStretchLastSection(True); self.alert_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); alerts_layout.addWidget(self.alert_table)
+        self.alert_chart = NumericBarChart(); self.alert_chart.setStyleSheet("background: transparent;"); self.alert_chart.setMaximumHeight(145); self.alert_chart.activated.connect(self._drill_into_alert_metric); alerts_layout.addWidget(self.alert_chart)
+        self.alert_table = QTableWidget(0, 4); self.alert_table.setHorizontalHeaderLabels([self.tr("Severity"), self.tr("Alert"), self.tr("Count"), self.tr("Evidence")]); self.alert_table.horizontalHeader().setStretchLastSection(True); self.alert_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.alert_table.cellDoubleClicked.connect(self._drill_into_alert_row); alerts_layout.addWidget(self.alert_table)
         alert_actions = QHBoxLayout(); refresh_alerts = QPushButton(self.tr("Refresh local alerts")); refresh_alerts.clicked.connect(self.refresh_alerts); alert_actions.addWidget(refresh_alerts)
         copy_alerts = QPushButton(self.tr("Copy masked alert summary")); copy_alerts.clicked.connect(self.copy_alert_summary); alert_actions.addWidget(copy_alerts); alert_actions.addStretch(); alerts_layout.addLayout(alert_actions)
         export_alert_json = QPushButton(self.tr("Export alerts as JSON")); export_alert_json.clicked.connect(lambda: self.export_alerts("json")); alert_actions.addWidget(export_alert_json)
@@ -6754,6 +6754,7 @@ class OperationsDialog(QDialog):
             "no_telemetry": (self.tr("No local telemetry yet"), self.tr("Send or import redacted requests to establish a local baseline.")),
         }
         findings = posture["findings"]
+        self._posture_snapshot = posture
         self.posture_findings.setRowCount(len(findings))
         for row, finding in enumerate(findings):
             title, detail = wording[finding["code"]]
@@ -6772,6 +6773,7 @@ class OperationsDialog(QDialog):
 
     def refresh_alerts(self):
         data = privacy_safe(self._alert_data(), self.settings, "display"); alerts = data["alerts"]
+        self._visible_alert_data = data
         self.alert_summary.setText(self.tr("{count} local alert(s) · error threshold: {threshold}").format(count=len(alerts), threshold=data["threshold"]))
         labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low")}
         self.alert_chart.set_style("pie")
@@ -6792,6 +6794,33 @@ class OperationsDialog(QDialog):
             self.alert_table.setItem(row, 1, QTableWidgetItem(wording[alert["code"]]))
             self.alert_table.setItem(row, 2, QTableWidgetItem(str(alert["count"])))
             self.alert_table.setItem(row, 3, QTableWidgetItem(json.dumps(mask(alert["evidence"]), ensure_ascii=False)))
+
+    def _open_local_evidence_detail(self, detail: dict):
+        """Present selected operational evidence without exposing unredacted history."""
+        dialog = QDialog(self); dialog.setWindowTitle(self.tr("Report detail")); dialog.resize(700, 440)
+        layout = QVBoxLayout(dialog); intro = QLabel(self.tr("Local evidence behind the selected report metric. It is not a tenant-wide assessment.")); intro.setWordWrap(True); layout.addWidget(intro)
+        output = QPlainTextEdit(json.dumps(mask(detail), indent=2, ensure_ascii=False)); output.setReadOnly(True); layout.addWidget(output, 1)
+        close = QPushButton(self.tr("Close")); close.clicked.connect(dialog.accept); layout.addWidget(close, alignment=Qt.AlignmentFlag.AlignRight); dialog.exec()
+
+    def _drill_into_posture_finding(self, row: int, _column: int):
+        findings = getattr(self, "_posture_snapshot", {}).get("findings", [])
+        if 0 <= row < len(findings):
+            self._open_local_evidence_detail({"scope": self._scope_metadata(), "finding": findings[row]})
+
+    def _drill_into_posture_metric(self, label: str, value: float):
+        findings = getattr(self, "_posture_snapshot", {}).get("findings", [])
+        selected = [item for item in findings if self.tr(str(item.get("severity", "")).title()) == label]
+        self._open_local_evidence_detail({"metric": label, "value": value, "scope": self._scope_metadata(), "findings": selected})
+
+    def _drill_into_alert_row(self, row: int, _column: int):
+        alerts = getattr(self, "_visible_alert_data", {}).get("alerts", [])
+        if 0 <= row < len(alerts):
+            self._open_local_evidence_detail({"scope": self._visible_alert_data.get("scope", {}), "alert": alerts[row]})
+
+    def _drill_into_alert_metric(self, label: str, value: float):
+        alerts = getattr(self, "_visible_alert_data", {}).get("alerts", [])
+        selected = [item for item in alerts if self.tr(str(item.get("severity", "")).title()) == label]
+        self._open_local_evidence_detail({"metric": label, "value": value, "scope": self._visible_alert_data.get("scope", {}), "alerts": selected})
 
     def copy_alert_summary(self):
         QApplication.clipboard().setText(json.dumps(privacy_safe(self._alert_data(), self.settings, "clipboard"), indent=2, ensure_ascii=False))
