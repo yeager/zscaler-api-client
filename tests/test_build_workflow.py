@@ -71,6 +71,27 @@ class BuildWorkflowTests(unittest.TestCase):
         self.assertNotIn("PyQt6", hook)
         self.assertIn("runtime_hooks=['runtime_hook.py']", spec)
 
+    def test_translation_build_contract_is_enforced_on_every_platform(self):
+        root = Path(__file__).parent.parent
+        workflow = (root / ".github/workflows/build.yml").read_text(encoding="utf-8")
+        gitignore = (root / ".gitignore").read_text(encoding="utf-8")
+        sections = (
+            workflow.split("  build-windows:", 1)[0],
+            workflow.split("  build-windows:", 1)[1].split("  build-macos:", 1)[0],
+            workflow.split("  build-macos:", 1)[1].split("  release:", 1)[0],
+        )
+        for section in sections:
+            self.assertLess(section.index("python scripts/compile_translations.py"), section.index("pyinstaller"))
+        self.assertIn("translations/*.qm", gitignore)
+        self.assertEqual([], list((root / "translations").glob("*.qm")))
+
+    def test_all_checked_in_specs_can_evaluate_platform_icon_selection(self):
+        root = Path(__file__).parent.parent
+        for spec_name in ("zscaler_api_client.spec", "ZS API Client.spec"):
+            spec = (root / spec_name).read_text(encoding="utf-8")
+            if "sys.platform" in spec:
+                self.assertIn("import sys", spec)
+
 
 if __name__ == "__main__":
     unittest.main()

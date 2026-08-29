@@ -1,6 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 from PyInstaller.utils.hooks import collect_all
+import sys
 
 
 cryptography_datas, cryptography_binaries, cryptography_hiddenimports = collect_all('cryptography')
