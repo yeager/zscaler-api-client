@@ -1632,6 +1632,10 @@ class MainWindowTests(unittest.TestCase):
         dialog.run_simulation()
         self.assertGreaterEqual(dialog.simulation_path.rowCount(), 2)
         self.assertIn("Matched", dialog.simulation_path.item(1, 3).text())
+        with patch.object(dialog, "_open_local_evidence_detail") as detail:
+            dialog._drill_into_simulation_step(1, 0)
+            dialog._drill_into_simulation_metric(dialog.simulation_chart.values[1][0], dialog.simulation_chart.values[1][1])
+        self.assertEqual(2, detail.call_count)
         dialog.close()
 
     def test_reports_and_operations_mode_are_available(self):

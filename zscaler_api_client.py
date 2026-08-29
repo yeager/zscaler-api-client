@@ -6326,8 +6326,8 @@ class OperationsDialog(QDialog):
         self.context_input = QPlainTextEdit(); self.context_input.setPlaceholderText(self.tr("Request context JSON: {\"group\": \"staff\"}"))
         self.simulation_result = QPlainTextEdit(); self.simulation_result.setReadOnly(True)
         for widget in (self.rules_input, self.context_input, self.simulation_result): simulate_layout.addWidget(widget)
-        self.simulation_chart = NumericBarChart(); self.simulation_chart.setMaximumHeight(140); simulate_layout.addWidget(self.simulation_chart)
-        self.simulation_path = QTableWidget(0, 4); self.simulation_path.setHorizontalHeaderLabels([self.tr("Order"), self.tr("Rule"), self.tr("Action"), self.tr("Decision")]); self.simulation_path.horizontalHeader().setStretchLastSection(True); self.simulation_path.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.simulation_path.setMaximumHeight(160); simulate_layout.addWidget(self.simulation_path)
+        self.simulation_chart = NumericBarChart(); self.simulation_chart.setMaximumHeight(140); self.simulation_chart.activated.connect(self._drill_into_simulation_metric); simulate_layout.addWidget(self.simulation_chart)
+        self.simulation_path = QTableWidget(0, 4); self.simulation_path.setHorizontalHeaderLabels([self.tr("Order"), self.tr("Rule"), self.tr("Action"), self.tr("Decision")]); self.simulation_path.horizontalHeader().setStretchLastSection(True); self.simulation_path.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); self.simulation_path.cellDoubleClicked.connect(self._drill_into_simulation_step); self.simulation_path.setMaximumHeight(160); simulate_layout.addWidget(self.simulation_path)
         simulate_btn = QPushButton(self.tr("Simulate policy (local only)")); simulate_btn.clicked.connect(self.run_simulation)
         simulate_layout.addWidget(simulate_btn); self.tabs.addTab(simulate_page, self.tr("Simulation"))
 
@@ -7887,6 +7887,7 @@ body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}
         try:
             result = simulate_policy_trace(self._json(self.rules_input, []), self._json(self.context_input, {}))
             display_result = privacy_safe(result, self.settings, "display")
+            self._simulation_result = display_result
             self.simulation_result.setPlainText(json.dumps(display_result, indent=2))
             trace = display_result["trace"]
             self.simulation_chart.set_values([(self.tr("Rules evaluated"), float(len(trace))), (self.tr("Matched rule"), 1.0 if result["matched"] else 0.0)])
@@ -7895,6 +7896,18 @@ body{{margin:0;background:#07111f;color:#e7f0fa;font:15px system-ui,sans-serif}}
                 values = (str(item["position"]), item["name"], str(item["action"]).title(), self.tr("Matched") if item["matched"] else self.tr("Not matched"))
                 for column, value in enumerate(values): self.simulation_path.setItem(row, column, QTableWidgetItem(value))
         except ValueError as exc: QMessageBox.warning(self, self.tr("Simulation"), str(exc))
+
+    def _drill_into_simulation_step(self, row: int, _column: int):
+        trace = getattr(self, "_simulation_result", {}).get("trace", [])
+        if 0 <= row < len(trace):
+            self._open_local_evidence_detail({"scope": self._scope_metadata(), "simulation_step": trace[row]})
+
+    def _drill_into_simulation_metric(self, label: str, value: float):
+        result = getattr(self, "_simulation_result", {})
+        trace = result.get("trace", [])
+        if label == self.tr("Matched rule"):
+            trace = [item for item in trace if item.get("matched")]
+        self._open_local_evidence_detail({"metric": label, "value": value, "scope": self._scope_metadata(), "trace": trace, "decision": {key: result.get(key) for key in ("matched", "position", "name", "action")}})
 
     def validate_bulk(self):
         required = [item.strip() for item in self.bulk_required.text().split(",") if item.strip()]
