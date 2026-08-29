@@ -19,6 +19,7 @@ cryptography_datas, cryptography_binaries, cryptography_hiddenimports = collect_
 translations_path = Path('translations')
 translation_files = [(str(f), 'translations') for f in translations_path.glob('*.qm')]
 visual_files = [(str(f), 'assets/visuals') for f in Path('assets/visuals').glob('*.png')]
+branding_files = [(str(f), 'assets/branding') for f in Path('assets/branding').glob('*.png')]
 
 a = Analysis(
     ['zscaler_api_client.py'],
@@ -29,6 +30,7 @@ a = Analysis(
         *cryptography_datas,
         *translation_files,
         *visual_files,
+        *branding_files,
         ('data', 'data'),
         ('feature_services.py', '.'),
         ('evidence_signing.py', '.'),
@@ -112,18 +114,18 @@ coll = COLLECT(
 
 app = BUNDLE(
     coll,
-    name='Zscaler API Client.app',
+    name='ZS API Client.app',
     icon='assets/icons/zs-api-client.icns' if sys.platform == 'darwin' else 'assets/icons/zs-api-client.ico',
     bundle_identifier='com.zscaler.apiclient',
     info_plist={
-        'CFBundleName': 'Zscaler API Client',
-        'CFBundleDisplayName': 'Zscaler API Client',
+        'CFBundleName': 'ZS API Client',
+        'CFBundleDisplayName': 'ZS API Client',
         'CFBundleShortVersionString': VERSION,
         'CFBundleVersion': VERSION,
         'CFBundleIdentifier': 'com.zscaler.apiclient',
         'CFBundlePackageType': 'APPL',
         'CFBundleSignature': '????',
-        'CFBundleExecutable': 'Zscaler API Client',
+        'CFBundleExecutable': 'ZS API Client',
         'NSHighResolutionCapable': True,
         'NSPrincipalClass': 'NSApplication',
         'LSMinimumSystemVersion': '10.15',

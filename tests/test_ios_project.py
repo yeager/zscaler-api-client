@@ -33,6 +33,13 @@ class IOSProjectTests(unittest.TestCase):
         self.assertIn("NSAllowsArbitraryLoads", info)
         self.assertIn("<false/>", info)
 
+    def test_native_client_uses_the_shared_application_icon(self):
+        project = (ROOT / "project.yml").read_text(encoding="utf-8")
+        icons = ROOT / "Sources/Assets.xcassets/AppIcon.appiconset/Contents.json"
+        self.assertIn("ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon", project)
+        self.assertTrue(icons.exists())
+        self.assertIn('"ios-marketing"', icons.read_text(encoding="utf-8"))
+
     def test_readme_is_clear_that_xcode_on_macos_builds_the_ipa(self):
         readme = (ROOT.parent / "README.md").read_text(encoding="utf-8")
         self.assertIn("macOS", readme)

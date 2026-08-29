@@ -122,6 +122,20 @@ class BuildWorkflowTests(unittest.TestCase):
             if "sys.platform" in spec:
                 self.assertIn("import sys", spec)
 
+    def test_linux_launcher_installs_every_exported_icon_size(self):
+        root = Path(__file__).parent.parent
+        installer = (root / "packaging/linux/install.sh").read_text(encoding="utf-8")
+        desktop = (root / "packaging/linux/zs-api-client.desktop").read_text(encoding="utf-8")
+        for size in (16, 32, 48, 64, 128, 256, 512):
+            self.assertIn(str(size), installer)
+        self.assertIn("Icon=zs-api-client", desktop)
+
+    def test_primary_spec_bundles_the_runtime_branding_asset(self):
+        root = Path(__file__).parent.parent
+        spec = (root / "zscaler_api_client.spec").read_text(encoding="utf-8")
+        self.assertIn("branding_files", spec)
+        self.assertIn("'assets/branding'", spec)
+
 
 if __name__ == "__main__":
     unittest.main()
