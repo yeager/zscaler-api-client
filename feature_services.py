@@ -1014,6 +1014,26 @@ def change_control_plan(before: Any, after: Any) -> dict[str, Any]:
     }
 
 
+def user_risk_report(response: Any, maximum_records: int = 5000) -> dict[str, Any]:
+    """Extract explicit user-risk evidence without inferring risk from identity alone."""
+    users: list[dict[str, Any]] = []
+    def visit(value: Any):
+        if len(users) >= maximum_records: return
+        if isinstance(value, dict):
+            identity = next((value.get(key) for key in ("email", "userName", "username", "displayName", "loginName") if value.get(key)), None)
+            if identity:
+                evidence = {key: value[key] for key in value if key.lower() in {"risk", "riskscore", "risklevel", "threat", "status", "enabled", "mfa", "lastlogin", "admin", "privilege"}}
+                score = next((value[key] for key in value if key.lower() in {"riskscore", "risk_score"} and isinstance(value[key], (int, float))), 0)
+                level = str(next((value[key] for key in value if key.lower() in {"risk", "risklevel"}), "observed")).lower()
+                users.append({"identity": str(identity), "risk_score": score, "risk_level": level, "evidence": mask(evidence)})
+            for child in value.values(): visit(child)
+        elif isinstance(value, list):
+            for child in value: visit(child)
+    visit(response)
+    users.sort(key=lambda item: (float(item["risk_score"] or 0), item["risk_level"] not in {"observed", "none", "low"}), reverse=True)
+    return {"users": users, "summary": {"observed_users": len(users), "explicit_risk_signals": sum(1 for item in users if item["risk_level"] not in {"observed", "none", "low"} or item["risk_score"])} , "disclaimer": "Only explicit fields in the current response are reported; identity alone is never treated as risk."}
+
+
 def security_report_data(kind: str, history: Iterable[dict[str, Any]], audit_events: Iterable[dict[str, Any]], audit_valid: bool, scope: dict[str, str] | None = None) -> dict[str, Any]:
     """Create local, redacted facts for CISO, SOC, or operations reports."""
     if kind not in {"ciso", "soc", "operations"}:

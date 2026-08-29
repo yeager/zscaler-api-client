@@ -469,208 +469,208 @@
     <context>
         <name>MainWindow</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="8673" />
-            <location filename="../zscaler_api_client.py" line="8691" />
+            <location filename="../zscaler_api_client.py" line="8681" />
+            <location filename="../zscaler_api_client.py" line="8699" />
             <source>API Explorer</source>
             <translation>API 탐색기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8694" />
-            <location filename="../zscaler_api_client.py" line="10031" />
-            <location filename="../zscaler_api_client.py" line="11662" />
+            <location filename="../zscaler_api_client.py" line="8702" />
+            <location filename="../zscaler_api_client.py" line="10039" />
+            <location filename="../zscaler_api_client.py" line="11670" />
             <source>Product</source>
             <translation>제품</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8704" />
+            <location filename="../zscaler_api_client.py" line="8712" />
             <source>Auth</source>
             <translation>인증</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8705" />
+            <location filename="../zscaler_api_client.py" line="8713" />
             <source>Authenticate with selected API (Ctrl+Shift+A)</source>
             <translation>선택한 API로 인증(Ctrl+Shift+A)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8715" />
+            <location filename="../zscaler_api_client.py" line="8723" />
             <source>🔍 Filter endpoints...</source>
             <translation>🔍 엔드포인트 필터링...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8726" />
+            <location filename="../zscaler_api_client.py" line="8734" />
             <source>Endpoints</source>
             <translation>엔드포인트</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8732" />
+            <location filename="../zscaler_api_client.py" line="8740" />
             <source>Output</source>
             <translation>출력</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8738" />
+            <location filename="../zscaler_api_client.py" line="8746" />
             <source>Authentication status, requests, and audit info...</source>
             <translation>인증 상태, 요청, 감사 정보...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8749" />
+            <location filename="../zscaler_api_client.py" line="8757" />
             <source>Request Builder</source>
             <translation>요청 작성기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8772" />
+            <location filename="../zscaler_api_client.py" line="8780" />
             <source>Enter URL or select endpoint...</source>
             <translation>URL을 입력하거나 엔드포인트를 선택하세요...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8776" />
+            <location filename="../zscaler_api_client.py" line="8784" />
             <source>Send</source>
             <translation>보내기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8777" />
+            <location filename="../zscaler_api_client.py" line="8785" />
             <source>Send request (Ctrl+Return)</source>
             <translation>요청 보내기(Ctrl+Return)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8785" />
+            <location filename="../zscaler_api_client.py" line="8793" />
             <source>cURL</source>
             <translation>cURL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8786" />
+            <location filename="../zscaler_api_client.py" line="8794" />
             <source>Copy request as cURL command (Ctrl+Shift+C)</source>
             <translation>요청을 cURL 명령으로 복사(Ctrl+Shift+C)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8792" />
+            <location filename="../zscaler_api_client.py" line="8800" />
             <source>GraphQL request</source>
             <translation>GraphQL 요청</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8793" />
+            <location filename="../zscaler_api_client.py" line="8801" />
             <source>Send the request body as a GraphQL query and preserve data, errors, and extensions.</source>
             <translation>요청 본문을 GraphQL 쿼리로 보내고 데이터, 오류 및 확장을 보존합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8812" />
+            <location filename="../zscaler_api_client.py" line="8820" />
             <source>Saved GraphQL query name</source>
             <translation>저장된 GraphQL 쿼리 이름</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8816" />
+            <location filename="../zscaler_api_client.py" line="8824" />
             <source>Save query</source>
             <translation>쿼리 저장</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8819" />
+            <location filename="../zscaler_api_client.py" line="8827" />
             <source>Load query</source>
             <translation>쿼리 로드</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8822" />
+            <location filename="../zscaler_api_client.py" line="8830" />
             <source>Rename query</source>
             <translation>쿼리 이름 바꾸기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8825" />
+            <location filename="../zscaler_api_client.py" line="8833" />
             <source>Delete query</source>
             <translation>쿼리 삭제</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8828" />
+            <location filename="../zscaler_api_client.py" line="8836" />
             <source>Introspect schema</source>
             <translation>스키마 점검</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8831" />
+            <location filename="../zscaler_api_client.py" line="8839" />
             <source>Load saved schema</source>
             <translation>저장된 스키마 로드</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8858" />
-            <location filename="../zscaler_api_client.py" line="8867" />
+            <location filename="../zscaler_api_client.py" line="8866" />
+            <location filename="../zscaler_api_client.py" line="8875" />
             <source>Key</source>
             <translation>열쇠</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8858" />
-            <location filename="../zscaler_api_client.py" line="8867" />
-            <location filename="../zscaler_api_client.py" line="8927" />
-            <location filename="../zscaler_api_client.py" line="9002" />
+            <location filename="../zscaler_api_client.py" line="8866" />
+            <location filename="../zscaler_api_client.py" line="8875" />
+            <location filename="../zscaler_api_client.py" line="8935" />
+            <location filename="../zscaler_api_client.py" line="9010" />
             <source>Value</source>
             <translation>가치</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8861" />
+            <location filename="../zscaler_api_client.py" line="8869" />
             <source>Params</source>
             <translation>매개변수</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8870" />
-            <location filename="../zscaler_api_client.py" line="8995" />
+            <location filename="../zscaler_api_client.py" line="8878" />
+            <location filename="../zscaler_api_client.py" line="9003" />
             <source>Headers</source>
             <translation>헤더</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8903" />
-            <location filename="../zscaler_api_client.py" line="10745" />
+            <location filename="../zscaler_api_client.py" line="8911" />
+            <location filename="../zscaler_api_client.py" line="10753" />
             <source>Request body (JSON)...</source>
             <translation>요청 본문(JSON)...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8907" />
-            <location filename="../zscaler_api_client.py" line="8994" />
+            <location filename="../zscaler_api_client.py" line="8915" />
+            <location filename="../zscaler_api_client.py" line="9002" />
             <source>Body</source>
             <translation>본체</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8914" />
-            <location filename="../zscaler_api_client.py" line="8927" />
+            <location filename="../zscaler_api_client.py" line="8922" />
+            <location filename="../zscaler_api_client.py" line="8935" />
             <source>Variable</source>
             <translation>변수</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8930" />
+            <location filename="../zscaler_api_client.py" line="8938" />
             <source>Path Variables</source>
             <translation>경로 변수</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8952" />
-            <location filename="../zscaler_api_client.py" line="10650" />
+            <location filename="../zscaler_api_client.py" line="8960" />
+            <location filename="../zscaler_api_client.py" line="10658" />
             <source>Response</source>
             <translation>응답</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8967" />
+            <location filename="../zscaler_api_client.py" line="8975" />
             <source>Pretty</source>
             <translation>꽤</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8970" />
+            <location filename="../zscaler_api_client.py" line="8978" />
             <source>Toggle pretty-print JSON (Ctrl+P)</source>
             <translation>예쁜 인쇄 JSON 전환(Ctrl+P)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8975" />
-            <location filename="../zscaler_api_client.py" line="10157" />
-            <location filename="../zscaler_api_client.py" line="10176" />
-            <location filename="../zscaler_api_client.py" line="10181" />
+            <location filename="../zscaler_api_client.py" line="8983" />
+            <location filename="../zscaler_api_client.py" line="10165" />
+            <location filename="../zscaler_api_client.py" line="10184" />
             <location filename="../zscaler_api_client.py" line="10189" />
+            <location filename="../zscaler_api_client.py" line="10197" />
             <source>Export response</source>
             <translation>응답 내보내기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8978" />
+            <location filename="../zscaler_api_client.py" line="8986" />
             <source>Preview export</source>
             <translation>내보내기 미리보기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8998" />
+            <location filename="../zscaler_api_client.py" line="9006" />
             <source>Table</source>
             <translation>테이블</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9000" />
+            <location filename="../zscaler_api_client.py" line="9008" />
             <source>Chart</source>
             <translation>차트</translation>
         </message>
@@ -679,239 +679,239 @@
             <translation type="vanished">JSON 구조</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9004" />
+            <location filename="../zscaler_api_client.py" line="9012" />
             <source>Tree</source>
             <translation>나무</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9007" />
+            <location filename="../zscaler_api_client.py" line="9015" />
             <source>Heatmap</source>
             <translation>히트맵</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9010" />
+            <location filename="../zscaler_api_client.py" line="9018" />
             <source>Topology</source>
             <translation>토폴로지</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9014" />
+            <location filename="../zscaler_api_client.py" line="9022" />
             <source>Schema</source>
             <translation>스키마</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9019" />
-            <location filename="../zscaler_api_client.py" line="9085" />
+            <location filename="../zscaler_api_client.py" line="9027" />
+            <location filename="../zscaler_api_client.py" line="9093" />
             <source>AI Assistant</source>
             <translation>AI 어시스턴트</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9022" />
+            <location filename="../zscaler_api_client.py" line="9030" />
             <source>Ask a OneAPI question, e.g. list ZPA application segments</source>
             <translation>OneAPI 질문을 해보세요. ZPA 애플리케이션 세그먼트 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9026" />
+            <location filename="../zscaler_api_client.py" line="9034" />
             <source>Choose a guided AI example…</source>
             <translation>가이드형 AI 예시를 선택하세요…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9032" />
+            <location filename="../zscaler_api_client.py" line="9040" />
             <source>Find API request</source>
             <translation>API 요청 찾기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9035" />
+            <location filename="../zscaler_api_client.py" line="9043" />
             <source>Run selected request</source>
             <translation>선택한 요청 실행</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9038" />
+            <location filename="../zscaler_api_client.py" line="9046" />
             <source>Export result</source>
             <translation>결과 내보내기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9042" />
-            <location filename="../zscaler_api_client.py" line="11859" />
+            <location filename="../zscaler_api_client.py" line="9050" />
+            <location filename="../zscaler_api_client.py" line="11867" />
             <source>Ask in plain language. Sensitive values are masked before display or export.</source>
             <translation>쉬운 언어로 물어보세요. 민감한 값은 표시하거나 내보내기 전에 마스크됩니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9048" />
+            <location filename="../zscaler_api_client.py" line="9056" />
             <source>AI request preview appears here before execution.</source>
             <translation>실행 전에 AI 요청 미리보기가 여기에 표시됩니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9054" />
+            <location filename="../zscaler_api_client.py" line="9062" />
             <source>Bar chart</source>
             <translation>막대 차트</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9055" />
+            <location filename="../zscaler_api_client.py" line="9063" />
             <source>Line chart</source>
             <translation>꺾은선형 차트</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9056" />
+            <location filename="../zscaler_api_client.py" line="9064" />
             <source>Pie chart</source>
             <translation>원형 차트</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9065" />
+            <location filename="../zscaler_api_client.py" line="9073" />
             <source>Help</source>
             <translation>도움말</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9083" />
+            <location filename="../zscaler_api_client.py" line="9091" />
             <source>Documentation</source>
             <translation>문서</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9084" />
+            <location filename="../zscaler_api_client.py" line="9092" />
             <source>Console</source>
             <translation>콘솔</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9101" />
+            <location filename="../zscaler_api_client.py" line="9109" />
             <source>Ready</source>
             <translation>준비</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9110" />
+            <location filename="../zscaler_api_client.py" line="9118" />
             <source>&amp;File</source>
             <translation>파일(&amp;F)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9112" />
+            <location filename="../zscaler_api_client.py" line="9120" />
             <source>&amp;Settings...</source>
             <translation>설정(&amp;S)...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9117" />
+            <location filename="../zscaler_api_client.py" line="9125" />
             <source>&amp;Batch Operations...</source>
             <translation>&amp;일괄 작업...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9124" />
+            <location filename="../zscaler_api_client.py" line="9132" />
             <source>Request &amp;History...</source>
             <translation>요청 및 내역...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9133" />
+            <location filename="../zscaler_api_client.py" line="9141" />
             <source>&amp;Quit</source>
             <translation>&amp;종료</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9139" />
+            <location filename="../zscaler_api_client.py" line="9147" />
             <source>&amp;Edit</source>
             <translation>편집(&amp;E)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9141" />
+            <location filename="../zscaler_api_client.py" line="9149" />
             <source>Copy as c&amp;URL</source>
             <translation>c&amp;URL로 복사</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9146" />
+            <location filename="../zscaler_api_client.py" line="9154" />
             <source>Copy &amp;Response</source>
             <translation>복사 및 응답</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9153" />
+            <location filename="../zscaler_api_client.py" line="9161" />
             <source>C&amp;lear Request</source>
             <translation>요청 지우기(&amp;L)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9158" />
+            <location filename="../zscaler_api_client.py" line="9166" />
             <source>&amp;Request</source>
             <translation>&amp;요청</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9160" />
+            <location filename="../zscaler_api_client.py" line="9168" />
             <source>&amp;Send Request</source>
             <translation>&amp;요청 보내기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9167" />
+            <location filename="../zscaler_api_client.py" line="9175" />
             <source>Authenticate &amp;ZIA</source>
             <translation>&amp;ZIA 인증</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9171" />
+            <location filename="../zscaler_api_client.py" line="9179" />
             <source>Authenticate Z&amp;PA</source>
             <translation>Z&amp;PA 인증</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9177" />
+            <location filename="../zscaler_api_client.py" line="9185" />
             <source>&amp;Logout All Sessions</source>
             <translation>모든 세션 로그아웃(&amp;R)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9181" />
+            <location filename="../zscaler_api_client.py" line="9189" />
             <source>&amp;Operations</source>
             <translation>&amp;작업</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9182" />
+            <location filename="../zscaler_api_client.py" line="9190" />
             <source>Operations &amp;Center...</source>
             <translation>운영 및 센터...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9190" />
+            <location filename="../zscaler_api_client.py" line="9198" />
             <source>Environment &amp;Profiles...</source>
             <translation>환경 및 프로필...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9195" />
+            <location filename="../zscaler_api_client.py" line="9203" />
             <source>&amp;Language</source>
             <translation>&amp;언어</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9204" />
+            <location filename="../zscaler_api_client.py" line="9212" />
             <source>&amp;Help</source>
             <translation>&amp;도움말</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9206" />
+            <location filename="../zscaler_api_client.py" line="9214" />
             <source>&amp;Welcome Guide...</source>
             <translation>&amp;환영 가이드...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9210" />
+            <location filename="../zscaler_api_client.py" line="9218" />
             <source>&amp;About...</source>
             <translation>정보(&amp;A)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9215" />
+            <location filename="../zscaler_api_client.py" line="9223" />
             <source>About &amp;Qt...</source>
             <translation>&amp;Qt 정보...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9222" />
+            <location filename="../zscaler_api_client.py" line="9230" />
             <source>ZIA API &amp;Documentation</source>
             <translation>ZIA API 및 문서</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9226" />
+            <location filename="../zscaler_api_client.py" line="9234" />
             <source>ZPA API D&amp;ocumentation</source>
             <translation>ZPA API 문서(&amp;O)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9230" />
+            <location filename="../zscaler_api_client.py" line="9238" />
             <source>Zscaler API &amp;Portal</source>
             <translation>Zscaler API 및 포털</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9234" />
+            <location filename="../zscaler_api_client.py" line="9242" />
             <source>API &amp;Error Codes...</source>
             <translation>API 및 오류 코드...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9240" />
+            <location filename="../zscaler_api_client.py" line="9248" />
             <source>Check for &amp;Updates...</source>
             <translation>업데이트 확인(&amp;U)...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9310" />
+            <location filename="../zscaler_api_client.py" line="9318" />
             <source>{count} operations · {groups} groups</source>
             <translation>{count} operations · {groups} groups</translation>
         </message>
@@ -920,7 +920,7 @@
             <translation type="vanished">새 프로필 만들기…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9668" />
+            <location filename="../zscaler_api_client.py" line="9676" />
             <source>Environment profiles</source>
             <translation>환경 프로필</translation>
         </message>
@@ -937,53 +937,53 @@
             <translation type="vanished">환경 프로필 활성: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9715" />
+            <location filename="../zscaler_api_client.py" line="9723" />
             <source>{count} matching operations</source>
             <translation>{count} matching operations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9715" />
+            <location filename="../zscaler_api_client.py" line="9723" />
             <source>{count} operations</source>
             <translation>{count} operations</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9752" />
+            <location filename="../zscaler_api_client.py" line="9760" />
             <source>Guided example loaded. Find the API request, review the preview, then choose whether to run it.</source>
             <translation>안내 예제가 로드되었습니다. API 요청을 찾아 미리보기를 검토한 후 실행 여부를 선택하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9853" />
-            <location filename="../zscaler_api_client.py" line="9883" />
-            <location filename="../zscaler_api_client.py" line="9908" />
-            <location filename="../zscaler_api_client.py" line="9972" />
-            <location filename="../zscaler_api_client.py" line="11190" />
-            <location filename="../zscaler_api_client.py" line="11193" />
-            <location filename="../zscaler_api_client.py" line="11220" />
+            <location filename="../zscaler_api_client.py" line="9861" />
+            <location filename="../zscaler_api_client.py" line="9891" />
+            <location filename="../zscaler_api_client.py" line="9916" />
+            <location filename="../zscaler_api_client.py" line="9980" />
+            <location filename="../zscaler_api_client.py" line="11198" />
+            <location filename="../zscaler_api_client.py" line="11201" />
+            <location filename="../zscaler_api_client.py" line="11228" />
             <source>Error</source>
             <translation>오류</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9854" />
+            <location filename="../zscaler_api_client.py" line="9862" />
             <source>ZIA credentials not configured. Please go to Settings.</source>
             <translation>ZIA 자격 증명이 구성되지 않았습니다. 설정으로 이동하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9883" />
+            <location filename="../zscaler_api_client.py" line="9891" />
             <source>ZCC credentials not configured. Please go to Settings.</source>
             <translation>ZCC 자격 증명이 구성되지 않았습니다. 설정으로 이동하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9909" />
+            <location filename="../zscaler_api_client.py" line="9917" />
             <source>{api_type} credentials not configured. Please go to Settings.</source>
             <translation>{api_type} credentials not configured. Please go to Settings.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9973" />
+            <location filename="../zscaler_api_client.py" line="9981" />
             <source>OneAPI credentials not configured. Please go to Settings.</source>
             <translation>OneAPI 자격 증명이 구성되지 않았습니다. 설정으로 이동하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10014" />
+            <location filename="../zscaler_api_client.py" line="10022" />
             <source>No matching API operation was found. Try product and resource names.</source>
             <translation>일치하는 API 작업을 찾을 수 없습니다. 제품 및 리소스 이름을 사용해 보세요.</translation>
         </message>
@@ -992,374 +992,374 @@
             <translation type="vanished">Suggested request: {method} {name}. Review path variables before running.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10031" />
+            <location filename="../zscaler_api_client.py" line="10039" />
             <source>Operation</source>
             <translation>작동</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10031" />
-            <location filename="../zscaler_api_client.py" line="11662" />
+            <location filename="../zscaler_api_client.py" line="10039" />
+            <location filename="../zscaler_api_client.py" line="11670" />
             <source>Method</source>
             <translation>방법</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10031" />
-            <location filename="../zscaler_api_client.py" line="11662" />
+            <location filename="../zscaler_api_client.py" line="10039" />
+            <location filename="../zscaler_api_client.py" line="11670" />
             <source>URL</source>
             <translation>URL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10065" />
+            <location filename="../zscaler_api_client.py" line="10073" />
             <source>Ask the AI assistant for a request first.</source>
             <translation>먼저 AI 비서에게 요청을 요청하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10068" />
+            <location filename="../zscaler_api_client.py" line="10076" />
             <source>Review AI request</source>
             <translation>AI 요청 검토</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10069" />
+            <location filename="../zscaler_api_client.py" line="10077" />
             <source>Review the URL, path variables, and parameters in the preview before sending. Send this request now?</source>
             <translation>보내기 전에 미리보기에서 URL, 경로 변수, 매개변수를 검토하세요. 지금 이 요청을 보내시겠습니까?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10092" />
-            <location filename="../zscaler_api_client.py" line="10097" />
+            <location filename="../zscaler_api_client.py" line="10100" />
+            <location filename="../zscaler_api_client.py" line="10105" />
             <source>Asking configured LLM…</source>
             <translation>구성된 LLM을 요청하는 중…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10095" />
+            <location filename="../zscaler_api_client.py" line="10103" />
             <source>LLM unavailable; using the local catalog assistant.</source>
             <translation>LLM을 이용할 수 없습니다. 로컬 카탈로그 도우미를 사용합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10106" />
+            <location filename="../zscaler_api_client.py" line="10114" />
             <source>Configure an AI endpoint and model in Settings.</source>
             <translation>설정에서 AI 엔드포인트 및 모델을 구성하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10110" />
+            <location filename="../zscaler_api_client.py" line="10118" />
             <source>AI endpoint must use HTTP or HTTPS.</source>
             <translation>AI 엔드포인트는 HTTP 또는 HTTPS를 사용해야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10112" />
+            <location filename="../zscaler_api_client.py" line="10120" />
             <source>External AI is disabled. Enable it explicitly in Settings.</source>
             <translation>외부 AI가 비활성화되었습니다. 설정에서 명시적으로 활성화하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10114" />
+            <location filename="../zscaler_api_client.py" line="10122" />
             <source>External AI endpoints must use HTTPS.</source>
             <translation>외부 AI 엔드포인트는 HTTPS를 사용해야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10116" />
+            <location filename="../zscaler_api_client.py" line="10124" />
             <source>AI question is too long (maximum 2000 characters).</source>
             <translation>AI 질문이 너무 깁니다(최대 2000자).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10145" />
-            <location filename="../zscaler_api_client.py" line="10151" />
+            <location filename="../zscaler_api_client.py" line="10153" />
+            <location filename="../zscaler_api_client.py" line="10159" />
             <source>Save binary response</source>
             <translation>바이너리 응답 저장</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10146" />
+            <location filename="../zscaler_api_client.py" line="10154" />
             <source>Binary content cannot be inspected or obfuscated as text. Save the original response only if you trust this endpoint and destination?</source>
             <translation>바이너리 콘텐츠는 텍스트로 검사하거나 난독화할 수 없습니다. 이 엔드포인트와 대상을 신뢰하는 경우에만 원래 응답을 저장하시겠습니까?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10151" />
+            <location filename="../zscaler_api_client.py" line="10159" />
             <source>All files (*)</source>
             <translation>모든 파일(*)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10154" />
+            <location filename="../zscaler_api_client.py" line="10162" />
             <source>Original binary response saved</source>
             <translation>원본 바이너리 응답이 저장되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10203" />
+            <location filename="../zscaler_api_client.py" line="10211" />
             <source>Masked response exported</source>
             <translation>마스크된 응답을 내보냈습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10309" />
+            <location filename="../zscaler_api_client.py" line="10317" />
             <source>Binary content is not included in this preview.</source>
             <translation>이 미리보기에는 바이너리 콘텐츠가 포함되지 않습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10311" />
-            <location filename="../zscaler_api_client.py" line="10317" />
+            <location filename="../zscaler_api_client.py" line="10319" />
+            <location filename="../zscaler_api_client.py" line="10325" />
             <source>Export preview</source>
             <translation>미리보기 내보내기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10312" />
+            <location filename="../zscaler_api_client.py" line="10320" />
             <source>Original binary export requires a separate confirmation.</source>
             <translation>원본 바이너리 내보내기에는 별도의 확인이 필요합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10318" />
+            <location filename="../zscaler_api_client.py" line="10326" />
             <source>Sensitive fields are masked in every export.</source>
             <translation>모든 내보내기에서는 민감한 필드가 마스킹됩니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10372" />
-            <location filename="../zscaler_api_client.py" line="10381" />
+            <location filename="../zscaler_api_client.py" line="10380" />
             <location filename="../zscaler_api_client.py" line="10389" />
+            <location filename="../zscaler_api_client.py" line="10397" />
             <source>Export AI result</source>
             <translation>AI 결과 내보내기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10181" />
             <location filename="../zscaler_api_client.py" line="10189" />
-            <location filename="../zscaler_api_client.py" line="10381" />
+            <location filename="../zscaler_api_client.py" line="10197" />
             <location filename="../zscaler_api_client.py" line="10389" />
+            <location filename="../zscaler_api_client.py" line="10397" />
             <source>No chart data is available to export.</source>
             <translation>내보낼 수 있는 차트 데이터가 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10398" />
+            <location filename="../zscaler_api_client.py" line="10406" />
             <source>AI result exported</source>
             <translation>AI 결과 내보내기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10657" />
+            <location filename="../zscaler_api_client.py" line="10665" />
             <source>No tabular datasets</source>
             <translation>테이블 형식 데이터세트 없음</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10666" />
+            <location filename="../zscaler_api_client.py" line="10674" />
             <source>Nodes</source>
             <translation>노드</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10666" />
+            <location filename="../zscaler_api_client.py" line="10674" />
             <source>Connections</source>
             <translation>연결</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10668" />
+            <location filename="../zscaler_api_client.py" line="10676" />
             <source>No nodes or connections were found in this response.</source>
             <translation>이 응답에서는 노드나 연결을 찾을 수 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10729" />
+            <location filename="../zscaler_api_client.py" line="10737" />
             <source>Visualized {count} records as a masked table. Export is available from the AI Assistant tab.</source>
             <translation>Visualized {count} records as a masked table. Export is available from the AI Assistant tab.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10746" />
+            <location filename="../zscaler_api_client.py" line="10754" />
             <source>Raw request body...</source>
             <translation>원시 요청 본문...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10747" />
+            <location filename="../zscaler_api_client.py" line="10755" />
             <source>Form fields as JSON or an encoded key=value string...</source>
             <translation>JSON 또는 인코딩된 키=값 문자열 형식의 필드...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10748" />
+            <location filename="../zscaler_api_client.py" line="10756" />
             <source>Optional multipart fields as a JSON object...</source>
             <translation>JSON 객체로서의 선택적 멀티파트 필드...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10754" />
+            <location filename="../zscaler_api_client.py" line="10762" />
             <source>Select upload file</source>
             <translation>업로드 파일 선택</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9506" />
-            <location filename="../zscaler_api_client.py" line="10803" />
+            <location filename="../zscaler_api_client.py" line="9514" />
+            <location filename="../zscaler_api_client.py" line="10811" />
             <source>Yes</source>
             <translation>예</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8646" />
+            <location filename="../zscaler_api_client.py" line="8654" />
             <source>Environment</source>
             <translation>Environment</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8651" />
-            <location filename="../zscaler_api_client.py" line="8673" />
+            <location filename="../zscaler_api_client.py" line="8659" />
+            <location filename="../zscaler_api_client.py" line="8681" />
             <source>Monitor</source>
             <translation>Monitor</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8652" />
+            <location filename="../zscaler_api_client.py" line="8660" />
             <source>Open dashboards, alerts, audits, and response analysis</source>
             <translation>Open dashboards, alerts, audits, and response analysis</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8655" />
-            <location filename="../zscaler_api_client.py" line="8673" />
+            <location filename="../zscaler_api_client.py" line="8663" />
+            <location filename="../zscaler_api_client.py" line="8681" />
             <source>Changes</source>
             <translation>Changes</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9506" />
-            <location filename="../zscaler_api_client.py" line="10803" />
+            <location filename="../zscaler_api_client.py" line="9514" />
+            <location filename="../zscaler_api_client.py" line="10811" />
             <source>No</source>
             <translation>아니요</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10365" />
-            <location filename="../zscaler_api_client.py" line="10367" />
+            <location filename="../zscaler_api_client.py" line="10373" />
+            <location filename="../zscaler_api_client.py" line="10375" />
             <source>Response drift comparison</source>
             <translation>응답 드리프트 비교</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10365" />
+            <location filename="../zscaler_api_client.py" line="10373" />
             <source>Binary responses cannot be structurally compared. Export and inspect the original file with an appropriate tool.</source>
             <translation>이진 반응은 구조적으로 비교할 수 없습니다. 적절한 도구를 사용하여 원본 파일을 내보내고 검사합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10367" />
+            <location filename="../zscaler_api_client.py" line="10375" />
             <source>Send a request or open a response export before comparing drift.</source>
             <translation>드리프트를 비교하기 전에 요청을 보내거나 응답 내보내기를 엽니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10821" />
+            <location filename="../zscaler_api_client.py" line="10829" />
             <source>{count} variable(s) extracted · {missing} required value(s) missing</source>
             <translation>{count} variable(s) extracted · {missing} required value(s) missing</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10828" />
-            <location filename="../zscaler_api_client.py" line="11176" />
+            <location filename="../zscaler_api_client.py" line="10836" />
+            <location filename="../zscaler_api_client.py" line="11184" />
             <source>GraphQL body must be a JSON object containing a query string.</source>
             <translation>GraphQL 본문은 쿼리 문자열을 포함하는 JSON 객체여야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10832" />
+            <location filename="../zscaler_api_client.py" line="10840" />
             <source>Choose operationName because the document contains multiple GraphQL operations.</source>
             <translation>문서에 여러 GraphQL 작업이 포함되어 있으므로 OperationName을 선택합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10834" />
+            <location filename="../zscaler_api_client.py" line="10842" />
             <source>GraphQL operationName does not match a named operation in the query.</source>
             <translation>GraphQL OperationName이 쿼리의 명명된 작업과 일치하지 않습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10845" />
+            <location filename="../zscaler_api_client.py" line="10853" />
             <source>Variable ${name} is required.</source>
             <translation>Variable ${name} is required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10849" />
+            <location filename="../zscaler_api_client.py" line="10857" />
             <source>Variable ${name} must be valid for type {type}.</source>
             <translation>Variable ${name} must be valid for type {type}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10856" />
+            <location filename="../zscaler_api_client.py" line="10864" />
             <source>Remove undeclared GraphQL variables: {names}</source>
             <translation>Remove undeclared GraphQL variables: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10880" />
-            <location filename="../zscaler_api_client.py" line="10900" />
+            <location filename="../zscaler_api_client.py" line="10888" />
+            <location filename="../zscaler_api_client.py" line="10908" />
             <source>Documented GraphQL schema</source>
             <translation>문서화된 GraphQL 스키마</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10881" />
+            <location filename="../zscaler_api_client.py" line="10889" />
             <source>The current Automation Hub page has no executable query example. Open its documentation or use schema introspection.</source>
             <translation>현재 Automation Hub 페이지에는 실행 가능한 쿼리 예제가 없습니다. 해당 문서를 열거나 스키마 검사를 사용하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10895" />
+            <location filename="../zscaler_api_client.py" line="10903" />
             <source>Loaded documented ZInsights query. Review time ranges, filters, and fields before sending.</source>
             <translation>문서화된 ZInsights 쿼리를 로드했습니다. 보내기 전에 시간 범위, 필터, 필드를 검토하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10931" />
+            <location filename="../zscaler_api_client.py" line="10939" />
             <source>Enter a name before saving the GraphQL query.</source>
             <translation>GraphQL 쿼리를 저장하기 전에 이름을 입력하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10935" />
-            <location filename="../zscaler_api_client.py" line="10976" />
-            <location filename="../zscaler_api_client.py" line="10989" />
-            <location filename="../zscaler_api_client.py" line="11008" />
+            <location filename="../zscaler_api_client.py" line="10943" />
+            <location filename="../zscaler_api_client.py" line="10984" />
+            <location filename="../zscaler_api_client.py" line="10997" />
+            <location filename="../zscaler_api_client.py" line="11016" />
             <source>Secure storage</source>
             <translation>안전한 저장</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10935" />
+            <location filename="../zscaler_api_client.py" line="10943" />
             <source>The system keychain could not save the GraphQL query.</source>
             <translation>시스템 키체인이 GraphQL 쿼리를 저장할 수 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10941" />
+            <location filename="../zscaler_api_client.py" line="10949" />
             <source>GraphQL query saved securely</source>
             <translation>GraphQL 쿼리가 안전하게 저장됨</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10947" />
+            <location filename="../zscaler_api_client.py" line="10955" />
             <source>Saved GraphQL query is unavailable.</source>
             <translation>저장된 GraphQL 쿼리를 사용할 수 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10976" />
+            <location filename="../zscaler_api_client.py" line="10984" />
             <source>The system keychain could not rename the GraphQL query.</source>
             <translation>시스템 키체인이 GraphQL 쿼리의 이름을 바꿀 수 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10989" />
+            <location filename="../zscaler_api_client.py" line="10997" />
             <source>The system keychain could not delete the GraphQL query.</source>
             <translation>시스템 키체인이 GraphQL 쿼리를 삭제할 수 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11000" />
+            <location filename="../zscaler_api_client.py" line="11008" />
             <source>GraphQL introspection query prepared. Review the endpoint before sending.</source>
             <translation>GraphQL 내부 검사 쿼리가 준비되었습니다. 보내기 전에 엔드포인트를 검토하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11008" />
+            <location filename="../zscaler_api_client.py" line="11016" />
             <source>The system keychain could not save the GraphQL schema.</source>
             <translation>시스템 키체인이 GraphQL 스키마를 저장할 수 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11010" />
+            <location filename="../zscaler_api_client.py" line="11018" />
             <source>GraphQL schema saved securely</source>
             <translation>안전하게 저장된 GraphQL 스키마</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11071" />
-            <location filename="../zscaler_api_client.py" line="11588" />
+            <location filename="../zscaler_api_client.py" line="11079" />
+            <location filename="../zscaler_api_client.py" line="11596" />
             <source>Read only</source>
             <translation>읽기 전용</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11071" />
-            <location filename="../zscaler_api_client.py" line="11588" />
+            <location filename="../zscaler_api_client.py" line="11079" />
+            <location filename="../zscaler_api_client.py" line="11596" />
             <source>Read-only mode blocks write requests. Change the local role in Operations Center to continue.</source>
             <translation>읽기 전용 모드는 쓰기 요청을 차단합니다. 계속하려면 Operations Center에서 로컬 역할을 변경하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11107" />
+            <location filename="../zscaler_api_client.py" line="11115" />
             <source>Configure a base URL for the selected product before sending a relative API path.</source>
             <translation>상대 API 경로를 보내기 전에 선택한 제품에 대한 기본 URL을 구성하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11185" />
+            <location filename="../zscaler_api_client.py" line="11193" />
             <source>Select an available local file before sending.</source>
             <translation>전송하기 전에 사용 가능한 로컬 파일을 선택하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11190" />
+            <location filename="../zscaler_api_client.py" line="11198" />
             <source>Multipart fields must be a JSON object: {error}</source>
             <translation>Multipart fields must be a JSON object: {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11193" />
+            <location filename="../zscaler_api_client.py" line="11201" />
             <source>Multipart fields must be a JSON object.</source>
             <translation>멀티파트 필드는 JSON 객체여야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11376" />
+            <location filename="../zscaler_api_client.py" line="11384" />
             <source>Binary response ready to save.
 File: {name}
 Type: {type}
@@ -1370,339 +1370,339 @@ Type: {type}
 Size: {size}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11580" />
+            <location filename="../zscaler_api_client.py" line="11588" />
             <source>Batch validation failed: </source>
             <translation>일괄 검증 실패: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11583" />
+            <location filename="../zscaler_api_client.py" line="11591" />
             <source>Select {api} before running this batch.</source>
             <translation>Select {api} before running this batch.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11591" />
+            <location filename="../zscaler_api_client.py" line="11599" />
             <source>Review complete. Send {count} request(s) to the active environment?</source>
             <translation>Review complete. Send {count} request(s) to the active environment?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11592" />
+            <location filename="../zscaler_api_client.py" line="11600" />
             <source>Confirm batch</source>
             <translation>배치 확인</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11607" />
+            <location filename="../zscaler_api_client.py" line="11615" />
             <source>Sending batch request 0 of {count}...</source>
             <translation>Sending batch request 0 of {count}...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11608" />
+            <location filename="../zscaler_api_client.py" line="11616" />
             <source>Batch execution started: {count} request(s)</source>
             <translation>Batch execution started: {count} request(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11625" />
+            <location filename="../zscaler_api_client.py" line="11633" />
             <source>Sending batch request {completed} of {total}...</source>
             <translation>Sending batch request {completed} of {total}...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11635" />
-            <location filename="../zscaler_api_client.py" line="11636" />
-            <location filename="../zscaler_api_client.py" line="11637" />
+            <location filename="../zscaler_api_client.py" line="11643" />
+            <location filename="../zscaler_api_client.py" line="11644" />
+            <location filename="../zscaler_api_client.py" line="11645" />
             <source>Batch complete: {successful} succeeded, {failed} failed.</source>
             <translation>Batch complete: {successful} succeeded, {failed} failed.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8673" />
-            <location filename="../zscaler_api_client.py" line="11704" />
+            <location filename="../zscaler_api_client.py" line="8681" />
+            <location filename="../zscaler_api_client.py" line="11712" />
             <source>Request History</source>
             <translation>요청 내역</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11661" />
+            <location filename="../zscaler_api_client.py" line="11669" />
             <source>Favorites are local to the active environment and never include credentials or request bodies.</source>
             <translation>Favorites are local to the active environment and never include credentials or request bodies.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11670" />
+            <location filename="../zscaler_api_client.py" line="11678" />
             <source>Save favorite</source>
             <translation>Save favorite</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11670" />
+            <location filename="../zscaler_api_client.py" line="11678" />
             <source>Favorite name:</source>
             <translation>Favorite name:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11670" />
+            <location filename="../zscaler_api_client.py" line="11678" />
             <source>New request</source>
             <translation>New request</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11680" />
+            <location filename="../zscaler_api_client.py" line="11688" />
             <source>Save current request</source>
             <translation>Save current request</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11680" />
+            <location filename="../zscaler_api_client.py" line="11688" />
             <source>Load selected</source>
             <translation>Load selected</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11680" />
+            <location filename="../zscaler_api_client.py" line="11688" />
             <source>Remove favorite</source>
             <translation>Remove favorite</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11680" />
-            <location filename="../zscaler_api_client.py" line="11697" />
+            <location filename="../zscaler_api_client.py" line="11688" />
+            <location filename="../zscaler_api_client.py" line="11705" />
             <source>Close</source>
             <translation>Close</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11686" />
+            <location filename="../zscaler_api_client.py" line="11694" />
             <source>Local items requiring attention. This inbox is scoped to the active environment and never sends changes.</source>
             <translation>Local items requiring attention. This inbox is scoped to the active environment and never sends changes.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11687" />
+            <location filename="../zscaler_api_client.py" line="11695" />
             <source>Priority</source>
             <translation>Priority</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11687" />
+            <location filename="../zscaler_api_client.py" line="11695" />
             <source>Source</source>
             <translation>Source</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11687" />
+            <location filename="../zscaler_api_client.py" line="11695" />
             <source>Details</source>
             <translation>Details</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11691" />
+            <location filename="../zscaler_api_client.py" line="11699" />
             <source>Alert</source>
             <translation>Alert</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11692" />
+            <location filename="../zscaler_api_client.py" line="11700" />
             <source>High</source>
             <translation>High</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11692" />
+            <location filename="../zscaler_api_client.py" line="11700" />
             <source>Failed request</source>
             <translation>Failed request</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11693" />
+            <location filename="../zscaler_api_client.py" line="11701" />
             <source>Info</source>
             <translation>Info</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11693" />
+            <location filename="../zscaler_api_client.py" line="11701" />
             <source>Scheduled report</source>
             <translation>Scheduled report</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11697" />
+            <location filename="../zscaler_api_client.py" line="11705" />
             <source>Open Alerts</source>
             <translation>Open Alerts</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11697" />
+            <location filename="../zscaler_api_client.py" line="11705" />
             <source>Open Recent</source>
             <translation>Open Recent</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11705" />
+            <location filename="../zscaler_api_client.py" line="11713" />
             <source>This request belongs to another environment. Activate that environment profile before loading it.</source>
             <translation>이 요청은 다른 환경에 속합니다. 해당 환경 프로필을 로드하기 전에 활성화하십시오.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11718" />
-            <location filename="../zscaler_api_client.py" line="11737" />
+            <location filename="../zscaler_api_client.py" line="11726" />
+            <location filename="../zscaler_api_client.py" line="11745" />
             <source>Multipart request loaded. Select the local file again before sending.</source>
             <translation>멀티파트 요청이 로드되었습니다. 보내기 전에 로컬 파일을 다시 선택하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11809" />
+            <location filename="../zscaler_api_client.py" line="11817" />
             <source>Masked cURL command copied to clipboard</source>
             <translation>마스크된 cURL 명령이 클립보드에 복사되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11814" />
+            <location filename="../zscaler_api_client.py" line="11822" />
             <source>Binary response</source>
             <translation>바이너리 응답</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11814" />
+            <location filename="../zscaler_api_client.py" line="11822" />
             <source>Binary response content is not copied to the clipboard. Use Export to save the original file.</source>
             <translation>바이너리 응답 콘텐츠는 클립보드에 복사되지 않습니다. 내보내기를 사용하여 원본 파일을 저장하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11823" />
+            <location filename="../zscaler_api_client.py" line="11831" />
             <source>Masked response copied to clipboard</source>
             <translation>마스킹된 응답이 클립보드에 복사되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9012" />
-            <location filename="../zscaler_api_client.py" line="11015" />
+            <location filename="../zscaler_api_client.py" line="9020" />
+            <location filename="../zscaler_api_client.py" line="11023" />
             <source>GraphQL schema</source>
             <translation>GraphQL 스키마</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11015" />
+            <location filename="../zscaler_api_client.py" line="11023" />
             <source>No saved introspection result exists for this endpoint.</source>
             <translation>이 끝점에 대해 저장된 자체 검사 결과가 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11056" />
+            <location filename="../zscaler_api_client.py" line="11064" />
             <source>{count} GraphQL errors</source>
             <translation>{count} GraphQL errors</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11058" />
+            <location filename="../zscaler_api_client.py" line="11066" />
             <source>extensions included</source>
             <translation>확장 기능 포함</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10065" />
-            <location filename="../zscaler_api_client.py" line="10931" />
-            <location filename="../zscaler_api_client.py" line="10947" />
-            <location filename="../zscaler_api_client.py" line="11075" />
-            <location filename="../zscaler_api_client.py" line="11107" />
-            <location filename="../zscaler_api_client.py" line="11806" />
-            <location filename="../zscaler_api_client.py" line="11825" />
+            <location filename="../zscaler_api_client.py" line="10073" />
+            <location filename="../zscaler_api_client.py" line="10939" />
+            <location filename="../zscaler_api_client.py" line="10955" />
+            <location filename="../zscaler_api_client.py" line="11083" />
+            <location filename="../zscaler_api_client.py" line="11115" />
+            <location filename="../zscaler_api_client.py" line="11814" />
+            <location filename="../zscaler_api_client.py" line="11833" />
             <source>Warning</source>
             <translation>경고</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8570" />
+            <location filename="../zscaler_api_client.py" line="8578" />
             <source>ZIA · List users</source>
             <translation>ZIA · 사용자 목록</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8570" />
+            <location filename="../zscaler_api_client.py" line="8578" />
             <source>List ZIA users with pagination</source>
             <translation>페이지 매김을 사용하여 ZIA 사용자 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8571" />
+            <location filename="../zscaler_api_client.py" line="8579" />
             <source>ZIA · Find URL categories</source>
             <translation>ZIA · URL 카테고리 찾기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8571" />
+            <location filename="../zscaler_api_client.py" line="8579" />
             <source>Search ZIA URL categories for social media</source>
             <translation>소셜 미디어용 ZIA URL 카테고리 검색</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8572" />
+            <location filename="../zscaler_api_client.py" line="8580" />
             <source>ZIA · Review firewall policies</source>
             <translation>ZIA · 방화벽 정책 검토</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8572" />
+            <location filename="../zscaler_api_client.py" line="8580" />
             <source>List ZIA cloud firewall policies</source>
             <translation>ZIA 클라우드 방화벽 정책 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8573" />
+            <location filename="../zscaler_api_client.py" line="8581" />
             <source>ZPA · Application segments</source>
             <translation>ZPA · 응용 분야</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8573" />
+            <location filename="../zscaler_api_client.py" line="8581" />
             <source>List ZPA application segments</source>
             <translation>ZPA 애플리케이션 세그먼트 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8574" />
+            <location filename="../zscaler_api_client.py" line="8582" />
             <source>ZPA · Connector inventory</source>
             <translation>ZPA · 커넥터 인벤토리</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8574" />
+            <location filename="../zscaler_api_client.py" line="8582" />
             <source>List ZPA connectors</source>
             <translation>ZPA 커넥터 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8575" />
+            <location filename="../zscaler_api_client.py" line="8583" />
             <source>ZDX · Experience overview</source>
             <translation>ZDX · 체험개요</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8575" />
+            <location filename="../zscaler_api_client.py" line="8583" />
             <source>List ZDX devices and experience scores</source>
             <translation>ZDX 장치 및 경험 점수 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8576" />
+            <location filename="../zscaler_api_client.py" line="8584" />
             <source>ZDX · Active alerts</source>
             <translation>ZDX · 활성 경고</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8576" />
+            <location filename="../zscaler_api_client.py" line="8584" />
             <source>List active ZDX alerts with pagination</source>
             <translation>페이지 매김을 사용하여 활성 ZDX 알림 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8577" />
+            <location filename="../zscaler_api_client.py" line="8585" />
             <source>ZDX · Application monitoring</source>
             <translation>ZDX · 애플리케이션 모니터링</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8577" />
+            <location filename="../zscaler_api_client.py" line="8585" />
             <source>List monitored ZDX applications</source>
             <translation>모니터링되는 ZDX 애플리케이션 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8578" />
+            <location filename="../zscaler_api_client.py" line="8586" />
             <source>Client Connector · Devices</source>
             <translation>클라이언트 커넥터 · 장치</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8578" />
+            <location filename="../zscaler_api_client.py" line="8586" />
             <source>List Client Connector devices</source>
             <translation>클라이언트 커넥터 장치 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8579" />
+            <location filename="../zscaler_api_client.py" line="8587" />
             <source>ZIdentity · Users</source>
             <translation>ZIdentity · 사용자</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8579" />
+            <location filename="../zscaler_api_client.py" line="8587" />
             <source>List ZIdentity users with pagination</source>
             <translation>페이지 매김을 사용하여 ZIdentity 사용자 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8580" />
+            <location filename="../zscaler_api_client.py" line="8588" />
             <source>ZIdentity · Groups</source>
             <translation>ZID · 그룹</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8580" />
+            <location filename="../zscaler_api_client.py" line="8588" />
             <source>List ZIdentity groups</source>
             <translation>ZIdentity 그룹 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8581" />
+            <location filename="../zscaler_api_client.py" line="8589" />
             <source>AI Security · Workloads</source>
             <translation>AI 보안 · 워크로드</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8581" />
+            <location filename="../zscaler_api_client.py" line="8589" />
             <source>List AI Security workloads</source>
             <translation>AI 보안 워크로드 나열</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8635" />
+            <location filename="../zscaler_api_client.py" line="8643" />
             <source>ZS API Client</source>
             <translation>ZS API 클라이언트</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8642" />
+            <location filename="../zscaler_api_client.py" line="8650" />
             <source>Explore APIs, review changes, and operate safely</source>
             <translation>API를 탐색하고, 변경 사항을 검토하고, 안전하게 운영하세요.</translation>
         </message>
@@ -1711,7 +1711,7 @@ Size: {size}</translation>
             <translation type="vanished">1 · 환경</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8648" />
+            <location filename="../zscaler_api_client.py" line="8656" />
             <source>Select or create a tenant environment profile</source>
             <translation>테넌트 환경 프로필 선택 또는 생성</translation>
         </message>
@@ -1728,7 +1728,7 @@ Size: {size}</translation>
             <translation type="vanished">3 · 변경</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8656" />
+            <location filename="../zscaler_api_client.py" line="8664" />
             <source>Open policy diff and policy-as-code export</source>
             <translation>개방형 정책 차이점 및 코드형 정책 내보내기</translation>
         </message>
@@ -1737,354 +1737,354 @@ Size: {size}</translation>
             <translation type="vanished">운영센터</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8659" />
-            <location filename="../zscaler_api_client.py" line="8673" />
+            <location filename="../zscaler_api_client.py" line="8667" />
+            <location filename="../zscaler_api_client.py" line="8681" />
             <source>PAC Workspace</source>
             <translation>PAC Workspace</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8660" />
+            <location filename="../zscaler_api_client.py" line="8668" />
             <source>Create, verify, map, and prepare PAC files (Ctrl+Shift+P)</source>
             <translation>Create, verify, map, and prepare PAC files (Ctrl+Shift+P)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8664" />
-            <location filename="../zscaler_api_client.py" line="9656" />
+            <location filename="../zscaler_api_client.py" line="8672" />
+            <location filename="../zscaler_api_client.py" line="9664" />
             <source>Alerts</source>
             <translation>Alerts</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8665" />
+            <location filename="../zscaler_api_client.py" line="8673" />
             <source>Open local operational alerts</source>
             <translation>Open local operational alerts</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8668" />
+            <location filename="../zscaler_api_client.py" line="8676" />
             <source>Recent</source>
             <translation>Recent</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8669" />
+            <location filename="../zscaler_api_client.py" line="8677" />
             <source>Open redacted request history</source>
             <translation>Open redacted request history</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8673" />
-            <location filename="../zscaler_api_client.py" line="11659" />
+            <location filename="../zscaler_api_client.py" line="8681" />
+            <location filename="../zscaler_api_client.py" line="11667" />
             <source>Favorites</source>
             <translation>Favorites</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8673" />
-            <location filename="../zscaler_api_client.py" line="11685" />
+            <location filename="../zscaler_api_client.py" line="8681" />
+            <location filename="../zscaler_api_client.py" line="11693" />
             <source>Operations inbox</source>
             <translation>Operations inbox</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8675" />
+            <location filename="../zscaler_api_client.py" line="8683" />
             <source>Quick actions</source>
             <translation>Quick actions</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8676" />
+            <location filename="../zscaler_api_client.py" line="8684" />
             <source>Open common workspaces and actions</source>
             <translation>Open common workspaces and actions</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8679" />
+            <location filename="../zscaler_api_client.py" line="8687" />
             <source>Settings</source>
             <translation>설정</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8781" />
+            <location filename="../zscaler_api_client.py" line="8789" />
             <source>Cancel</source>
             <translation>취소</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8782" />
+            <location filename="../zscaler_api_client.py" line="8790" />
             <source>Stop before the next page or chain step; the current HTTP request is allowed to finish safely.</source>
             <translation>다음 페이지 또는 체인 단계 전에 중지하십시오. 현재 HTTP 요청이 안전하게 완료되도록 허용됩니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8797" />
+            <location filename="../zscaler_api_client.py" line="8805" />
             <source>Fetch all pages</source>
             <translation>모든 페이지 가져오기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8798" />
+            <location filename="../zscaler_api_client.py" line="8806" />
             <source>Follow only the pagination parameters documented for the selected read operation.</source>
             <translation>선택한 읽기 작업에 대해 문서화된 페이지 매기기 매개변수만 따르세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8800" />
+            <location filename="../zscaler_api_client.py" line="8808" />
             <source>Page size:</source>
             <translation>페이지 크기:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8804" />
+            <location filename="../zscaler_api_client.py" line="8812" />
             <source>Maximum pages:</source>
             <translation>최대 페이지 수:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8837" />
+            <location filename="../zscaler_api_client.py" line="8845" />
             <source>Documented ZInsights query…</source>
             <translation>문서화된 ZInsights 쿼리…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8842" />
+            <location filename="../zscaler_api_client.py" line="8850" />
             <source>Load documented query</source>
             <translation>문서화된 쿼리 로드</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8845" />
+            <location filename="../zscaler_api_client.py" line="8853" />
             <source>Browse documented schema</source>
             <translation>문서화된 스키마 찾아보기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8876" />
+            <location filename="../zscaler_api_client.py" line="8884" />
             <source>Body type:</source>
             <translation>체형:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8878" />
+            <location filename="../zscaler_api_client.py" line="8886" />
             <source>JSON</source>
             <translation>JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8879" />
+            <location filename="../zscaler_api_client.py" line="8887" />
             <source>Raw text</source>
             <translation>원시 텍스트</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8880" />
+            <location filename="../zscaler_api_client.py" line="8888" />
             <source>Form URL encoded</source>
             <translation>인코딩된 양식 URL</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8881" />
-            <location filename="../zscaler_api_client.py" line="11185" />
+            <location filename="../zscaler_api_client.py" line="8889" />
+            <location filename="../zscaler_api_client.py" line="11193" />
             <source>Multipart file upload</source>
             <translation>멀티파트 파일 업로드</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8889" />
+            <location filename="../zscaler_api_client.py" line="8897" />
             <source>File field:</source>
             <translation>파일 필드:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8893" />
+            <location filename="../zscaler_api_client.py" line="8901" />
             <source>Upload file:</source>
             <translation>파일 업로드:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8896" />
+            <location filename="../zscaler_api_client.py" line="8904" />
             <source>Select a local file; its path is never saved in history</source>
             <translation>로컬 파일을 선택하십시오. 그 경로는 역사에 저장되지 않습니다</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8898" />
+            <location filename="../zscaler_api_client.py" line="8906" />
             <source>Browse…</source>
             <translation>찾아보기…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8912" />
+            <location filename="../zscaler_api_client.py" line="8920" />
             <source>Extract typed variables from the selected GraphQL operation. Values are inserted into the JSON request body, never into the URL.</source>
             <translation>선택한 GraphQL 작업에서 입력된 변수를 추출합니다. 값은 JSON 요청 본문에 삽입되며 URL에는 삽입되지 않습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8914" />
-            <location filename="../zscaler_api_client.py" line="8939" />
+            <location filename="../zscaler_api_client.py" line="8922" />
+            <location filename="../zscaler_api_client.py" line="8947" />
             <source>Type</source>
             <translation>유형</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8914" />
-            <location filename="../zscaler_api_client.py" line="8939" />
+            <location filename="../zscaler_api_client.py" line="8922" />
+            <location filename="../zscaler_api_client.py" line="8947" />
             <source>Required</source>
             <translation>필수</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8914" />
-            <location filename="../zscaler_api_client.py" line="8940" />
+            <location filename="../zscaler_api_client.py" line="8922" />
+            <location filename="../zscaler_api_client.py" line="8948" />
             <source>Default</source>
             <translation>기본값</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8914" />
+            <location filename="../zscaler_api_client.py" line="8922" />
             <source>JSON value</source>
             <translation>JSON 값</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8918" />
+            <location filename="../zscaler_api_client.py" line="8926" />
             <source>Extract variables from query</source>
             <translation>쿼리에서 변수 추출</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8919" />
-            <location filename="../zscaler_api_client.py" line="10823" />
-            <location filename="../zscaler_api_client.py" line="11839" />
+            <location filename="../zscaler_api_client.py" line="8927" />
+            <location filename="../zscaler_api_client.py" line="10831" />
+            <location filename="../zscaler_api_client.py" line="11847" />
             <source>No GraphQL variables extracted.</source>
             <translation>추출된 GraphQL 변수가 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8920" />
-            <location filename="../zscaler_api_client.py" line="11176" />
-            <location filename="../zscaler_api_client.py" line="11226" />
+            <location filename="../zscaler_api_client.py" line="8928" />
+            <location filename="../zscaler_api_client.py" line="11184" />
+            <location filename="../zscaler_api_client.py" line="11234" />
             <source>GraphQL Variables</source>
             <translation>GraphQL 변수</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8934" />
-            <location filename="../zscaler_api_client.py" line="11844" />
+            <location filename="../zscaler_api_client.py" line="8942" />
+            <location filename="../zscaler_api_client.py" line="11852" />
             <source>Select a documented endpoint to inspect its request contract.</source>
             <translation>요청 계약을 검사하려면 문서화된 끝점을 선택하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8939" />
+            <location filename="../zscaler_api_client.py" line="8947" />
             <source>Location</source>
             <translation>위치</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8939" />
-            <location filename="../zscaler_api_client.py" line="11662" />
+            <location filename="../zscaler_api_client.py" line="8947" />
+            <location filename="../zscaler_api_client.py" line="11670" />
             <source>Name</source>
             <translation>이름</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8940" />
+            <location filename="../zscaler_api_client.py" line="8948" />
             <source>Description</source>
             <translation>설명</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8945" />
+            <location filename="../zscaler_api_client.py" line="8953" />
             <source>API Guide</source>
             <translation>API 가이드</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8959" />
+            <location filename="../zscaler_api_client.py" line="8967" />
             <source>Dataset:</source>
             <translation>데이터세트:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8981" />
+            <location filename="../zscaler_api_client.py" line="8989" />
             <source>Open export</source>
             <translation>내보내기 열기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8982" />
+            <location filename="../zscaler_api_client.py" line="8990" />
             <source>Compare drift</source>
             <translation>드리프트 비교</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9002" />
+            <location filename="../zscaler_api_client.py" line="9010" />
             <source>Field</source>
             <translation>필드</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9128" />
+            <location filename="../zscaler_api_client.py" line="9136" />
             <source>Open response export…</source>
             <translation>공개 응답 내보내기…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9129" />
+            <location filename="../zscaler_api_client.py" line="9137" />
             <source>Compare response drift…</source>
             <translation>응답 드리프트 비교…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9186" />
+            <location filename="../zscaler_api_client.py" line="9194" />
             <source>PAC &amp;Workspace...</source>
             <translation>PAC 및 작업 공간...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9466" />
-            <location filename="../zscaler_api_client.py" line="9480" />
+            <location filename="../zscaler_api_client.py" line="9474" />
+            <location filename="../zscaler_api_client.py" line="9488" />
             <source>Required value</source>
             <translation>필수값</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9466" />
-            <location filename="../zscaler_api_client.py" line="9480" />
+            <location filename="../zscaler_api_client.py" line="9474" />
+            <location filename="../zscaler_api_client.py" line="9488" />
             <source>Optional value</source>
             <translation>선택적 값</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9514" />
+            <location filename="../zscaler_api_client.py" line="9522" />
             <source>body template available</source>
             <translation>바디 템플릿 사용 가능</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9514" />
+            <location filename="../zscaler_api_client.py" line="9522" />
             <source>no body template</source>
             <translation>본문 템플릿 없음</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9515" />
+            <location filename="../zscaler_api_client.py" line="9523" />
             <source>not listed</source>
             <translation>목록에 없음</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9516" />
+            <location filename="../zscaler_api_client.py" line="9524" />
             <source>{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.</source>
             <translation>{count} documented parameter(s) · {body} · responses: {codes}. Templates are examples; review every value before sending.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9520" />
+            <location filename="../zscaler_api_client.py" line="9528" />
             <source>Documented {mode} pagination is available as an explicit bounded option.</source>
             <translation>Documented {mode} pagination is available as an explicit bounded option.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9539" />
+            <location filename="../zscaler_api_client.py" line="9547" />
             <source>Documented {mode} pagination using {parameter}. Results retain every page and stop at the configured maximum.</source>
             <translation>Documented {mode} pagination using {parameter}. Results retain every page and stop at the configured maximum.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9551" />
+            <location filename="../zscaler_api_client.py" line="9559" />
             <source>The URL was edited manually. Select an endpoint again to attach its documented request contract.</source>
             <translation>URL이 수동으로 편집되었습니다. 문서화된 요청 계약을 첨부하려면 엔드포인트를 다시 선택하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9649" />
+            <location filename="../zscaler_api_client.py" line="9657" />
             <source>Active environment: {name}</source>
             <translation>Active environment: {name}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9656" />
+            <location filename="../zscaler_api_client.py" line="9664" />
             <source>Alerts ({count})</source>
             <translation>Alerts ({count})</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9668" />
+            <location filename="../zscaler_api_client.py" line="9676" />
             <source>The selected environment profile is unavailable.</source>
             <translation>선택한 환경 프로필을 사용할 수 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9682" />
+            <location filename="../zscaler_api_client.py" line="9690" />
             <source>Environment profile active: {name}. Sessions and request data were cleared.</source>
             <translation>Environment profile active: {name}. Sessions and request data were cleared.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9726" />
+            <location filename="../zscaler_api_client.py" line="9734" />
             <source>Write request prepared</source>
             <translation>쓰기 요청 준비됨</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="9727" />
+            <location filename="../zscaler_api_client.py" line="9735" />
             <source>The documented write template is ready. Review the API Guide, parameters, and body, then choose Send explicitly.</source>
             <translation>문서화된 쓰기 템플릿이 준비되었습니다. API 가이드, 매개변수 및 본문을 검토한 후 명시적으로 보내기를 선택합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10021" />
+            <location filename="../zscaler_api_client.py" line="10029" />
             <source>Suggested request: {method} {name}. Review the attached API Guide and all template values before running.</source>
             <translation>Suggested request: {method} {name}. Review the attached API Guide and all template values before running.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10176" />
+            <location filename="../zscaler_api_client.py" line="10184" />
             <source>No tabular response data is available to export.</source>
             <translation>내보낼 수 있는 표 형식 응답 데이터가 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10326" />
-            <location filename="../zscaler_api_client.py" line="10337" />
+            <location filename="../zscaler_api_client.py" line="10334" />
+            <location filename="../zscaler_api_client.py" line="10345" />
             <source>Open response export</source>
             <translation>공개 응답 내보내기</translation>
         </message>
@@ -2101,150 +2101,150 @@ Size: {size}</translation>
             <translation type="vanished">응답 교환 파일이 불완전합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="10360" />
+            <location filename="../zscaler_api_client.py" line="10368" />
             <source>Response export opened locally; no API request was sent.</source>
             <translation>응답 내보내기가 로컬에서 열렸습니다. API 요청이 전송되지 않았습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11075" />
+            <location filename="../zscaler_api_client.py" line="11083" />
             <source>Please enter a URL</source>
             <translation>URL을 입력하세요</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11096" />
+            <location filename="../zscaler_api_client.py" line="11104" />
             <source>Missing Path Variables</source>
             <translation>누락된 경로 변수</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11097" />
+            <location filename="../zscaler_api_client.py" line="11105" />
             <source>Enter values for: {names}</source>
             <translation>Enter values for: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11161" />
+            <location filename="../zscaler_api_client.py" line="11169" />
             <source>Missing documented parameters</source>
             <translation>문서화된 매개변수 누락</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11162" />
+            <location filename="../zscaler_api_client.py" line="11170" />
             <source>Enter required values for: {names}</source>
             <translation>Enter required values for: {names}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11232" />
+            <location filename="../zscaler_api_client.py" line="11240" />
             <source>Sending request...</source>
             <translation>요청을 보내는 중...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11263" />
+            <location filename="../zscaler_api_client.py" line="11271" />
             <source>Pagination unavailable</source>
             <translation>페이지 매김을 사용할 수 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11263" />
+            <location filename="../zscaler_api_client.py" line="11271" />
             <source>Select a documented paginated GET operation before fetching all pages.</source>
             <translation>모든 페이지를 가져오기 전에 문서화된 페이지 매기기 GET 작업을 선택하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11281" />
+            <location filename="../zscaler_api_client.py" line="11289" />
             <source>Fetching page {page} of at most {maximum}…</source>
             <translation>Fetching page {page} of at most {maximum}…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11285" />
+            <location filename="../zscaler_api_client.py" line="11293" />
             <source>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</source>
             <translation>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11294" />
+            <location filename="../zscaler_api_client.py" line="11302" />
             <source>Cancellation requested; waiting for the current HTTP request to finish safely…</source>
             <translation>취소가 요청되었습니다. 현재 HTTP 요청이 안전하게 완료되기를 기다리는 중…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11307" />
+            <location filename="../zscaler_api_client.py" line="11315" />
             <source>Request cancelled before completion</source>
             <translation>완료되기 전에 요청이 취소되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11355" />
+            <location filename="../zscaler_api_client.py" line="11363" />
             <source>Safe read retries: {count}</source>
             <translation>Safe read retries: {count}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11416" />
+            <location filename="../zscaler_api_client.py" line="11424" />
             <source>Pagination complete: {pages} page(s), {records} record(s)</source>
             <translation>Pagination complete: {pages} page(s), {records} record(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11423" />
+            <location filename="../zscaler_api_client.py" line="11431" />
             <source>Pagination stopped before completion: {pages} page(s), {records} record(s)</source>
             <translation>Pagination stopped before completion: {pages} page(s), {records} record(s)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11428" />
+            <location filename="../zscaler_api_client.py" line="11436" />
             <source>Request successful</source>
             <translation>요청 성공</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11438" />
+            <location filename="../zscaler_api_client.py" line="11446" />
             <source>ZIA authenticated successfully</source>
             <translation>ZIA가 성공적으로 인증되었습니다</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11447" />
+            <location filename="../zscaler_api_client.py" line="11455" />
             <source>ZPA authenticated successfully</source>
             <translation>ZPA가 성공적으로 인증되었습니다</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11451" />
+            <location filename="../zscaler_api_client.py" line="11459" />
             <source>ZDX authenticated successfully</source>
             <translation>ZDX가 성공적으로 인증되었습니다</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11455" />
+            <location filename="../zscaler_api_client.py" line="11463" />
             <source>ZCC authenticated successfully</source>
             <translation>ZCC가 성공적으로 인증되었습니다</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11459" />
+            <location filename="../zscaler_api_client.py" line="11467" />
             <source>ZIdentity authenticated successfully</source>
             <translation>ZIdentity가 성공적으로 인증되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11463" />
+            <location filename="../zscaler_api_client.py" line="11471" />
             <source>ZTW authenticated successfully</source>
             <translation>ZTW가 성공적으로 인증되었습니다</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11467" />
+            <location filename="../zscaler_api_client.py" line="11475" />
             <source>ZWA authenticated successfully</source>
             <translation>ZWA가 성공적으로 인증되었습니다</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11471" />
+            <location filename="../zscaler_api_client.py" line="11479" />
             <source>EASM authenticated successfully</source>
             <translation>EASM이 성공적으로 인증되었습니다</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11475" />
+            <location filename="../zscaler_api_client.py" line="11483" />
             <source>OneAPI authenticated successfully</source>
             <translation>OneAPI가 성공적으로 인증되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11480" />
+            <location filename="../zscaler_api_client.py" line="11488" />
             <source>Authenticated successfully</source>
             <translation>성공적으로 인증됨</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11513" />
-            <location filename="../zscaler_api_client.py" line="11519" />
+            <location filename="../zscaler_api_client.py" line="11521" />
+            <location filename="../zscaler_api_client.py" line="11527" />
             <source>Request failed</source>
             <translation>요청 실패</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11580" />
-            <location filename="../zscaler_api_client.py" line="11583" />
-            <location filename="../zscaler_api_client.py" line="11637" />
+            <location filename="../zscaler_api_client.py" line="11588" />
+            <location filename="../zscaler_api_client.py" line="11591" />
+            <location filename="../zscaler_api_client.py" line="11645" />
             <source>Batch</source>
             <translation>배치</translation>
         </message>
@@ -2253,12 +2253,12 @@ Size: {size}</translation>
             <translation type="vanished">Processing {count} items...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11739" />
+            <location filename="../zscaler_api_client.py" line="11747" />
             <source>Request loaded from history</source>
             <translation>기록에서 로드된 요청</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11806" />
+            <location filename="../zscaler_api_client.py" line="11814" />
             <source>No URL to copy</source>
             <translation>복사할 URL이 없습니다.</translation>
         </message>
@@ -2271,53 +2271,53 @@ Size: {size}</translation>
             <translation type="vanished">응답이 클립보드에 복사되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11825" />
+            <location filename="../zscaler_api_client.py" line="11833" />
             <source>No response to copy</source>
             <translation>복사에 대한 응답이 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11861" />
+            <location filename="../zscaler_api_client.py" line="11869" />
             <source>Request cleared</source>
             <translation>요청이 삭제되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11874" />
-            <location filename="../zscaler_api_client.py" line="11925" />
+            <location filename="../zscaler_api_client.py" line="11882" />
+            <location filename="../zscaler_api_client.py" line="11933" />
             <source>Missing Credentials</source>
             <translation>누락된 자격 증명</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11875" />
+            <location filename="../zscaler_api_client.py" line="11883" />
             <source>Please configure ZIA credentials in Settings first.</source>
             <translation>먼저 설정에서 ZIA 자격 증명을 구성하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11897" />
+            <location filename="../zscaler_api_client.py" line="11905" />
             <source>ZIA auth request prepared. Click Send to authenticate.</source>
             <translation>ZIA 인증 요청이 준비되었습니다. 보내기를 클릭하여 인증하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11926" />
+            <location filename="../zscaler_api_client.py" line="11934" />
             <source>Please configure ZPA credentials in Settings first.</source>
             <translation>먼저 설정에서 ZPA 자격 증명을 구성하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11939" />
+            <location filename="../zscaler_api_client.py" line="11947" />
             <source>ZPA auth request prepared. Click Send to authenticate.</source>
             <translation>ZPA 인증 요청이 준비되었습니다. 보내기를 클릭하여 인증하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11944" />
+            <location filename="../zscaler_api_client.py" line="11952" />
             <source>All sessions cleared</source>
             <translation>모든 세션이 삭제되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11967" />
+            <location filename="../zscaler_api_client.py" line="11975" />
             <source>Language Changed</source>
             <translation>언어가 변경되었습니다</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11968" />
+            <location filename="../zscaler_api_client.py" line="11976" />
             <source>The application needs to restart to apply the new language.
 
 Restart now?</source>
@@ -2326,49 +2326,49 @@ Restart now?</source>
 지금 다시 시작하시겠습니까?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12016" />
+            <location filename="../zscaler_api_client.py" line="12024" />
             <source>Checking for updates...</source>
             <translation>업데이트 확인 중...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12089" />
+            <location filename="../zscaler_api_client.py" line="12097" />
             <source>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</source>
             <translation>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12093" />
+            <location filename="../zscaler_api_client.py" line="12101" />
             <source>Update Available</source>
             <translation>업데이트 가능</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12095" />
+            <location filename="../zscaler_api_client.py" line="12103" />
             <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
             <translation>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12115" />
+            <location filename="../zscaler_api_client.py" line="12123" />
             <source>Update available: v{version}</source>
             <translation>Update available: v{version}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12118" />
+            <location filename="../zscaler_api_client.py" line="12126" />
             <source>You are up to date (v{version})</source>
             <translation>You are up to date (v{version})</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12123" />
+            <location filename="../zscaler_api_client.py" line="12131" />
             <source>Update Check Failed</source>
             <translation>업데이트 확인 실패</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12124" />
+            <location filename="../zscaler_api_client.py" line="12132" />
             <source>Could not check for updates:
 {error}</source>
             <translation>Could not check for updates:
 {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12126" />
+            <location filename="../zscaler_api_client.py" line="12134" />
             <source>Update check failed</source>
             <translation>업데이트 확인 실패</translation>
         </message>
@@ -2392,7 +2392,7 @@ Restart now?</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6244" />
-            <location filename="../zscaler_api_client.py" line="7365" />
+            <location filename="../zscaler_api_client.py" line="7373" />
             <source>Audit integrity</source>
             <translation>감사 무결성</translation>
         </message>
@@ -2481,7 +2481,7 @@ Restart now?</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6285" />
-            <location filename="../zscaler_api_client.py" line="7687" />
+            <location filename="../zscaler_api_client.py" line="7695" />
             <source>Policy diff</source>
             <translation>정책 차이</translation>
         </message>
@@ -2502,7 +2502,7 @@ Restart now?</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6295" />
-            <location filename="../zscaler_api_client.py" line="7735" />
+            <location filename="../zscaler_api_client.py" line="7743" />
             <source>Simulation</source>
             <translation>시뮬레이션</translation>
         </message>
@@ -2540,7 +2540,7 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6307" />
-            <location filename="../zscaler_api_client.py" line="7470" />
+            <location filename="../zscaler_api_client.py" line="7478" />
             <source>Read only</source>
             <translation>읽기 전용</translation>
         </message>
@@ -2578,10 +2578,10 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6317" />
-            <location filename="../zscaler_api_client.py" line="7744" />
-            <location filename="../zscaler_api_client.py" line="7747" />
-            <location filename="../zscaler_api_client.py" line="7750" />
+            <location filename="../zscaler_api_client.py" line="7752" />
+            <location filename="../zscaler_api_client.py" line="7755" />
             <location filename="../zscaler_api_client.py" line="7758" />
+            <location filename="../zscaler_api_client.py" line="7766" />
             <source>Governance</source>
             <translation>거버넌스</translation>
         </message>
@@ -2632,8 +2632,8 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6340" />
-            <location filename="../zscaler_api_client.py" line="7797" />
-            <location filename="../zscaler_api_client.py" line="7817" />
+            <location filename="../zscaler_api_client.py" line="7805" />
+            <location filename="../zscaler_api_client.py" line="7825" />
             <source>Integrations</source>
             <translation>통합</translation>
         </message>
@@ -3018,26 +3018,26 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6523" />
-            <location filename="../zscaler_api_client.py" line="7322" />
-            <location filename="../zscaler_api_client.py" line="7354" />
-            <location filename="../zscaler_api_client.py" line="7961" />
-            <location filename="../zscaler_api_client.py" line="8062" />
+            <location filename="../zscaler_api_client.py" line="7327" />
+            <location filename="../zscaler_api_client.py" line="7362" />
+            <location filename="../zscaler_api_client.py" line="7969" />
+            <location filename="../zscaler_api_client.py" line="8070" />
             <source>CISO security summary</source>
             <translation>CISO 보안 요약</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6523" />
-            <location filename="../zscaler_api_client.py" line="7322" />
-            <location filename="../zscaler_api_client.py" line="7354" />
-            <location filename="../zscaler_api_client.py" line="7961" />
+            <location filename="../zscaler_api_client.py" line="7327" />
+            <location filename="../zscaler_api_client.py" line="7362" />
+            <location filename="../zscaler_api_client.py" line="7969" />
             <source>SOC investigation summary</source>
             <translation>SOC 조사 요약</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6523" />
-            <location filename="../zscaler_api_client.py" line="7322" />
-            <location filename="../zscaler_api_client.py" line="7354" />
-            <location filename="../zscaler_api_client.py" line="7961" />
+            <location filename="../zscaler_api_client.py" line="7327" />
+            <location filename="../zscaler_api_client.py" line="7362" />
+            <location filename="../zscaler_api_client.py" line="7969" />
             <source>Operations health summary</source>
             <translation>운영 상태 요약</translation>
         </message>
@@ -3053,19 +3053,19 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6530" />
-            <location filename="../zscaler_api_client.py" line="7397" />
+            <location filename="../zscaler_api_client.py" line="7405" />
             <source>Export report as Markdown</source>
             <translation>보고서를 마크다운으로 내보내기</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6531" />
-            <location filename="../zscaler_api_client.py" line="7391" />
+            <location filename="../zscaler_api_client.py" line="7399" />
             <source>Export report as JSON</source>
             <translation>보고서를 JSON으로 내보내기</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6532" />
-            <location filename="../zscaler_api_client.py" line="7394" />
+            <location filename="../zscaler_api_client.py" line="7402" />
             <source>Export visual report as HTML</source>
             <translation>시각적 보고서를 HTML로 내보내기</translation>
         </message>
@@ -3149,7 +3149,7 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6562" />
-            <location filename="../zscaler_api_client.py" line="7476" />
+            <location filename="../zscaler_api_client.py" line="7484" />
             <source>Run approved chain</source>
             <translation>승인된 체인 실행</translation>
         </message>
@@ -3160,16 +3160,16 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6564" />
-            <location filename="../zscaler_api_client.py" line="7548" />
+            <location filename="../zscaler_api_client.py" line="7556" />
             <source>Export masked chain results</source>
             <translation>마스킹된 체인 결과 내보내기</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6565" />
-            <location filename="../zscaler_api_client.py" line="7466" />
-            <location filename="../zscaler_api_client.py" line="7472" />
-            <location filename="../zscaler_api_client.py" line="7543" />
-            <location filename="../zscaler_api_client.py" line="7547" />
+            <location filename="../zscaler_api_client.py" line="7474" />
+            <location filename="../zscaler_api_client.py" line="7480" />
+            <location filename="../zscaler_api_client.py" line="7551" />
+            <location filename="../zscaler_api_client.py" line="7555" />
             <source>API chains</source>
             <translation>API 체인</translation>
         </message>
@@ -3190,7 +3190,7 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6572" />
-            <location filename="../zscaler_api_client.py" line="7632" />
+            <location filename="../zscaler_api_client.py" line="7640" />
             <source>Export twin evidence</source>
             <translation>쌍 증거 내보내기</translation>
         </message>
@@ -3570,7 +3570,7 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6503" />
-            <location filename="../zscaler_api_client.py" line="7366" />
+            <location filename="../zscaler_api_client.py" line="7374" />
             <source>Assurance score</source>
             <translation>보증 점수</translation>
         </message>
@@ -3629,19 +3629,19 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6333" />
-            <location filename="../zscaler_api_client.py" line="7804" />
+            <location filename="../zscaler_api_client.py" line="7812" />
             <source>Export masked security events</source>
             <translation>마스킹된 보안 이벤트 내보내기</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6334" />
-            <location filename="../zscaler_api_client.py" line="7810" />
+            <location filename="../zscaler_api_client.py" line="7818" />
             <source>Export read-only MCP manifest</source>
             <translation>읽기 전용 MCP 매니페스트 내보내기</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6335" />
-            <location filename="../zscaler_api_client.py" line="7818" />
+            <location filename="../zscaler_api_client.py" line="7826" />
             <source>Export Terraform review handoff</source>
             <translation>Terraform 검토 전달 내보내기</translation>
         </message>
@@ -3940,11 +3940,16 @@ Ada,ada@example.com</source>
             <translation>지속적인 보증</translation>
         </message>
         <message>
+            <location filename="../zscaler_api_client.py" line="6523" />
+            <source>User risk report (current response)</source>
+            <translation>User risk report (current response)</translation>
+        </message>
+        <message>
             <location filename="../zscaler_api_client.py" line="6584" />
-            <location filename="../zscaler_api_client.py" line="7652" />
-            <location filename="../zscaler_api_client.py" line="7656" />
-            <location filename="../zscaler_api_client.py" line="7658" />
-            <location filename="../zscaler_api_client.py" line="7670" />
+            <location filename="../zscaler_api_client.py" line="7660" />
+            <location filename="../zscaler_api_client.py" line="7664" />
+            <location filename="../zscaler_api_client.py" line="7666" />
+            <location filename="../zscaler_api_client.py" line="7678" />
             <source>Policy time travel</source>
             <translation>정책 시간 여행</translation>
         </message>
@@ -3970,9 +3975,9 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6591" />
-            <location filename="../zscaler_api_client.py" line="7587" />
-            <location filename="../zscaler_api_client.py" line="7622" />
-            <location filename="../zscaler_api_client.py" line="7647" />
+            <location filename="../zscaler_api_client.py" line="7595" />
+            <location filename="../zscaler_api_client.py" line="7630" />
+            <location filename="../zscaler_api_client.py" line="7655" />
             <source>Policy twin</source>
             <translation>정책 쌍</translation>
         </message>
@@ -3994,7 +3999,7 @@ Ada,ada@example.com</source>
         <message>
             <location filename="../zscaler_api_client.py" line="6657" />
             <location filename="../zscaler_api_client.py" line="7021" />
-            <location filename="../zscaler_api_client.py" line="7436" />
+            <location filename="../zscaler_api_client.py" line="7444" />
             <source>Invalid JSON: </source>
             <translation>잘못된 JSON: </translation>
         </message>
@@ -4020,7 +4025,7 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6697" />
-            <location filename="../zscaler_api_client.py" line="7323" />
+            <location filename="../zscaler_api_client.py" line="7328" />
             <source>Posture score: {score}/100</source>
             <translation>Posture score: {score}/100</translation>
         </message>
@@ -4029,8 +4034,8 @@ Ada,ada@example.com</source>
             <location filename="../zscaler_api_client.py" line="6730" />
             <location filename="../zscaler_api_client.py" line="6797" />
             <location filename="../zscaler_api_client.py" line="7256" />
-            <location filename="../zscaler_api_client.py" line="7337" />
-            <location filename="../zscaler_api_client.py" line="7698" />
+            <location filename="../zscaler_api_client.py" line="7345" />
+            <location filename="../zscaler_api_client.py" line="7706" />
             <source>Critical</source>
             <translation>심각</translation>
         </message>
@@ -4040,9 +4045,9 @@ Ada,ada@example.com</source>
             <location filename="../zscaler_api_client.py" line="6797" />
             <location filename="../zscaler_api_client.py" line="6861" />
             <location filename="../zscaler_api_client.py" line="7256" />
-            <location filename="../zscaler_api_client.py" line="7337" />
-            <location filename="../zscaler_api_client.py" line="7604" />
-            <location filename="../zscaler_api_client.py" line="7698" />
+            <location filename="../zscaler_api_client.py" line="7345" />
+            <location filename="../zscaler_api_client.py" line="7612" />
+            <location filename="../zscaler_api_client.py" line="7706" />
             <source>High</source>
             <translation>높음</translation>
         </message>
@@ -4052,9 +4057,9 @@ Ada,ada@example.com</source>
             <location filename="../zscaler_api_client.py" line="6797" />
             <location filename="../zscaler_api_client.py" line="6861" />
             <location filename="../zscaler_api_client.py" line="7256" />
-            <location filename="../zscaler_api_client.py" line="7337" />
-            <location filename="../zscaler_api_client.py" line="7604" />
-            <location filename="../zscaler_api_client.py" line="7698" />
+            <location filename="../zscaler_api_client.py" line="7345" />
+            <location filename="../zscaler_api_client.py" line="7612" />
+            <location filename="../zscaler_api_client.py" line="7706" />
             <source>Medium</source>
             <translation>중간</translation>
         </message>
@@ -4063,18 +4068,18 @@ Ada,ada@example.com</source>
             <location filename="../zscaler_api_client.py" line="6730" />
             <location filename="../zscaler_api_client.py" line="6797" />
             <location filename="../zscaler_api_client.py" line="7256" />
-            <location filename="../zscaler_api_client.py" line="7337" />
-            <location filename="../zscaler_api_client.py" line="7604" />
-            <location filename="../zscaler_api_client.py" line="7698" />
+            <location filename="../zscaler_api_client.py" line="7345" />
+            <location filename="../zscaler_api_client.py" line="7612" />
+            <location filename="../zscaler_api_client.py" line="7706" />
             <source>Low</source>
             <translation>낮음</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6699" />
             <location filename="../zscaler_api_client.py" line="6861" />
-            <location filename="../zscaler_api_client.py" line="7337" />
-            <location filename="../zscaler_api_client.py" line="7604" />
-            <location filename="../zscaler_api_client.py" line="7698" />
+            <location filename="../zscaler_api_client.py" line="7345" />
+            <location filename="../zscaler_api_client.py" line="7612" />
+            <location filename="../zscaler_api_client.py" line="7706" />
             <source>Info</source>
             <translation>정보</translation>
         </message>
@@ -4190,9 +4195,9 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6759" />
-            <location filename="../zscaler_api_client.py" line="7323" />
-            <location filename="../zscaler_api_client.py" line="7860" />
-            <location filename="../zscaler_api_client.py" line="7921" />
+            <location filename="../zscaler_api_client.py" line="7328" />
+            <location filename="../zscaler_api_client.py" line="7868" />
+            <location filename="../zscaler_api_client.py" line="7929" />
             <source>Data scope: {name}</source>
             <translation>Data scope: {name}</translation>
         </message>
@@ -4917,34 +4922,34 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="7268" />
-            <location filename="../zscaler_api_client.py" line="7325" />
-            <location filename="../zscaler_api_client.py" line="7380" />
+            <location filename="../zscaler_api_client.py" line="7330" />
+            <location filename="../zscaler_api_client.py" line="7388" />
             <source>Local assurance requires attention</source>
             <translation>현지 보증에는 주의가 필요합니다</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="7268" />
-            <location filename="../zscaler_api_client.py" line="7325" />
-            <location filename="../zscaler_api_client.py" line="7380" />
+            <location filename="../zscaler_api_client.py" line="7330" />
+            <location filename="../zscaler_api_client.py" line="7388" />
             <source>No failing controls in the evaluated local scope</source>
             <translation>평가된 로컬 범위에는 실패한 컨트롤이 없습니다.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="7269" />
-            <location filename="../zscaler_api_client.py" line="7326" />
-            <location filename="../zscaler_api_client.py" line="7381" />
+            <location filename="../zscaler_api_client.py" line="7331" />
+            <location filename="../zscaler_api_client.py" line="7389" />
             <source>{passed} evaluated control(s) passed and {failed} failed.</source>
             <translation>{passed} evaluated control(s) passed and {failed} failed.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="7269" />
-            <location filename="../zscaler_api_client.py" line="7381" />
+            <location filename="../zscaler_api_client.py" line="7389" />
             <source>Evidence coverage is {coverage}% and local posture is {posture}/100.</source>
             <translation>Evidence coverage is {coverage}% and local posture is {posture}/100.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="7270" />
-            <location filename="../zscaler_api_client.py" line="7382" />
+            <location filename="../zscaler_api_client.py" line="7390" />
             <source>The assurance score changed by {delta:+d} points versus the selected baseline.</source>
             <translation>The assurance score changed by {delta:+d} points versus the selected baseline.</translation>
         </message>
@@ -5007,215 +5012,240 @@ Ada,ada@example.com</source>
             <translation>Signature verification failed: {reason}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7323" />
+            <location filename="../zscaler_api_client.py" line="7327" />
+            <source>User risk report</source>
+            <translation>User risk report</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7328" />
             <source>Assurance score: {score}/100 · evidence coverage {coverage}%</source>
             <translation>Assurance score: {score}/100 · evidence coverage {coverage}%</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7325" />
+            <location filename="../zscaler_api_client.py" line="7330" />
             <source>Executive assurance narrative</source>
             <translation>경영진 보증 설명</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7345" />
+            <location filename="../zscaler_api_client.py" line="7336" />
+            <source>User risk evidence</source>
+            <translation>User risk evidence</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7336" />
+            <source>Observed users: {count}; explicit risk signals: {signals}.</source>
+            <translation>Observed users: {count}; explicit risk signals: {signals}.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7336" />
+            <source>Only explicit fields in the current response are reported; identity alone is never treated as risk.</source>
+            <translation>Only explicit fields in the current response are reported; identity alone is never treated as risk.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7337" />
+            <source>No user records with explicit risk evidence were found in the current response.</source>
+            <translation>No user records with explicit risk evidence were found in the current response.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="7353" />
             <source>Report detail</source>
             <translation>Report detail</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7346" />
+            <location filename="../zscaler_api_client.py" line="7354" />
             <source>Local evidence behind the selected report metric. It is not a tenant-wide assessment.</source>
             <translation>Local evidence behind the selected report metric. It is not a tenant-wide assessment.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7348" />
+            <location filename="../zscaler_api_client.py" line="7356" />
             <source>Close</source>
             <translation>Close</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7362" />
+            <location filename="../zscaler_api_client.py" line="7370" />
             <source>Posture score</source>
             <translation>자세 점수</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7363" />
+            <location filename="../zscaler_api_client.py" line="7371" />
             <source>Local requests</source>
             <translation>현지 요청</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7364" />
+            <location filename="../zscaler_api_client.py" line="7372" />
             <source>Failed requests</source>
             <translation>실패한 요청</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7493" />
+            <location filename="../zscaler_api_client.py" line="7501" />
             <source>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</source>
             <translation>Safe read retry {attempt} of {maximum} in {seconds} second(s)…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7499" />
+            <location filename="../zscaler_api_client.py" line="7507" />
             <source>Cancellation requested; the current HTTP request will finish and no new chain step will start.</source>
             <translation>취소가 요청되었습니다. 현재 HTTP 요청이 완료되고 새 체인 단계가 시작되지 않습니다.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="7040" />
-            <location filename="../zscaler_api_client.py" line="7523" />
+            <location filename="../zscaler_api_client.py" line="7531" />
             <source>{duration} ms</source>
             <translation>{duration} ms</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7540" />
+            <location filename="../zscaler_api_client.py" line="7548" />
             <source>The chain was cancelled before all steps started; completed results were retained.</source>
             <translation>모든 단계가 시작되기 전에 체인이 취소되었습니다. 완료된 결과가 유지되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7547" />
+            <location filename="../zscaler_api_client.py" line="7555" />
             <source>Run a chain before exporting its masked results.</source>
             <translation>마스크된 결과를 내보내기 전에 체인을 실행하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7571" />
+            <location filename="../zscaler_api_client.py" line="7579" />
             <source>No baseline (analyze current policy only)</source>
             <translation>기준 없음(현재 정책만 분석)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7597" />
+            <location filename="../zscaler_api_client.py" line="7605" />
             <source>Unconditional allow</source>
             <translation>무조건 허용</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7597" />
+            <location filename="../zscaler_api_client.py" line="7605" />
             <source>Shadowed conflict</source>
             <translation>그림자 갈등</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7597" />
+            <location filename="../zscaler_api_client.py" line="7605" />
             <source>Redundant shadow</source>
             <translation>중복된 그림자</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7597" />
+            <location filename="../zscaler_api_client.py" line="7605" />
             <source>Overlapping actions</source>
             <translation>겹치는 작업</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7597" />
+            <location filename="../zscaler_api_client.py" line="7605" />
             <source>Duplicate rule name</source>
             <translation>규칙 이름이 중복되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7599" />
+            <location filename="../zscaler_api_client.py" line="7607" />
             <source>An unconditional allow rule can expose every later matching scope.</source>
             <translation>무조건 허용 규칙은 이후 일치하는 모든 범위를 노출할 수 있습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7600" />
+            <location filename="../zscaler_api_client.py" line="7608" />
             <source>The later rule can never decide because an earlier rule covers all of its matches.</source>
             <translation>이전 규칙이 모든 일치 항목을 다루기 때문에 이후 규칙은 결코 결정할 수 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7601" />
+            <location filename="../zscaler_api_client.py" line="7609" />
             <source>The rules can match the same context but have different actions; order decides the outcome.</source>
             <translation>규칙은 동일한 컨텍스트와 일치할 수 있지만 작업은 다를 수 있습니다. 순서가 결과를 결정합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7602" />
+            <location filename="../zscaler_api_client.py" line="7610" />
             <source>Duplicate rule names make reviews, evidence, and rollback ambiguous.</source>
             <translation>규칙 이름이 중복되면 검토, 증거 및 롤백이 모호해집니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7611" />
+            <location filename="../zscaler_api_client.py" line="7619" />
             <source>Policy twin: {rules} rule(s), {findings} finding(s), blast radius {score}/100, {changed} changed rule(s) versus baseline.</source>
             <translation>Policy twin: {rules} rule(s), {findings} finding(s), blast radius {score}/100, {changed} changed rule(s) versus baseline.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7618" />
+            <location filename="../zscaler_api_client.py" line="7626" />
             <source>Request context must be a JSON object.</source>
             <translation>요청 컨텍스트는 JSON 객체여야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7624" />
+            <location filename="../zscaler_api_client.py" line="7632" />
             <source>Decision: {action}. Rule “{name}” matched after evaluating {count} rule(s).</source>
             <translation>Decision: {action}. Rule “{name}” matched after evaluating {count} rule(s).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7626" />
+            <location filename="../zscaler_api_client.py" line="7634" />
             <source>Decision: no match after evaluating {count} rule(s).</source>
             <translation>Decision: no match after evaluating {count} rule(s).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7652" />
+            <location filename="../zscaler_api_client.py" line="7660" />
             <source>Select one environment before saving a policy snapshot.</source>
             <translation>정책 스냅샷을 저장하기 전에 하나의 환경을 선택하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7658" />
+            <location filename="../zscaler_api_client.py" line="7666" />
             <source>Policy snapshots are limited to 2 MB.</source>
             <translation>정책 스냅샷은 2MB로 제한됩니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7659" />
+            <location filename="../zscaler_api_client.py" line="7667" />
             <source>Save policy snapshot</source>
             <translation>정책 스냅샷 저장</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7659" />
+            <location filename="../zscaler_api_client.py" line="7667" />
             <source>Snapshot name:</source>
             <translation>스냅샷 이름:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7670" />
+            <location filename="../zscaler_api_client.py" line="7678" />
             <source>Select a saved policy snapshot first.</source>
             <translation>먼저 저장된 정책 스냅샷을 선택하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7676" />
+            <location filename="../zscaler_api_client.py" line="7684" />
             <source>Delete policy snapshot</source>
             <translation>정책 스냅샷 삭제</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7676" />
+            <location filename="../zscaler_api_client.py" line="7684" />
             <source>Delete the selected local policy snapshot?</source>
             <translation>선택한 로컬 정책 스냅샷을 삭제하시겠습니까?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7747" />
+            <location filename="../zscaler_api_client.py" line="7755" />
             <source>Local automation must be an existing absolute path to a non-symlinked .py file no larger than 1 MiB.</source>
             <translation>로컬 자동화는 1MiB 이하의 심볼릭 링크가 아닌 .py 파일에 대한 기존 절대 경로여야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7750" />
-            <location filename="../zscaler_api_client.py" line="7914" />
+            <location filename="../zscaler_api_client.py" line="7758" />
+            <location filename="../zscaler_api_client.py" line="7922" />
             <source>Webhook endpoints must use HTTPS (or local HTTP) and must not contain credentials in the URL.</source>
             <translation>웹훅 엔드포인트는 HTTPS(또는 로컬 HTTP)를 사용해야 하며 URL에 자격 증명을 포함해서는 안 됩니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7754" />
+            <location filename="../zscaler_api_client.py" line="7762" />
             <source>Secure storage</source>
             <translation>안전한 저장</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7754" />
+            <location filename="../zscaler_api_client.py" line="7762" />
             <source>The system keychain could not save the webhook endpoint. Check the keychain service and try again.</source>
             <translation>시스템 키체인이 웹훅 엔드포인트를 저장할 수 없습니다. 키체인 서비스를 확인하고 다시 시도하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7770" />
+            <location filename="../zscaler_api_client.py" line="7778" />
             <source>Connectivity test</source>
             <translation>연결 테스트</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7770" />
+            <location filename="../zscaler_api_client.py" line="7778" />
             <source>Alert snapshot</source>
             <translation>알림 스냅샷</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7771" />
+            <location filename="../zscaler_api_client.py" line="7779" />
             <source>Started</source>
             <translation>시작됨</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7531" />
-            <location filename="../zscaler_api_client.py" line="7771" />
+            <location filename="../zscaler_api_client.py" line="7539" />
+            <location filename="../zscaler_api_client.py" line="7779" />
             <source>Succeeded</source>
             <translation>성공함</translation>
         </message>
@@ -5255,201 +5285,201 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6503" />
-            <location filename="../zscaler_api_client.py" line="7531" />
-            <location filename="../zscaler_api_client.py" line="7771" />
+            <location filename="../zscaler_api_client.py" line="7539" />
+            <location filename="../zscaler_api_client.py" line="7779" />
             <source>Failed</source>
             <translation>실패</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7804" />
+            <location filename="../zscaler_api_client.py" line="7812" />
             <source>All files (*)</source>
             <translation>모든 파일(*)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7807" />
+            <location filename="../zscaler_api_client.py" line="7815" />
             <source>Exported {count} masked local event(s) as {format}. No data was sent automatically.</source>
             <translation>Exported {count} masked local event(s) as {format}. No data was sent automatically.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7823" />
+            <location filename="../zscaler_api_client.py" line="7831" />
             <source>Created a non-executable Terraform review handoff. Run terraformer and terraform plan only after independent review; this client never applies it.</source>
             <translation>실행 불가능한 Terraform 검토 핸드오프를 만들었습니다. 독립적인 검토 후에만 Terraformer 및 Terraform 계획을 실행하십시오. 이 클라이언트는 이를 적용하지 않습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7849" />
-            <location filename="../zscaler_api_client.py" line="7852" />
-            <location filename="../zscaler_api_client.py" line="7854" />
-            <location filename="../zscaler_api_client.py" line="7859" />
-            <location filename="../zscaler_api_client.py" line="7888" />
-            <location filename="../zscaler_api_client.py" line="7898" />
-            <location filename="../zscaler_api_client.py" line="7903" />
+            <location filename="../zscaler_api_client.py" line="7857" />
+            <location filename="../zscaler_api_client.py" line="7860" />
+            <location filename="../zscaler_api_client.py" line="7862" />
+            <location filename="../zscaler_api_client.py" line="7867" />
+            <location filename="../zscaler_api_client.py" line="7896" />
+            <location filename="../zscaler_api_client.py" line="7906" />
+            <location filename="../zscaler_api_client.py" line="7911" />
             <source>Local automation</source>
             <translation>로컬 자동화</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7849" />
+            <location filename="../zscaler_api_client.py" line="7857" />
             <source>Read-only mode blocks local automation.</source>
             <translation>읽기 전용 모드는 로컬 자동화를 차단합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7852" />
+            <location filename="../zscaler_api_client.py" line="7860" />
             <source>Configure a valid local Python automation in Governance first.</source>
             <translation>먼저 거버넌스에서 유효한 로컬 Python 자동화를 구성하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7854" />
+            <location filename="../zscaler_api_client.py" line="7862" />
             <source>Local automation is already running.</source>
             <translation>로컬 자동화가 이미 실행 중입니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7860" />
+            <location filename="../zscaler_api_client.py" line="7868" />
             <source>Run the reviewed Python file with masked local posture and alert data? The process receives no API credentials.</source>
             <translation>마스크된 로컬 상태 및 경고 데이터를 사용하여 검토된 Python 파일을 실행하시겠습니까? 프로세스는 API 자격 증명을 받지 않습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7888" />
+            <location filename="../zscaler_api_client.py" line="7896" />
             <source>Local automation exceeded the 15-second limit and was stopped.</source>
             <translation>로컬 자동화가 15초 제한을 초과하여 중지되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7898" />
+            <location filename="../zscaler_api_client.py" line="7906" />
             <source>Local automation completed with exit code {code}.</source>
             <translation>Local automation completed with exit code {code}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7903" />
+            <location filename="../zscaler_api_client.py" line="7911" />
             <source>Local automation failed to start.</source>
             <translation>로컬 자동화를 시작하지 못했습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7909" />
+            <location filename="../zscaler_api_client.py" line="7917" />
             <source>Send the current masked local alert snapshot to the configured webhook endpoint?</source>
             <translation>현재 마스킹된 로컬 알림 스냅샷을 구성된 웹훅 엔드포인트로 보내시겠습니까?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7915" />
-            <location filename="../zscaler_api_client.py" line="7917" />
-            <location filename="../zscaler_api_client.py" line="7921" />
-            <location filename="../zscaler_api_client.py" line="7941" />
-            <location filename="../zscaler_api_client.py" line="7948" />
+            <location filename="../zscaler_api_client.py" line="7923" />
+            <location filename="../zscaler_api_client.py" line="7925" />
+            <location filename="../zscaler_api_client.py" line="7929" />
+            <location filename="../zscaler_api_client.py" line="7949" />
+            <location filename="../zscaler_api_client.py" line="7956" />
             <source>Webhook delivery</source>
             <translation>웹훅 전달</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7917" />
+            <location filename="../zscaler_api_client.py" line="7925" />
             <source>A webhook delivery is already running.</source>
             <translation>웹훅 전달이 이미 실행 중입니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7941" />
+            <location filename="../zscaler_api_client.py" line="7949" />
             <source>Masked webhook delivery succeeded (HTTP {status}).</source>
             <translation>Masked webhook delivery succeeded (HTTP {status}).</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7948" />
+            <location filename="../zscaler_api_client.py" line="7956" />
             <source>Masked webhook delivery failed: {error}</source>
             <translation>Masked webhook delivery failed: {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7977" />
+            <location filename="../zscaler_api_client.py" line="7985" />
             <source>Background</source>
             <translation>배경</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7977" />
+            <location filename="../zscaler_api_client.py" line="7985" />
             <source>App only</source>
             <translation>앱 전용</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7978" />
+            <location filename="../zscaler_api_client.py" line="7986" />
             <source>Paused</source>
             <translation>일시중지됨</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7990" />
+            <location filename="../zscaler_api_client.py" line="7998" />
             <source>Select a scheduled report first.</source>
             <translation>먼저 예약된 보고서를 선택하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8008" />
+            <location filename="../zscaler_api_client.py" line="8016" />
             <source>The scheduled report was generated locally.</source>
             <translation>예약된 보고서가 로컬에서 생성되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8010" />
+            <location filename="../zscaler_api_client.py" line="8018" />
             <source>The scheduled report could not be generated. Check its output folder and the audit trail.</source>
             <translation>예약된 보고서를 생성할 수 없습니다. 출력 폴더와 감사 추적을 확인하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8024" />
+            <location filename="../zscaler_api_client.py" line="8032" />
             <source>The operating-system schedule could not be updated. No state was changed.</source>
             <translation>운영 체제 일정을 업데이트할 수 없습니다. 상태가 변경되지 않았습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8040" />
+            <location filename="../zscaler_api_client.py" line="8048" />
             <source>The report is paused and cannot generate output, but the operating-system job cleanup needs manual review.</source>
             <translation>보고서가 일시 중지되어 출력을 생성할 수 없지만 운영 체제 작업 정리를 수동으로 검토해야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8046" />
+            <location filename="../zscaler_api_client.py" line="8054" />
             <source>Remove the selected scheduled report?</source>
             <translation>선택한 예약 보고서를 삭제하시겠습니까?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8059" />
+            <location filename="../zscaler_api_client.py" line="8067" />
             <source>The report was removed, but the operating-system job could not be removed. It can no longer generate a report because its schedule ID is no longer active.</source>
             <translation>보고서가 제거되었지만 운영 체제 작업을 제거할 수 없습니다. 일정 ID가 더 이상 활성화되지 않으므로 더 이상 보고서를 생성할 수 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8062" />
+            <location filename="../zscaler_api_client.py" line="8070" />
             <source>Report name:</source>
             <translation>보고서 이름:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8075" />
+            <location filename="../zscaler_api_client.py" line="8083" />
             <source>Run this report even when ZS API Client is closed? This creates a user-level operating-system schedule and requires no administrator privileges.</source>
             <translation>ZS API 클라이언트가 닫힌 경우에도 이 보고서를 실행하시겠습니까? 이렇게 하면 사용자 수준 운영 체제 일정이 생성되며 관리자 권한이 필요하지 않습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8089" />
+            <location filename="../zscaler_api_client.py" line="8097" />
             <source>The operating-system schedule could not be created. The report was not scheduled.</source>
             <translation>운영 체제 일정을 만들 수 없습니다. 보고서가 예약되지 않았습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8097" />
+            <location filename="../zscaler_api_client.py" line="8105" />
             <source>Scheduled report saved. It will run in the background even when the application is closed.</source>
             <translation>예약된 보고서가 저장되었습니다. 애플리케이션이 종료되어도 백그라운드에서 실행됩니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8097" />
+            <location filename="../zscaler_api_client.py" line="8105" />
             <source>Scheduled report saved. It will run locally while the application is open.</source>
             <translation>예약된 보고서가 저장되었습니다. 애플리케이션이 열려 있는 동안 로컬로 실행됩니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7962" />
-            <location filename="../zscaler_api_client.py" line="8065" />
+            <location filename="../zscaler_api_client.py" line="7970" />
+            <location filename="../zscaler_api_client.py" line="8073" />
             <source>Hourly</source>
             <translation>시간별</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7962" />
-            <location filename="../zscaler_api_client.py" line="8065" />
+            <location filename="../zscaler_api_client.py" line="7970" />
+            <location filename="../zscaler_api_client.py" line="8073" />
             <source>Daily</source>
             <translation>매일</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7962" />
-            <location filename="../zscaler_api_client.py" line="8065" />
+            <location filename="../zscaler_api_client.py" line="7970" />
+            <location filename="../zscaler_api_client.py" line="8073" />
             <source>Weekly</source>
             <translation>주간</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8066" />
+            <location filename="../zscaler_api_client.py" line="8074" />
             <source>Report cadence:</source>
             <translation>보고서 주기:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8069" />
+            <location filename="../zscaler_api_client.py" line="8077" />
             <source>Choose report output folder</source>
             <translation>보고서 출력 폴더 선택</translation>
         </message>
@@ -5459,125 +5489,125 @@ Ada,ada@example.com</source>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6759" />
-            <location filename="../zscaler_api_client.py" line="7323" />
+            <location filename="../zscaler_api_client.py" line="7328" />
             <source>Local requests: {count}</source>
             <translation>Local requests: {count}</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6759" />
-            <location filename="../zscaler_api_client.py" line="7323" />
+            <location filename="../zscaler_api_client.py" line="7328" />
             <source>Failed requests: {count}</source>
             <translation>Failed requests: {count}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7323" />
+            <location filename="../zscaler_api_client.py" line="7328" />
             <source>Audit integrity: {status}</source>
             <translation>Audit integrity: {status}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7323" />
-            <location filename="../zscaler_api_client.py" line="7365" />
+            <location filename="../zscaler_api_client.py" line="7328" />
+            <location filename="../zscaler_api_client.py" line="7373" />
             <source>Valid</source>
             <translation>유효</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7323" />
-            <location filename="../zscaler_api_client.py" line="7365" />
+            <location filename="../zscaler_api_client.py" line="7328" />
+            <location filename="../zscaler_api_client.py" line="7373" />
             <source>Needs review</source>
             <translation>검토 필요</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7323" />
+            <location filename="../zscaler_api_client.py" line="7328" />
             <source>Incident signals</source>
             <translation>사고 신호</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7327" />
+            <location filename="../zscaler_api_client.py" line="7332" />
             <source>Executive actions</source>
             <translation>행정 조치</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7327" />
+            <location filename="../zscaler_api_client.py" line="7332" />
             <source>Review high-risk findings and approval records.</source>
             <translation>고위험 조사 결과 및 승인 기록을 검토합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7327" />
+            <location filename="../zscaler_api_client.py" line="7332" />
             <source>Use the Security Posture and Change Control workspaces for evidence.</source>
             <translation>증거를 위해 보안 상태 및 변경 제어 작업 공간을 사용하십시오.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7329" />
+            <location filename="../zscaler_api_client.py" line="7334" />
             <source>SOC next steps</source>
             <translation>SOC의 다음 단계</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7329" />
+            <location filename="../zscaler_api_client.py" line="7334" />
             <source>Use Incident Investigation to prepare a review chain.</source>
             <translation>사고 조사를 사용하여 검토 체인을 준비합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7329" />
+            <location filename="../zscaler_api_client.py" line="7334" />
             <source>Export masked evidence before escalation.</source>
             <translation>에스컬레이션하기 전에 마스킹된 증거를 내보냅니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7331" />
+            <location filename="../zscaler_api_client.py" line="7339" />
             <source>Operations next steps</source>
             <translation>운영 다음 단계</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7331" />
+            <location filename="../zscaler_api_client.py" line="7339" />
             <source>Review slow responses and API failures.</source>
             <translation>느린 응답 및 API 오류를 검토하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7331" />
+            <location filename="../zscaler_api_client.py" line="7339" />
             <source>Confirm rate limits and service health with read-only queries.</source>
             <translation>읽기 전용 쿼리로 속도 제한과 서비스 상태를 확인하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7440" />
+            <location filename="../zscaler_api_client.py" line="7448" />
             <source>Configure a host for the active product before running a chain.</source>
             <translation>체인을 실행하기 전에 활성 제품에 대한 호스트를 구성하십시오.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7450" />
+            <location filename="../zscaler_api_client.py" line="7458" />
             <source>Each chain step must stay on the active product host.</source>
             <translation>각 체인 단계는 활성 제품 호스트에 있어야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7466" />
+            <location filename="../zscaler_api_client.py" line="7474" />
             <source>Fix the chain validation errors before running it.</source>
             <translation>실행하기 전에 체인 유효성 검사 오류를 수정하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7470" />
+            <location filename="../zscaler_api_client.py" line="7478" />
             <source>Read-only mode blocks write requests. Change the local role in Operations Center to continue.</source>
             <translation>읽기 전용 모드는 쓰기 요청을 차단합니다. 계속하려면 Operations Center에서 로컬 역할을 변경하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7472" />
+            <location filename="../zscaler_api_client.py" line="7480" />
             <source>Authenticate the active product before running a chain.</source>
             <translation>체인을 실행하기 전에 활성 제품을 인증하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7473" />
+            <location filename="../zscaler_api_client.py" line="7481" />
             <source>Run {count} API step(s) sequentially against the active environment?</source>
             <translation>Run {count} API step(s) sequentially against the active environment?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7475" />
+            <location filename="../zscaler_api_client.py" line="7483" />
             <source>The chain contains write operations; review and approve before continuing.</source>
             <translation>체인에는 쓰기 작업이 포함되어 있습니다. 계속하기 전에 검토하고 승인하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7490" />
+            <location filename="../zscaler_api_client.py" line="7498" />
             <source>Running API chain step {completed} of {total}...</source>
             <translation>Running API chain step {completed} of {total}...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7538" />
+            <location filename="../zscaler_api_client.py" line="7546" />
             <source>API chain completed: {successful} succeeded, {failed} failed.</source>
             <translation>API chain completed: {successful} succeeded, {failed} failed.</translation>
         </message>
@@ -5586,119 +5616,119 @@ Ada,ada@example.com</source>
             <translation type="vanished">측정항목은 로컬이며 자격 증명을 포함하지 않습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7710" />
+            <location filename="../zscaler_api_client.py" line="7718" />
             <source>Policy export</source>
             <translation>정책 내보내기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7711" />
+            <location filename="../zscaler_api_client.py" line="7719" />
             <source>Export policy</source>
             <translation>수출 정책</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7720" />
+            <location filename="../zscaler_api_client.py" line="7728" />
             <source>Compliance</source>
             <translation>규정 준수</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7744" />
+            <location filename="../zscaler_api_client.py" line="7752" />
             <source>Alert threshold must be a positive integer.</source>
             <translation>경고 임계값은 양의 정수여야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7758" />
+            <location filename="../zscaler_api_client.py" line="7766" />
             <source>Governance settings saved.</source>
             <translation>거버넌스 설정이 저장되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7762" />
+            <location filename="../zscaler_api_client.py" line="7770" />
             <source>Use OneAPI or legacy clients locally</source>
             <translation>OneAPI 또는 레거시 클라이언트를 로컬에서 사용</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7762" />
+            <location filename="../zscaler_api_client.py" line="7770" />
             <source>AI-assisted, tool-scoped exploration</source>
             <translation>AI 지원, 도구 범위 탐색</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7762" />
+            <location filename="../zscaler_api_client.py" line="7770" />
             <source>Export existing ZIA/ZPA configuration to Terraform</source>
             <translation>기존 ZIA/ZPA 구성을 Terraform으로 내보내기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7765" />
+            <location filename="../zscaler_api_client.py" line="7773" />
             <source>Available</source>
             <translation>가능</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7765" />
+            <location filename="../zscaler_api_client.py" line="7773" />
             <source>Not installed</source>
             <translation>설치되지 않음</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7797" />
+            <location filename="../zscaler_api_client.py" line="7805" />
             <source>Prepare an integration first.</source>
             <translation>먼저 통합을 준비하세요.</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6753" />
-            <location filename="../zscaler_api_client.py" line="7800" />
+            <location filename="../zscaler_api_client.py" line="7808" />
             <source>Copied to clipboard</source>
             <translation>클립보드에 복사됨</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7542" />
+            <location filename="../zscaler_api_client.py" line="7550" />
             <source>The chain stopped after the first failed step.</source>
             <translation>첫 번째 단계 실패 후 체인이 중지되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7694" />
-            <location filename="../zscaler_api_client.py" line="7978" />
+            <location filename="../zscaler_api_client.py" line="7702" />
+            <location filename="../zscaler_api_client.py" line="7986" />
             <source>Enabled</source>
             <translation>활성화됨</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7694" />
+            <location filename="../zscaler_api_client.py" line="7702" />
             <source>Disabled</source>
             <translation>장애인</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7700" />
+            <location filename="../zscaler_api_client.py" line="7708" />
             <source>Allow rule has no conditions</source>
             <translation>허용 규칙에 조건이 없습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7700" />
+            <location filename="../zscaler_api_client.py" line="7708" />
             <source>Rule is disabled</source>
             <translation>규칙이 비활성화되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7701" />
+            <location filename="../zscaler_api_client.py" line="7709" />
             <source>Rule name is duplicated</source>
             <translation>규칙 이름이 중복되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7701" />
+            <location filename="../zscaler_api_client.py" line="7709" />
             <source>Rule action is unspecified</source>
             <translation>규칙 작업이 지정되지 않았습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7730" />
+            <location filename="../zscaler_api_client.py" line="7738" />
             <source>Rules evaluated</source>
             <translation>평가된 규칙</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7730" />
+            <location filename="../zscaler_api_client.py" line="7738" />
             <source>Matched rule</source>
             <translation>일치하는 규칙</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7733" />
+            <location filename="../zscaler_api_client.py" line="7741" />
             <source>Matched</source>
             <translation>일치함</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7733" />
+            <location filename="../zscaler_api_client.py" line="7741" />
             <source>Not matched</source>
             <translation>일치하지 않음</translation>
         </message>
@@ -5707,7 +5737,7 @@ Ada,ada@example.com</source>
             <translation type="vanished">웹훅 테스트</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7914" />
+            <location filename="../zscaler_api_client.py" line="7922" />
             <source>Configure a webhook endpoint in Governance first.</source>
             <translation>먼저 거버넌스에서 웹훅 엔드포인트를 구성하세요.</translation>
         </message>
@@ -5716,7 +5746,7 @@ Ada,ada@example.com</source>
             <translation type="vanished">웹훅 엔드포인트는 로컬이 아닌 이상 HTTPS를 사용해야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7906" />
+            <location filename="../zscaler_api_client.py" line="7914" />
             <source>Send a masked connectivity test to the configured webhook endpoint?</source>
             <translation>구성된 웹훅 엔드포인트에 마스킹된 연결 테스트를 보내시겠습니까?</translation>
         </message>
@@ -5729,18 +5759,18 @@ Ada,ada@example.com</source>
             <translation type="vanished">Masked webhook test failed: {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="7990" />
-            <location filename="../zscaler_api_client.py" line="8008" />
-            <location filename="../zscaler_api_client.py" line="8010" />
-            <location filename="../zscaler_api_client.py" line="8024" />
-            <location filename="../zscaler_api_client.py" line="8040" />
-            <location filename="../zscaler_api_client.py" line="8046" />
-            <location filename="../zscaler_api_client.py" line="8059" />
-            <location filename="../zscaler_api_client.py" line="8062" />
-            <location filename="../zscaler_api_client.py" line="8066" />
-            <location filename="../zscaler_api_client.py" line="8075" />
-            <location filename="../zscaler_api_client.py" line="8089" />
-            <location filename="../zscaler_api_client.py" line="8098" />
+            <location filename="../zscaler_api_client.py" line="7998" />
+            <location filename="../zscaler_api_client.py" line="8016" />
+            <location filename="../zscaler_api_client.py" line="8018" />
+            <location filename="../zscaler_api_client.py" line="8032" />
+            <location filename="../zscaler_api_client.py" line="8048" />
+            <location filename="../zscaler_api_client.py" line="8054" />
+            <location filename="../zscaler_api_client.py" line="8067" />
+            <location filename="../zscaler_api_client.py" line="8070" />
+            <location filename="../zscaler_api_client.py" line="8074" />
+            <location filename="../zscaler_api_client.py" line="8083" />
+            <location filename="../zscaler_api_client.py" line="8097" />
+            <location filename="../zscaler_api_client.py" line="8106" />
             <source>Scheduled report</source>
             <translation>예정된 보고서</translation>
         </message>
@@ -5749,17 +5779,17 @@ Ada,ada@example.com</source>
             <translation type="vanished">보고서 이름 및 흐름:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8101" />
+            <location filename="../zscaler_api_client.py" line="8109" />
             <source>Save support bundle</source>
             <translation>지원 번들 저장</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8106" />
+            <location filename="../zscaler_api_client.py" line="8114" />
             <source>Support bundle</source>
             <translation>지원 번들</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8106" />
+            <location filename="../zscaler_api_client.py" line="8114" />
             <source>A redacted support bundle was created.</source>
             <translation>수정된 지원 번들이 생성되었습니다.</translation>
         </message>
@@ -5767,601 +5797,601 @@ Ada,ada@example.com</source>
     <context>
         <name>PacWorkspaceDialog</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="8173" />
-            <location filename="../zscaler_api_client.py" line="8498" />
+            <location filename="../zscaler_api_client.py" line="8181" />
+            <location filename="../zscaler_api_client.py" line="8506" />
             <source>PAC Workspace</source>
             <translation>PAC 작업공간</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8177" />
+            <location filename="../zscaler_api_client.py" line="8185" />
             <source>Create and verify PAC files locally. API operations are prepared in the request editor and are never sent or deployed automatically.</source>
             <translation>PAC 파일을 로컬에서 생성하고 확인합니다. API 작업은 요청 편집기에서 준비되며 자동으로 전송되거나 배포되지 않습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8182" />
+            <location filename="../zscaler_api_client.py" line="8190" />
             <source>PAC experience:</source>
             <translation>PAC 경험:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8184" />
+            <location filename="../zscaler_api_client.py" line="8192" />
             <source>Guided (recommended)</source>
             <translation>안내됨(권장)</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8185" />
+            <location filename="../zscaler_api_client.py" line="8193" />
             <source>Advanced</source>
             <translation>고급</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8202" />
+            <location filename="../zscaler_api_client.py" line="8210" />
             <source>PAC name:</source>
             <translation>PAC 이름:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8203" />
+            <location filename="../zscaler_api_client.py" line="8211" />
             <source>Change note:</source>
             <translation>변경 사항:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8204" />
+            <location filename="../zscaler_api_client.py" line="8212" />
             <source>Hosted PAC URL (optional for ZCC):</source>
             <translation>호스팅된 PAC URL(ZCC의 경우 선택 사항):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8205" />
+            <location filename="../zscaler_api_client.py" line="8213" />
             <source>Existing ZIA PAC ID (for lifecycle actions):</source>
             <translation>기존 ZIA PAC ID(수명 주기 작업용):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8206" />
+            <location filename="../zscaler_api_client.py" line="8214" />
             <source>ZIA PAC version:</source>
             <translation>ZIA PAC 버전:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8207" />
+            <location filename="../zscaler_api_client.py" line="8215" />
             <source>ZIA version action:</source>
             <translation>ZIA 버전 작업:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8214" />
+            <location filename="../zscaler_api_client.py" line="8222" />
             <source>Start with a safe baseline. Enter only internal destinations that must bypass Zscaler; all other traffic uses the selected gateway and failover.</source>
             <translation>안전한 기준선부터 시작하세요. Zscaler를 우회해야 하는 내부 대상만 입력하세요. 다른 모든 트래픽은 선택한 게이트웨이와 장애 조치를 사용합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8222" />
+            <location filename="../zscaler_api_client.py" line="8230" />
             <source>Direct-bypass host patterns (one per line):</source>
             <translation>직접 우회 호스트 패턴(한 줄에 하나씩):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8223" />
+            <location filename="../zscaler_api_client.py" line="8231" />
             <source>Primary gateway:</source>
             <translation>기본 게이트웨이:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8224" />
+            <location filename="../zscaler_api_client.py" line="8232" />
             <source>Secondary gateway:</source>
             <translation>보조 게이트웨이:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8227" />
+            <location filename="../zscaler_api_client.py" line="8235" />
             <source>Create guided PAC</source>
             <translation>안내형 PAC 생성</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8228" />
+            <location filename="../zscaler_api_client.py" line="8236" />
             <source>Load safe example</source>
             <translation>로드 세이프 예시</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8231" />
+            <location filename="../zscaler_api_client.py" line="8239" />
             <source>Generated PAC preview (read-only):</source>
             <translation>Generated PAC preview (read-only):</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8238" />
+            <location filename="../zscaler_api_client.py" line="8246" />
             <source>Guided setup</source>
             <translation>안내 설정</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8240" />
+            <location filename="../zscaler_api_client.py" line="8248" />
             <source>PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.</source>
             <translation>PAC JavaScript — include FindProxyForURL(url, host). Variables use ${NAME}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8245" />
+            <location filename="../zscaler_api_client.py" line="8253" />
             <source>Color guide: blue = PAC structure, amber = DIRECT bypass, green = proxy route, purple = variable, cyan = Zscaler endpoint, orange = IP/network, red = performance-sensitive DNS helper.</source>
             <translation>Color guide: blue = PAC structure, amber = DIRECT bypass, green = proxy route, purple = variable, cyan = Zscaler endpoint, orange = IP/network, red = performance-sensitive DNS helper.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8249" />
+            <location filename="../zscaler_api_client.py" line="8257" />
             <source>Load PAC…</source>
             <translation>PAC 로드…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8250" />
+            <location filename="../zscaler_api_client.py" line="8258" />
             <source>Save PAC…</source>
             <translation>PAC 저장…</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8251" />
+            <location filename="../zscaler_api_client.py" line="8259" />
             <source>Save local draft</source>
             <translation>로컬 초안 저장</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8254" />
+            <location filename="../zscaler_api_client.py" line="8262" />
             <source>Author</source>
             <translation>작성자</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8257" />
+            <location filename="../zscaler_api_client.py" line="8265" />
             <source>Variables (JSON). Standard Zscaler names: </source>
             <translation>변수(JSON). 표준 Zscaler 이름: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8261" />
+            <location filename="../zscaler_api_client.py" line="8269" />
             <source>Test URL:</source>
             <translation>테스트 URL:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8263" />
+            <location filename="../zscaler_api_client.py" line="8271" />
             <source>Apply variables</source>
             <translation>변수 적용</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8264" />
+            <location filename="../zscaler_api_client.py" line="8272" />
             <source>Run static verification</source>
             <translation>정적 검증 실행</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8265" />
+            <location filename="../zscaler_api_client.py" line="8273" />
             <source>Preview decision</source>
             <translation>미리보기 결정</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8268" />
+            <location filename="../zscaler_api_client.py" line="8276" />
             <source>Verify</source>
             <translation>확인</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8271" />
+            <location filename="../zscaler_api_client.py" line="8279" />
             <source>PAC reference and review help. The verifier never executes JavaScript; validate in ZIA and test a pilot group before deployment.</source>
             <translation>PAC 참조 및 검토 도움말. 검증자는 절대로 JavaScript를 실행하지 않습니다. ZIA에서 검증하고 배포 전에 파일럿 그룹을 테스트합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8272" />
+            <location filename="../zscaler_api_client.py" line="8280" />
             <source>Variable or function</source>
             <translation>변수 또는 함수</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8272" />
+            <location filename="../zscaler_api_client.py" line="8280" />
             <source>Purpose / guidance</source>
             <translation>목적 / 안내</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8280" />
+            <location filename="../zscaler_api_client.py" line="8288" />
             <source>Roll out in stages: validate, test representative URLs, stage to a small pilot group, then deploy. Prefer host-pattern checks; avoid DNS helpers in Client Connector PAC files where possible.</source>
             <translation>단계별 출시: 대표 URL을 검증하고 테스트하고 소규모 파일럿 그룹으로 단계화한 후 배포합니다. 호스트 패턴 검사를 선호합니다. 가능하면 클라이언트 커넥터 PAC 파일에 DNS 도우미를 사용하지 마세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8282" />
+            <location filename="../zscaler_api_client.py" line="8290" />
             <source>Help and reference</source>
             <translation>도움말 및 참조</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8285" />
+            <location filename="../zscaler_api_client.py" line="8293" />
             <source>Map supplied ZIA PAC metadata to ZCC forwarding-profile actions. Matches use hosted PAC URLs or an inline PAC content fingerprint; names alone are never treated as a match.</source>
             <translation>제공된 ZIA PAC 메타데이터를 ZCC 전달 프로필 작업에 매핑합니다. 일치 항목은 호스팅된 PAC URL 또는 인라인 PAC 콘텐츠 지문을 사용합니다. 이름만으로는 결코 일치 항목으로 처리되지 않습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8288" />
+            <location filename="../zscaler_api_client.py" line="8296" />
             <source>ZIA PAC list JSON</source>
             <translation>ZIA PAC 목록 JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8290" />
+            <location filename="../zscaler_api_client.py" line="8298" />
             <source>ZCC forwarding-profile list JSON</source>
             <translation>ZCC 전달 프로필 목록 JSON</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8294" />
+            <location filename="../zscaler_api_client.py" line="8302" />
             <source>Build PAC mappings</source>
             <translation>PAC 매핑 구축</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8295" />
-            <location filename="../zscaler_api_client.py" line="8330" />
+            <location filename="../zscaler_api_client.py" line="8303" />
+            <location filename="../zscaler_api_client.py" line="8338" />
             <source>Prepare ZIA PAC list</source>
             <translation>ZIA PAC 목록 준비</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8296" />
-            <location filename="../zscaler_api_client.py" line="8322" />
+            <location filename="../zscaler_api_client.py" line="8304" />
+            <location filename="../zscaler_api_client.py" line="8330" />
             <source>Prepare ZCC profile list</source>
             <translation>ZCC 프로필 목록 준비</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8299" />
+            <location filename="../zscaler_api_client.py" line="8307" />
             <source>ZCC profile</source>
             <translation>ZCC 프로필</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8299" />
+            <location filename="../zscaler_api_client.py" line="8307" />
             <source>Action / network</source>
             <translation>액션/네트워크</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8299" />
+            <location filename="../zscaler_api_client.py" line="8307" />
             <source>PAC type</source>
             <translation>PAC 유형</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8299" />
+            <location filename="../zscaler_api_client.py" line="8307" />
             <source>PAC reference</source>
             <translation>PAC 참조</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8299" />
+            <location filename="../zscaler_api_client.py" line="8307" />
             <source>ZIA status</source>
             <translation>ZIA 상태</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8299" />
+            <location filename="../zscaler_api_client.py" line="8307" />
             <source>Mapping result</source>
             <translation>매핑 결과</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8299" />
+            <location filename="../zscaler_api_client.py" line="8307" />
             <source>Profile ID</source>
             <translation>프로필 ID</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8302" />
-            <location filename="../zscaler_api_client.py" line="8411" />
+            <location filename="../zscaler_api_client.py" line="8310" />
+            <location filename="../zscaler_api_client.py" line="8419" />
             <source>PAC mappings</source>
             <translation>PAC 매핑</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8305" />
+            <location filename="../zscaler_api_client.py" line="8313" />
             <source>Search the bundled Zscaler Configuration Center index of Cloud Enforcement Node ranges, proxy/VPN hostnames, GRE and extranet virtual IP addresses. The PAC editor shows a help balloon when a line references an indexed endpoint.</source>
             <translation>Cloud Enforcement Node 범위, 프록시/VPN 호스트 이름, GRE 및 엑스트라넷 가상 IP 주소의 번들 Zscaler Configuration Center 색인을 검색하세요. PAC 편집기는 라인이 색인화된 끝점을 참조할 때 도움말 풍선을 표시합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8309" />
+            <location filename="../zscaler_api_client.py" line="8317" />
             <source>Search city, CIDR, hostname, GRE or VPN address</source>
             <translation>도시, CIDR, 호스트 이름, GRE 또는 VPN 주소 검색</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8310" />
+            <location filename="../zscaler_api_client.py" line="8318" />
             <source>Search data centers</source>
             <translation>데이터 센터 검색</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8313" />
+            <location filename="../zscaler_api_client.py" line="8321" />
             <source>Continent</source>
             <translation>대륙</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8313" />
+            <location filename="../zscaler_api_client.py" line="8321" />
             <source>Data center</source>
             <translation>데이터 센터</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8313" />
+            <location filename="../zscaler_api_client.py" line="8321" />
             <source>CIDR range</source>
             <translation>CIDR 범위</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8313" />
+            <location filename="../zscaler_api_client.py" line="8321" />
             <source>Proxy hostname</source>
             <translation>프록시 호스트 이름</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8313" />
+            <location filename="../zscaler_api_client.py" line="8321" />
             <source>VPN hostname</source>
             <translation>VPN 호스트 이름</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8313" />
+            <location filename="../zscaler_api_client.py" line="8321" />
             <source>GRE VIP</source>
             <translation>GRE VIP</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8313" />
+            <location filename="../zscaler_api_client.py" line="8321" />
             <source>Extranet VIP</source>
             <translation>엑스트라넷 VIP</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8313" />
+            <location filename="../zscaler_api_client.py" line="8321" />
             <source>Coordinates</source>
             <translation>좌표</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8316" />
+            <location filename="../zscaler_api_client.py" line="8324" />
             <source>Zscaler data centers</source>
             <translation>Zscaler 데이터 센터</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8319" />
+            <location filename="../zscaler_api_client.py" line="8327" />
             <source>Paste a forwarding profile returned by ZCC, or first prepare the profile-list request. Existing profile fields are preserved when PAC fields are updated.</source>
             <translation>ZCC에서 반환된 전달 프로필을 붙여넣거나 먼저 프로필 목록 요청을 준비하세요. PAC 필드가 업데이트되면 기존 프로필 필드가 유지됩니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8323" />
+            <location filename="../zscaler_api_client.py" line="8331" />
             <source>Prepare ZCC update</source>
             <translation>ZCC 업데이트 준비</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8325" />
+            <location filename="../zscaler_api_client.py" line="8333" />
             <source>ZCC / Mobile Portal</source>
             <translation>ZCC / 모바일 포털</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8328" />
+            <location filename="../zscaler_api_client.py" line="8336" />
             <source>Prepare ZIA validation</source>
             <translation>ZIA 검증 준비</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8329" />
+            <location filename="../zscaler_api_client.py" line="8337" />
             <source>Prepare ZIA hosted PAC upload</source>
             <translation>ZIA 호스팅 PAC 업로드 준비</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8331" />
+            <location filename="../zscaler_api_client.py" line="8339" />
             <source>Prepare ZIA version action</source>
             <translation>ZIA 버전 작업 준비</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8332" />
+            <location filename="../zscaler_api_client.py" line="8340" />
             <source>Close</source>
             <translation>닫기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8351" />
+            <location filename="../zscaler_api_client.py" line="8359" />
             <source>Guided mode creates a minimal, reviewable PAC. Switch to Advanced to edit JavaScript, update ZCC profiles, or prepare ZIA lifecycle actions.</source>
             <translation>안내 모드는 최소한의 검토 가능한 PAC를 생성합니다. JavaScript를 편집하거나, ZCC 프로필을 업데이트하거나, ZIA 수명 주기 작업을 준비하려면 고급으로 전환하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8352" />
+            <location filename="../zscaler_api_client.py" line="8360" />
             <source>Advanced mode exposes the PAC editor, ZCC profile patching, and ZIA version lifecycle actions. Every write remains explicit.</source>
             <translation>고급 모드에서는 PAC 편집기, ZCC 프로필 패치 및 ZIA 버전 수명 주기 작업을 노출합니다. 모든 쓰기는 명시적으로 유지됩니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8363" />
+            <location filename="../zscaler_api_client.py" line="8371" />
             <source>Primary Zscaler gateway.</source>
             <translation>Primary Zscaler gateway.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8363" />
+            <location filename="../zscaler_api_client.py" line="8371" />
             <source>Secondary Zscaler gateway.</source>
             <translation>Secondary Zscaler gateway.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8364" />
+            <location filename="../zscaler_api_client.py" line="8372" />
             <source>Primary gateway with failover support.</source>
             <translation>Primary gateway with failover support.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8364" />
+            <location filename="../zscaler_api_client.py" line="8372" />
             <source>Secondary gateway with failover support.</source>
             <translation>Secondary gateway with failover support.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8365" />
+            <location filename="../zscaler_api_client.py" line="8373" />
             <source>Optional local deployment label.</source>
             <translation>Optional local deployment label.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8365" />
+            <location filename="../zscaler_api_client.py" line="8373" />
             <source>Zscaler cloud name.</source>
             <translation>Zscaler cloud name.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8366" />
+            <location filename="../zscaler_api_client.py" line="8374" />
             <source>Primary gateway for an explicit subcloud.</source>
             <translation>Primary gateway for an explicit subcloud.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8367" />
+            <location filename="../zscaler_api_client.py" line="8375" />
             <source>Secondary gateway for an explicit subcloud.</source>
             <translation>Secondary gateway for an explicit subcloud.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8370" />
+            <location filename="../zscaler_api_client.py" line="8378" />
             <source>Required PAC entry point; returns DIRECT, PROXY, or SOCKS.</source>
             <translation>Required PAC entry point; returns DIRECT, PROXY, or SOCKS.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8371" />
+            <location filename="../zscaler_api_client.py" line="8379" />
             <source>Matches a host without a DNS suffix.</source>
             <translation>Matches a host without a DNS suffix.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8372" />
+            <location filename="../zscaler_api_client.py" line="8380" />
             <source>Matches a DNS suffix.</source>
             <translation>Matches a DNS suffix.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8373" />
+            <location filename="../zscaler_api_client.py" line="8381" />
             <source>Matches a local host or fully qualified name.</source>
             <translation>Matches a local host or fully qualified name.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8374" />
+            <location filename="../zscaler_api_client.py" line="8382" />
             <source>Matches wildcard patterns such as *.example.com.</source>
             <translation>Matches wildcard patterns such as *.example.com.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8375" />
+            <location filename="../zscaler_api_client.py" line="8383" />
             <source>Counts DNS labels in a host name.</source>
             <translation>Counts DNS labels in a host name.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8376" />
+            <location filename="../zscaler_api_client.py" line="8384" />
             <source>Matches a weekday range.</source>
             <translation>Matches a weekday range.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8376" />
+            <location filename="../zscaler_api_client.py" line="8384" />
             <source>Matches a date range.</source>
             <translation>Matches a date range.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8377" />
+            <location filename="../zscaler_api_client.py" line="8385" />
             <source>Matches a time range.</source>
             <translation>Matches a time range.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8378" />
+            <location filename="../zscaler_api_client.py" line="8386" />
             <source>Resolves DNS; avoid in Client Connector PAC files unless required.</source>
             <translation>Resolves DNS; avoid in Client Connector PAC files unless required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8379" />
+            <location filename="../zscaler_api_client.py" line="8387" />
             <source>Tests DNS resolution; avoid in Client Connector PAC files unless required.</source>
             <translation>Tests DNS resolution; avoid in Client Connector PAC files unless required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8380" />
+            <location filename="../zscaler_api_client.py" line="8388" />
             <source>Tests a network; avoid in Client Connector PAC files unless required.</source>
             <translation>Tests a network; avoid in Client Connector PAC files unless required.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8389" />
+            <location filename="../zscaler_api_client.py" line="8397" />
             <source>Fix the guided input to generate a PAC preview: </source>
             <translation>Fix the guided input to generate a PAC preview: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8399" />
+            <location filename="../zscaler_api_client.py" line="8407" />
             <source>Guided PAC</source>
             <translation>가이드 PAC</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8403" />
+            <location filename="../zscaler_api_client.py" line="8411" />
             <source>Guided PAC created. Review the verification findings, test a URL, then prepare ZIA validation.</source>
             <translation>가이드 PAC가 생성되었습니다. 검증 결과를 검토하고 URL을 테스트한 후 ZIA 검증을 준비하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8411" />
+            <location filename="../zscaler_api_client.py" line="8419" />
             <source>Both mapping inputs must be valid JSON: </source>
             <translation>두 매핑 입력 모두 유효한 JSON이어야 합니다. </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8420" />
+            <location filename="../zscaler_api_client.py" line="8428" />
             <source>Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.</source>
             <translation>Mapped actions: {total}; confirmed mappings: {matched}; unresolved hosted URLs: {unresolved}.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8441" />
+            <location filename="../zscaler_api_client.py" line="8449" />
             <source>{matches} matching endpoint records from {total} indexed Zscaler data-center records. Source: {source}</source>
             <translation>{matches} matching endpoint records from {total} indexed Zscaler data-center records. Source: {source}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8450" />
-            <location filename="../zscaler_api_client.py" line="8452" />
-            <location filename="../zscaler_api_client.py" line="8479" />
+            <location filename="../zscaler_api_client.py" line="8458" />
+            <location filename="../zscaler_api_client.py" line="8460" />
+            <location filename="../zscaler_api_client.py" line="8487" />
             <source>PAC variables</source>
             <translation>PAC 변수</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8450" />
+            <location filename="../zscaler_api_client.py" line="8458" />
             <source>Variables must be valid JSON: </source>
             <translation>변수는 유효한 JSON이어야 합니다. </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8452" />
+            <location filename="../zscaler_api_client.py" line="8460" />
             <source>Variables must be a JSON object with text or numeric values.</source>
             <translation>변수는 텍스트 또는 숫자 값이 포함된 JSON 개체여야 합니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8461" />
+            <location filename="../zscaler_api_client.py" line="8469" />
             <source>none</source>
             <translation>없음</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8462" />
+            <location filename="../zscaler_api_client.py" line="8470" />
             <source>Detected variables: </source>
             <translation>감지된 변수: </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8466" />
+            <location filename="../zscaler_api_client.py" line="8474" />
             <source>Improvement tips:</source>
             <translation>개선 팁:</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8478" />
+            <location filename="../zscaler_api_client.py" line="8486" />
             <source>Variables applied.</source>
             <translation>변수가 적용되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8478" />
+            <location filename="../zscaler_api_client.py" line="8486" />
             <source>Variables applied; missing values were retained: </source>
             <translation>변수가 적용되었습니다. 누락된 값이 유지되었습니다. </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8483" />
+            <location filename="../zscaler_api_client.py" line="8491" />
             <source>Preview</source>
             <translation>미리보기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8498" />
+            <location filename="../zscaler_api_client.py" line="8506" />
             <source>PAC draft saved locally.</source>
             <translation>PAC 초안이 로컬에 저장되었습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8501" />
-            <location filename="../zscaler_api_client.py" line="8506" />
+            <location filename="../zscaler_api_client.py" line="8509" />
+            <location filename="../zscaler_api_client.py" line="8514" />
             <source>Load PAC</source>
             <translation>PAC 로드</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8509" />
-            <location filename="../zscaler_api_client.py" line="8514" />
+            <location filename="../zscaler_api_client.py" line="8517" />
+            <location filename="../zscaler_api_client.py" line="8522" />
             <source>Save PAC</source>
             <translation>PAC 저장</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8522" />
+            <location filename="../zscaler_api_client.py" line="8530" />
             <source>PAC request prepared</source>
             <translation>PAC 요청 준비됨</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8522" />
+            <location filename="../zscaler_api_client.py" line="8530" />
             <source>The request was placed in the main editor. Review it and explicitly select Send Request; no deployment action has been performed.</source>
             <translation>요청이 메인 편집기에 배치되었습니다. 이를 검토하고 요청 보내기를 명시적으로 선택하십시오. 배포 작업이 수행되지 않았습니다.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8527" />
+            <location filename="../zscaler_api_client.py" line="8535" />
             <source>PAC verification</source>
             <translation>PAC 검증</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8527" />
+            <location filename="../zscaler_api_client.py" line="8535" />
             <source>Resolve PAC errors before preparing an API write.</source>
             <translation>API 쓰기를 준비하기 전에 PAC 오류를 해결하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8543" />
+            <location filename="../zscaler_api_client.py" line="8551" />
             <source>ZIA PAC lifecycle</source>
             <translation>ZIA PAC 수명주기</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8543" />
+            <location filename="../zscaler_api_client.py" line="8551" />
             <source>Enter a numeric PAC ID and version before preparing a lifecycle action.</source>
             <translation>수명 주기 작업을 준비하기 전에 숫자로 된 PAC ID와 버전을 입력하세요.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8557" />
-            <location filename="../zscaler_api_client.py" line="8559" />
+            <location filename="../zscaler_api_client.py" line="8565" />
+            <location filename="../zscaler_api_client.py" line="8567" />
             <source>ZCC forwarding profile</source>
             <translation>ZCC 전달 프로필</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8557" />
+            <location filename="../zscaler_api_client.py" line="8565" />
             <source>Profile must be valid JSON: </source>
             <translation>프로필은 유효한 JSON이어야 합니다. </translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="8559" />
+            <location filename="../zscaler_api_client.py" line="8567" />
             <source>Paste one ZCC forwarding profile object with its id before preparing an update.</source>
             <translation>업데이트를 준비하기 전에 하나의 ZCC 전달 프로필 객체를 해당 ID와 함께 붙여넣으세요.</translation>
         </message>
@@ -7570,12 +7600,12 @@ Ada,ada@example.com</source>
     <context>
         <name>window</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="12278" />
+            <location filename="../zscaler_api_client.py" line="12286" />
             <source>Automatic Update Check</source>
             <translation>자동 업데이트 확인</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12280" />
+            <location filename="../zscaler_api_client.py" line="12288" />
             <source>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</source>
             <translation>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</translation>
         </message>

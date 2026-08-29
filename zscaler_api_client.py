@@ -75,7 +75,7 @@ try:
     import pyqtgraph as pg
 except (ImportError, OSError):  # Keep source checkouts usable with the minimal Qt stack.
     pg = None
-from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, exposure_access_analysis, investigation_note, PLAYBOOK_TEMPLATES, security_report_data, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
+from feature_services import AuditTrail, policy_diff, response_drift, simulate_policy_trace, policy_overview, policy_twin, validate_bulk_csv, support_bundle, mask, is_sensitive_name, policy_as_code, compliance_findings, security_posture, operational_alerts, request_latency_trend, incident_evidence, soc_investigation_graph, change_control_plan, change_safety_assessment, rollback_package, verify_rollback_package, guided_playbook, smart_api_plan, security_event_export, read_only_mcp_manifest, terraform_review_handoff, exposure_access_analysis, investigation_note, PLAYBOOK_TEMPLATES, security_report_data, user_risk_report, compliance_assessment, executive_security_narrative, zdx_experience_journey, adaptive_anomalies, validate_detection_rule, evaluate_detection_rule, DETECTION_TEMPLATES, validate_request_chain, resolve_chain_templates, BATCH_OPERATIONS, build_batch_plan, environment_scope, environment_scope_metadata, obfuscate_identifiers
 from evidence_signing import generate_private_key, public_key, sign_evidence, verify_evidence
 from pac_services import PAC_TEMPLATE, PAC_VARIABLES, PAC_FUNCTIONS, build_guided_pac, lint_pac, pac_improvements, pac_profile_mappings, pac_variables, preview_pac_decision, substitute_pac_variables, zia_pac_payload, zcc_pac_patch
 from schedule_services import register_background_schedule, unregister_background_schedule
@@ -6520,7 +6520,7 @@ class OperationsDialog(QDialog):
         reports_page = QWidget(); reports_layout = QVBoxLayout(reports_page)
         reports_intro = QLabel(self.tr("Generate local, redacted reports for leadership, SOC, or operations. Reports contain no credentials and are not sent automatically.")); reports_intro.setWordWrap(True); reports_layout.addWidget(reports_intro)
         report_controls = QHBoxLayout(); report_controls.addWidget(QLabel(self.tr("Report type:")))
-        self.report_type = QComboBox(); self.report_type.addItem(self.tr("CISO security summary"), "ciso"); self.report_type.addItem(self.tr("SOC investigation summary"), "soc"); self.report_type.addItem(self.tr("Operations health summary"), "operations"); report_controls.addWidget(self.report_type)
+        self.report_type = QComboBox(); self.report_type.addItem(self.tr("CISO security summary"), "ciso"); self.report_type.addItem(self.tr("SOC investigation summary"), "soc"); self.report_type.addItem(self.tr("Operations health summary"), "operations"); self.report_type.addItem(self.tr("User risk report (current response)"), "user_risk"); report_controls.addWidget(self.report_type)
         report_generate = QPushButton(self.tr("Generate report")); report_generate.clicked.connect(self.generate_report); report_controls.addWidget(report_generate); report_controls.addStretch(); reports_layout.addLayout(report_controls)
         report_banner = VisualAssetLabel("assets/visuals/security-report-banner.png", 120, crop=True)
         report_banner.setAccessibleName(self.tr("Security posture report artwork")); reports_layout.addWidget(report_banner)
@@ -7314,12 +7314,17 @@ class OperationsDialog(QDialog):
         self.assurance_status.setText(message); self._scope_audit().append("signed_assurance_verified", {"file": os.path.basename(path), "valid": bool(result["valid"]), "reason": result["reason"]})
 
     def _report_data(self):
-        return security_report_data(self.report_type.currentData(), self._scoped_history(), self._scoped_events(), AuditTrail(self.settings).verify(), self._scope_metadata())
+        kind = self.report_type.currentData()
+        if kind == "user_risk":
+            data = security_report_data("operations", self._scoped_history(), self._scoped_events(), AuditTrail(self.settings).verify(), self._scope_metadata())
+            data["kind"] = "user_risk"; data["user_risk"] = user_risk_report(self._current_response_body())
+            return data
+        return security_report_data(kind, self._scoped_history(), self._scoped_events(), AuditTrail(self.settings).verify(), self._scope_metadata())
 
     def _report_lines(self, data):
         posture, incidents = data["posture"], data["incident_summary"]
         assurance = data.get("assurance", {"summary": {"score": 0, "passed": 0, "failed": 0, "coverage_percent": 0}, "controls": []})
-        title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary")}[data["kind"]]
+        title = {"ciso": self.tr("CISO security summary"), "soc": self.tr("SOC investigation summary"), "operations": self.tr("Operations health summary"), "user_risk": self.tr("User risk report")}[data["kind"]]
         lines = [f"# {title}", "", self.tr("Data scope: {name}").format(name=data["scope"]["environment"]), self.tr("Posture score: {score}/100").format(score=posture["score"]), self.tr("Assurance score: {score}/100 · evidence coverage {coverage}%").format(score=assurance["summary"]["score"], coverage=assurance["summary"]["coverage_percent"]), self.tr("Local requests: {count}").format(count=posture["metrics"]["requests"]), self.tr("Failed requests: {count}").format(count=posture["metrics"]["failed"]), self.tr("Audit integrity: {status}").format(status=self.tr("Valid") if data["audit_valid"] else self.tr("Needs review")), "", self.tr("Incident signals"), f"- {self.tr('High')}: {incidents['high']}", f"- {self.tr('Medium')}: {incidents['medium']}"]
         if data["kind"] == "ciso":
             lines += ["", self.tr("Executive assurance narrative"), self.tr("Local assurance requires attention") if assurance["summary"]["failed"] else self.tr("No failing controls in the evaluated local scope")]
@@ -7327,6 +7332,9 @@ class OperationsDialog(QDialog):
             lines += ["", self.tr("Executive actions"), "- " + self.tr("Review high-risk findings and approval records."), "- " + self.tr("Use the Security Posture and Change Control workspaces for evidence.")]
         elif data["kind"] == "soc":
             lines += ["", self.tr("SOC next steps"), "- " + self.tr("Use Incident Investigation to prepare a review chain."), "- " + self.tr("Export masked evidence before escalation.")]
+        elif data["kind"] == "user_risk":
+            risk = data["user_risk"]; lines += ["", self.tr("User risk evidence"), self.tr("Observed users: {count}; explicit risk signals: {signals}.").format(count=risk["summary"]["observed_users"], signals=risk["summary"]["explicit_risk_signals"]), self.tr("Only explicit fields in the current response are reported; identity alone is never treated as risk.")]
+            lines += [f"- {item['identity']}: {item['risk_level']} ({item['risk_score']})" for item in risk["users"][:50]] or [self.tr("No user records with explicit risk evidence were found in the current response.")]
         else:
             lines += ["", self.tr("Operations next steps"), "- " + self.tr("Review slow responses and API failures."), "- " + self.tr("Confirm rate limits and service health with read-only queries.")]
         return lines
