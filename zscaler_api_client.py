@@ -8582,26 +8582,39 @@ class MainWindow(QMainWindow):
         self.workspace_context.setObjectName("mutedLabel")
         command_layout.addWidget(self.workspace_context)
         command_layout.addStretch()
-        environment_shortcut = QPushButton(self.tr("1 · Environment"))
+        self.environment_shortcut = QPushButton(self.tr("Environment"))
+        environment_shortcut = self.environment_shortcut
         environment_shortcut.setToolTip(self.tr("Select or create a tenant environment profile"))
         environment_shortcut.clicked.connect(self._manage_profiles)
         command_layout.addWidget(environment_shortcut)
-        self.insight_shortcut = QPushButton(self.tr("2 · Analyze"))
-        self.insight_shortcut.setToolTip(self.tr("Open dashboards, audits, policy diffs, and response analysis"))
+        self.insight_shortcut = QPushButton(self.tr("Monitor"))
+        self.insight_shortcut.setToolTip(self.tr("Open dashboards, alerts, audits, and response analysis"))
         self.insight_shortcut.clicked.connect(lambda: self._show_operations(0))
         command_layout.addWidget(self.insight_shortcut)
-        self.change_shortcut = QPushButton(self.tr("3 · Change"))
+        self.change_shortcut = QPushButton(self.tr("Changes"))
         self.change_shortcut.setToolTip(self.tr("Open policy diff and policy-as-code export"))
         self.change_shortcut.clicked.connect(lambda: self._show_operations(1))
         command_layout.addWidget(self.change_shortcut)
-        self.operations_shortcut = QPushButton(self.tr("Operations Center"))
-        self.operations_shortcut.clicked.connect(self._show_operations)
-        command_layout.addWidget(self.operations_shortcut)
         self.pac_shortcut = QPushButton(self.tr("PAC Workspace"))
         self.pac_shortcut.setToolTip(self.tr("Create, verify, map, and prepare PAC files (Ctrl+Shift+P)"))
         self.pac_shortcut.setShortcut("Ctrl+Shift+P")
         self.pac_shortcut.clicked.connect(self._show_pac_workspace)
         command_layout.addWidget(self.pac_shortcut)
+        self.alert_shortcut = QPushButton(self.tr("Alerts"))
+        self.alert_shortcut.setToolTip(self.tr("Open local operational alerts"))
+        self.alert_shortcut.clicked.connect(lambda: self._show_operations_named("alert_tab_index"))
+        command_layout.addWidget(self.alert_shortcut)
+        recent_shortcut = QPushButton(self.tr("Recent"))
+        recent_shortcut.setToolTip(self.tr("Open redacted request history"))
+        recent_shortcut.clicked.connect(self._show_history)
+        command_layout.addWidget(recent_shortcut)
+        command_menu = QMenu(self)
+        for label, callback in ((self.tr("API Explorer"), lambda: self.endpoint_tree.setFocus()), (self.tr("Monitor"), lambda: self._show_operations(0)), (self.tr("Changes"), lambda: self._show_operations(1)), (self.tr("PAC Workspace"), self._show_pac_workspace), (self.tr("Request History"), self._show_history)):
+            action = command_menu.addAction(label); action.triggered.connect(callback)
+        command_shortcut = QPushButton(self.tr("Quick actions"))
+        command_shortcut.setToolTip(self.tr("Open common workspaces and actions"))
+        command_shortcut.clicked.connect(lambda: command_menu.exec(command_shortcut.mapToGlobal(command_shortcut.rect().bottomLeft())))
+        command_layout.addWidget(command_shortcut)
         settings_shortcut = QPushButton(self.tr("Settings"))
         settings_shortcut.clicked.connect(self._show_settings)
         command_layout.addWidget(settings_shortcut)
@@ -9548,6 +9561,12 @@ class MainWindow(QMainWindow):
         """Open the relevant Operations Center workspace for the chosen task."""
         OperationsDialog(self, initial_tab=initial_tab).exec()
 
+    def _show_operations_named(self, tab_attribute: str):
+        """Open a named Operations Center workspace without duplicate header buttons."""
+        dialog = OperationsDialog(self)
+        dialog.tabs.setCurrentIndex(getattr(dialog, tab_attribute, 0))
+        dialog.exec()
+
     def _show_pac_workspace(self):
         """Open local PAC authoring with explicit, reviewable API preparation."""
         PacWorkspaceDialog(self).exec()
@@ -9567,6 +9586,13 @@ class MainWindow(QMainWindow):
         """Keep the active tenant visibly anchored in the command bar."""
         profile = active_environment_profile(QSettings("Zscaler", "APIClient"))
         self.workspace_context.setText(self.tr("Active environment: {name}").format(name=environment_profile_display_name(self, profile)))
+        if hasattr(self, "alert_shortcut"):
+            try:
+                threshold = max(1, int(QSettings("Zscaler", "APIClient").value("monitoring/error_threshold", "10")))
+                count = len(operational_alerts(self.request_history, AuditTrail(QSettings("Zscaler", "APIClient")).verify(), threshold).get("alerts", []))
+            except (TypeError, ValueError):
+                count = 0
+            self.alert_shortcut.setText(self.tr("Alerts ({count})").format(count=count) if count else self.tr("Alerts"))
 
     def _activate_environment_profile(self, profile_id: str) -> bool:
         """Switch tenant context after clearing every request and authentication artifact."""
