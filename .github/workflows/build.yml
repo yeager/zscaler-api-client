@@ -40,12 +40,7 @@ jobs:
           python scripts/generate_spdx_sbom.py --artifact dist/ZS-API-Client-linux-x64.tar.gz --output dist/ZS-API-Client-linux-x64.spdx.json
       - name: Smoke test frozen Linux application
         run: |
-          set +e
-          QT_QPA_PLATFORM=offscreen timeout 12s "dist/ZS API Client/ZS API Client" > frozen-app-startup.log 2>&1
-          status=$?
-          cat frozen-app-startup.log
-          test "$status" -eq 0 -o "$status" -eq 124
-          ! grep -Eqi 'traceback|modulenotfounderror|importerror|failed to execute script' frozen-app-startup.log
+          python scripts/smoke_frozen_app.py --timeout 12 -- "dist/ZS API Client/ZS API Client"
 
       - name: Attest Linux package and SBOM
         uses: actions/attest@v4
@@ -92,6 +87,9 @@ jobs:
               throw "Missing bundled runtime resource: $resource"
             }
           }
+
+      - name: Smoke test frozen Windows application
+        run: python scripts/smoke_frozen_app.py --timeout 12 -- "dist\ZS API Client\ZS API Client.exe"
 
       - name: Install Inno Setup
         run: choco install innosetup --no-progress --yes
@@ -158,6 +156,7 @@ jobs:
           for resource in feature_services.py evidence_signing.py schedule_services.py pac_services.py zscaler_config_services.py assets/branding/zs-api-client-logo.png; do
             test -f "$resource_dir/$resource"
           done
+          python scripts/smoke_frozen_app.py --timeout 12 -- "dist/ZS API Client.app/Contents/MacOS/ZS API Client"
           cd dist
           zip -ry "ZS-API-Client-macos-${{ matrix.artifact_suffix }}.zip" "ZS API Client.app"
           cd ..

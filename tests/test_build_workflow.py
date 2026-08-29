@@ -60,6 +60,18 @@ class BuildWorkflowTests(unittest.TestCase):
             "pac_services.py", "zscaler_config_services.py", "zs-api-client-logo.png",
         ):
             self.assertIn(resource, windows)
+        self.assertIn("scripts/smoke_frozen_app.py", windows)
+
+    def test_all_native_builds_smoke_test_the_frozen_application(self):
+        workflow = (Path(__file__).parent.parent / ".github/workflows/build.yml").read_text(
+            encoding="utf-8"
+        )
+        sections = (
+            workflow.split("  build-windows:", 1)[0],
+            workflow.split("  build-windows:", 1)[1].split("  build-macos:", 1)[0],
+            workflow.split("  build-macos:", 1)[1].split("  release:", 1)[0],
+        )
+        self.assertTrue(all("scripts/smoke_frozen_app.py" in section for section in sections))
 
     def test_security_workflow_runs_runtime_symbol_check(self):
         workflow = (Path(__file__).parent.parent / ".github/workflows/security.yml").read_text(
