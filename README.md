@@ -109,6 +109,14 @@ ZS API Client is built with security as a top priority:
 - **Simple installation** – Windows installer plus native macOS and Linux packages
 - **Open Source** – Full source code available for security audits
 
+### Native iPad foundation
+
+The repository also includes a native SwiftUI iPad client foundation in
+[`ios/ZSAPIClient`](ios/ZSAPIClient). It supports secure OneAPI authentication,
+Keychain-only client-secret storage, HTTPS-only requests, and an iPad split-view
+API explorer. Generate and sign an IPA on macOS with Xcode; iOS artifacts are
+not yet part of the desktop release workflow.
+
 ## 📦 Installation
 
 ### Download
