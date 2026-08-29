@@ -8609,7 +8609,7 @@ class MainWindow(QMainWindow):
         recent_shortcut.clicked.connect(self._show_history)
         command_layout.addWidget(recent_shortcut)
         command_menu = QMenu(self)
-        for label, callback in ((self.tr("API Explorer"), lambda: self.endpoint_tree.setFocus()), (self.tr("Monitor"), lambda: self._show_operations(0)), (self.tr("Changes"), lambda: self._show_operations(1)), (self.tr("PAC Workspace"), self._show_pac_workspace), (self.tr("Request History"), self._show_history)):
+        for label, callback in ((self.tr("API Explorer"), lambda: self.endpoint_tree.setFocus()), (self.tr("Monitor"), lambda: self._show_operations(0)), (self.tr("Changes"), lambda: self._show_operations(1)), (self.tr("PAC Workspace"), self._show_pac_workspace), (self.tr("Request History"), self._show_history), (self.tr("Favorites"), self._manage_favorites), (self.tr("Operations inbox"), self._show_operations_inbox)):
             action = command_menu.addAction(label); action.triggered.connect(callback)
         command_shortcut = QPushButton(self.tr("Quick actions"))
         command_shortcut.setToolTip(self.tr("Open common workspaces and actions"))
@@ -11573,6 +11573,60 @@ class MainWindow(QMainWindow):
         dialog.request_selected.connect(self._load_from_history)
         dialog.exec()
         self._save_history()
+
+    def _favorites_key(self) -> str:
+        return _profile_data_key(active_environment_profile(QSettings("Zscaler", "APIClient"))["id"], "favorites")
+
+    def _favorites(self) -> list[dict[str, str]]:
+        try:
+            data = json.loads(str(QSettings("Zscaler", "APIClient").value(self._favorites_key(), "[]")))
+            return [item for item in data if isinstance(item, dict)]
+        except (TypeError, ValueError):
+            return []
+
+    def _save_favorites(self, items: list[dict[str, str]]):
+        QSettings("Zscaler", "APIClient").setValue(self._favorites_key(), json.dumps(items[:50], ensure_ascii=False))
+
+    def _manage_favorites(self):
+        dialog = QDialog(self); dialog.setWindowTitle(self.tr("Favorites")); dialog.resize(720, 380)
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(QLabel(self.tr("Favorites are local to the active environment and never include credentials or request bodies.")))
+        table = QTableWidget(0, 4); table.setHorizontalHeaderLabels([self.tr("Name"), self.tr("Product"), self.tr("Method"), self.tr("URL")]); table.horizontalHeader().setStretchLastSection(True); table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows); table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); layout.addWidget(table, 1)
+        items = self._favorites()
+        def refresh():
+            table.setRowCount(len(items))
+            for row, item in enumerate(items):
+                for col, key in enumerate(("name", "api", "method", "url")):
+                    table.setItem(row, col, QTableWidgetItem(str(item.get(key, ""))))
+        def add_current():
+            name, accepted = QInputDialog.getText(dialog, self.tr("Save favorite"), self.tr("Favorite name:"), text=self.url_input.text().strip() or self.tr("New request"))
+            if accepted and name.strip() and self.url_input.text().strip():
+                items.append({"name": name.strip(), "api": self._current_api_type(), "method": self.method_combo.currentText().replace("● ", ""), "url": self.url_input.text().strip()}); self._save_favorites(items); refresh()
+        def load_selected():
+            row = table.currentRow()
+            if 0 <= row < len(items):
+                item = items[row]; self.api_type.setCurrentText(item.get("api", self._current_api_type())); self.method_combo.setCurrentText("● " + item.get("method", "GET")); self.url_input.setText(item.get("url", "")); dialog.accept()
+        def remove_selected():
+            row = table.currentRow()
+            if 0 <= row < len(items): items.pop(row); self._save_favorites(items); refresh()
+        actions = QHBoxLayout(); add = QPushButton(self.tr("Save current request")); add.clicked.connect(add_current); load = QPushButton(self.tr("Load selected")); load.clicked.connect(load_selected); remove = QPushButton(self.tr("Remove favorite")); remove.clicked.connect(remove_selected); close = QPushButton(self.tr("Close")); close.clicked.connect(dialog.accept)
+        for button in (add, load, remove): actions.addWidget(button)
+        actions.addStretch(); actions.addWidget(close); layout.addLayout(actions); refresh(); dialog.exec()
+
+    def _show_operations_inbox(self):
+        dialog = QDialog(self); dialog.setWindowTitle(self.tr("Operations inbox")); dialog.resize(820, 460)
+        layout = QVBoxLayout(dialog); layout.addWidget(QLabel(self.tr("Local items requiring attention. This inbox is scoped to the active environment and never sends changes.")))
+        table = QTableWidget(0, 3); table.setHorizontalHeaderLabels([self.tr("Priority"), self.tr("Source"), self.tr("Details")]); table.horizontalHeader().setStretchLastSection(True); table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers); layout.addWidget(table, 1)
+        profile = active_environment_profile(QSettings("Zscaler", "APIClient")); scoped = [item for item in self.request_history if str(item.get("environment_id") or "default") == profile["id"]]
+        try: alerts = operational_alerts(scoped, AuditTrail(QSettings("Zscaler", "APIClient")).verify(), max(1, int(QSettings("Zscaler", "APIClient").value("monitoring/error_threshold", "10")))).get("alerts", [])
+        except (TypeError, ValueError): alerts = []
+        rows = [(str(item.get("severity", "medium")).title(), self.tr("Alert"), str(item.get("code", ""))) for item in alerts]
+        rows += [(self.tr("High"), self.tr("Failed request"), f"{item.get('method', '')} {item.get('url', '')}") for item in scoped[-20:] if int(item.get("status", 0) or 0) >= 400]
+        rows += [(self.tr("Info"), self.tr("Scheduled report"), str(item.get("name", ""))) for item in self._report_schedules() if item.get("environment_id", profile["id"]) == profile["id"] and not item.get("enabled", True)]
+        table.setRowCount(len(rows))
+        for row, values in enumerate(rows):
+            for column, value in enumerate(values): table.setItem(row, column, QTableWidgetItem(value))
+        actions = QHBoxLayout(); alerts_btn = QPushButton(self.tr("Open Alerts")); alerts_btn.clicked.connect(lambda: (dialog.accept(), self._show_operations_named("alert_tab_index"))); history_btn = QPushButton(self.tr("Open Recent")); history_btn.clicked.connect(lambda: (dialog.accept(), self._show_history())); close = QPushButton(self.tr("Close")); close.clicked.connect(dialog.accept); actions.addWidget(alerts_btn); actions.addWidget(history_btn); actions.addStretch(); actions.addWidget(close); layout.addLayout(actions); dialog.exec()
     
     def _load_from_history(self, entry: Dict):
         """Load a request from history."""

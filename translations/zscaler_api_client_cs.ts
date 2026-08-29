@@ -477,6 +477,7 @@
         <message>
             <location filename="../zscaler_api_client.py" line="8633" />
             <location filename="../zscaler_api_client.py" line="9970" />
+            <location filename="../zscaler_api_client.py" line="11594" />
             <source>Product</source>
             <translation>Produkt</translation>
         </message>
@@ -730,7 +731,7 @@
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="8981" />
-            <location filename="../zscaler_api_client.py" line="11737" />
+            <location filename="../zscaler_api_client.py" line="11791" />
             <source>Ask in plain language. Sensitive values are masked before display or export.</source>
             <translation>Zeptejte se srozumitelným jazykem. Citlivé hodnoty jsou před zobrazením nebo exportem maskovány.</translation>
         </message>
@@ -997,11 +998,13 @@
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="9970" />
+            <location filename="../zscaler_api_client.py" line="11594" />
             <source>Method</source>
             <translation>Metoda</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="9970" />
+            <location filename="../zscaler_api_client.py" line="11594" />
             <source>URL</source>
             <translation>URL</translation>
         </message>
@@ -1410,38 +1413,134 @@ Size: {size}</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="8612" />
-            <location filename="../zscaler_api_client.py" line="11582" />
+            <location filename="../zscaler_api_client.py" line="11636" />
             <source>Request History</source>
             <translation>Historie požadavků</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11583" />
+            <location filename="../zscaler_api_client.py" line="11593" />
+            <source>Favorites are local to the active environment and never include credentials or request bodies.</source>
+            <translation>Favorites are local to the active environment and never include credentials or request bodies.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11602" />
+            <source>Save favorite</source>
+            <translation>Save favorite</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11602" />
+            <source>Favorite name:</source>
+            <translation>Favorite name:</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11602" />
+            <source>New request</source>
+            <translation>New request</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11612" />
+            <source>Save current request</source>
+            <translation>Save current request</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11612" />
+            <source>Load selected</source>
+            <translation>Load selected</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11612" />
+            <source>Remove favorite</source>
+            <translation>Remove favorite</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11612" />
+            <location filename="../zscaler_api_client.py" line="11629" />
+            <source>Close</source>
+            <translation>Close</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11618" />
+            <source>Local items requiring attention. This inbox is scoped to the active environment and never sends changes.</source>
+            <translation>Local items requiring attention. This inbox is scoped to the active environment and never sends changes.</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11619" />
+            <source>Priority</source>
+            <translation>Priority</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11619" />
+            <source>Source</source>
+            <translation>Source</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11619" />
+            <source>Details</source>
+            <translation>Details</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11623" />
+            <source>Alert</source>
+            <translation>Alert</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11624" />
+            <source>High</source>
+            <translation>High</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11624" />
+            <source>Failed request</source>
+            <translation>Failed request</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11625" />
+            <source>Info</source>
+            <translation>Info</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11625" />
+            <source>Scheduled report</source>
+            <translation>Scheduled report</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11629" />
+            <source>Open Alerts</source>
+            <translation>Open Alerts</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11629" />
+            <source>Open Recent</source>
+            <translation>Open Recent</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="11637" />
             <source>This request belongs to another environment. Activate that environment profile before loading it.</source>
             <translation>Tento požadavek patří do jiného prostředí. Před načtením profil prostředí aktivujte.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11596" />
-            <location filename="../zscaler_api_client.py" line="11615" />
+            <location filename="../zscaler_api_client.py" line="11650" />
+            <location filename="../zscaler_api_client.py" line="11669" />
             <source>Multipart request loaded. Select the local file again before sending.</source>
             <translation>Vícedílný požadavek načten. Před odesláním znovu vyberte místní soubor.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11687" />
+            <location filename="../zscaler_api_client.py" line="11741" />
             <source>Masked cURL command copied to clipboard</source>
             <translation>Maskovaný příkaz cURL zkopírován do schránky</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11692" />
+            <location filename="../zscaler_api_client.py" line="11746" />
             <source>Binary response</source>
             <translation>Binární odezva</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11692" />
+            <location filename="../zscaler_api_client.py" line="11746" />
             <source>Binary response content is not copied to the clipboard. Use Export to save the original file.</source>
             <translation>Obsah binární odpovědi se nezkopíruje do schránky. Pomocí Export uložte původní soubor.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11701" />
+            <location filename="../zscaler_api_client.py" line="11755" />
             <source>Masked response copied to clipboard</source>
             <translation>Maskovaná odpověď byla zkopírována do schránky</translation>
         </message>
@@ -1472,8 +1571,8 @@ Size: {size}</translation>
             <location filename="../zscaler_api_client.py" line="10879" />
             <location filename="../zscaler_api_client.py" line="11007" />
             <location filename="../zscaler_api_client.py" line="11039" />
-            <location filename="../zscaler_api_client.py" line="11684" />
-            <location filename="../zscaler_api_client.py" line="11703" />
+            <location filename="../zscaler_api_client.py" line="11738" />
+            <location filename="../zscaler_api_client.py" line="11757" />
             <source>Warning</source>
             <translation>Varování</translation>
         </message>
@@ -1670,6 +1769,18 @@ Size: {size}</translation>
             <translation>Open redacted request history</translation>
         </message>
         <message>
+            <location filename="../zscaler_api_client.py" line="8612" />
+            <location filename="../zscaler_api_client.py" line="11591" />
+            <source>Favorites</source>
+            <translation>Favorites</translation>
+        </message>
+        <message>
+            <location filename="../zscaler_api_client.py" line="8612" />
+            <location filename="../zscaler_api_client.py" line="11617" />
+            <source>Operations inbox</source>
+            <translation>Operations inbox</translation>
+        </message>
+        <message>
             <location filename="../zscaler_api_client.py" line="8614" />
             <source>Quick actions</source>
             <translation>Quick actions</translation>
@@ -1811,7 +1922,7 @@ Size: {size}</translation>
         <message>
             <location filename="../zscaler_api_client.py" line="8858" />
             <location filename="../zscaler_api_client.py" line="10755" />
-            <location filename="../zscaler_api_client.py" line="11717" />
+            <location filename="../zscaler_api_client.py" line="11771" />
             <source>No GraphQL variables extracted.</source>
             <translation>Nebyly extrahovány žádné proměnné GraphQL.</translation>
         </message>
@@ -1824,7 +1935,7 @@ Size: {size}</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="8873" />
-            <location filename="../zscaler_api_client.py" line="11722" />
+            <location filename="../zscaler_api_client.py" line="11776" />
             <source>Select a documented endpoint to inspect its request contract.</source>
             <translation>Vyberte zdokumentovaný koncový bod ke kontrole jeho smlouvy požadavku.</translation>
         </message>
@@ -1835,6 +1946,7 @@ Size: {size}</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="8878" />
+            <location filename="../zscaler_api_client.py" line="11594" />
             <source>Name</source>
             <translation>Jméno</translation>
         </message>
@@ -2141,12 +2253,12 @@ Size: {size}</translation>
             <translation type="vanished">Processing {count} items...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11617" />
+            <location filename="../zscaler_api_client.py" line="11671" />
             <source>Request loaded from history</source>
             <translation>Požadavek načten z historie</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11684" />
+            <location filename="../zscaler_api_client.py" line="11738" />
             <source>No URL to copy</source>
             <translation>Žádná adresa URL ke kopírování</translation>
         </message>
@@ -2159,53 +2271,53 @@ Size: {size}</translation>
             <translation type="vanished">Odpověď zkopírována do schránky</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11703" />
+            <location filename="../zscaler_api_client.py" line="11757" />
             <source>No response to copy</source>
             <translation>Žádná odpověď na kopírování</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11739" />
+            <location filename="../zscaler_api_client.py" line="11793" />
             <source>Request cleared</source>
             <translation>Požadavek vymazán</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11752" />
-            <location filename="../zscaler_api_client.py" line="11803" />
+            <location filename="../zscaler_api_client.py" line="11806" />
+            <location filename="../zscaler_api_client.py" line="11857" />
             <source>Missing Credentials</source>
             <translation>Chybějící přihlašovací údaje</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11753" />
+            <location filename="../zscaler_api_client.py" line="11807" />
             <source>Please configure ZIA credentials in Settings first.</source>
             <translation>Nejprve nakonfigurujte přihlašovací údaje ZIA v Nastavení.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11775" />
+            <location filename="../zscaler_api_client.py" line="11829" />
             <source>ZIA auth request prepared. Click Send to authenticate.</source>
             <translation>Žádost o ověření ZIA byla připravena. Klikněte na Odeslat pro ověření.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11804" />
+            <location filename="../zscaler_api_client.py" line="11858" />
             <source>Please configure ZPA credentials in Settings first.</source>
             <translation>Nejprve nakonfigurujte přihlašovací údaje ZPA v Nastavení.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11817" />
+            <location filename="../zscaler_api_client.py" line="11871" />
             <source>ZPA auth request prepared. Click Send to authenticate.</source>
             <translation>Žádost o ověření ZPA připravena. Klikněte na Odeslat pro ověření.</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11822" />
+            <location filename="../zscaler_api_client.py" line="11876" />
             <source>All sessions cleared</source>
             <translation>Všechny relace byly vymazány</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11845" />
+            <location filename="../zscaler_api_client.py" line="11899" />
             <source>Language Changed</source>
             <translation>Jazyk změněn</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11846" />
+            <location filename="../zscaler_api_client.py" line="11900" />
             <source>The application needs to restart to apply the new language.
 
 Restart now?</source>
@@ -2214,49 +2326,49 @@ Restart now?</source>
 Restartovat nyní?</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11894" />
+            <location filename="../zscaler_api_client.py" line="11948" />
             <source>Checking for updates...</source>
             <translation>Kontrola aktualizací...</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11967" />
+            <location filename="../zscaler_api_client.py" line="12021" />
             <source>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</source>
             <translation>&lt;p&gt;&lt;i&gt;⚠️ This is a pre-release version&lt;/i&gt;&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11971" />
+            <location filename="../zscaler_api_client.py" line="12025" />
             <source>Update Available</source>
             <translation>Aktualizace k dispozici</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11973" />
+            <location filename="../zscaler_api_client.py" line="12027" />
             <source>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</source>
             <translation>&lt;h3&gt;A new version is available!&lt;/h3&gt;&lt;p&gt;&lt;b&gt;Current version:&lt;/b&gt; {current}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Latest version:&lt;/b&gt; {latest}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Release:&lt;/b&gt; {name}&lt;/p&gt;{prerelease}&lt;p style='color: #666; font-size: 11px;'&gt;✓ Verified from github.com/{repo}&lt;/p&gt;&lt;p&gt;Would you like to open the download page?&lt;/p&gt;</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11993" />
+            <location filename="../zscaler_api_client.py" line="12047" />
             <source>Update available: v{version}</source>
             <translation>Update available: v{version}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="11996" />
+            <location filename="../zscaler_api_client.py" line="12050" />
             <source>You are up to date (v{version})</source>
             <translation>You are up to date (v{version})</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12001" />
+            <location filename="../zscaler_api_client.py" line="12055" />
             <source>Update Check Failed</source>
             <translation>Kontrola aktualizace se nezdařila</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12002" />
+            <location filename="../zscaler_api_client.py" line="12056" />
             <source>Could not check for updates:
 {error}</source>
             <translation>Could not check for updates:
 {error}</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12004" />
+            <location filename="../zscaler_api_client.py" line="12058" />
             <source>Update check failed</source>
             <translation>Kontrola aktualizace se nezdařila</translation>
         </message>
@@ -7436,12 +7548,12 @@ Ada,ada@example.com</translation>
     <context>
         <name>window</name>
         <message>
-            <location filename="../zscaler_api_client.py" line="12156" />
+            <location filename="../zscaler_api_client.py" line="12210" />
             <source>Automatic Update Check</source>
             <translation>Automatická kontrola aktualizací</translation>
         </message>
         <message>
-            <location filename="../zscaler_api_client.py" line="12158" />
+            <location filename="../zscaler_api_client.py" line="12212" />
             <source>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</source>
             <translation>&lt;p&gt;Would you like to automatically check for updates when the app starts?&lt;/p&gt;&lt;p&gt;This will connect to GitHub to check for new versions.&lt;/p&gt;</translation>
         </message>
