@@ -20,6 +20,7 @@ import html
 import hashlib
 import io
 import json
+import math
 import mimetypes
 import os
 import re
@@ -67,7 +68,7 @@ from PySide6.QtWidgets import (
     QCheckBox, QScrollArea, QFrame, QStackedWidget, QGridLayout, QSizePolicy
     , QInputDialog, QToolTip
 )
-from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment, QSize
+from PySide6.QtCore import Qt, QThread, Signal, QSettings, QTranslator, QLocale, QTimer, QLibraryInfo, QProcess, QProcessEnvironment, QSize, QPoint
 from PySide6.QtGui import QAction, QFont, QColor, QSyntaxHighlighter, QTextCharFormat, QPixmap, QPainter, QPen
 
 try:
@@ -3705,6 +3706,7 @@ class LlmWorker(QThread):
 
 class NumericBarChart(QWidget):
     """Compact, dependency-free chart with accessible labels and contrasts."""
+    activated = Signal(str, float)
     def __init__(self, parent=None):
         super().__init__(parent)
         self.values: list[tuple[str, float]] = []
@@ -3719,6 +3721,26 @@ class NumericBarChart(QWidget):
     def set_style(self, style: str):
         self.style = style
         self.update()
+
+    def mousePressEvent(self, event):
+        if not self.values:
+            return super().mousePressEvent(event)
+        point = event.position().toPoint()
+        if self.style == "pie":
+            total = sum(value for _, value in self.values) or 1
+            chart = self.rect().adjusted(42, 16, -16, -31); size = min(chart.height(), chart.width() // 2)
+            center = QPoint(chart.left() + size // 2, chart.top() + size // 2)
+            dx, dy = point.x() - center.x(), point.y() - center.y()
+            if dx * dx + dy * dy <= (size // 2) ** 2:
+                angle = (math.degrees(math.atan2(-dy, dx)) + 360) % 360; start = 0.0
+                for label, value in self.values:
+                    span = 360 * value / total
+                    if start <= angle < start + span: self.activated.emit(label, value); break
+                    start += span
+        else:
+            chart = self.rect().adjusted(42, 16, -16, -31); index = min(len(self.values) - 1, max(0, (point.x() - chart.left()) * len(self.values) // max(1, chart.width())))
+            self.activated.emit(*self.values[index])
+        super().mousePressEvent(event)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -6503,6 +6525,7 @@ class OperationsDialog(QDialog):
         report_banner = VisualAssetLabel("assets/visuals/security-report-banner.png", 120, crop=True)
         report_banner.setAccessibleName(self.tr("Security posture report artwork")); reports_layout.addWidget(report_banner)
         self.report_chart = NumericBarChart(); reports_layout.addWidget(self.report_chart)
+        self.report_chart.activated.connect(self._drill_into_report_metric)
         self.report_preview = QPlainTextEdit(); self.report_preview.setReadOnly(True); reports_layout.addWidget(self.report_preview)
         report_actions = QHBoxLayout(); report_markdown = QPushButton(self.tr("Export report as Markdown")); report_markdown.clicked.connect(lambda: self.export_report("markdown")); report_actions.addWidget(report_markdown)
         report_json = QPushButton(self.tr("Export report as JSON")); report_json.clicked.connect(lambda: self.export_report("json")); report_actions.addWidget(report_json); report_actions.addStretch(); reports_layout.addLayout(report_actions)
@@ -7314,6 +7337,15 @@ class OperationsDialog(QDialog):
         severity_labels = {"critical": self.tr("Critical"), "high": self.tr("High"), "medium": self.tr("Medium"), "low": self.tr("Low"), "info": self.tr("Info")}
         self.report_chart.set_style("pie"); self.report_chart.set_values([(severity_labels[level], float(count)) for level, count in posture["severity_counts"].items()])
         self.report_preview.setPlainText("\n".join(self._report_lines(data)))
+
+    def _drill_into_report_metric(self, label: str, value: float):
+        """Turn a visual report metric into a local, reviewable evidence view."""
+        data = privacy_safe(self._report_data(), self.settings, "display")
+        detail = {"metric": label, "value": value, "scope": data["scope"], "findings": [item for item in data["posture"].get("findings", []) if str(item.get("severity", "")).lower() == str(label).lower()]}
+        dialog = QDialog(self); dialog.setWindowTitle(self.tr("Report detail")); dialog.resize(700, 440)
+        layout = QVBoxLayout(dialog); intro = QLabel(self.tr("Local evidence behind the selected report metric. It is not a tenant-wide assessment.")); intro.setWordWrap(True); layout.addWidget(intro)
+        output = QPlainTextEdit(json.dumps(detail, indent=2, ensure_ascii=False)); output.setReadOnly(True); layout.addWidget(output, 1)
+        close = QPushButton(self.tr("Close")); close.clicked.connect(dialog.accept); layout.addWidget(close, alignment=Qt.AlignmentFlag.AlignRight); dialog.exec()
 
     def _report_html(self, data):
         """Create a self-contained visual report with embedded, offline artwork."""
