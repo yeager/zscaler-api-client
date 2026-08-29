@@ -1,12 +1,25 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from PyInstaller.utils.hooks import collect_all
+
+
+cryptography_datas, cryptography_binaries, cryptography_hiddenimports = collect_all('cryptography')
 
 a = Analysis(
     ['zscaler_api_client.py'],
     pathex=[],
-    binaries=[],
-    datas=[('translations', 'translations'), ('data', 'data'), ('assets', 'assets'), ('CHANGELOG.md', '.')],
-    hiddenimports=['keyring.backends.macOS'],
+    binaries=cryptography_binaries,
+    datas=[
+        *cryptography_datas,
+        ('translations', 'translations'), ('data', 'data'), ('assets', 'assets'), ('CHANGELOG.md', '.'),
+        ('feature_services.py', '.'), ('evidence_signing.py', '.'), ('schedule_services.py', '.'),
+        ('pac_services.py', '.'), ('zscaler_config_services.py', '.'),
+    ],
+    hiddenimports=[
+        *cryptography_hiddenimports,
+        'keyring.backends.macOS', 'feature_services', 'evidence_signing', 'schedule_services',
+        'pac_services', 'zscaler_config_services',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

@@ -4,15 +4,16 @@
 import sys
 import os
 from pathlib import Path
-from PyInstaller.utils.hooks import collect_data_files, collect_submodules
+from PyInstaller.utils.hooks import collect_all, collect_data_files, collect_submodules
 
-VERSION = '1.6.7'
+VERSION = '2.8.9'
 
 block_cipher = None
 
-# Collect all PyQt6 data files and submodules
-pyqt6_datas = collect_data_files('PyQt6', include_py_files=True)
-pyqt6_submodules = collect_submodules('PyQt6')
+# Collect the Qt runtime used by the application, including its platform plugins.
+pyside6_datas = collect_data_files('PySide6', include_py_files=True)
+pyside6_submodules = collect_submodules('PySide6')
+cryptography_datas, cryptography_binaries, cryptography_hiddenimports = collect_all('cryptography')
 
 # Path to translations - include compiled .qm files
 translations_path = Path('translations')
@@ -22,18 +23,28 @@ visual_files = [(str(f), 'assets/visuals') for f in Path('assets/visuals').glob(
 a = Analysis(
     ['zscaler_api_client.py'],
     pathex=[],
-    binaries=[],
+    binaries=cryptography_binaries,
     datas=[
-        *pyqt6_datas,
+        *pyside6_datas,
+        *cryptography_datas,
         *translation_files,
         *visual_files,
+        ('data', 'data'),
+        ('feature_services.py', '.'),
+        ('evidence_signing.py', '.'),
+        ('schedule_services.py', '.'),
+        ('pac_services.py', '.'),
+        ('zscaler_config_services.py', '.'),
+        ('CHANGELOG.md', '.'),
     ],
     hiddenimports=[
-        *pyqt6_submodules,
-        'PyQt6.QtCore',
-        'PyQt6.QtGui',
-        'PyQt6.QtWidgets',
-        'PyQt6.sip',
+        *pyside6_submodules,
+        *cryptography_hiddenimports,
+        'feature_services',
+        'evidence_signing',
+        'schedule_services',
+        'pac_services',
+        'zscaler_config_services',
     ],
     hookspath=[],
     hooksconfig={},
@@ -122,7 +133,7 @@ app = BUNDLE(
             # Disable early Qt logging that triggers the crash
             'QT_LOGGING_RULES': '*.debug=false;qt.*=false',
             # Force Qt to not use CF bundle detection
-            'QT_QPA_PLATFORM_PLUGIN_PATH': '@executable_path/../Frameworks/PyQt6/Qt6/plugins/platforms',
+            'QT_QPA_PLATFORM_PLUGIN_PATH': '@executable_path/../Frameworks/PySide6/Qt/plugins/platforms',
         },
     },
 )
