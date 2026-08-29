@@ -4034,7 +4034,7 @@ Ada,ada@example.com</translation>
         <message>
             <location filename="../zscaler_api_client.py" line="6523" />
             <source>User risk report (current response)</source>
-            <translation>User risk report (current response)</translation>
+            <translation>Felhasználói kockázati jelentés (aktuális válasz)</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="6584" />
@@ -5106,7 +5106,7 @@ Ada,ada@example.com</translation>
         <message>
             <location filename="../zscaler_api_client.py" line="7327" />
             <source>User risk report</source>
-            <translation>User risk report</translation>
+            <translation>Felhasználói kockázati jelentés</translation>
         </message>
         <message>
             <location filename="../zscaler_api_client.py" line="7328" />
