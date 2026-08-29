@@ -1,6 +1,7 @@
 """Regression checks for required modules in packaged application builds."""
 
 from pathlib import Path
+import re
 import unittest
 
 
@@ -22,6 +23,14 @@ class BuildWorkflowTests(unittest.TestCase):
                 self.assertIn(data_marker, section)
         for section in build_sections:
             self.assertIn("--collect-all cryptography", section)
+
+    def test_readme_release_link_matches_application_version(self):
+        root = Path(__file__).parent.parent
+        source = (root / "zscaler_api_client.py").read_text(encoding="utf-8")
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        version = re.search(r'^__version__ = "([^"]+)"$', source, re.MULTILINE)
+        self.assertIsNotNone(version)
+        self.assertIn(f"releases/tag/v{version.group(1)}", readme)
 
 
 if __name__ == "__main__":
