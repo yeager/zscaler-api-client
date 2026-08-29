@@ -15,9 +15,9 @@
     "kind": "query",
     "domain": "Cyber Security",
     "name": "cyber_security_location",
-    "description": "Queries",
-    "details": "Queries View locations with incidents and the number of incidents for each location. Response Returns CyberSecurityIncidentsResponseWithId Arguments ​ Name Description categorize_by - IncidentsWithIdGroupBy! start_time - Long! The time frame start time. end_time - Long! The time frame end time. QUERY query CYBER_SECURITY { CYBER_SECURITY { cyber_security_location(categorize_by: LOCATION_ID, start_time: \"123456789\", end_time: \"123456789\") { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { id name total } obfuscated } } } RESPONSE { \"data\": { \"CYBER_SECURITY\": { \"cyber_security_location\": { \"entries\": [{ \"id\": 123, \"name\": \"example_value\", \"total\": 123 }], \"obfuscated\": true } } } }",
-    "query": "query CYBER_SECURITY { CYBER_SECURITY { cyber_security_location(categorize_by: LOCATION_ID, start_time: \"123456789\", end_time: \"123456789\") { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { id name total } obfuscated } } }",
+    "description": "",
+    "details": "",
+    "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/domains/cyber-security/queries/cyber_security_location"
   },
@@ -48,9 +48,9 @@
     "kind": "query",
     "domain": "Saas Security",
     "name": "casb_app",
-    "description": "",
-    "details": "",
-    "query": "",
+    "description": "Queries",
+    "details": "Queries Displays data about SaaS applications. Response Returns CasbAppReport Arguments ​ Name Description start_time - Long! The time frame start time. end_time - Long! The time frame end time. QUERY query SAAS_SECURITY { SAAS_SECURITY { casb_app(start_time: \"123456789\", end_time: \"123456789\") { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { name total } obfuscated } } } RESPONSE { \"data\": { \"SAAS_SECURITY\": { \"casb_app\": { \"entries\": [{ \"name\": \"example_value\", \"total\": 123 }], \"obfuscated\": true } } } }",
+    "query": "query SAAS_SECURITY { SAAS_SECURITY { casb_app(start_time: \"123456789\", end_time: \"123456789\") { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { name total } obfuscated } } }",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/domains/saas-security/queries/casb_app"
   },
@@ -92,9 +92,9 @@
     "kind": "query",
     "domain": "Web Traffic",
     "name": "bandwidth_control_rules",
-    "description": "",
-    "details": "",
-    "query": "",
+    "description": "Queries",
+    "details": "Queries Displays the bandwidth control rules by traffic volume. Response Returns WebBandwidthRuleResponse Arguments ​ Name Description start_time - Long! The time frame start time. end_time - Long! The time frame end time. QUERY query WEB_TRAFFIC { WEB_TRAFFIC { bandwidth_control_rules(start_time: \"123456789\", end_time: \"123456789\") { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { name total } obfuscated } } } RESPONSE { \"data\": { \"WEB_TRAFFIC\": { \"bandwidth_control_rules\": { \"entries\": [{ \"name\": \"example_value\", \"total\": 123 }], \"obfuscated\": true } } } }",
+    "query": "query WEB_TRAFFIC { WEB_TRAFFIC { bandwidth_control_rules(start_time: \"123456789\", end_time: \"123456789\") { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { name total } obfuscated } } }",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/domains/web-traffic/queries/bandwidth_control_rules"
   },
@@ -103,9 +103,9 @@
     "kind": "query",
     "domain": "Web Traffic",
     "name": "location",
-    "description": "Queries",
-    "details": "Queries Displays data about the web traffic of your organization's locations. Response Returns ReportDataWebTrendResponse Arguments ​ Name Description start_time - Long! The time frame start time. end_time - Long! The time frame end time. traffic_unit - WebTrafficUnits! Transactions or Bytes as the unit of data. include_trend - Boolean = false Optional:To include trend data. trend_interval - TrendInterval Conditional Optional:Trend interval to be specified if including trend data. QUERY query WEB_TRAFFIC { WEB_TRAFFIC { location(start_time: \"123456789\", end_time: \"123456789\", traffic_unit: TRANSACTIONS, include_trend: true, trend_interval: DAY) { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { name total trend { trend_start_time trend_interval trend_values } } obfuscated } } } RESPONSE { \"data\": { \"WEB_TRAFFIC\": { \"location\": { \"entries\": [{ \"name\": \"example_value\", \"total\": 123, \"trend\": { \"trend_start_time\": 123, \"trend_interval\": 123, \"trend_values\": 123 } }], \"obfuscated\": true } } } }",
-    "query": "query WEB_TRAFFIC { WEB_TRAFFIC { location(start_time: \"123456789\", end_time: \"123456789\", traffic_unit: TRANSACTIONS, include_trend: true, trend_interval: DAY) { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { name total trend { trend_start_time trend_interval trend_values } } obfuscated } } }",
+    "description": "",
+    "details": "",
+    "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/domains/web-traffic/queries/location"
   },
@@ -169,9 +169,9 @@
     "kind": "query",
     "domain": "Web Traffic",
     "name": "top_installed_apps",
-    "description": "Zscaler Automation Documentation",
-    "details": "",
-    "query": "",
+    "description": "Queries",
+    "details": "Queries Displays the top installed plug-ins, browsers, and applications. Response Returns WebInstalledAppResponse Arguments ​ Name Description start_time - Long! The time frame start time. end_time - Long! The time frame end time. QUERY query WEB_TRAFFIC { WEB_TRAFFIC { top_installed_apps(start_time: \"123456789\", end_time: \"123456789\") { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { name total } obfuscated } } } RESPONSE { \"data\": { \"WEB_TRAFFIC\": { \"top_installed_apps\": { \"entries\": [{ \"name\": \"example_value\", \"total\": 123 }], \"obfuscated\": true } } } }",
+    "query": "query WEB_TRAFFIC { WEB_TRAFFIC { top_installed_apps(start_time: \"123456789\", end_time: \"123456789\") { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { name total } obfuscated } } }",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/domains/web-traffic/queries/top_installed_apps"
   },
@@ -301,9 +301,9 @@
     "kind": "query",
     "domain": "Zero Trust Firewall",
     "name": "overall_traffic",
-    "description": "",
-    "details": "",
-    "query": "",
+    "description": "Queries",
+    "details": "Queries Displays data about the overall traffic for the selected time period. Response Returns FirewallOverallTrafficReport Arguments ​ Name Description start_time - Long! The time frame start time. end_time - Long! The time frame end time. QUERY query ZERO_TRUST_FIREWALL { ZERO_TRUST_FIREWALL { overall_traffic(start_time: \"123456789\", end_time: \"123456789\") { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { name total } obfuscated } } } RESPONSE { \"data\": { \"ZERO_TRUST_FIREWALL\": { \"overall_traffic\": { \"entries\": [{ \"name\": \"example_value\", \"total\": 123 }], \"obfuscated\": true } } } }",
+    "query": "query ZERO_TRUST_FIREWALL { ZERO_TRUST_FIREWALL { overall_traffic(start_time: \"123456789\", end_time: \"123456789\") { entries(limit: 10, order_by: [{ name: ASC, total: ASC }], filter_by: { name: { eq: \"AWS\" } }) { name total } obfuscated } } }",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/domains/zero-trust-firewall/queries/overall_traffic"
   },
@@ -311,12 +311,12 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "ActionStatus",
-    "description": "Enums",
-    "details": "Enums Supported action types. Values Value Description ALLOW BLOCK DEFINITION enum ActionStatus { ALLOW BLOCK }",
+    "name": "AppsOnlyResponse",
+    "description": "Types",
+    "details": "Types Internally supported response type. Fields Name Description entries(limit: Int, order_by: [ShadowITAppsOrderBy], filter_by: shadowITAppsSearchFilterBy) - [AppsResponse] Response entries having supported sub fields EXAMPLE { \"entries\": [{ \"application\": \"example\", \"application_category\": \"example\", \"risk_index\": 123, \"computed_risk_index\": 123, \"sanctioned_state\": \"example\", \"integration\": 123, \"data_consumed\": 123, \"data_uploaded\": 123, \"data_downloaded\": 123, \"authenticated_users\": 123, \"unAuthenticated_location_count\": 123, \"last_access_time\": 123, \"vulnerability\": \"example\", \"undiscovered\": true, \"custom_risk_index\": true }] }",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/actionstatus"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/appsonlyresponse"
   },
   {
     "product": "zinsights",
@@ -355,6 +355,17 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
+    "name": "CasbEntryOrderBy",
+    "description": "Input Types",
+    "details": "Input Types Supported order by fields. Fields Name Description name - SortOrder Use this to sort by name total - SortOrder Use this to sort by total EXAMPLE { \"name\": { }, \"total\": { } }",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/casbentryorderby"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
     "name": "CasbReportDataQuery",
     "description": "Types",
     "details": "Types Analyze your SAAS Security traffic.View the data as Units. Fields Name Description casb_app(start_time: Long!, end_time: Long!) - CasbAppReport Displays data about SaaS applications. EXAMPLE { \"casb_app\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true } }",
@@ -372,17 +383,6 @@
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cloudapplicationclass"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
-    "name": "CloudApplicationEntriesFilterBy",
-    "description": "Input Types",
-    "details": "Input Types Supported fields to filter by for cloud application. Fields Name Description name - StringFilter Use this to filter by name EXAMPLE { \"name\": { \"eq\": \"example\", \"ne\": \"example\", \"in\": [\"example\"], \"nin\": [\"example\"] } }",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cloudapplicationentriesfilterby"
   },
   {
     "product": "zinsights",
@@ -410,23 +410,23 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "CloudApplicationReportData",
-    "description": "Types",
-    "details": "Types Internally supported response type. Fields Name Description name - String! Supported field name in the entries response. total - Long! Supported field total in the entries response. EXAMPLE { \"name\": \"example\", \"total\": 123 }",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cloudapplicationreportdata"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
     "name": "CloudApplicationResponse",
     "description": "Types",
     "details": "Types Cloud Application Response format without trend data. Fields Name Description entries(limit: Int, order_by: [CloudApplicationOrderBy], filter_by: CloudApplicationEntriesFilterBy) - [CloudApplicationReportData] Response entries having supported sub fields obfuscated - Boolean! Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cloudapplicationresponse"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
+    "name": "CyberSecurityEntriesSearchFilterBy",
+    "description": "Input Types",
+    "details": "Input Types Supported fields to filter by. Fields Name Description name - StringFilter Use this to filter by name. EXAMPLE { \"name\": { \"eq\": \"example\", \"ne\": \"example\", \"in\": [\"example\"], \"nin\": [\"example\"] } }",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cybersecurityentriessearchfilterby"
   },
   {
     "product": "zinsights",
@@ -454,23 +454,12 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "CyberSecurityIncidentsResponse",
+    "name": "CyberSecurityReportDataQuery",
     "description": "Types",
-    "details": "Types Internally supported response type. Fields Name Description entries(limit: Int, order_by: [CyberSecurityEntryOrderBy], filter_by: CyberSecurityEntriesSearchFilterBy) - [CyberSecurityResponse] Response entries having supported sub fields obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123, \"entries\": [{ \"name\": \"example\", \"total\": 123 }] }], \"obfuscated\": true }",
+    "details": "Types Cybersecurity Insights provides a unified real-time visibility into critical security incidents and policy actions to understand the security efficacy of layered defense across Malware Protection, Advanced Threat Protection (ATP), Sandbox, Firewall, and Isolation for your organization. Fields Name Description cyber_security_location(categorize_by: IncidentsWithIdGroupBy!, start_time: Long!, end_time: Long!) - CyberSecurityIncidentsResponseWithId View locations with incidents and the number of incidents for each location. incidents(categorize_by: [IncidentsGroupBy!]!, start_time: Long!, end_time: Long!) - CyberSecurityIncidentsResponse View the number of incidents recorded for each threat category. EXAMPLE { \"cyber_security_location\": { \"entries\": [{ \"id\": 123, \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"incidents\": { \"entries\": [{ \"name\": \"example\", \"total\": 123, \"entries\": [{ \"name\": \"example\", \"total\": 123 }] }], \"obfuscated\": true } }",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cybersecurityincidentsresponse"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
-    "name": "CyberSecurityIncidentsResponseWithId",
-    "description": "Types",
-    "details": "Types Internally supported response type with Id. Fields Name Description entries(limit: Int, order_by: [CyberSecurityEntryOrderBy], filter_by: CyberSecurityEntriesSearchFilterBy) - [CyberSecurityResponseId] Response entries having supported sub fields obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"id\": 123, \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cybersecurityincidentsresponsewithid"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cybersecurityreportdataquery"
   },
   {
     "product": "zinsights",
@@ -487,6 +476,28 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
+    "name": "CyberSecurityResponseId",
+    "description": "Types",
+    "details": "Types Internally supported response type with Id. Fields Name Description id - Long! Supported field id in the entries response. name - String! Supported field name in the entries response. total - Long! Supported field total in the entries response. EXAMPLE { \"id\": 123, \"name\": \"example\", \"total\": 123 }",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cybersecurityresponseid"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
+    "name": "DeviceStat",
+    "description": "Types",
+    "details": "Types Devices connected to your organization's traffic and its distribution among various device types. Fields Name Description entries(limit: Int, order_by: [IoTDeviceOrderBy], filter_by: IoTDeviceFilterBy) - [IoTDeviceStat] Response entries having supported sub fields devices_count - Int! Device count. user_devices_count - Int! Device type count by unmanaged user devices whose traffic does not flow via Zscaler Client Connector. iot_devices_count - Int! Device type count by IOT. server_devices_count - Int! Device type count by server. un_classified_devices_count - Int! Device type count by devices not classified due to limited information for the AI/ML engine EXAMPLE { \"entries\": [{ \"classifications\": \"example\", \"classification_uuid\": \"example\", \"category\": \"example\", \"total\": 123 }], \"devices_count\": 123, \"user_devices_count\": 123, \"iot_devices_count\": 123, \"server_devices_count\": 123, \"un_classified_devices_count\": 123 }",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/devicestat"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
     "name": "DlpEngineFilter",
     "description": "Enums",
     "details": "Enums Supported DLP engines. Values Value Description ANY NONE HIPAA CYBER_BULLY_ENG GLBA PCI OFFENSIVE_LANGUAGE EXTERNAL DEFINITION enum DlpEngineFilter { ANY NONE HIPAA CYBER_BULLY_ENG GLBA PCI OFFENSIVE_LANGUAGE EXTERNAL }",
@@ -498,12 +509,12 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "FirewallActionReport",
+    "name": "EntriesResponse",
     "description": "Types",
-    "details": "Types Firewall Response format for action. Fields Name Description entries(limit: Int, order_by: [FirewallEntryOrderBy], filter_by: FirewallEntriesFilterBy) - [FirewallReportData] Response entries having supported sub fields obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
+    "details": "Types Internally supported response type. Fields Name Description name - String! Supported field name in the entries response. total - Long! Supported field total in the entries response. EXAMPLE { \"name\": \"example\", \"total\": 123 }",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewallactionreport"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/entriesresponse"
   },
   {
     "product": "zinsights",
@@ -553,17 +564,6 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "FirewallInsightsReport",
-    "description": "Types",
-    "details": "Types Firewall Response format for Insights. Fields Name Description entries(limit: Int, order_by: [FirewallEntryOrderBy], filter_by: FirewallEntriesFilterBy) - [FirewallInsightsEntry] Response entries having supported sub fields obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewallinsightsreport"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
     "name": "FirewallLocationReport",
     "description": "Types",
     "details": "Types Firewall Response format for location. Fields Name Description entries(limit: Int, order_by: [FirewallEntryOrderBy], filter_by: FirewallEntriesFilterBy) - [FirewallReportDataId] Response entries having supported sub fields obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"id\": 123, \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
@@ -575,12 +575,34 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
+    "name": "FirewallNetworkReport",
+    "description": "Types",
+    "details": "Types Firewall Response format for network report. Fields Name Description entries(limit: Int, order_by: [FirewallEntryOrderBy], filter_by: FirewallEntriesFilterBy) - [FirewallReportDataIsName] Response entries having supported sub fields obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewallnetworkreport"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
     "name": "FirewallNetworkServiceReport",
     "description": "Types",
     "details": "Types Firewall Response format for network service. Fields Name Description entries(limit: Int, order_by: [FirewallEntryOrderBy], filter_by: FirewallEntriesFilterBy) - [FirewallReportDataIsName] Response entries having supported sub fields obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewallnetworkservicereport"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
+    "name": "FirewallOverallTrafficReport",
+    "description": "Types",
+    "details": "Types Firewall Response format for overall traffic. Fields Name Description entries(limit: Int, order_by: [FirewallEntryOrderBy], filter_by: FirewallEntriesFilterBy) - [FirewallReportData] Response entries having supported sub fields obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewalloveralltrafficreport"
   },
   {
     "product": "zinsights",
@@ -614,17 +636,6 @@
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewallreportdataisname"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
-    "name": "FirewallReportDataQuery",
-    "description": "Types",
-    "details": "Types Analyze your Firewall traffic Fields Name Description location_firewall(start_time: Long!, end_time: Long!) - FirewallLocationReport Displays data about the firewall traffic of your organization's locations. action(start_time: Long!, end_time: Long!) - FirewallActionReport Displays data about the action that the service took on your organization's traffic. overall_traffic(start_time: Long!, end_time: Long!) - FirewallOverallTrafficReport Displays data about the overall traffic for the selected time period. network_service(start_time: Long!, end_time: Long!, units: FirewallInsightUnits) - FirewallNetworkServiceReport Displays data about traffic associated with a specific network service. firewall_rule_policy_hits(start_time: Long!, end_time: Long!, action: ActionStatus, units: FirewallInsightUnits) - FirewallInsightsReport Displays firewall policy hit counts (Firewall rule names and corresponding hit count) network_applications(start_time: Long!, end_time: Long!, units: FirewallInsightUnits) - FirewallNetworkReport Displays data about traffic associated with a specific network applications. network_location_types(start_time: Long!, end_time: Long!, units: FirewallInsightUnits) - FirewallLocationReport Displays data about traffic associated with different location groups. EXAMPLE { \"location_firewall\": { \"entries\": [{ \"id\": 123, \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"action\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"overall_traffic\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"network_service\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"firewall_rule_policy_hits\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"network_applications\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"network_location_types\": { \"entries\": [{ \"id\": 123, \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true } }",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewallreportdataquery"
   },
   {
     "product": "zinsights",
@@ -685,17 +696,6 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "IotDataQuery",
-    "description": "Types",
-    "details": "Types Gain visibility and monitor the IoT devices connected to your organization's traffic. Fields Name Description device_stats - DeviceStat IOT device stats EXAMPLE { \"device_stats\": { \"entries\": [{ \"classifications\": \"example\", \"classification_uuid\": \"example\", \"category\": \"example\", \"total\": 123 }], \"devices_count\": 123, \"user_devices_count\": 123, \"iot_devices_count\": 123, \"server_devices_count\": 123, \"un_classified_devices_count\": 123 } }",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/iotdataquery"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
     "name": "Long",
     "description": "Scalars",
     "details": "Scalars A 64-bit signed integer DEFINITION scalar Long",
@@ -707,12 +707,45 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
+    "name": "ProtocolReportEntry",
+    "description": "Types",
+    "details": "Types Internally supported response type. Fields Name Description name - String! Supported field name in the entries response. total - Long! Supported field total in the entries response. EXAMPLE { \"name\": \"example\", \"total\": 123 }",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/protocolreportentry"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
     "name": "ReportDataWebTrendResponse",
     "description": "Types",
     "details": "Types Web Response format with trend data included. Fields Name Description entries(limit: Int, order_by: [WebOrderBy], filter_by: WebEntriesFilterBy) - [WebReportDataTrend] Response entries having supported sub fields obfuscated - Boolean! Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123, \"trend\": { \"trend_start_time\": 123, \"trend_interval\": 123, \"trend_values\": [123] } }], \"obfuscated\": true }",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/reportdatawebtrendresponse"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
+    "name": "ShadowITAppsOrderBy",
+    "description": "Input Types",
+    "details": "Input Types Supported order by fields. Fields Name Description data_consumed - SortOrder Use this to sort by data consumed. data_uploaded - SortOrder Use this to sort by data uploaded. data_downloaded - SortOrder Use this to sort by data downloaded. EXAMPLE { \"data_consumed\": { }, \"data_uploaded\": { }, \"data_downloaded\": { } }",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/shadowitappsorderby"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
+    "name": "ShadowITDashboardResponse",
+    "description": "Types",
+    "details": "Types Internally supported response type. Fields Name Description group_by_app_cat_for_app(limit: Int) - SummaryAppCatResponse Response per application category grouped by application status. group_by_app_cat_for_user_count(limit: Int) - SummaryAppCatResponse Response per application category grouped by application status and user count. group_by_app_cat_for_upload_bytes(limit: Int) - SummaryAppCatResponse Response per application category grouped by application status and uploaded bytes. group_by_app_cat_for_total_bytes(limit: Int) - SummaryAppCatResponse Response per application category grouped by application status and total bytes. group_by_app_cat_for_download_bytes(limit: Int) - SummaryAppCatResponse Response per application category grouped by application status and downloaded bytes. group_by_risk_index_for_app(limit: Int) - SummaryOthersResponse Response for application count grouped by risk value. group_by_provisioning_status_for_app(limit: Int) - SummaryOthersResponse Response for application count grouped by provisioning status. group_by_access_for_app(limit: Int) - SummaryOthersResponse Response for application count grouped by access. total_upload_bytes - Long! Upload Bytes: The total upload bytes for all the applications. total_download_bytes - Long! Download Bytes: The total download bytes for all the applications. total_apps - Long! Total Applications: The total number of sanctioned and unsanctioned applications that are in use. total_bytes - Long! Total Bytes: The total bytes consumed by all the applications, both upload and download. EXAMPLE { \"group_by_app_cat_for_app\": { \"entries\": [{ \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"group_by_app_cat_for_user_count\": { \"entries\": [{ \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"group_by_app_cat_for_upload_bytes\": { \"entries\": [{ \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"group_by_app_cat_for_total_bytes\": { \"entries\": [{ \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"group_by_app_cat_for_download_bytes\": { \"entries\": [{ \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"group_by_risk_index_for_app\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"group_by_provisioning_status_for_app\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"group_by_access_for_app\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"total_upload_bytes\": 123, \"total_download_bytes\": 123, \"total_apps\": 123, \"total_bytes\": 123 }",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/shadowitdashboardresponse"
   },
   {
     "product": "zinsights",
@@ -735,6 +768,17 @@
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/sortorder"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
+    "name": "StringFilter",
+    "description": "Input Types",
+    "details": "Input Types The StringFilter input. Fields Name Description eq - String ne - String in - [String] nin - [String] EXAMPLE { \"eq\": \"example\", \"ne\": \"example\", \"in\": [\"example\"], \"nin\": [\"example\"] }",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/stringfilter"
   },
   {
     "product": "zinsights",
@@ -806,12 +850,12 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "WebInstalledAppResponse",
-    "description": "Types",
-    "details": "Types Web Response format for top installed plug-ins, browsers, and applications. Fields Name Description entries(limit: Int, order_by: [WebOrderBy], filter_by: WebEntriesFilterBy) - [WebReportData] obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
+    "name": "WebEntriesFilterBy",
+    "description": "Input Types",
+    "details": "Input Types Supported fields to filter by for web traffic. Fields Name Description name - StringFilter Use this to filter by name EXAMPLE { \"name\": { \"eq\": \"example\", \"ne\": \"example\", \"in\": [\"example\"], \"nin\": [\"example\"] } }",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webinstalledappresponse"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webentriesfilterby"
   },
   {
     "product": "zinsights",
@@ -839,23 +883,23 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "WebReportData",
+    "name": "WebReportDataQuery",
     "description": "Types",
-    "details": "Types Internally supported response type. Fields Name Description name - String! Supported field name in the entries response. total - Long! Supported field total in the entries response. EXAMPLE { \"name\": \"example\", \"total\": 123 }",
+    "details": "Types Analyze your Web traffic Fields Name Description location(start_time: Long!, end_time: Long!, traffic_unit: WebTrafficUnits!, include_trend: Boolean, trend_interval: TrendInterval) - ReportDataWebTrendResponse Displays data about the web traffic of your organization's locations. no_grouping(start_time: Long!, end_time: Long!, traffic_unit: WebTrafficUnits!, dlp_engine_filter: DlpEngineFilter, include_trend: Boolean, trend_interval: TrendInterval, action_filter: ActionStatus) - ReportDataWebTrendResponse Displays data about the overall web traffic for the selected time period. protocols(start_time: Long!, end_time: Long!, traffic_unit: WebTrafficUnits!, include_trend: Boolean, trend_interval: TrendInterval) - ReportDataWebTrendResponse Displays data about the protocols of the web traffic. top_url_category(start_time: Long!, end_time: Long!, traffic_unit: WebTrafficUnits!, action_filter: ActionStatus) - WebProtocolReport Displays data about the top URL categories of the web traffic. web_browsing_trend(start_time: Long!, end_time: Long!, traffic_unit: WebTrafficUnits!, trend_interval: TrendInterval!) - ReportDataWebTrendResponse Displays web browsing trend data by URL class. threat_super_categories(start_time: Long!, end_time: Long!, traffic_unit: WebTrafficUnits!) - WebThreatSuperCategoryReport Displays data about the detected viruses and spyware for each virus and spyware super category. threat_class(start_time: Long!, end_time: Long!, traffic_unit: WebTrafficUnits!) - WebThreatClassResponse Displays data about the threats that the service detected in the web traffic of your organization. advanced_threats(start_time: Long!, end_time: Long!) - WebAdvancedThreatResponse Displays advanced threats (e.g. Phishing, Botnet Callback). top_threat_category(start_time: Long!, end_time: Long!) - WebThreatCategoryResponse Displays the top viruses and spyware threat categories detected in web traffic. top_mobile_apps(start_time: Long!, end_time: Long!) - WebMobileAppResponse Displays the top mobile applications by traffic volume. top_bandwidth_classes(start_time: Long!, end_time: Long!) - WebBandwidthClassResponse Displays the top bandwidth classes by traffic volume. bandwidth_control_rules(start_time: Long!, end_time: Long!) - WebBandwidthRuleResponse Displays the bandwidth control rules by traffic volume. top_vulnerable_apps(start_time: Long!, end_time: Long!) - WebVulnerableAppResponse Displays the top vulnerable plug-ins, browsers, and applications. top_installed_apps(start_time: Long!, end_time: Long!) - WebInstalledAppResponse Displays the top installed plug-ins, browsers, and applications. EXAMPLE { \"location\": { \"entries\": [{ \"name\": \"example\", \"total\": 123, \"trend\": { \"trend_start_time\": 123, \"trend_interval\": 123, \"trend_values\": [123] } }], \"obfuscated\": true }, \"no_grouping\": { \"entries\": [{ \"name\": \"example\", \"total\": 123, \"trend\": { \"trend_start_time\": 123, \"trend_interval\": 123, \"trend_values\": [123] } }], \"obfuscated\": true }, \"protocols\": { \"entries\": [{ \"name\": \"example\", \"total\": 123, \"trend\": { \"trend_start_time\": 123, \"trend_interval\": 123, \"trend_values\": [123] } }], \"obfuscated\": true }, \"top_url_category\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"web_browsing_trend\": { \"entries\": [{ \"name\": \"example\", \"total\": 123, \"trend\": { \"trend_start_time\": 123, \"trend_interval\": 123, \"trend_values\": [123] } }], \"obfuscated\": true }, \"threat_super_categories\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"threat_class\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"advanced_threats\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"top_threat_category\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"top_mobile_apps\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"top_bandwidth_classes\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"bandwidth_control_rules\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"top_vulnerable_apps\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }, \"top_installed_apps\": { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true } }",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webreportdata"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webreportdataquery"
   },
   {
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "WebReportDataTrend",
+    "name": "WebThreatCategoryResponse",
     "description": "Types",
-    "details": "Types Internally supported response type with trend data. Fields Name Description name - String! Supported field name in the entries response. total - Long! Supported field total in the entries response. trend - WebTrend Supported field trend in the entries response. EXAMPLE { \"name\": \"example\", \"total\": 123, \"trend\": { \"trend_start_time\": 123, \"trend_interval\": 123, \"trend_values\": [123] } }",
+    "details": "Types Web Response format for threat categories (Top Viruses & Spyware). Fields Name Description entries(limit: Int, order_by: [WebOrderBy], filter_by: WebEntriesFilterBy) - [WebReportData] obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webreportdatatrend"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webthreatcategoryresponse"
   },
   {
     "product": "zinsights",
@@ -905,23 +949,12 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "WebVulnerableAppResponse",
-    "description": "Types",
-    "details": "Types Web Response format for top vulnerable plug-ins, browsers, and applications. Fields Name Description entries(limit: Int, order_by: [WebOrderBy], filter_by: WebEntriesFilterBy) - [WebReportData] obfuscated - Boolean Personally Identifiable Information (PII) was obfuscated or not in the response. EXAMPLE { \"entries\": [{ \"name\": \"example\", \"total\": 123 }], \"obfuscated\": true }",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webvulnerableappresponse"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
-    "name": "appsonlyresponse",
+    "name": "actionstatus",
     "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/appsonlyresponse"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/actionstatus"
   },
   {
     "product": "zinsights",
@@ -938,108 +971,97 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "casbentryorderby",
+    "name": "cloudapplicationentriesfilterby",
     "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/casbentryorderby"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cloudapplicationentriesfilterby"
   },
   {
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "cybersecurityentriessearchfilterby",
+    "name": "cloudapplicationreportdata",
     "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cybersecurityentriessearchfilterby"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cloudapplicationreportdata"
   },
   {
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "cybersecurityreportdataquery",
+    "name": "cybersecurityincidentsresponse",
     "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cybersecurityreportdataquery"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cybersecurityincidentsresponse"
   },
   {
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "cybersecurityresponseid",
+    "name": "cybersecurityincidentsresponsewithid",
     "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cybersecurityresponseid"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/cybersecurityincidentsresponsewithid"
   },
   {
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "devicestat",
+    "name": "firewallactionreport",
     "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/devicestat"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewallactionreport"
   },
   {
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "entriesresponse",
+    "name": "firewallinsightsreport",
     "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/entriesresponse"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewallinsightsreport"
   },
   {
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "firewallnetworkreport",
+    "name": "firewallreportdataquery",
     "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewallnetworkreport"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewallreportdataquery"
   },
   {
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "firewalloveralltrafficreport",
-    "description": "",
+    "name": "iotdataquery",
+    "description": "Zscaler Automation Documentation",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/firewalloveralltrafficreport"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/iotdataquery"
   },
   {
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "protocolreportentry",
+    "name": "shadowitappssearchfilterby",
     "description": "",
     "details": "",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/protocolreportentry"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
-    "name": "shadowITAppsSearchFilterBy",
-    "description": "Input Types",
-    "details": "Input Types Supported fields to filter by. Fields Name Description application - StringFilter Use this to filter by application. application_category - StringFilter Use this to filter by application category. sanctioned_state - StringFilter Use this to filter by sanctioned state. EXAMPLE { \"application\": { \"eq\": \"example\", \"ne\": \"example\", \"in\": [\"example\"], \"nin\": [\"example\"] }, \"application_category\": { \"eq\": \"example\", \"ne\": \"example\", \"in\": [\"example\"], \"nin\": [\"example\"] }, \"sanctioned_state\": { \"eq\": \"example\", \"ne\": \"example\", \"in\": [\"example\"], \"nin\": [\"example\"] } }",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/shadowitappssearchfilterby"
@@ -1048,34 +1070,12 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "shadowITEntriesSearchFilterBy",
-    "description": "Input Types",
-    "details": "Input Types Supported fields to filter by. Fields Name Description name - StringFilter Use this to filter by name.s EXAMPLE { \"name\": { \"eq\": \"example\", \"ne\": \"example\", \"in\": [\"example\"], \"nin\": [\"example\"] } }",
+    "name": "shadowitentriessearchfilterby",
+    "description": "",
+    "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
     "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/shadowitentriessearchfilterby"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
-    "name": "shadowitappsorderby",
-    "description": "",
-    "details": "",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/shadowitappsorderby"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
-    "name": "shadowitdashboardresponse",
-    "description": "",
-    "details": "",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/shadowitdashboardresponse"
   },
   {
     "product": "zinsights",
@@ -1092,17 +1092,6 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "stringfilter",
-    "description": "",
-    "details": "",
-    "query": "",
-    "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/stringfilter"
-  },
-  {
-    "product": "zinsights",
-    "kind": "type",
-    "domain": "Schema",
     "name": "summaryothersresponse",
     "description": "",
     "details": "",
@@ -1114,12 +1103,12 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "webentriesfilterby",
-    "description": "Zscaler Automation Documentation",
+    "name": "webinstalledappresponse",
+    "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webentriesfilterby"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webinstalledappresponse"
   },
   {
     "product": "zinsights",
@@ -1136,22 +1125,33 @@
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "webreportdataquery",
+    "name": "webreportdata",
     "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webreportdataquery"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webreportdata"
   },
   {
     "product": "zinsights",
     "kind": "type",
     "domain": "Schema",
-    "name": "webthreatcategoryresponse",
+    "name": "webreportdatatrend",
     "description": "",
     "details": "",
     "query": "",
     "endpoint": "https://api.zsapi.net/zins/graphql",
-    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webthreatcategoryresponse"
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webreportdatatrend"
+  },
+  {
+    "product": "zinsights",
+    "kind": "type",
+    "domain": "Schema",
+    "name": "webvulnerableappresponse",
+    "description": "",
+    "details": "",
+    "query": "",
+    "endpoint": "https://api.zsapi.net/zins/graphql",
+    "doc_url": "https://automate.zscaler.com/docs/api-reference-and-guides/graphql-api-references/zinsights/types/webvulnerableappresponse"
   }
 ]
