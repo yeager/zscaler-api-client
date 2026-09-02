@@ -1223,8 +1223,8 @@ class MainWindowTests(unittest.TestCase):
                 self.window._authenticate_api()
             self.assertEqual("https://mobile.zscalertwo.net/papi/auth/v1/login", self.window.url_input.text())
             self.assertEqual("application/json", self.window.headers_table.item(0, 1).text())
-            self.assertEqual({"apiKey": "key-id", "secretKey": "secret-key"}, json.loads(self.window.body_input.toPlainText()))
-            send.assert_called_once()
+            self.assertNotIn("secret-key", self.window.body_input.toPlainText())
+            self.assertEqual({"apiKey": "key-id", "secretKey": "secret-key"}, json.loads(send.call_args.kwargs["transient_body"]))
         finally:
             for key, value in previous.items():
                 settings.remove(key) if value is None else settings.setValue(key, value)
@@ -1287,9 +1287,10 @@ class MainWindowTests(unittest.TestCase):
             if self.window.api_type.findText("ZPA") < 0:
                 self.window.api_type.addItem("ZPA")
             self.window.api_type.setCurrentText("ZPA")
-            with patch.object(client, "secure_get", return_value="secret%#&+"), patch.object(self.window, "_send_request"):
+            with patch.object(client, "secure_get", return_value="secret%#&+"), patch.object(self.window, "_send_request") as send:
                 self.window._authenticate_api()
-            parsed = client.urllib.parse.parse_qs(self.window.body_input.toPlainText(), keep_blank_values=True)
+            self.assertNotIn("secret%#&+", self.window.body_input.toPlainText())
+            parsed = client.urllib.parse.parse_qs(send.call_args.kwargs["transient_body"], keep_blank_values=True)
             self.assertEqual({"client_id": ["client+id"], "client_secret": ["secret%#&+"]}, parsed)
         finally:
             for key, value in previous.items():
@@ -1306,10 +1307,11 @@ class MainWindowTests(unittest.TestCase):
             if self.window.api_type.findText("ZDX") < 0:
                 self.window.api_type.addItem("ZDX")
             self.window.api_type.setCurrentText("ZDX")
-            with patch.object(client, "secure_get", return_value="key-secret"), patch.object(self.window, "_send_request"):
+            with patch.object(client, "secure_get", return_value="key-secret"), patch.object(self.window, "_send_request") as send:
                 self.window._authenticate_api()
             self.assertEqual("https://api.zdxcloud.net/v2/oauth/token", self.window.url_input.text())
-            self.assertEqual({"key_id": "key-id", "key_secret": "key-secret"}, json.loads(self.window.body_input.toPlainText()))
+            self.assertNotIn("key-secret", self.window.body_input.toPlainText())
+            self.assertEqual({"key_id": "key-id", "key_secret": "key-secret"}, json.loads(send.call_args.kwargs["transient_body"]))
         finally:
             for key, value in previous.items():
                 settings.remove(key) if value is None else settings.setValue(key, value)
@@ -1334,6 +1336,43 @@ class MainWindowTests(unittest.TestCase):
                     settings.remove(key)
                 else:
                     settings.setValue(key, value)
+
+    def test_oneapi_authentication_masks_editor_payload_and_keeps_real_form_transient(self):
+        settings = client.QSettings("Zscaler", "APIClient")
+        keys = ("oneapi/vanity_domain", "oneapi/client_id", "oneapi/cloud")
+        previous = {key: settings.value(key, None) for key in keys}
+        try:
+            settings.setValue("oneapi/vanity_domain", "acme")
+            settings.setValue("oneapi/client_id", "client+id")
+            settings.setValue("oneapi/cloud", "")
+            if self.window.api_type.findText("OneAPI") < 0:
+                self.window.api_type.addItem("OneAPI")
+            self.window.api_type.setCurrentText("OneAPI")
+            with patch.object(client, "secure_get", return_value="secret%#&+"), patch.object(self.window, "_send_request") as send:
+                self.window._authenticate_api()
+            self.assertEqual("https://acme.zslogin.net/oauth2/v1/token", self.window.url_input.text())
+            self.assertNotIn("secret%#&+", self.window.body_input.toPlainText())
+            self.assertIn("client_secret=***", self.window.body_input.toPlainText())
+            parsed = client.urllib.parse.parse_qs(send.call_args.kwargs["transient_body"], keep_blank_values=True)
+            self.assertEqual("secret%#&+", parsed["client_secret"][0])
+            self.assertEqual("https://api.zscaler.com", parsed["audience"][0])
+        finally:
+            for key, value in previous.items():
+                settings.remove(key) if value is None else settings.setValue(key, value)
+
+    def test_transient_auth_form_is_sent_without_replacing_the_masked_editor_value(self):
+        self.window.url_input.setText("https://example.test/oauth2/v1/token")
+        self.window.method_combo.setCurrentText("● POST")
+        self.window._set_body_mode("form")
+        self.window.body_input.setPlainText("client_id=client&client_secret=***")
+        transient = "client_id=client&client_secret=never-display&grant_type=client_credentials"
+        with patch.object(client, "ApiWorker") as worker_type:
+            self.window._send_request(transient_body=transient)
+        request = worker_type.call_args.args[0][0]
+        self.assertEqual(transient, request["body"])
+        self.assertEqual(transient, self.window._pending_request["body"])
+        self.assertNotIn("never-display", self.window.body_input.toPlainText())
+        self.window._pending_request = None
 
     def test_clear_request_removes_all_derived_response_views(self):
         self.window.url_input.setText("https://example.test")

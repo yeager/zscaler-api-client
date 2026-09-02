@@ -10065,9 +10065,7 @@ class MainWindow(QMainWindow):
                 "password": password,
                 "timestamp": timestamp
             }
-            self._set_body_mode("json")
-            self.body_input.setPlainText(json.dumps(body, indent=2))
-            self._send_request()
+            self._submit_sensitive_auth_request(json.dumps(body, indent=2), "json")
             
         elif api_type == "ZCC":
             cloud = str(settings.value("zcc/cloud", "")).strip()
@@ -10081,9 +10079,9 @@ class MainWindow(QMainWindow):
             self.method_combo.setCurrentText("● POST")
             self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
             self.headers_table.setItem(0, 1, QTableWidgetItem("application/json"))
-            self._set_body_mode("json")
-            self.body_input.setPlainText(json.dumps({"apiKey": api_key, "secretKey": api_secret}, indent=2))
-            self._send_request()
+            self._submit_sensitive_auth_request(
+                json.dumps({"apiKey": api_key, "secretKey": api_secret}, indent=2), "json"
+            )
 
         elif api_type in ["ZPA", "ZDX", "ZIdentity", "ZTW", "ZWA", "EASM"]:
             # OAuth-based APIs
@@ -10152,8 +10150,7 @@ class MainWindow(QMainWindow):
                 body = urllib.parse.urlencode(form)
                 self._set_body_mode("form")
             
-            self.body_input.setPlainText(body)
-            self._send_request()
+            self._submit_sensitive_auth_request(body, "json" if api_type == "ZDX" else "form")
             
         elif api_type == "OneAPI":
             # OneAPI uses ZIdentity OAuth2 with vanity domain
@@ -10180,7 +10177,6 @@ class MainWindow(QMainWindow):
             # OneAPI uses form-urlencoded with audience parameter
             self.headers_table.setItem(0, 0, QTableWidgetItem("Content-Type"))
             self.headers_table.setItem(0, 1, QTableWidgetItem("application/x-www-form-urlencoded"))
-            self._set_body_mode("form")
             body = urllib.parse.urlencode({
                 "client_id": client_id,
                 "client_secret": client_secret,
@@ -10188,8 +10184,7 @@ class MainWindow(QMainWindow):
                 "audience": "https://api.zscaler.com",
             })
             
-            self.body_input.setPlainText(body)
-            self._send_request()
+            self._submit_sensitive_auth_request(body, "form")
     
     def _run_ai_assistant(self):
         """Turn a natural-language question into a safe catalog-backed request."""
@@ -11253,7 +11248,13 @@ class MainWindow(QMainWindow):
         if details:
             self.ai_summary.setText(self.ai_summary.text() + " · " + ", ".join(details))
 
-    def _send_request(self):
+    def _submit_sensitive_auth_request(self, payload: str, body_mode: str):
+        """Send an authentication payload without exposing its secrets in the editor."""
+        self._set_body_mode(body_mode)
+        self.body_input.setPlainText(str(redact_sensitive(payload)))
+        self._send_request(transient_body=payload)
+
+    def _send_request(self, transient_body: str | None = None):
         url = self.url_input.text().strip()
         method = self.method_combo.currentText().replace("● ", "")
         if self.graphql_mode.isChecked():
@@ -11364,7 +11365,9 @@ class MainWindow(QMainWindow):
         body = None
         history_body = None
         body_mode = "json" if self.graphql_mode.isChecked() else str(self.body_mode.currentData() or "json")
-        body_text = self.body_input.toPlainText().strip()
+        # Authentication helpers keep their actual form payload only in this
+        # call stack; the visible editor always contains its redacted twin.
+        body_text = transient_body.strip() if transient_body is not None else self.body_input.toPlainText().strip()
         if self.graphql_mode.isChecked() and not body_text:
             self.request_tabs.setCurrentIndex(2)
             QMessageBox.warning(self, self.tr("GraphQL Variables"), self.tr("GraphQL body must be a JSON object containing a query string.")); return

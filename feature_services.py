@@ -120,7 +120,7 @@ def is_sensitive_name(value: Any) -> bool:
     """Recognise credential-like JSON keys, query parameters, and HTTP headers."""
     normalized = "".join(character for character in str(value).lower() if character.isalnum())
     return normalized in {"authorization", "proxyauthorization", "cookie", "setcookie", "password", "secret",
-                          "token", "jwttoken", "authtoken", "authcookie", "sessionid", "jsessionid", "apikey",
+                          "token", "jwttoken", "authtoken", "authcookie", "sessionid", "jsessionid", "apikey", "secretkey",
                           "clientsecret", "keysecret", "accesstoken", "refreshtoken"} or normalized.startswith(("xapikey", "xauthtoken"))
 
 
