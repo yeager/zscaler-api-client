@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [2.8.12] - 2026-09-02
+
 ### Security
 - Authentication request editors now display masked JSON or form payloads for every built-in product. The unredacted credential payload exists only in memory for the active request and remains redacted in history, evidence, and exports.
 
